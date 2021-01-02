@@ -24,15 +24,15 @@ public:
 // ------------------------- Components
 	UPROPERTY(meta = (BindWidget))
 	UComboBoxString* Birthday_Day_DropDown;
-
 	UPROPERTY(meta = (BindWidget))
 	UComboBoxString* Birthday_Month_DropDown;
-
 	UPROPERTY(meta = (BindWidget))
 	UComboBoxString* Birthday_Year_DropDown;
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* HoroscopeText;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* MarkText;
 
 // ------------------------- References
 	UPROPERTY()
@@ -41,12 +41,31 @@ public:
 // ------------------------- Other
 	UPROPERTY()
 	int BirthDayAsNumber;
-
 	UPROPERTY()
 	int BirthMonthAsNumber;
-
 	UPROPERTY()
 	int BirthYearAsNumber;
+
+	UPROPERTY()
+	FString BirthYearAsString;
+	UPROPERTY()
+	FString BirthYearAsString2;
+
+	UPROPERTY()
+	TArray<FString> BirthDayAsCharArray;
+	UPROPERTY()
+	TArray<FString> BirthMonthAsCharArray;
+	UPROPERTY()
+	TArray<FString> BirthYearAsCharArray;
+
+	UPROPERTY()
+	int MarkNumberAsInt;
+	UPROPERTY()
+	TArray<int> MarkNumberAsIntArray;
+	UPROPERTY()
+	FString MarkNumberAsString;
+	UPROPERTY()
+	TArray<FString> MarkNumberAsCharArray;
 
 // Function
 // --------------------------------------------------
@@ -58,4 +77,7 @@ public:
 // ------------------------- Player
 	UFUNCTION(BlueprintCallable)
 	void CalculateHoroscope();
+
+	UFUNCTION(BlueprintCallable)
+	void CalculateMark();
 };

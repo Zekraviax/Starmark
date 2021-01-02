@@ -32,7 +32,6 @@ void UWidget_CharacterCreator::OnWidgetOpened()
 		for (int y = CurrentYear; y >= 1900; y--) {
 			Birthday_Year_DropDown->AddOption(FString::FromInt(y));
 		}
-
 		//Birthday_Year_DropDown->SetSelectedOption("2021");
 	}
 }
@@ -174,6 +173,134 @@ void UWidget_CharacterCreator::CalculateHoroscope()
 			}
 		default:
 			// The default is already set to Capricorn
+			break;
+	}
+
+	CalculateMark();
+}
+
+
+void UWidget_CharacterCreator::CalculateMark()
+{
+	// Clear previous variables
+	MarkNumberAsInt = 0;
+	MarkNumberAsString = "";
+	MarkNumberAsCharArray.Empty();
+	MarkNumberAsIntArray.Empty();
+
+	BirthYearAsCharArray.Empty();
+	BirthMonthAsCharArray.Empty();
+	BirthDayAsCharArray.Empty();
+	BirthYearAsString = "";
+	BirthYearAsString2 = "";
+
+	if (BirthDayAsNumber > 9) {
+		BirthDayAsCharArray.Add(Birthday_Day_DropDown->GetSelectedOption().LeftChop(1));
+		BirthDayAsCharArray.Add(Birthday_Day_DropDown->GetSelectedOption().RightChop(1));
+	} else {
+		BirthDayAsCharArray.Add(Birthday_Day_DropDown->GetSelectedOption());
+	}
+
+	if (BirthMonthAsNumber > 9) {
+		BirthMonthAsCharArray.Add(Birthday_Month_DropDown->GetSelectedOption().LeftChop(1));
+		BirthMonthAsCharArray.Add(Birthday_Month_DropDown->GetSelectedOption().RightChop(1));
+	} else {
+		BirthMonthAsCharArray.Add(Birthday_Month_DropDown->GetSelectedOption());
+	}
+
+	BirthYearAsString = Birthday_Year_DropDown->GetSelectedOption().LeftChop(2);
+	BirthYearAsString2 = Birthday_Year_DropDown->GetSelectedOption().RightChop(2);
+
+	BirthYearAsCharArray.Add(BirthYearAsString.LeftChop(1));
+	BirthYearAsCharArray.Add(BirthYearAsString.RightChop(1));
+	BirthYearAsCharArray.Add(BirthYearAsString2.LeftChop(1));
+	BirthYearAsCharArray.Add(BirthYearAsString2.RightChop(1));
+
+
+	// Convert all individual characters into ints
+	for (int x = 0; x < BirthDayAsCharArray.Num(); x++) {
+		MarkNumberAsIntArray.Add(FCString::Atoi(*BirthDayAsCharArray[x]));
+	}
+	for (int y = 0; y < BirthMonthAsCharArray.Num(); y++) {
+		MarkNumberAsIntArray.Add(FCString::Atoi(*BirthMonthAsCharArray[y]));
+	}
+	for (int z = 0; z < BirthYearAsCharArray.Num(); z++) {
+		MarkNumberAsIntArray.Add(FCString::Atoi(*BirthYearAsCharArray[z]));
+	}
+
+	// Add all individual numbers together
+	for (int i = 0; i < MarkNumberAsIntArray.Num(); i++) {
+		MarkNumberAsInt += MarkNumberAsIntArray[i];
+	}
+
+	MarkText->SetText(FText::FromString(FString::FromInt(MarkNumberAsInt)));
+
+	// If the MarkNumber is greater than 9, split the number into individual characters and add them together
+	// Repeat as necessary
+	while (MarkNumberAsInt > 9) {
+		MarkNumberAsString = FString::FromInt(MarkNumberAsInt);
+		MarkNumberAsIntArray.Empty();
+		MarkNumberAsCharArray.Empty();
+
+		MarkNumberAsCharArray.Add(MarkNumberAsString.LeftChop(1));
+		MarkNumberAsCharArray.Add(MarkNumberAsString.RightChop(1));
+
+		for (int n = 0; n < MarkNumberAsCharArray.Num(); n++) {
+			MarkNumberAsIntArray.Add(FCString::Atoi(*MarkNumberAsCharArray[n]));
+		}
+
+		MarkNumberAsInt = 0;
+		for (int i = 0; i < MarkNumberAsIntArray.Num(); i++) {
+			MarkNumberAsInt += MarkNumberAsIntArray[i];
+		}
+	}
+
+	if (!GameInstanceReference) {
+		GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	}
+	
+	// Convert MarkNumberAsInto into a Mark
+	switch (MarkNumberAsInt)
+	{
+		case(1):
+			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Romp;
+			MarkText->SetText(FText::FromString("Romp"));
+			break;
+		case(2):
+			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Slith;
+			MarkText->SetText(FText::FromString("Slith"));
+			break;
+		case(3):
+			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Roa;
+			MarkText->SetText(FText::FromString("Roa"));
+			break;
+		case(4):
+			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Skip;
+			MarkText->SetText(FText::FromString("Skip"));
+			break;
+		case(5):
+			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Flok;
+			MarkText->SetText(FText::FromString("Flok"));
+			break;
+		case(6):
+			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Gup;
+			MarkText->SetText(FText::FromString("Gup"));
+			break;
+		case(7):
+			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Xash;
+			MarkText->SetText(FText::FromString("Xash"));
+			break;
+		case(8):
+			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Zwor;
+			MarkText->SetText(FText::FromString("Zwor"));
+			break;
+		case(9):
+			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Kop;
+			MarkText->SetText(FText::FromString("Kop"));
+			break;
+		default:
+			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Romp;
+			MarkText->SetText(FText::FromString("Romp"));
 			break;
 	}
 

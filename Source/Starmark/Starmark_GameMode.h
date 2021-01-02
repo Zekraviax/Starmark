@@ -87,6 +87,9 @@ struct STARMARK_API F_Player_Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
 	E_Player_Horoscopes Horoscope;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
+	E_Character_Marks Mark;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hemisphere")
 	E_Player_Hemispheres Hemisphere;
 	
@@ -102,6 +105,7 @@ struct STARMARK_API F_Player_Data
 		Birthday_Month = 1;
 		Birthday_Year = 2021;
 		Horoscope = E_Player_Horoscopes::E_Capricorn;
+		Mark = E_Character_Marks::E_Romp;
 		Hemisphere = E_Player_Hemispheres::E_Southern;
 		Name = "Default";
 		Pronouns = E_Player_Pronouns::E_Neutral;
