@@ -32,7 +32,6 @@ void UWidget_CharacterCreator::OnWidgetOpened()
 		for (int y = CurrentYear; y >= 1900; y--) {
 			Birthday_Year_DropDown->AddOption(FString::FromInt(y));
 		}
-		//Birthday_Year_DropDown->SetSelectedOption("2021");
 	}
 }
 
@@ -259,7 +258,7 @@ void UWidget_CharacterCreator::CalculateMark()
 		GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	}
 	
-	// Convert MarkNumberAsInto into a Mark
+	// Convert MarkNumberAsInt into a Mark
 	switch (MarkNumberAsInt)
 	{
 		case(1):
