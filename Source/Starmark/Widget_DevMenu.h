@@ -10,4 +10,5 @@ class STARMARK_API UWidget_DevMenu : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
 };
