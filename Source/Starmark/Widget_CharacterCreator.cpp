@@ -51,122 +51,122 @@ void UWidget_CharacterCreator::CalculateHoroscope()
 	{
 		case(1):
 			if (BirthDayAsNumber <= 19) {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Capricorn;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Capricorn;
 				HoroscopeText->SetText(FText::FromString("Capricorn"));
 				break;
 			} else {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Aquarius;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Aquarius;
 				HoroscopeText->SetText(FText::FromString("Aquarius"));
 				break;
 			}
 			break;
 		case(2):
 			if (BirthDayAsNumber <= 18) {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Aquarius;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Aquarius;
 				HoroscopeText->SetText(FText::FromString("Aquarius"));
 				break;
 			} else {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Pisces;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Pisces;
 				HoroscopeText->SetText(FText::FromString("Pisces"));
 				break;
 			}
 		case(3):
 			if (BirthDayAsNumber <= 20) {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Pisces;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Pisces;
 				HoroscopeText->SetText(FText::FromString("Pisces"));
 				break;
 			} else {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Aries;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Aries;
 				HoroscopeText->SetText(FText::FromString("Aries"));
 				break;
 			}
 		case(4):
 			if (BirthDayAsNumber <= 19) {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Aries;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Aries;
 				HoroscopeText->SetText(FText::FromString("Aries"));
 				break;
 			} else {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Taurus;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Taurus;
 				HoroscopeText->SetText(FText::FromString("Taurus"));
 				break;
 			}
 		case(5):
 			if (BirthDayAsNumber <= 20) {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Taurus;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Taurus;
 				HoroscopeText->SetText(FText::FromString("Taurus"));
 				break;
 			} else {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Gemini;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Gemini;
 				HoroscopeText->SetText(FText::FromString("Gemini"));
 				break;
 			}
 		case(6):
 			if (BirthDayAsNumber <= 20) {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Gemini;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Gemini;
 				HoroscopeText->SetText(FText::FromString("Gemini"));
 				break;
 			} else {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Cancer;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Cancer;
 				HoroscopeText->SetText(FText::FromString("Cancer"));
 				break;
 			}
 		case(7):
 			if (BirthDayAsNumber <= 22) {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Cancer;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Cancer;
 				HoroscopeText->SetText(FText::FromString("Cancer"));
 				break;
 			} else {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Leo;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Leo;
 				HoroscopeText->SetText(FText::FromString("Leo"));
 				break;
 			}
 		case(8):
 			if (BirthDayAsNumber <= 22) {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Leo;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Leo;
 				HoroscopeText->SetText(FText::FromString("Leo"));
 				break;
 			} else {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Virgo;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Virgo;
 				HoroscopeText->SetText(FText::FromString("Virgo"));
 				break;
 			}
 		case(9):
 			if (BirthDayAsNumber <= 22) {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Virgo;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Virgo;
 				HoroscopeText->SetText(FText::FromString("Virgo"));
 				break;
 			} else {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Libra;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Libra;
 				HoroscopeText->SetText(FText::FromString("Libra"));
 				break;
 			}
 		case(10):
 			if (BirthDayAsNumber <= 22) {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Libra;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Libra;
 				HoroscopeText->SetText(FText::FromString("Libra"));
 				break;
 			} else {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Scorpio;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Scorpio;
 				HoroscopeText->SetText(FText::FromString("Scorpio"));
 				break;
 			}
 		case(11):
 			if (BirthDayAsNumber <= 22) {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Scorpio;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Scorpio;
 				HoroscopeText->SetText(FText::FromString("Scorpio"));
 				break;
 			} else {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Sagittarius;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Sagittarius;
 				HoroscopeText->SetText(FText::FromString("Sagittarius"));
 				break;
 			}
 		case(12):
 			if (BirthDayAsNumber <= 21) {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Sagittarius;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Sagittarius;
 				HoroscopeText->SetText(FText::FromString("Sagittarius"));
 				break;
 			} else {
-				GameInstanceReference->PlayerData.Horoscope = E_Player_Horoscopes::E_Capricorn;
+				GameInstanceReference->PlayerData.Horoscope = EPlayer_Horoscopes::E_Capricorn;
 				HoroscopeText->SetText(FText::FromString("Capricorn"));
 				break;
 			}
@@ -262,43 +262,43 @@ void UWidget_CharacterCreator::CalculateMark()
 	switch (MarkNumberAsInt)
 	{
 		case(1):
-			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Romp;
+			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Romp;
 			MarkText->SetText(FText::FromString("Romp"));
 			break;
 		case(2):
-			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Slith;
+			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Slith;
 			MarkText->SetText(FText::FromString("Slith"));
 			break;
 		case(3):
-			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Roa;
+			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Roa;
 			MarkText->SetText(FText::FromString("Roa"));
 			break;
 		case(4):
-			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Skip;
+			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Skip;
 			MarkText->SetText(FText::FromString("Skip"));
 			break;
 		case(5):
-			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Flok;
+			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Flok;
 			MarkText->SetText(FText::FromString("Flok"));
 			break;
 		case(6):
-			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Gup;
+			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Gup;
 			MarkText->SetText(FText::FromString("Gup"));
 			break;
 		case(7):
-			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Xash;
+			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Xash;
 			MarkText->SetText(FText::FromString("Xash"));
 			break;
 		case(8):
-			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Zwor;
+			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Zwor;
 			MarkText->SetText(FText::FromString("Zwor"));
 			break;
 		case(9):
-			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Kop;
+			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Kop;
 			MarkText->SetText(FText::FromString("Kop"));
 			break;
 		default:
-			GameInstanceReference->PlayerData.Mark = E_Character_Marks::E_Romp;
+			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Romp;
 			MarkText->SetText(FText::FromString("Romp"));
 			break;
 	}

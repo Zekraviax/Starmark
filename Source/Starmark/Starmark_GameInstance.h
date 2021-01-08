@@ -22,5 +22,5 @@ public:
 
 // ------------------------- Player
 	UPROPERTY()
-	F_Player_Data PlayerData;
+	FPlayer_Data PlayerData;
 };

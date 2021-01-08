@@ -4,6 +4,10 @@
 #include "Blueprint/UserWidget.h"
 
 #include "Components/ComboBoxString.h"
+#include "Components/TextBlock.h"
+#include "Components/UniformGridPanel.h"
+#include "Engine/DataTable.h"
+#include "Engine/CurveTable.h"
 #include "Math/Color.h"
 
 #include "Widget_DevMenu.generated.h"
@@ -48,6 +52,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dye-Changing")
 	TSoftObjectPtr<AActor_CharacterTest> DyeChangeCharacter;
 
+// ------------------------- Type Calculator
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Type Calculator", meta = (BindWidget))
+	UComboBoxString* PrimaryTypeDropdown;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Type Calculator", meta = (BindWidget))
+	UComboBoxString* SecondaryTypeDropdown;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Type Calculator", meta = (BindWidget))
+	UTextBlock* CombinationTypeText;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Type Calculator", meta = (BindWidget))
+	UUniformGridPanel* TypeTextsGridPanel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type Calculator")
+	TArray<UComboBoxString*> TypeChartTextBoxes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type Calculator")
+	UCurveTable* NumberedTypeChartDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type Calculator")
+	UDataTable* CombinationTypesDataTable;
+
 
 // Function
 // --------------------------------------------------
@@ -59,4 +85,8 @@ public:
 // ------------------------- Dye-Changing
 	UFUNCTION(BlueprintCallable)
 	void OnColourDropdownChanged(E_DevMenu_ColourChangeDropdowns Dropdown);
+
+// ------------------------- Type Calculator
+	UFUNCTION(BlueprintCallable)
+	void CalculateTypeStrengthsAndWeaknesses();
 };
