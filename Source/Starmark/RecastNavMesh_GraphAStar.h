@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "NavMesh/RecastNavMesh.h"
+
+#include "GraphAStar.h"
+
 #include "RecastNavMesh_GraphAStar.generated.h"
 
 // Forward Declarations
@@ -28,7 +31,30 @@ struct FGridPathFilter
 
 protected:
 	// A reference to our NavMesh
-	const ARecastNavMesh_GraphAStar NavMeshReference;
+	const ARecastNavMesh_GraphAStar &NavMeshReference;
+};
+
+
+// Inherit this struct in order to make custom GetCost/GetLength functions
+struct FGridNavMeshPath : public FNavMeshPath
+{
+	FORCEINLINE
+	virtual float GetCostFromIndex(int32 PathPointIndex) const override
+	{
+		return CurrentPathCost;
+	}
+
+	FORCEINLINE
+		virtual float GetLengthFromPosition(FVector SegmentStart, uint32 NextPathPointIndex) const override
+	{
+		// Exclude the starting point
+		return PathPoints.Num() - 1;
+	}
+
+	float CurrentPathCost
+	{
+		0
+	};
 };
 
 
@@ -44,27 +70,31 @@ public:
 	// The function returns a FPathFindingResult struct that contains the path
 	static FPathFindingResult FindPath(const FNavAgentProperties &AgentProperties, const FPathFindingQuery &Query);
 
+	// Set the WorldGrid pointer
+	// 'NewWorldGrid' can be null
+	UFUNCTION(BlueprintCallable)
+	void SetWorldGrid(class AActor_WorldGrid* NewWorldGrid);
+
 	// Define the type we use for Nodes
-	typedef int32 FNodeReference;
+	typedef int32 FNodeRef;
 
 	// Return the number of neighbours a given NodeReference has
-	int32 GetNeightbourCount(FNodeReference NodeReference) const;
+	int32 GetNeighbourCount(FNodeRef NodeReference) const;
 
 	// Return whether a NodeReference is valid
-	bool IsValidReference(FNodeReference NodeReference) const;
+	bool IsValidRef(FNodeRef NodeReference) const;
 
 	// Return a reference to a Node's neighbour
 	// (only one neighbour)
-	FNodeReference GetNeighbour(const FNodeReference NodeReference, const int32 NeighbourIndex) const;
+	FNodeRef GetNeighbour(const FNodeRef NodeReference, const int32 NeighbourIndex) const;
 
 	// Pointer to a Grid actor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class AActor_WorldGrid* WorldGrid;
 
-	// ---------
-
-	// Set the WorldGrid pointer
-	// 'NewWorldGrid' can be null
-	UFUNCTION(BlueprintCallable)
-	void SetWorldGrid(class AActor_WorldGrid* NewWorldGrid);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float PathPointZOffset
+	{
+		0.f
+	};
 };

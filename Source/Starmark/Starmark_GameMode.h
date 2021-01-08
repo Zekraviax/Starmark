@@ -280,7 +280,7 @@ struct FHCubeCoord
 	{
 		return FHCubeCoord 
 		{
-			lhs.QRS + rhs.QRS;
+			lhs.QRS + rhs.QRS
 		};
 	}
 
@@ -328,6 +328,48 @@ struct FHFractional
 
 	FHFractional() {}
 };
+
+USTRUCT(BlueprintType)
+struct FHDirections
+{
+	GENERATED_USTRUCT_BODY()
+
+	FHDirections() {}
+};
+
+USTRUCT(BlueprintType)
+struct FHDiagonals
+{
+	GENERATED_USTRUCT_BODY()
+
+	FHDiagonals() {}
+};
+
+USTRUCT(BlueprintType)
+struct FHTileOrientation
+{
+	GENERATED_USTRUCT_BODY()
+
+	FHTileOrientation() {}
+};
+
+const struct FHFlatTopOrientation : FHTileOrientation
+{
+	FHFlatTopOrientation()
+	{
+
+	}
+
+} HFlatTopLayout;
+
+const struct FHPointyOrientation : FHTileOrientation
+{
+	FHPointyOrientation()
+	{
+
+	}
+
+} HPointyOrientation;
 
 
 UCLASS()

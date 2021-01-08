@@ -62,7 +62,7 @@ public:
 
 	// Array of the Cube Coordinates that comprises the Grid
 	UPROPERTY(BlueprintReadWrite)
-	TArray<FHCubeCoord> GridCoordinates{};
+	TArray<FHCubeCoord> GridCoordinates {};
 
 	// Layout of a Tile
 	UPROPERTY(BlueprintReadWrite)
