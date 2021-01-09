@@ -26,18 +26,13 @@ void UWidget_DevMenu::OnColourDropdownChanged(E_DevMenu_ColourChangeDropdowns Dr
 		for (auto Dye = DyeColorsMap.CreateConstIterator(); Dye; ++Dye) {
 			if (*Dye.Value() == ColourOneDropDown->GetSelectedOption()) {
 				Material->SetVectorParameterValue("Colour1", Dye.Key());
-				//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Change Colour1")));
-				//break;
+
 			}
 			if (*Dye.Value() == ColourTwoDropDown->GetSelectedOption()) {
 				Material->SetVectorParameterValue("Colour2", Dye.Key());
-				//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Change Colour2")));
-				//break;
 			}
 			if (*Dye.Value() == ColourThreeDropDown->GetSelectedOption()) {
 				Material->SetVectorParameterValue("Colour3", Dye.Key());
-				//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Change Colour3")));
-				//break;
 			}
 		}
 
@@ -69,16 +64,12 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 			PrimaryTypeString = PrimaryTypeString.Right(PrimaryTypeString.Len() - 2);
 			SecondaryTypeString = SecondaryTypeString.Right(SecondaryTypeString.Len() - 2);
 
-			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Primary Type: %s  /  Secondary Type: %s"), *PrimaryTypeString, *SecondaryTypeString));
-
 			if (PrimaryTypeString == PrimaryTypeDropdown->GetSelectedOption() ||
 				PrimaryTypeString == SecondaryTypeDropdown->GetSelectedOption()) {
 				if (SecondaryTypeString == PrimaryTypeDropdown->GetSelectedOption() ||
 					SecondaryTypeString == SecondaryTypeDropdown->GetSelectedOption()) {
 					CombinationTypeString = UEnum::GetDisplayValueAsText<ECharacter_Types>(CombinationType->CombinationType).ToString();
 					CombinationTypeString = CombinationTypeString.Right(CombinationTypeString.Len() - 2);
-
-					//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Combination Type: %s"), *(UEnum::GetValueAsString(CombinationType->CombinationType))));
 
 					CombinationTypeText->SetText(FText::FromString(CombinationTypeString));
 					break;
@@ -95,6 +86,7 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 				if (TextBoxName == PrimaryTypeString || TextBoxName == SecondaryTypeString) {
 
 				}
+
 				//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, (Cast<UTextBlock>(TypeTextBox)->GetName()));
 			}
 		}

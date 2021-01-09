@@ -250,7 +250,24 @@ struct FHAxialCoord
 {
 	GENERATED_USTRUCT_BODY()
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FIntPoint QR
+	{
+		FIntPoint::ZeroValue
+	};
+
 	FHAxialCoord() {}
+
+	FHAxialCoord(int32 q, int32 r)
+	{
+		QR.X = q;
+		QR.Y = r;
+	}
+
+	FHAxialCoord(FIntPoint _qr) : QR(_qr)
+	{
+
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -326,13 +343,34 @@ struct FHFractional
 {
 	GENERATED_USTRUCT_BODY()
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector QRS
+	{
+		FVector::ZeroVector
+	};
+
 	FHFractional() {}
+
+	FHFractional(float q, float r, float s)
+	{
+		QRS.X = q;
+		QRS.Y = r;
+		QRS.Z = q;
+	}
+
+	FHFractional(FVector _v) : QRS(_v)
+	{
+
+	}
 };
 
 USTRUCT(BlueprintType)
 struct FHDirections
 {
 	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FHCubeCoord> Directions;
 
 	FHDirections() {}
 };
@@ -342,6 +380,9 @@ struct FHDiagonals
 {
 	GENERATED_USTRUCT_BODY()
 
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FHCubeCoord> Diagonals;
+
 	FHDiagonals() {}
 };
 
@@ -350,14 +391,40 @@ struct FHTileOrientation
 {
 	GENERATED_USTRUCT_BODY()
 
-	FHTileOrientation() {}
+	// F variables are used in the GridToWorld conversion
+	// f0 and f1 for X coords, f2 and f3 for Y coords
+	double f0, f1, f2, f3;
+
+	// B variables are used in the WorldToGrid conversion
+	double b0, b1, b2, b3;
+
+	FHTileOrientation() 
+	{
+
+	}
+
+	friend bool operator==(const FHTileOrientation &lhs, const FHTileOrientation &rhs) 
+	{
+		return (lhs.f0 == rhs.f0) && (lhs.f1 == rhs.f1) && (lhs.f2 == rhs.f2) && (lhs.f3 == rhs.f3);
+	}
+
+
 };
 
 const struct FHFlatTopOrientation : FHTileOrientation
 {
 	FHFlatTopOrientation()
 	{
+		// UE4 | Original
+		f0 = -FMath::Sqrt(3.0) / 2.0;	// -f2 | f0 = 3/2
+		f1 = -FMath::Sqrt(3.0);			// -f3 | f1 = 0
+		f2 = 3.0 / 2.0;					//  f0 | f2 = sqrt(3)/2
+		f3 = 0.0;						//  f1 | f3 = sqrt(3)
 
+		b0 = 0.0;						// b1 | b0 = 2/3
+		b1 = 2.0 / 3.0;					// b0 | b1 = 0
+		b2 = FMath::Sqrt(3.0) / 3.0;	// b3 | b2 = -1/3
+		b3 = -1.0 / 3.0;				// b2 | b3 = sqrt(3)/3
 	}
 
 } HFlatTopLayout;
@@ -366,7 +433,15 @@ const struct FHPointyOrientation : FHTileOrientation
 {
 	FHPointyOrientation()
 	{
+		f0 = 0.0;						// -f2 | f0 = sqrt(3)
+		f1 = -3.0 / 2.0;				// -f3 | f1 = sqrt(3)/2
+		f2 = FMath::Sqrt(3.0);			//  f0 | f2 = 0
+		f3 = FMath::Sqrt(3.0) / 2.0;	//  f1 | f3 = 3/2f
 
+		b0 = 1.0 / 3.0;					// -b1 | b0 = sqrt(3)/3
+		b1 = FMath::Sqrt(3.0) / 3.0;	//  b0 | b1 = -1/3
+		b2 = -2.0 / 3.0;				// -b3 | b2 = 0
+		b3 = 0.0;						//  b2 | b3 = 2/3
 	}
 
 } HPointyOrientation;
