@@ -72,7 +72,10 @@ public:
 
 	// Layout of a Tile
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	FHTileLayout TileLayout {};
+	FHTileLayout TileLayout;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+	int TileSize;
 
 	// Radius of the grid in Tiles
 	// Clamped between 1 and 25

@@ -279,7 +279,7 @@ struct FHCubeCoord
 
 	FHCubeCoord(int32 q, int32 r, int32 s)
 	{
-		check(q + r + s == 0);
+		//check(q + r + s == 0);
 		QRS.X = q;
 		QRS.Y = r;
 		QRS.Z = s;
