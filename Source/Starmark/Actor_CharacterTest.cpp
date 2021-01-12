@@ -48,10 +48,6 @@ void AActor_CharacterTest::BeginPlay()
 	// Dynamic Material
 	DynamicMaterial = UMaterialInstanceDynamic::Create(StaticMaterial, this);
 	StaticMeshComponent->SetMaterial(0, DynamicMaterial);
-
-	// Random Colour Test
-	//FLinearColor RandColor = FLinearColor(FMath::RandRange(0.f, 1.f), FMath::RandRange(0.f, 1.f), FMath::RandRange(0.f, 1.f), 1.f);
-	//DynamicMaterial->SetVectorParameterValue("Colour2", RandColor);
 }
 
 // Called every frame
