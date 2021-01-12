@@ -10,6 +10,8 @@
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
+#include "PlayerController_Base.h"
 
 ACharacter_Pathfinder::ACharacter_Pathfinder()
 {
@@ -60,31 +62,23 @@ void ACharacter_Pathfinder::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (CursorToWorld != nullptr)
-	{
-		//if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
-		//{
-		//	if (UWorld* World = GetWorld())
-		//	{
-		//		FHitResult HitResult;
-		//		FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
-		//		FVector StartLocation = TopDownCameraComponent->GetComponentLocation();
-		//		FVector EndLocation = TopDownCameraComponent->GetComponentRotation().Vector() * 2000.0f;
-		//		Params.AddIgnoredActor(this);
-		//		World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
-		//		FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
-		//		CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
-		//	}
-		//}
-		//else 
-		if (APlayerController* PC = Cast<APlayerController>(GetController()))
-		{
-			FHitResult TraceHitResult;
-			PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
-			FVector CursorFV = TraceHitResult.ImpactNormal;
-			FRotator CursorR = CursorFV.Rotation();
-			CursorToWorld->SetWorldLocation(TraceHitResult.Location);
-			CursorToWorld->SetWorldRotation(CursorR);
-		}
-	}
+	//if (CursorToWorld != nullptr)
+	//{
+	//	//if (APlayerController_Base* PC = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+	//	if (APlayerController* PC = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+	//	{
+	//		FHitResult TraceHitResult;
+	//		PC->GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery1, true, TraceHitResult);
+	//		FVector CursorFV = TraceHitResult.ImpactNormal;
+	//		FRotator CursorR = CursorFV.Rotation();
+
+	//		// Snap Location To Grid
+	//		//FVector CursorSnappedToGrid = CursorFV.GridSnap(200.f);
+	//		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("CursorLocation: %s"), *CursorFV.ToString()));
+
+	//		CursorToWorld->SetWorldLocation(CursorFV);
+	//		//PC->CursorLocationSnappedToGrid = CursorFV;
+	//		CursorToWorld->SetWorldRotation(CursorR);
+	//	}
+	//}
 }

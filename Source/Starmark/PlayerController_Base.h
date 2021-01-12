@@ -4,8 +4,12 @@
 #include "GameFramework/PlayerController.h"
 
 #include "Actor_CharacterTest.h"
+#include "Character_Pathfinder.h"
 
 #include "PlayerController_Base.generated.h"
+
+// Forward Declarations
+//class ACharacter_Pathfinder;
 
 
 UCLASS()
@@ -36,10 +40,10 @@ public:
 
 // ------------------------- Pawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Pawn")
-	AActor_CharacterTest* CurrentSelectedPawn;
+	ACharacter_Pathfinder* CurrentSelectedPawn;
 
 // ------------------------- Grid
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Grid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	FVector CursorLocationSnappedToGrid;
 
 // Functions
