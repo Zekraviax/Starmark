@@ -36,7 +36,7 @@ void UWidget_DevMenu::OnColourDropdownChanged(E_DevMenu_ColourChangeDropdowns Dr
 			}
 		}
 
-		DyeChangeCharacter->Mesh->SetMaterial(0, Material);
+		//DyeChangeCharacter->Mesh->SetMaterial(0, Material);
 	}
 }
 

@@ -1,15 +1,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 
 #include "Materials/Material.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/DecalComponent.h"
 
 #include "Actor_CharacterTest.generated.h"
 
 UCLASS()
-class STARMARK_API AActor_CharacterTest : public AActor
+class STARMARK_API AActor_CharacterTest : public ACharacter
 {
 	GENERATED_BODY()
 	
@@ -25,16 +26,30 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-// Base Variables
+// Variables
 // --------------------------------------------------
 
 // ------------------------- Components
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterTest")
-	UStaticMeshComponent* Mesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CharacterTest")
+	UStaticMeshComponent* StaticMeshComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterTest")
 	UMaterialInterface* StaticMaterial;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterTest")
 	UMaterialInstanceDynamic* DynamicMaterial;
+
+	/** A decal that projects to the cursor location. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UDecalComponent* CursorToWorld;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UDecalComponent* ActorSelected;
+
+// Functions
+// --------------------------------------------------
+
+// ------------------------- 
+	/** Returns CursorToWorld subobject **/
+	FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
 };

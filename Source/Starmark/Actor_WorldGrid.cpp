@@ -6,7 +6,7 @@ AActor_WorldGrid::AActor_WorldGrid()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	TileLayout.TileSize = 102;
+	TileLayout.TileSize = 100;
 }
 
 // Called when the game starts or when spawned
@@ -26,17 +26,17 @@ void AActor_WorldGrid::Tick(float DeltaTime)
 
 void AActor_WorldGrid::CreateGrid(const FHTileLayout &TLayout, const int32 GRadius, const FCreationStepDelegate &CreationStepDelegate)
 {
-	int32 Size = 1;
-	for (int32 i = 0; i <= GridRadius; i++) {
-		Size += (6 * i);
-	}
+	//int32 Size = 1;
+	//for (int32 i = 0; i <= GridRadius; i++) {
+	//	Size += (6 * i);
+	//}
 
 	TileLayout = TLayout;
 	GridRadius = GRadius;
 
-	TileLayout.TileSize = 102;
+	TileLayout.TileSize = 100;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("TileLayout.TileSize: %d"), (TLayout.TileSize)));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("TileLayout.TileSize: %d"), (TLayout.TileSize)));
 
 	for (int32 q = -GridRadius; q <= GridRadius; q++) {
 		// R1
@@ -58,57 +58,43 @@ void AActor_WorldGrid::CreateGrid(const FHTileLayout &TLayout, const int32 GRadi
 
 FVector AActor_WorldGrid::TileToWorld(const FHCubeCoord &Tile)
 {
-	float x = Tile.QRS.X * TileLayout.TileSize;
-	float y = Tile.QRS.Y * TileLayout.TileSize;
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Tile To World: %s"), *Tile.QRS.ToString()));
 
-	//float x = Tile.QRS.X * 102;
-	//float y = Tile.QRS.Y * 102;
+	float x = Tile.QRS.X * TileSize;
+	float y = Tile.QRS.Y * TileSize;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Tile X: %d / Tile Y: %d /TileLayout.TileSize: %d"), (Tile.QRS.X), (Tile.QRS.Y), (TileLayout.TileSize)));
+	TileLayout.Origin.X = 1;
+	TileLayout.Origin.Y = 1;
+	TileLayout.Origin.Z = 1;
 
-	return FVector(x + TileLayout.Origin.X, y + TileLayout.Origin.Y, TileLayout.Origin.Z);
+	return FVector(x + 1, y + 1, 1);
 }
 
 FHCubeCoord AActor_WorldGrid::WorldToTile(const FVector &Location)
 {
-	//FVector InternalLocation
-	//{
-	//	FVector((Location.X - TileLayout.Origin.X) / TileLayout.TileSize, (Location.Y - TileLayout.Origin.Y) / TileLayout.TileSize, (Location.Z - TileLayout.Origin.Z))
-	//};
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, FString::Printf(TEXT("World to Tile: %s"), *Location.ToString()));
 
-	//float q = ((InternalLocation.X) + (InternalLocation.Y));
-	//float r = ((InternalLocation.X) + (InternalLocation.Y));
-	//FVector v = FVector(q, r, 1);
+	TileLayout.Origin.X = 1;
+	TileLayout.Origin.Y = 1;
+	TileLayout.Origin.Z = 1;
 
-	//{
-	//	(TileLayout.TileOrientation == EHTileOrientationFlag::FLAT) ? FVector(q, (-q - r), r) : FVector(q, r, (-q - r))
-	//};
-
-	float x = (Location.X - TileLayout.Origin.X) / TileLayout.TileSize;
-	float y = (Location.Y - TileLayout.Origin.Y) / TileLayout.TileSize;
+	float x = (Location.X - 1) / TileSize;
+	float y = (Location.Y - 1) / TileSize;
 
 	FHCubeCoord ReturnCoords = FHCubeCoord(x, y, TileLayout.Origin.Z);
-
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("X: %d / TileLayout.Orgin.X: %d / TileLayout.TileSize: %d"), x, TileLayout.Origin.X, TileLayout.TileSize));
 
 	return ReturnCoords;
 }
 
 FVector AActor_WorldGrid::SnapToGrid(const FVector &Location)
 {
-	float TempZ = Location.Z;
-
-	//FVector Result
-	//{
-	//	TileToWorld(WorldToTile(Location))
-	//};
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Magenta, FString::Printf(TEXT("Original Location: %s"), *Location.ToString()));
 
 	FHCubeCoord Result1 = WorldToTile(Location);
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("WorldToTile.X: %d / WorldToTile.Y: %d / WorldToTile.Z: %d"), Result1.QRS.X, Result1.QRS.Y, Result1.QRS.Z));
 	FVector Result = TileToWorld(Result1);
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("TileToWorld.X: %d / TileToWorld.Y: %d / TileToWorld.Z: %d"), Result.X, Result.Y, Result.Z));
 
-	Result.Z = TempZ;
+	Result.Z = Location.Z;
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Result: %s"), *Result.ToString()));
 	return Result;
 }
 
