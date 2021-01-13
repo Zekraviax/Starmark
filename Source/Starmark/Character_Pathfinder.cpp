@@ -6,8 +6,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
 #include "Materials/Material.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerController_Base.h"
@@ -91,9 +91,15 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 // ------------------------- Cursor
 void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 {
-	if (ActorSelected) {
+	if (!PlayerControllerReference) {
+		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	}
+
+	if (ActorSelected && ActorSelected_DynamicMaterial) {
+		if (PlayerControllerReference->CurrentSelectedPawn != this)
+			ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Blue);
+
 		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
-		//ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.f, 0.f, 1.f, 1.f));
 		ActorSelected->SetVisibility(true);
 	}
 }
@@ -101,16 +107,37 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 
 void ACharacter_Pathfinder::OnAvatarCursorOverEnd()
 {
+	if (!PlayerControllerReference) {
+		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	}
+
 	if (ActorSelected)
 		ActorSelected->SetVisibility(false);
+
+	//if (ActorSelected && PlayerControllerReference->CurrentSelectedPawn != this)
+	//	ActorSelected->SetVisibility(false);
 }
 
 
 void ACharacter_Pathfinder::OnAvatarClicked()
 {
-	if (ActorSelected) {
+	if (!PlayerControllerReference) {
+		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	}
+
+	if (ActorSelected && ActorSelected_DynamicMaterial) {
+		ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
 		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
-		//ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.4f, 0.f, 1.f));
 		ActorSelected->SetVisibility(true);
+
+		PlayerControllerReference->CurrentSelectedPawn = this;
+
+		for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
+			ACharacter_Pathfinder* FoundActor = *Itr;
+
+			if (PlayerControllerReference->CurrentSelectedPawn != FoundActor) {
+				FoundActor->ActorSelected->SetVisibility(false);
+			}
+		}
 	}
 }

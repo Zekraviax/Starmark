@@ -7,6 +7,9 @@
 
 #include "Character_Pathfinder.generated.h"
 
+// Forward Declarations
+class APlayerController_Base;
+
 UCLASS()
 class STARMARK_API ACharacter_Pathfinder : public ACharacter
 {
@@ -52,6 +55,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
+
+// ------------------------- Other
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	APlayerController_Base* PlayerControllerReference;
 
 // Functions
 // --------------------------------------------------
