@@ -15,7 +15,7 @@
 ACharacter_Pathfinder::ACharacter_Pathfinder()
 {
 	// Set size for player capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 84.0f);
+	GetCapsuleComponent()->InitCapsuleSize(42.f, 69.0f);
 
 	// Don't rotate character to camera direction
 	bUseControllerRotationPitch = false;
@@ -96,11 +96,11 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 	}
 
 	if (ActorSelected && ActorSelected_DynamicMaterial) {
-		if (PlayerControllerReference->CurrentSelectedPawn != this)
+		if (PlayerControllerReference->CurrentSelectedPawn != this) {
 			ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Blue);
-
-		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
-		ActorSelected->SetVisibility(true);
+			ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
+			ActorSelected->SetVisibility(true);
+		}
 	}
 }
 
@@ -111,7 +111,7 @@ void ACharacter_Pathfinder::OnAvatarCursorOverEnd()
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	}
 
-	if (ActorSelected)
+	if (ActorSelected && PlayerControllerReference->CurrentSelectedPawn != this)
 		ActorSelected->SetVisibility(false);
 
 	//if (ActorSelected && PlayerControllerReference->CurrentSelectedPawn != this)
@@ -129,6 +129,7 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 		ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
 		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
 		ActorSelected->SetVisibility(true);
+		CursorToWorld->SetVisibility(true);
 
 		PlayerControllerReference->CurrentSelectedPawn = this;
 
@@ -137,6 +138,7 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 
 			if (PlayerControllerReference->CurrentSelectedPawn != FoundActor) {
 				FoundActor->ActorSelected->SetVisibility(false);
+				FoundActor->CursorToWorld->SetVisibility(false);
 			}
 		}
 	}

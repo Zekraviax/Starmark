@@ -42,6 +42,7 @@ public:
 // Functions
 // --------------------------------------------------
 
-// ------------------------- 
-
+// ------------------------- Base
+	UFUNCTION(BlueprintCallable)
+	void SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* RandomPawnReference);
 };
