@@ -151,7 +151,7 @@ struct STARMARK_API FPlayer_Data
 };
 
 
-//------------------------- Character
+//------------------------- Avatar
 USTRUCT(BlueprintType)
 struct STARMARK_API FCharacter_TypeChart : public FTableRowBase
 {
@@ -212,6 +212,92 @@ struct STARMARK_API FCharacter_DyeColours : public FTableRowBase
 	FCharacter_DyeColours()
 	{
 
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct STARMARK_API FAvatar_BaseStats
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float HealthPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ManaPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Attack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Defence;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Speed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Evade;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Power;
+
+	FAvatar_BaseStats()
+	{
+		HealthPoints = 10;
+		ManaPoints = 10;
+		Attack = 1;
+		Defence = 1;
+		Speed = 1;
+		Evade = 1;
+		Power = 1;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int BasePower;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int BaseRange;
+
+	FAvatar_AttackStruct()
+	{
+		Name = "Default";
+		BasePower = 1;
+		BaseRange = 1;
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct STARMARK_API FAvatar_Struct : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString AvatarName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ECharacter_Marks Mark;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FAvatar_AttackStruct> AttacksArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FAvatar_BaseStats BaseStats;
+
+	FAvatar_Struct()
+	{
+		AvatarName = "Default";
+		Mark = ECharacter_Marks::E_Flok;
 	}
 };
 

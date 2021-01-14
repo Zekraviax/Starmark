@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 
 #include "Components/DecalComponent.h"
+#include "Starmark_GameMode.h"
 
 #include "Character_Pathfinder.generated.h"
 
@@ -55,6 +56,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
+
+// ------------------------- Avatar
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	FAvatar_Struct AvatarData;
 
 // ------------------------- Other
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

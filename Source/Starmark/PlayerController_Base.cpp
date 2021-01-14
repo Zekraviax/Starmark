@@ -2,6 +2,8 @@
 
 
 #include "NavigationSystem.h"
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/World.h"
 
 
@@ -26,6 +28,7 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 }
 
 
+// ------------------------- Base
 void APlayerController_Base::SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* RandomPawnReference)
 {
 	for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
@@ -40,5 +43,20 @@ void APlayerController_Base::SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* 
 		} else {
 			FoundActor->CursorToWorld->SetVisibility(false);
 		}
+	}
+}
+
+
+// ------------------------- Mouse
+void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("Clicked Actor Class: &s", ClickedActor->GetClass()->GetName()));
+
+	if (ClickedActor->GetClass() == ACharacter_Pathfinder::StaticClass()) {
+		// Select Avatar
+		// Attack Avatar
+	} else {
+		// If all else fails, assume we clicked on a plane that we can move our controller Avatar on
+		Cast<AAIController>(CurrentSelectedPawn->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
 	}
 }

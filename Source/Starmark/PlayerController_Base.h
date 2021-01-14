@@ -45,4 +45,8 @@ public:
 // ------------------------- Base
 	UFUNCTION(BlueprintCallable)
 	void SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* RandomPawnReference);
+
+// ------------------------- Mouse
+	UFUNCTION(BlueprintCallable)
+	void OnPrimaryClick(AActor* ClickedActor);
 };
