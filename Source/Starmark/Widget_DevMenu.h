@@ -6,6 +6,7 @@
 #include "Components/ComboBoxString.h"
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
+#include "Materials/Material.h"
 #include "Engine/DataTable.h"
 #include "Engine/CurveTable.h"
 #include "Math/Color.h"
@@ -14,6 +15,7 @@
 
 // Forward Declarations
 class AActor_CharacterTest;
+class AActor_MorphTargetTest;
 
 // Unique Variables
 UENUM(BlueprintType)
@@ -31,7 +33,7 @@ class STARMARK_API UWidget_DevMenu : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-// Base Variables
+// Variables
 // --------------------------------------------------
 
 // ------------------------- Components
@@ -107,11 +109,11 @@ public:
 
 // ------------------------- Face Customizer
 	UFUNCTION(BlueprintCallable)
-	void OnFaceChanged(ACharacter* MorphTargetTestCharacter);
+	void OnFaceChanged(AActor_MorphTargetTest* MorphTargetTestCharacter);
 
 	UFUNCTION(BlueprintCallable)
-	void OnEyesChanged(ACharacter* MorphTargetTestCharacter);
+	void OnEyesChanged(AActor_MorphTargetTest* MorphTargetTestCharacter);
 
 	UFUNCTION(BlueprintCallable)
-	void OnEyeColourChanged(ACharacter* MorphTargetTestCharacter);
+	void OnEyeColourChanged(AActor_MorphTargetTest* MorphTargetTestCharacter);
 };
