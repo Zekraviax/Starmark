@@ -50,13 +50,25 @@ void APlayerController_Base::SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* 
 // ------------------------- Mouse
 void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("Clicked Actor Class: &s", ClickedActor->GetClass()->GetName()));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("Clicked Actor Class: &s", ClickedActor->GetClass()->GetName()));
 
-	if (ClickedActor->GetClass() == ACharacter_Pathfinder::StaticClass()) {
-		// Select Avatar
-		// Attack Avatar
-	} else {
-		// If all else fails, assume we clicked on a plane that we can move our controller Avatar on
-		Cast<AAIController>(CurrentSelectedPawn->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
+	if (ClickedActor) {
+		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
+			// Select Avatar To Control
+			if (CurrentSelectedPawn != ClickedActor) {
+				Cast<ACharacter_Pathfinder>(ClickedActor)->OnAvatarClicked();
+			}
+			// Select Avatar to Begin Attack
+			else {
+
+			}
+		}
+		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh")) {
+			// If all else fails, assume we clicked on a plane that we can move our controller Avatar on
+			Cast<AAIController>(CurrentSelectedPawn->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
+		}
+		else {
+
+		}
 	}
 }

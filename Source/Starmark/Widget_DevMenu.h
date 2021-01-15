@@ -35,6 +35,8 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
+
+// ------------------------- Dye-Changing
 	UPROPERTY(meta = (BindWidget))
 	UComboBoxString* ColourOneDropDown;
 	UPROPERTY(meta = (BindWidget))
@@ -42,7 +44,6 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UComboBoxString* ColourThreeDropDown;
 
-// ------------------------- Dye-Changing
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dye-Changing")
 	TMap<FLinearColor, FString> DyeColorsMap;
 
@@ -74,11 +75,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type Calculator")
 	UDataTable* CombinationTypesDataTable;
 
+// ------------------------- Face Customizer
+	UPROPERTY(meta = (BindWidget))
+	UComboBoxString* Face_DropDown;
+	UPROPERTY(meta = (BindWidget))
+	UComboBoxString* Eyes_DropDown;
+	UPROPERTY(meta = (BindWidget))
+	UComboBoxString* EyeColour_DropDown;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Face Customizer")
+	UMaterial* PizzaEyes_Material;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Face Customizer")
+	UMaterial* RoundEyes_Material;
+
 
 // Function
 // --------------------------------------------------
 
-// ------------------------- Widgets
+// ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
 	void OnWidgetOpened();
 
@@ -89,4 +104,14 @@ public:
 // ------------------------- Type Calculator
 	UFUNCTION(BlueprintCallable)
 	void CalculateTypeStrengthsAndWeaknesses();
+
+// ------------------------- Face Customizer
+	UFUNCTION(BlueprintCallable)
+	void OnFaceChanged(ACharacter* MorphTargetTestCharacter);
+
+	UFUNCTION(BlueprintCallable)
+	void OnEyesChanged(ACharacter* MorphTargetTestCharacter);
+
+	UFUNCTION(BlueprintCallable)
+	void OnEyeColourChanged(ACharacter* MorphTargetTestCharacter);
 };

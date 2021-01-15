@@ -2,6 +2,7 @@
 
 
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Actor_CharacterTest.h"
 #include "Starmark_GameMode.h"
 
@@ -41,6 +42,7 @@ void UWidget_DevMenu::OnColourDropdownChanged(E_DevMenu_ColourChangeDropdowns Dr
 }
 
 
+// ------------------------- Type Chart Calculator
 void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 {
 	FString ContextString, PrimaryTypeString, SecondaryTypeString, CombinationTypeString, TextBoxName;
@@ -91,4 +93,51 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 			}
 		}
 	}
+}
+
+
+// ------------------------- Face Customizer
+void UWidget_DevMenu::OnFaceChanged(ACharacter* MorphTargetTestCharacter)
+{
+	if (MorphTargetTestCharacter) {
+		if (Face_DropDown->GetSelectedOption() == "0") {
+			//USkeletalMeshComponent* SkeletalMeshComponent = 
+			Cast<USkeletalMeshComponent>(MorphTargetTestCharacter->GetComponentByClass(USkeletalMeshComponent::StaticClass()))->SetMorphTarget("Key 1", 0.f);
+			Cast<USkeletalMeshComponent>(MorphTargetTestCharacter->GetComponentByClass(USkeletalMeshComponent::StaticClass()))->SetMorphTarget("Key 2", 0.f);
+		}
+		else if (Face_DropDown->GetSelectedOption() == "1") {
+			Cast<USkeletalMeshComponent>(MorphTargetTestCharacter->GetComponentByClass(USkeletalMeshComponent::StaticClass()))->SetMorphTarget("Key 1", -1.f);
+			Cast<USkeletalMeshComponent>(MorphTargetTestCharacter->GetComponentByClass(USkeletalMeshComponent::StaticClass()))->SetMorphTarget("Key 2", 1.f);
+		}
+		else if (Face_DropDown->GetSelectedOption() == "2") {
+			Cast<USkeletalMeshComponent>(MorphTargetTestCharacter->GetComponentByClass(USkeletalMeshComponent::StaticClass()))->SetMorphTarget("Key 1", 1.f);
+			Cast<USkeletalMeshComponent>(MorphTargetTestCharacter->GetComponentByClass(USkeletalMeshComponent::StaticClass()))->SetMorphTarget("Key 2", -1.f);
+		}
+	}
+}
+
+
+void UWidget_DevMenu::OnEyesChanged(ACharacter* MorphTargetTestCharacter)
+{
+	if (MorphTargetTestCharacter) {
+		USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(MorphTargetTestCharacter->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
+		UMaterialInstanceDynamic* RoundEyesDynamicMaterial = UMaterialInstanceDynamic::Create(RoundEyes_Material, MorphTargetTestCharacter);
+		UMaterialInstanceDynamic* PizzaEyesDynamicMaterial = UMaterialInstanceDynamic::Create(RoundEyes_Material, MorphTargetTestCharacter);
+
+		if (Eyes_DropDown->GetSelectedOption() == "Pizza" && PizzaEyes_Material) {
+			//SkeletalMeshComponent->SetMaterial(0, PizzaEyes_Material);
+			//UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(PizzaEyes_Material, MorphTargetTestCharacter);
+			SkeletalMeshComponent->SetMaterial(0, PizzaEyesDynamicMaterial);
+		} else if (Eyes_DropDown->GetSelectedOption() == "Round" && RoundEyes_Material) {
+			//SkeletalMeshComponent->SetMaterial(0, RoundEyes_Material);
+			//UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(RoundEyes_Material, MorphTargetTestCharacter);
+			SkeletalMeshComponent->SetMaterial(0, RoundEyesDynamicMaterial);
+		}
+	}
+}
+
+
+void UWidget_DevMenu::OnEyeColourChanged(ACharacter* MorphTargetTestCharacter)
+{
+
 }
