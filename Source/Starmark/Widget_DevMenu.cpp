@@ -48,16 +48,27 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 {
 	FString ContextString, PrimaryTypeString, SecondaryTypeString, CombinationTypeString, TextBoxName;
 	TArray<FName> CombinationTypesRowNames;
+	TMap<FName, FRealCurve*> NumberedBaseTypeChartRowMap;
 	FCharacter_CombinationTypes* CombinationType;
 	int CurrentTypeEffectivenessValue = 1;
 
+	// Get Row Names
 	if (CombinationTypesRowNames.Num() <= 0) {
 		CombinationTypesRowNames = CombinationTypesDataTable->GetRowNames();
+	}
+	if (NumberedBaseTypeChartRowMap.Num() <= 0) {
+		NumberedBaseTypeChartRowMap = NumberedBaseTypeChartDataTable->GetRowMap();
 	}
 
 	if (PrimaryTypeDropdown->GetSelectedOption() != "N/A" && SecondaryTypeDropdown->GetSelectedOption() != "N/A"
 		&& PrimaryTypeDropdown->GetSelectedOption() != SecondaryTypeDropdown->GetSelectedOption()) {
 
+		// Reset Text Boxes
+		for (auto& TypeTextBox : TypeTextsGridPanel->GetAllChildren()) {
+			Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString("1"));
+		}
+
+		// Get all combination types
 		for (auto& Name : CombinationTypesRowNames) {
 			CombinationType = CombinationTypesDataTable->FindRow<FCharacter_CombinationTypes>(Name, ContextString);
 
@@ -80,19 +91,56 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 			}
 		}
 
-		// Type Effectiveness Calculations
-		for (auto& TypeTextBox : TypeTextsGridPanel->GetAllChildren()) {
-			for (auto& Name : CombinationTypesRowNames) {
-				CombinationType = CombinationTypesDataTable->FindRow<FCharacter_CombinationTypes>(Name, ContextString);
-				TextBoxName = Cast<UTextBlock>(TypeTextBox)->GetName();
+		//for (auto Entry = NumberedBaseTypeChartRowMap.CreateConstIterator(); Entry; ++Entry) {
+		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, ("Type Chart Entry: %s"), *Entry.Key().ToString());
+		//	//, TypeChartEntry.Value
+		//}
 
-				if (TextBoxName == PrimaryTypeString || TextBoxName == SecondaryTypeString) {
+		TArray<FName> RowNames;
+		FRealCurve* Value;
 
+		int FirstTypeIndex = PrimaryTypeDropdown->GetSelectedIndex();
+		int SecondTypeIndex = SecondaryTypeDropdown->GetSelectedIndex();
+
+		NumberedBaseTypeChartRowMap.GetKeys(RowNames);
+
+		// Primary Type Multipliers
+		for (int i = 0; i < RowNames.Num(); i++) {
+			Value = *NumberedBaseTypeChartRowMap.Find(RowNames[i]);
+			//CurrentTypeEffectivenessValue = 1;
+
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, (RowNames[i].ToString() + " / " + FString::SanitizeFloat(Value->Eval(FirstTypeIndex, i))));
+			//CurrentTypeEffectivenessValue = CurrentTypeEffectivenessValue * Value->Eval(0, i);
+
+			for (auto& TypeTextBox : TypeTextsGridPanel->GetAllChildren()) {
+				if (Cast<UTextBlock>(TypeTextBox)->GetName() == RowNames[i].ToString()) {
+					FText Text = Cast<UTextBlock>(TypeTextBox)->GetText();
+					float FirstMultiplier = FCString::Atof(*Text.ToString()) * Value->Eval(FirstTypeIndex, i);
+					float SecondMultiplier = FirstMultiplier * Value->Eval(SecondTypeIndex, i);
+
+					Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString(FString::SanitizeFloat(SecondMultiplier)));
 				}
-
-				//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, (Cast<UTextBlock>(TypeTextBox)->GetName()));
 			}
 		}
+
+		// Type Effectiveness Calculations
+		//for (auto& TypeTextBox : TypeTextsGridPanel->GetAllChildren()) {
+		//	for (auto& Name : CombinationTypesRowNames) {
+		//		CombinationType = CombinationTypesDataTable->FindRow<FCharacter_CombinationTypes>(Name, ContextString);
+		//		TextBoxName = Cast<UTextBlock>(TypeTextBox)->GetName();
+		//		// Get the numbered type chart
+
+		//		// For each type, add the combination type's strenghts and weaknesses to the multiplier
+
+		//		//if (TextBoxName == PrimaryTypeString || TextBoxName == SecondaryTypeString) {
+
+		//		//}
+
+		//		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, (Cast<UTextBlock>(TypeTextBox)->GetName()));
+
+		//		//break
+		//	}
+		//}
 	}
 }
 

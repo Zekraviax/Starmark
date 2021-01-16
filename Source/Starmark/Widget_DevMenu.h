@@ -72,7 +72,7 @@ public:
 	TArray<UComboBoxString*> TypeChartTextBoxes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type Calculator")
-	UCurveTable* NumberedTypeChartDataTable;
+	UCurveTable* NumberedBaseTypeChartDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type Calculator")
 	UDataTable* CombinationTypesDataTable;
