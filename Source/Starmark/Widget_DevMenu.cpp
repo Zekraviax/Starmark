@@ -47,38 +47,51 @@ void UWidget_DevMenu::OnColourDropdownChanged(E_DevMenu_ColourChangeDropdowns Dr
 void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 {
 	FString ContextString, PrimaryTypeString, SecondaryTypeString, CombinationTypeString, TextBoxName;
-	TArray<FName> CombinationTypesRowNames;
-	TMap<FName, FRealCurve*> NumberedBaseTypeChartRowMap;
+	TArray<FName> CombinationTypesRowNames, MoveEffectiveness_RowNames, AvatarResistances_RowNames;
+	TMap<FName, FRealCurve*> MoveEffectiveness_BaseTypeChartRowMap, AvatarResistances_BaseTypeChartRowMap;
 	FCharacter_CombinationTypes* CombinationType;
+	FRealCurve* Value;
 	int CurrentTypeEffectivenessValue = 1;
 
 	// Get Row Names
 	if (CombinationTypesRowNames.Num() <= 0) {
 		CombinationTypesRowNames = CombinationTypesDataTable->GetRowNames();
 	}
-	if (NumberedBaseTypeChartRowMap.Num() <= 0) {
-		NumberedBaseTypeChartRowMap = NumberedBaseTypeChartDataTable->GetRowMap();
+	if (MoveEffectiveness_BaseTypeChartRowMap.Num() <= 0) {
+		MoveEffectiveness_BaseTypeChartRowMap = MoveEffectiveness_NumberedBaseTypeChartDataTable->GetRowMap();
+	}
+
+	if (AvatarResistances_BaseTypeChartRowMap.Num() <= 0) {
+		AvatarResistances_BaseTypeChartRowMap = AvatarResistances_NumberedBaseTypeChartDataTable->GetRowMap();
 	}
 
 	if (PrimaryTypeDropdown->GetSelectedOption() != "N/A" && SecondaryTypeDropdown->GetSelectedOption() != "N/A"
 		&& PrimaryTypeDropdown->GetSelectedOption() != SecondaryTypeDropdown->GetSelectedOption()) {
 
-		//for (auto& TypeTextBox : TypeTextsGridPanel->GetAllChildren()) {
-		//	if (RowNames.Contains(FName(*Cast<UTextBlock>(TypeTextBox)->GetName()))) {
-		//		for (int i = 0; i < RowNames.Num(); i++) {
-		//			if (RowNames[i].ToString() == Cast<UTextBlock>(TypeTextBox)->GetName()) {
-		//				Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString("1"));
-		//				break;
-		//		}
-		//	}
-		//}
+		int FirstTypeIndex = PrimaryTypeDropdown->GetSelectedIndex() - 1;
+		int SecondTypeIndex = SecondaryTypeDropdown->GetSelectedIndex() - 1;
+
+		MoveEffectiveness_BaseTypeChartRowMap.GetKeys(MoveEffectiveness_RowNames);
+		AvatarResistances_BaseTypeChartRowMap.GetKeys(AvatarResistances_RowNames);
 
 		// Reset Text Boxes
 		for (auto& TypeTextBox : TypeTextsGridPanel->GetAllChildren()) {
-			Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString("1"));
-		}
+			for (int i = 0; i < MoveEffectiveness_RowNames.Num(); i++) {
+				if (Cast<UTextBlock>(TypeTextBox)->GetName() == (MoveEffectiveness_RowNames[i].ToString() + "Move")) {
+					Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString("1"));
+					//break;
+				}
+			}
 
-		// Get all combination types
+			for (int i = 0; i < AvatarResistances_RowNames.Num(); i++) {
+				if (Cast<UTextBlock>(TypeTextBox)->GetName() == (AvatarResistances_RowNames[i].ToString() + "Avatar")) {
+					Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString("1"));
+					//break;
+				}
+			}
+		}		
+		
+		// Get Combination Name
 		for (auto& Name : CombinationTypesRowNames) {
 			CombinationType = CombinationTypesDataTable->FindRow<FCharacter_CombinationTypes>(Name, ContextString);
 
@@ -96,42 +109,70 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 					CombinationTypeString = CombinationTypeString.Right(CombinationTypeString.Len() - 2);
 
 					CombinationTypeText->SetText(FText::FromString(CombinationTypeString));
-					break;
 				}
 			}
 		}
 
-		TArray<FName> RowNames;
-		FRealCurve* Value;
 
-		int FirstTypeIndex = PrimaryTypeDropdown->GetSelectedIndex() - 1;
-		int SecondTypeIndex = SecondaryTypeDropdown->GetSelectedIndex() - 1;
+		for (auto& TypeTextBox : TypeTextsGridPanel->GetAllChildren()) {
 
-		NumberedBaseTypeChartRowMap.GetKeys(RowNames);
+			if (TypeTextBox->GetName() == "MoveText") {
+				Cast<UTextBlock>(TypeTextBox)->SetText((FText::FromString(CombinationTypeString + " Move Effectiveness:")));
+			} else if (TypeTextBox->GetName() == "AvatarText") {
+				Cast<UTextBlock>(TypeTextBox)->SetText((FText::FromString(CombinationTypeString + " Avatar Resistances:")));
+			} else {
+				for (int i = 0; i < MoveEffectiveness_RowNames.Num(); i++) {
+					if (Cast<UTextBlock>(TypeTextBox)->GetName() == (MoveEffectiveness_RowNames[i].ToString() + "Move")) {
+						// Move Effectiveness
 
-		// Primary Type Multipliers
-		for (int i = 0; i < RowNames.Num(); i++) {
-			Value = *NumberedBaseTypeChartRowMap.Find(RowNames[i]);
+						Value = *MoveEffectiveness_BaseTypeChartRowMap.Find(MoveEffectiveness_RowNames[i]);
+						FText Text = Cast<UTextBlock>(TypeTextBox)->GetText();
 
-			for (auto& TypeTextBox : TypeTextsGridPanel->GetAllChildren()) {
-				if (Cast<UTextBlock>(TypeTextBox)->GetName() == RowNames[i].ToString()) {
-					FText Text = Cast<UTextBlock>(TypeTextBox)->GetText();
+						float FirstMultiplier = FCString::Atof(*Text.ToString()) * Value->Eval(FirstTypeIndex, i);
+						float SecondMultiplier = FirstMultiplier * Value->Eval(SecondTypeIndex, i);
 
-					float FirstMultiplier = FCString::Atof(*Text.ToString()) * Value->Eval(FirstTypeIndex, i);
-					float SecondMultiplier = FirstMultiplier * Value->Eval(SecondTypeIndex, i);
+						//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s First TypeIndex: %d"), *MoveEffectiveness_RowNames[i].ToString(), FirstTypeIndex));
+						//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s Second TypeIndex: %d"), *MoveEffectiveness_RowNames[i].ToString(), SecondTypeIndex));
 
-					//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Value: %f"), Value->DefaultValue));
+						//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s First Multiplier: x%f"), *MoveEffectiveness_RowNames[i].ToString(), FirstMultiplier));
+						//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s Second Multiplier: x%f"), *MoveEffectiveness_RowNames[i].ToString(), SecondMultiplier));
 
-					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s First TypeIndex: %d"), *RowNames[i].ToString(), FirstTypeIndex));
-					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s Second TypeIndex: %d"), *RowNames[i].ToString(), SecondTypeIndex));
+						if (SecondMultiplier != 0.5f) {
+							Text = FText::FromString(FString::SanitizeFloat(SecondMultiplier, 0));
+						} else {
+							Text = FText::FromString(FString::SanitizeFloat(SecondMultiplier, 1));
+						}
 
-					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s First Multiplier: x%f"), *RowNames[i].ToString(), FirstMultiplier));
-					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s Second Multiplier: x%f"), *RowNames[i].ToString(), SecondMultiplier));
+						Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString(MoveEffectiveness_RowNames[i].ToString() + ": x" + Text.ToString()));
+						//break;
+					} else if (Cast<UTextBlock>(TypeTextBox)->GetName() == (AvatarResistances_RowNames[i].ToString() + "Avatar")) {
+						// Avatar Resistances
 
-					Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString(RowNames[i].ToString() + ": x" + FString::SanitizeFloat(SecondMultiplier)));
+						Value = *AvatarResistances_BaseTypeChartRowMap.Find(AvatarResistances_RowNames[i]);
+						FText Text = Cast<UTextBlock>(TypeTextBox)->GetText();
+
+						float FirstMultiplier = FCString::Atof(*Text.ToString()) * Value->Eval(FirstTypeIndex, i);
+						float SecondMultiplier = FirstMultiplier * Value->Eval(SecondTypeIndex, i);
+
+						GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s First TypeIndex: %d"), *AvatarResistances_RowNames[i].ToString(), FirstTypeIndex));
+						GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s Second TypeIndex: %d"), *AvatarResistances_RowNames[i].ToString(), SecondTypeIndex));
+
+						GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s First Multiplier: x%f"), *AvatarResistances_RowNames[i].ToString(), FirstMultiplier));
+						GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s Second Multiplier: x%f"), *AvatarResistances_RowNames[i].ToString(), SecondMultiplier));
+
+						if (SecondMultiplier != 0.5f) {
+							Text = FText::FromString(FString::SanitizeFloat(SecondMultiplier, 0));
+						} else {
+							Text = FText::FromString(FString::SanitizeFloat(SecondMultiplier, 1));
+						}
+
+						Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString(AvatarResistances_RowNames[i].ToString() + ": x" + Text.ToString()));
+					}
 				}
 			}
 		}
+
+		// Avatar Resistances
 	}
 }
 
