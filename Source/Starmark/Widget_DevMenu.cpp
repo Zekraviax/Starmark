@@ -63,6 +63,16 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 	if (PrimaryTypeDropdown->GetSelectedOption() != "N/A" && SecondaryTypeDropdown->GetSelectedOption() != "N/A"
 		&& PrimaryTypeDropdown->GetSelectedOption() != SecondaryTypeDropdown->GetSelectedOption()) {
 
+		//for (auto& TypeTextBox : TypeTextsGridPanel->GetAllChildren()) {
+		//	if (RowNames.Contains(FName(*Cast<UTextBlock>(TypeTextBox)->GetName()))) {
+		//		for (int i = 0; i < RowNames.Num(); i++) {
+		//			if (RowNames[i].ToString() == Cast<UTextBlock>(TypeTextBox)->GetName()) {
+		//				Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString("1"));
+		//				break;
+		//		}
+		//	}
+		//}
+
 		// Reset Text Boxes
 		for (auto& TypeTextBox : TypeTextsGridPanel->GetAllChildren()) {
 			Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString("1"));
@@ -91,56 +101,37 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 			}
 		}
 
-		//for (auto Entry = NumberedBaseTypeChartRowMap.CreateConstIterator(); Entry; ++Entry) {
-		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, ("Type Chart Entry: %s"), *Entry.Key().ToString());
-		//	//, TypeChartEntry.Value
-		//}
-
 		TArray<FName> RowNames;
 		FRealCurve* Value;
 
-		int FirstTypeIndex = PrimaryTypeDropdown->GetSelectedIndex();
-		int SecondTypeIndex = SecondaryTypeDropdown->GetSelectedIndex();
+		int FirstTypeIndex = PrimaryTypeDropdown->GetSelectedIndex() - 1;
+		int SecondTypeIndex = SecondaryTypeDropdown->GetSelectedIndex() - 1;
 
 		NumberedBaseTypeChartRowMap.GetKeys(RowNames);
 
 		// Primary Type Multipliers
 		for (int i = 0; i < RowNames.Num(); i++) {
 			Value = *NumberedBaseTypeChartRowMap.Find(RowNames[i]);
-			//CurrentTypeEffectivenessValue = 1;
-
-			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, (RowNames[i].ToString() + " / " + FString::SanitizeFloat(Value->Eval(FirstTypeIndex, i))));
-			//CurrentTypeEffectivenessValue = CurrentTypeEffectivenessValue * Value->Eval(0, i);
 
 			for (auto& TypeTextBox : TypeTextsGridPanel->GetAllChildren()) {
 				if (Cast<UTextBlock>(TypeTextBox)->GetName() == RowNames[i].ToString()) {
 					FText Text = Cast<UTextBlock>(TypeTextBox)->GetText();
+
 					float FirstMultiplier = FCString::Atof(*Text.ToString()) * Value->Eval(FirstTypeIndex, i);
 					float SecondMultiplier = FirstMultiplier * Value->Eval(SecondTypeIndex, i);
 
-					Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString(FString::SanitizeFloat(SecondMultiplier)));
+					//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Value: %f"), Value->DefaultValue));
+
+					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s First TypeIndex: %d"), *RowNames[i].ToString(), FirstTypeIndex));
+					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s Second TypeIndex: %d"), *RowNames[i].ToString(), SecondTypeIndex));
+
+					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s First Multiplier: x%f"), *RowNames[i].ToString(), FirstMultiplier));
+					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("%s Second Multiplier: x%f"), *RowNames[i].ToString(), SecondMultiplier));
+
+					Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString(RowNames[i].ToString() + ": x" + FString::SanitizeFloat(SecondMultiplier)));
 				}
 			}
 		}
-
-		// Type Effectiveness Calculations
-		//for (auto& TypeTextBox : TypeTextsGridPanel->GetAllChildren()) {
-		//	for (auto& Name : CombinationTypesRowNames) {
-		//		CombinationType = CombinationTypesDataTable->FindRow<FCharacter_CombinationTypes>(Name, ContextString);
-		//		TextBoxName = Cast<UTextBlock>(TypeTextBox)->GetName();
-		//		// Get the numbered type chart
-
-		//		// For each type, add the combination type's strenghts and weaknesses to the multiplier
-
-		//		//if (TextBoxName == PrimaryTypeString || TextBoxName == SecondaryTypeString) {
-
-		//		//}
-
-		//		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, (Cast<UTextBlock>(TypeTextBox)->GetName()));
-
-		//		//break
-		//	}
-		//}
 	}
 }
 
