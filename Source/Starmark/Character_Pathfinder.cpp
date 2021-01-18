@@ -10,7 +10,9 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 #include "PlayerController_Base.h"
+
 
 ACharacter_Pathfinder::ACharacter_Pathfinder()
 {
@@ -51,6 +53,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	//}
 	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
 	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
+	CursorToWorld->SetVisibility(false);
 
 	// Actor Selected Decal
 	ActorSelected = CreateDefaultSubobject<UDecalComponent>("ActorSelected");
@@ -66,6 +69,11 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	// Battle Testing
+	CurrentSelectedAttack.BasePower = 1;
+	CurrentSelectedAttack.BaseRange = 2;
+	CurrentSelectedAttack.Name = "Kick";
 }
 
 
@@ -84,7 +92,7 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 
 	ActorSelected_DynamicMaterial = UMaterialInstanceDynamic::Create(ActorSelected->GetMaterial(0), this);
 	ActorSelected->SetMaterial(0, ActorSelected_DynamicMaterial);
-	ActorSelected->SetVisibility(false);
+	//ActorSelected->SetVisibility(false);
 }
 
 
@@ -96,7 +104,7 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 	}
 
 	if (ActorSelected && ActorSelected_DynamicMaterial) {
-		if (PlayerControllerReference->CurrentSelectedPawn != this) {
+		if (PlayerControllerReference->CurrentSelectedAvatar != this) {
 			ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Blue);
 			ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
 			ActorSelected->SetVisibility(true);
@@ -111,10 +119,10 @@ void ACharacter_Pathfinder::OnAvatarCursorOverEnd()
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	}
 
-	if (ActorSelected && PlayerControllerReference->CurrentSelectedPawn != this)
+	if (ActorSelected && PlayerControllerReference->CurrentSelectedAvatar != this)
 		ActorSelected->SetVisibility(false);
 
-	//if (ActorSelected && PlayerControllerReference->CurrentSelectedPawn != this)
+	//if (ActorSelected && PlayerControllerReference->CurrentSelectedAvatar != this)
 	//	ActorSelected->SetVisibility(false);
 }
 
@@ -131,15 +139,41 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 		ActorSelected->SetVisibility(true);
 		CursorToWorld->SetVisibility(true);
 
-		PlayerControllerReference->CurrentSelectedPawn = this;
+		PlayerControllerReference->CurrentSelectedAvatar = this;
 
 		for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
 			ACharacter_Pathfinder* FoundActor = *Itr;
 
-			if (PlayerControllerReference->CurrentSelectedPawn != FoundActor) {
+			if (PlayerControllerReference->CurrentSelectedAvatar != FoundActor) {
 				FoundActor->ActorSelected->SetVisibility(false);
 				FoundActor->CursorToWorld->SetVisibility(false);
 			}
 		}
 	}
+}
+
+
+// ------------------------- Battle
+void ACharacter_Pathfinder::ShowAttackRange()
+{
+	int DebugSphereRadius = 25;
+	int DebugSphereSegments = 30;
+	float DebugSphereLifetime = 10.f;
+
+	for (int i = 1; i <= CurrentSelectedAttack.BaseRange; i++) {
+		// North
+		DrawDebugSphere(GetWorld(), FVector(GetActorLocation().X + (200 * i), GetActorLocation().Y, 1), DebugSphereRadius, DebugSphereSegments, FColor::Red, false, DebugSphereLifetime);
+		// South
+		DrawDebugSphere(GetWorld(), FVector(GetActorLocation().X - (200 * i), GetActorLocation().Y, 1), DebugSphereRadius, DebugSphereSegments, FColor::Red, false, DebugSphereLifetime);
+		// East
+		DrawDebugSphere(GetWorld(), FVector(GetActorLocation().X, GetActorLocation().Y + (200 * i), 1), DebugSphereRadius, DebugSphereSegments, FColor::Red, false, DebugSphereLifetime);
+		// West
+		DrawDebugSphere(GetWorld(), FVector(GetActorLocation().X, GetActorLocation().Y - (200 * i), 1), DebugSphereRadius, DebugSphereSegments, FColor::Red, false, DebugSphereLifetime);
+	}
+}
+
+
+void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder * Target)
+{
+
 }

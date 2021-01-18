@@ -36,7 +36,9 @@ public:
 // Variables
 // --------------------------------------------------
 
-// ------------------------- Components
+// ------------------------- Widget
+	UPROPERTY(meta = (BindWidget))
+	UComboBoxString* DevSubMenuDropdown;
 
 // ------------------------- Dye-Changing
 	UPROPERTY(meta = (BindWidget))
@@ -101,6 +103,9 @@ public:
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
 	void OnWidgetOpened();
+
+	UFUNCTION(BlueprintCallable)
+	void OnDevSubMenuDropdownChanged();
 
 // ------------------------- Dye-Changing
 	UFUNCTION(BlueprintCallable)

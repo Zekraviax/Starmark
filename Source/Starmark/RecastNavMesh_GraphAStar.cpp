@@ -90,7 +90,8 @@ ARecastNavMesh_GraphAStar::ARecastNavMesh_GraphAStar(const FObjectInitializer& O
 	FindPathImplementation = FindPath;
 }
 
-FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties & AgentProperties, const FPathFindingQuery & Query)
+
+FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties& AgentProperties, const FPathFindingQuery& Query)
 {
 	SCOPE_CYCLE_COUNTER(STAT_Navigation_CustomPathfinding);
 

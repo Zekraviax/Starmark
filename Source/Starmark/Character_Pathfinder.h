@@ -61,8 +61,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	FAvatar_Struct AvatarData;
 
+// ------------------------- Battle
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
+	FAvatar_AttackStruct CurrentSelectedAttack;
+
 // ------------------------- Other
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Other")
 	APlayerController_Base* PlayerControllerReference;
 
 // Functions
@@ -81,4 +85,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnAvatarClicked();
+
+// ------------------------- Battle
+	UFUNCTION(BlueprintCallable)
+	void ShowAttackRange();
+
+	UFUNCTION(BlueprintCallable)
+	void LaunchAttack(ACharacter_Pathfinder* Target);
 };

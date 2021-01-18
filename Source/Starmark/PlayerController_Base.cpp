@@ -10,6 +10,8 @@
 APlayerController_Base::APlayerController_Base()
 {
 	bShowMouseCursor = true;
+
+	PlayerClickMode = E_PlayerCharacter_ClickModes::E_Nothing;
 }
 
 
@@ -35,13 +37,14 @@ void APlayerController_Base::SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* 
 		ACharacter_Pathfinder* FoundActor = *Itr;
 
 		if (FoundActor == RandomPawnReference) {
-			CurrentSelectedPawn = RandomPawnReference;
-			CurrentSelectedPawn->ActorSelected->SetVisibility(true);
-			CurrentSelectedPawn->CursorToWorld->SetVisibility(true);
-			CurrentSelectedPawn->ActorSelected->SetWorldLocation(FVector(CurrentSelectedPawn->GetActorLocation().X, CurrentSelectedPawn->GetActorLocation().Y, 1.f));
-			CurrentSelectedPawn->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
-		} else {
-			FoundActor->CursorToWorld->SetVisibility(false);
+			CurrentSelectedAvatar = RandomPawnReference;
+
+			CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
+			CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
+			CurrentSelectedAvatar->ActorSelected->SetWorldLocation(FVector(CurrentSelectedAvatar->GetActorLocation().X, CurrentSelectedAvatar->GetActorLocation().Y, 1.f));
+
+			CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+			break;
 		}
 	}
 }
@@ -55,20 +58,21 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 	if (ClickedActor) {
 		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
 			// Select Avatar To Control
-			if (CurrentSelectedPawn != ClickedActor) {
+			if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
 				Cast<ACharacter_Pathfinder>(ClickedActor)->OnAvatarClicked();
 			}
 			// Select Avatar to Begin Attack
-			else {
-
+			else if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack) {
+				CurrentSelectedAvatar->ShowAttackRange();
+				//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("Show Attack Range"));
 			}
 		}
-		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh")) {
+		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
 			// If all else fails, assume we clicked on a plane that we can move our controller Avatar on
-			Cast<AAIController>(CurrentSelectedPawn->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
+			Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
 		}
 		else {
-
+			// Do nothing
 		}
 	}
 }

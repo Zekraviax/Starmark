@@ -11,6 +11,15 @@
 // Forward Declarations
 //class ACharacter_Pathfinder;
 
+UENUM(BlueprintType)
+enum class E_PlayerCharacter_ClickModes : uint8
+{
+	E_Nothing,
+	E_SelectCharacterToControl,
+	E_SelectCharacterToAttack,
+	E_MoveCharacter,
+};
+
 
 UCLASS()
 class STARMARK_API APlayerController_Base : public APlayerController
@@ -31,9 +40,13 @@ public:
 // Variables
 // --------------------------------------------------
 
+// ------------------------- Controller
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Controller")
+	E_PlayerCharacter_ClickModes PlayerClickMode;
+
 // ------------------------- Pawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Pawn")
-	ACharacter_Pathfinder* CurrentSelectedPawn;
+	ACharacter_Pathfinder* CurrentSelectedAvatar;
 
 // ------------------------- Grid
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")

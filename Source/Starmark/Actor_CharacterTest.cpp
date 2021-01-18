@@ -59,17 +59,17 @@ void AActor_CharacterTest::Tick(float DeltaTime)
 	{
 		if (APlayerController_Base* PC = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
 		{
-			FHitResult TraceHitResult;
-			PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
-			FVector CursorFV = TraceHitResult.ImpactNormal;
-			FRotator CursorR = CursorFV.Rotation();
+			//FHitResult TraceHitResult;
+			//PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
+			//FVector CursorFV = TraceHitResult.ImpactNormal;
+			//FRotator CursorR = CursorFV.Rotation();
 
 			// Snap Location To Grid
-			FVector CursorSnappedToGrid = CursorFV.GridSnap(200.f);
+			//FVector CursorSnappedToGrid = CursorFV.GridSnap(200.f);
 
-			CursorToWorld->SetWorldLocation(CursorSnappedToGrid);
-			PC->CursorLocationSnappedToGrid = CursorSnappedToGrid;
-			CursorToWorld->SetWorldRotation(CursorR);
+			//CursorToWorld->SetWorldLocation(CursorSnappedToGrid);
+			//PC->CursorLocationSnappedToGrid = CursorSnappedToGrid;
+			//CursorToWorld->SetWorldRotation(CursorR);
 		}
 	}
 }

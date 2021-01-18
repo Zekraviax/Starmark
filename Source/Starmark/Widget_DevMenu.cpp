@@ -19,6 +19,20 @@ void UWidget_DevMenu::OnWidgetOpened()
 }
 
 
+void UWidget_DevMenu::OnDevSubMenuDropdownChanged()
+{
+	if (DevSubMenuDropdown->GetSelectedOption() == "Dye-Changing") {
+
+	} else if (DevSubMenuDropdown->GetSelectedOption() == "Type Calculator") {
+
+	} else if (DevSubMenuDropdown->GetSelectedOption() == "Face Customizer") {
+
+	} else if (DevSubMenuDropdown->GetSelectedOption() == "Grid Movement") {
+
+	}
+}
+
+
 // ------------------------- Dye-Changing
 void UWidget_DevMenu::OnColourDropdownChanged(E_DevMenu_ColourChangeDropdowns Dropdown)
 {
