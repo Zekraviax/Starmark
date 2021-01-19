@@ -25,4 +25,5 @@ void UWidget_HUD_Battle::AttackCommand()
 	PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack;
 
 	// Display Attack Range
+	PlayerControllerReference->CurrentSelectedAvatar->ShowAttackRange();
 }

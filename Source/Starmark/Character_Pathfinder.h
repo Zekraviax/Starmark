@@ -62,8 +62,11 @@ public:
 	FAvatar_Struct AvatarData;
 
 // ------------------------- Battle
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	FAvatar_AttackStruct CurrentSelectedAttack;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
+	TArray<ACharacter_Pathfinder*> ValidAttackTargetsArray;
 
 // ------------------------- Other
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Other")

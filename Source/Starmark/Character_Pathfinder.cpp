@@ -9,7 +9,9 @@
 #include "Materials/Material.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Engine/World.h"
+#include "Engine/EngineTypes.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "PlayerController_Base.h"
 
@@ -65,6 +67,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	//}
 	ActorSelected->DecalSize = FVector(32.0f, 64.0f, 64.0f);
 	ActorSelected->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
+	ActorSelected->SetVisibility(false);
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -72,7 +75,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 
 	// Battle Testing
 	CurrentSelectedAttack.BasePower = 1;
-	CurrentSelectedAttack.BaseRange = 2;
+	CurrentSelectedAttack.BaseRange = 3;
 	CurrentSelectedAttack.Name = "Kick";
 }
 
@@ -93,6 +96,11 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 	ActorSelected_DynamicMaterial = UMaterialInstanceDynamic::Create(ActorSelected->GetMaterial(0), this);
 	ActorSelected->SetMaterial(0, ActorSelected_DynamicMaterial);
 	//ActorSelected->SetVisibility(false);
+
+	// Snap Actor to Grid
+	FVector ActorLocationSnappedToGrid = GetActorLocation().GridSnap(200.f);
+	ActorLocationSnappedToGrid.Z = 1;
+	SetActorLocation(ActorLocationSnappedToGrid);
 }
 
 
@@ -156,24 +164,56 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 // ------------------------- Battle
 void ACharacter_Pathfinder::ShowAttackRange()
 {
-	int DebugSphereRadius = 25;
-	int DebugSphereSegments = 30;
-	float DebugSphereLifetime = 10.f;
+	FVector TraceSphereStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y, 55);
+	FVector TraceSphereEndLocation = FVector(TraceSphereStartLocation.X, TraceSphereStartLocation.Y, 56);
+	int TraceSphereRadius = (100 * (CurrentSelectedAttack.BaseRange * 2));
+	int CapsuleHalfHeight = 300;
+	int TraceSphereSegments = 35;
+	float TraceDrawTime = 10.f;
+	const TArray<AActor*> TraceActorsToIgnore;
+	TArray<FHitResult> TraceHitResultArray;
+	FHitResult TraceHitResult;
+	bool TraceComplex = false;
+	bool TraceIgnoreSelf = true;
+	FLinearColor TraceColour = FLinearColor::Red;
+	FLinearColor TraceHitColour = FLinearColor::Green;
+	//EDrawDebugTrace::ForDuration;
+	TArray<TEnumAsByte<EObjectTypeQuery>> TraceTypeQuery;
+	TraceTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 
-	for (int i = 1; i <= CurrentSelectedAttack.BaseRange; i++) {
-		// North
-		DrawDebugSphere(GetWorld(), FVector(GetActorLocation().X + (200 * i), GetActorLocation().Y, 1), DebugSphereRadius, DebugSphereSegments, FColor::Red, false, DebugSphereLifetime);
-		// South
-		DrawDebugSphere(GetWorld(), FVector(GetActorLocation().X - (200 * i), GetActorLocation().Y, 1), DebugSphereRadius, DebugSphereSegments, FColor::Red, false, DebugSphereLifetime);
-		// East
-		DrawDebugSphere(GetWorld(), FVector(GetActorLocation().X, GetActorLocation().Y + (200 * i), 1), DebugSphereRadius, DebugSphereSegments, FColor::Red, false, DebugSphereLifetime);
-		// West
-		DrawDebugSphere(GetWorld(), FVector(GetActorLocation().X, GetActorLocation().Y - (200 * i), 1), DebugSphereRadius, DebugSphereSegments, FColor::Red, false, DebugSphereLifetime);
+	bool Hit;
+
+	Hit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), TraceSphereStartLocation, TraceSphereEndLocation, TraceSphereRadius, UEngineTypes::ConvertToTraceType(ECC_Pawn), TraceComplex,
+	TraceActorsToIgnore, EDrawDebugTrace::ForDuration, TraceHitResultArray, true, TraceColour, TraceHitColour, TraceDrawTime);
+
+	//// X-Directional Attack
+	//for (int i = 1; i < CurrentSelectedAttack.BaseRange + 1; i++) {
+	//	// North
+	//	/*Hit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), FVector(TraceSphereStartLocation.X + (200 * i), TraceSphereStartLocation.Y, TraceSphereStartLocation.Z),
+	//		FVector(TraceSphereEndLocation.X + (200 * i), TraceSphereEndLocation.Y, TraceSphereEndLocation.Z), TraceSphereRadius, UEngineTypes::ConvertToTraceType(ECC_Pawn), TraceComplex,
+	//		TraceActorsToIgnore, EDrawDebugTrace::ForDuration, TraceHitResultArray, TraceIgnoreSelf, TraceColour, TraceHitColour, TraceDrawTime);*/
+
+	//	Hit = UKismetSystemLibrary::CapsuleTraceMulti(GetWorld(), FVector(TraceSphereStartLocation.X + (200 * i), TraceSphereStartLocation.Y, TraceSphereStartLocation.Z),
+	//		FVector(TraceSphereEndLocation.X + (200 * i), TraceSphereEndLocation.Y, TraceSphereEndLocation.Z), TraceSphereRadius, CapsuleHalfHeight, UEngineTypes::ConvertToTraceType(ECC_Pawn), 
+	//		TraceComplex, TraceActorsToIgnore, EDrawDebugTrace::ForDuration, TraceHitResultArray, TraceIgnoreSelf, TraceColour, TraceHitColour, TraceDrawTime);
+	//}
+
+	if (Hit) {
+		for (int i = 0; i < TraceHitResultArray.Num(); i++) {
+			if (TraceHitResultArray[i].Actor->GetClass() == this->GetClass() && TraceHitResultArray[i].Actor != this) {
+				ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResultArray[i].Actor));
+				//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Hit Actor: %s"), *TraceHitResultArray[i].Actor->GetName()));
+			}
+		}
+	}
+
+	for (int i = 0; i < ValidAttackTargetsArray.Num(); i++) {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Hit Actor: %s"), *ValidAttackTargetsArray[i]->GetName()));
 	}
 }
 
 
-void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder * Target)
+void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 {
 
 }
