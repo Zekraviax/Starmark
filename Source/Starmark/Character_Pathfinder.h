@@ -62,6 +62,9 @@ public:
 	FAvatar_Struct AvatarData;
 
 // ------------------------- Battle
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
+	int CurrentHealthPoints;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	FAvatar_AttackStruct CurrentSelectedAttack;
 

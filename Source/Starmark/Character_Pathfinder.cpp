@@ -67,6 +67,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	//}
 	ActorSelected->DecalSize = FVector(32.0f, 64.0f, 64.0f);
 	ActorSelected->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
+	ActorSelected->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
 	ActorSelected->SetVisibility(false);
 
 	// Activate ticking in order to update the cursor every frame.
@@ -74,6 +75,8 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	// Battle Testing
+	CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
+
 	CurrentSelectedAttack.BasePower = 1;
 	CurrentSelectedAttack.BaseRange = 3;
 	CurrentSelectedAttack.Name = "Kick";
@@ -95,7 +98,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 
 	ActorSelected_DynamicMaterial = UMaterialInstanceDynamic::Create(ActorSelected->GetMaterial(0), this);
 	ActorSelected->SetMaterial(0, ActorSelected_DynamicMaterial);
-	//ActorSelected->SetVisibility(false);
 
 	// Snap Actor to Grid
 	FVector ActorLocationSnappedToGrid = GetActorLocation().GridSnap(200.f);
@@ -107,14 +109,13 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 // ------------------------- Cursor
 void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 {
-	if (!PlayerControllerReference) {
+	if (!PlayerControllerReference)
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	}
 
 	if (ActorSelected && ActorSelected_DynamicMaterial) {
 		if (PlayerControllerReference->CurrentSelectedAvatar != this) {
 			ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Blue);
-			ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
+			//ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, ActorSelected->RelativeLocation.Z));
 			ActorSelected->SetVisibility(true);
 		}
 	}
@@ -123,23 +124,18 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 
 void ACharacter_Pathfinder::OnAvatarCursorOverEnd()
 {
-	if (!PlayerControllerReference) {
+	if (!PlayerControllerReference)
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	}
 
 	if (ActorSelected && PlayerControllerReference->CurrentSelectedAvatar != this)
 		ActorSelected->SetVisibility(false);
-
-	//if (ActorSelected && PlayerControllerReference->CurrentSelectedAvatar != this)
-	//	ActorSelected->SetVisibility(false);
 }
 
 
 void ACharacter_Pathfinder::OnAvatarClicked()
 {
-	if (!PlayerControllerReference) {
+	if (!PlayerControllerReference)
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	}
 
 	if (ActorSelected && ActorSelected_DynamicMaterial) {
 		ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
@@ -202,7 +198,6 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		for (int i = 0; i < TraceHitResultArray.Num(); i++) {
 			if (TraceHitResultArray[i].Actor->GetClass() == this->GetClass() && TraceHitResultArray[i].Actor != this) {
 				ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResultArray[i].Actor));
-				//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Hit Actor: %s"), *TraceHitResultArray[i].Actor->GetName()));
 			}
 		}
 	}
@@ -215,5 +210,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 
 void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Launch Attack")));
 
+	Target->CurrentHealthPoints -= FMath::Clamp<int>((AvatarData.BaseStats.Attack + CurrentSelectedAttack.BasePower) - Target->AvatarData.BaseStats.Defence, 1, 999999999);
 }

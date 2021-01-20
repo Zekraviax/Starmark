@@ -11,7 +11,7 @@ APlayerController_Base::APlayerController_Base()
 {
 	bShowMouseCursor = true;
 
-	PlayerClickMode = E_PlayerCharacter_ClickModes::E_Nothing;
+	PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToControl;
 }
 
 
@@ -41,9 +41,11 @@ void APlayerController_Base::SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* 
 
 			CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
 			CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
-			CurrentSelectedAvatar->ActorSelected->SetWorldLocation(FVector(CurrentSelectedAvatar->GetActorLocation().X, CurrentSelectedAvatar->GetActorLocation().Y, 1.f));
+			//CurrentSelectedAvatar->ActorSelected->SetWorldLocation(FVector(CurrentSelectedAvatar->GetActorLocation().X, CurrentSelectedAvatar->GetActorLocation().Y, 1.f));
 
 			CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("Found Actor"));
 			break;
 		}
 	}
@@ -63,11 +65,13 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 			}
 			// Select Avatar to Begin Attack
 			else if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack) {
-				CurrentSelectedAvatar->ShowAttackRange();
-				//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("Show Attack Range"));
+				// If we're attacking, and we clicked on a target in-range, launch an attack
+				if (CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(Cast<ACharacter_Pathfinder>(ClickedActor))) {
+					CurrentSelectedAvatar->LaunchAttack(Cast<ACharacter_Pathfinder>(ClickedActor));
+				}
 			}
 		}
-		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
+		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") && PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter) {
 			// If all else fails, assume we clicked on a plane that we can move our controller Avatar on
 			Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
 		}
