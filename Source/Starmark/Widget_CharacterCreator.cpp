@@ -262,43 +262,43 @@ void UWidget_CharacterCreator::CalculateMark()
 	switch (MarkNumberAsInt)
 	{
 		case(1):
-			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Romp;
+			GameInstanceReference->PlayerData.Mark = EAvatar_Marks::E_Romp;
 			MarkText->SetText(FText::FromString("Romp"));
 			break;
 		case(2):
-			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Slith;
+			GameInstanceReference->PlayerData.Mark = EAvatar_Marks::E_Slith;
 			MarkText->SetText(FText::FromString("Slith"));
 			break;
 		case(3):
-			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Roa;
+			GameInstanceReference->PlayerData.Mark = EAvatar_Marks::E_Roa;
 			MarkText->SetText(FText::FromString("Roa"));
 			break;
 		case(4):
-			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Skip;
+			GameInstanceReference->PlayerData.Mark = EAvatar_Marks::E_Skip;
 			MarkText->SetText(FText::FromString("Skip"));
 			break;
 		case(5):
-			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Flok;
+			GameInstanceReference->PlayerData.Mark = EAvatar_Marks::E_Flok;
 			MarkText->SetText(FText::FromString("Flok"));
 			break;
 		case(6):
-			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Gup;
+			GameInstanceReference->PlayerData.Mark = EAvatar_Marks::E_Gup;
 			MarkText->SetText(FText::FromString("Gup"));
 			break;
 		case(7):
-			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Xash;
+			GameInstanceReference->PlayerData.Mark = EAvatar_Marks::E_Xash;
 			MarkText->SetText(FText::FromString("Xash"));
 			break;
 		case(8):
-			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Zwor;
+			GameInstanceReference->PlayerData.Mark = EAvatar_Marks::E_Zwor;
 			MarkText->SetText(FText::FromString("Zwor"));
 			break;
 		case(9):
-			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Kop;
+			GameInstanceReference->PlayerData.Mark = EAvatar_Marks::E_Kop;
 			MarkText->SetText(FText::FromString("Kop"));
 			break;
 		default:
-			GameInstanceReference->PlayerData.Mark = ECharacter_Marks::E_Romp;
+			GameInstanceReference->PlayerData.Mark = EAvatar_Marks::E_Romp;
 			MarkText->SetText(FText::FromString("Romp"));
 			break;
 	}

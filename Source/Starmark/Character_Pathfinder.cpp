@@ -14,6 +14,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "PlayerController_Base.h"
+#include "Starmark_GameState.h"
 
 
 ACharacter_Pathfinder::ACharacter_Pathfinder()
@@ -165,7 +166,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 	int TraceSphereRadius = (100 * (CurrentSelectedAttack.BaseRange * 2));
 	int CapsuleHalfHeight = 300;
 	int TraceSphereSegments = 35;
-	float TraceDrawTime = 10.f;
+	float TraceDrawTime = 2.5f;
 	const TArray<AActor*> TraceActorsToIgnore;
 	TArray<FHitResult> TraceHitResultArray;
 	FHitResult TraceHitResult;
@@ -213,4 +214,13 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Launch Attack")));
 
 	Target->CurrentHealthPoints -= FMath::Clamp<int>((AvatarData.BaseStats.Attack + CurrentSelectedAttack.BasePower) - Target->AvatarData.BaseStats.Defence, 1, 999999999);
+
+	// End this Avatar's turn
+	GetWorld()->GetGameState<AStarmark_GameState>()->AvatarEndTurn();
+
+	// Reset Decals
+	if (!PlayerControllerReference)
+		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+	PlayerControllerReference->UpdateSelectedAvatar();
 }

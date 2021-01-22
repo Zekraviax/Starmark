@@ -52,6 +52,21 @@ void APlayerController_Base::SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* 
 }
 
 
+void APlayerController_Base::UpdateSelectedAvatar()
+{
+	for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
+		ACharacter_Pathfinder* FoundActor = *Itr;
+
+		FoundActor->ActorSelected->SetVisibility(false);
+		FoundActor->CursorToWorld->SetVisibility(false);
+	}
+
+	CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
+	CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
+	CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+}
+
+
 // ------------------------- Mouse
 void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {

@@ -44,9 +44,9 @@ enum class EPlayer_Horoscopes : uint8
 	E_Sagittarius,
 };
 
-//------------------------- Character
+//------------------------- Avatar
 UENUM(BlueprintType)
-enum class ECharacter_Types : uint8
+enum class EAvatar_Types : uint8
 {
 	// Base Elements
 	E_Fire,
@@ -78,10 +78,12 @@ enum class ECharacter_Types : uint8
 	E_Magma,
 	E_Electric,
 	E_Sound,
+	// Placeholder
+	E_None,
 };
 
 UENUM(BlueprintType)
-enum class ECharacter_Marks : uint8
+enum class EAvatar_Marks : uint8
 {
 	E_Romp,
 	E_Slith,
@@ -126,7 +128,7 @@ struct STARMARK_API FPlayer_Data
 	EPlayer_Horoscopes Horoscope;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
-	ECharacter_Marks Mark;
+	EAvatar_Marks Mark;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hemisphere")
 	EPlayer_Hemispheres Hemisphere;
@@ -143,7 +145,7 @@ struct STARMARK_API FPlayer_Data
 		Birthday_Month = 1;
 		Birthday_Year = 2021;
 		Horoscope = EPlayer_Horoscopes::E_Capricorn;
-		Mark = ECharacter_Marks::E_Romp;
+		Mark = EAvatar_Marks::E_Romp;
 		Hemisphere = EPlayer_Hemispheres::E_Southern;
 		Name = "Default";
 		Pronouns = EPlayer_Pronouns::E_Neutral;
@@ -153,53 +155,53 @@ struct STARMARK_API FPlayer_Data
 
 //------------------------- Avatar
 USTRUCT(BlueprintType)
-struct STARMARK_API FCharacter_TypeChart : public FTableRowBase
+struct STARMARK_API FAvatar_TypeChart : public FTableRowBase
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECharacter_Types Type;
+	EAvatar_Types Type;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECharacter_Types TakesMoreDamageFromType;
+	EAvatar_Types TakesMoreDamageFromType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECharacter_Types TakesLessDamageFromType;
+	EAvatar_Types TakesLessDamageFromType;
 
-	FCharacter_TypeChart()
+	FAvatar_TypeChart()
 	{
-		Type = ECharacter_Types::E_Fire;
-		TakesMoreDamageFromType = ECharacter_Types::E_Water;
-		TakesLessDamageFromType = ECharacter_Types::E_Air;
+		Type = EAvatar_Types::E_Fire;
+		TakesMoreDamageFromType = EAvatar_Types::E_Water;
+		TakesLessDamageFromType = EAvatar_Types::E_Air;
 	}
 };
 
 
 USTRUCT(BlueprintType)
-struct STARMARK_API FCharacter_CombinationTypes : public FTableRowBase
+struct STARMARK_API FAvatar_CombinationTypes : public FTableRowBase
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECharacter_Types PrimaryType;
+	EAvatar_Types PrimaryType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECharacter_Types SecondaryType;
+	EAvatar_Types SecondaryType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECharacter_Types CombinationType;
+	EAvatar_Types CombinationType;
 
-	FCharacter_CombinationTypes()
+	FAvatar_CombinationTypes()
 	{
-		PrimaryType = ECharacter_Types::E_Fire;
-		SecondaryType = ECharacter_Types::E_Water;
-		CombinationType = ECharacter_Types::E_Steam;
+		PrimaryType = EAvatar_Types::E_Fire;
+		SecondaryType = EAvatar_Types::E_Water;
+		CombinationType = EAvatar_Types::E_Steam;
 	}
 };
 
 
 USTRUCT(BlueprintType)
-struct STARMARK_API FCharacter_DyeColours : public FTableRowBase
+struct STARMARK_API FAvatar_DyeColours : public FTableRowBase
 {
 	GENERATED_BODY()
 
@@ -209,7 +211,7 @@ struct STARMARK_API FCharacter_DyeColours : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLinearColor Colour;
 
-	FCharacter_DyeColours()
+	FAvatar_DyeColours()
 	{
 
 	}
@@ -263,6 +265,9 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 	FString Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAvatar_Types Type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int BasePower;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -271,6 +276,7 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 	FAvatar_AttackStruct()
 	{
 		Name = "Default";
+		Type = EAvatar_Types::E_Air;
 		BasePower = 1;
 		BaseRange = 1;
 	}
@@ -286,7 +292,13 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	FString AvatarName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECharacter_Marks Mark;
+	EAvatar_Types PrimaryType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAvatar_Types SecondaryType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAvatar_Marks Mark;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FAvatar_AttackStruct> AttacksArray;
@@ -297,7 +309,9 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	FAvatar_Struct()
 	{
 		AvatarName = "Default";
-		Mark = ECharacter_Marks::E_Flok;
+		Mark = EAvatar_Marks::E_Flok;
+		PrimaryType = EAvatar_Types::E_Air;
+		SecondaryType = EAvatar_Types::E_None;
 	}
 };
 

@@ -59,6 +59,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* RandomPawnReference);
 
+	UFUNCTION(BlueprintCallable)
+	void UpdateSelectedAvatar();
+
 // ------------------------- Mouse
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryClick(AActor* ClickedActor);

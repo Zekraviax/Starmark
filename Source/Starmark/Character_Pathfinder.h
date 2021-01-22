@@ -58,7 +58,7 @@ public:
 	UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
 
 // ------------------------- Avatar
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	FAvatar_Struct AvatarData;
 
 // ------------------------- Battle

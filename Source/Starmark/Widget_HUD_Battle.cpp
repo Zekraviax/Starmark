@@ -8,9 +8,8 @@
 // ------------------------- Commands
 void UWidget_HUD_Battle::MoveCommand()
 {
-	if (!PlayerControllerReference) {
+	if (!PlayerControllerReference)
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	}
 
 	PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_MoveCharacter;
 }
@@ -18,12 +17,20 @@ void UWidget_HUD_Battle::MoveCommand()
 
 void UWidget_HUD_Battle::AttackCommand()
 {
-	if (!PlayerControllerReference) {
+	if (!PlayerControllerReference)
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	}
 
 	PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack;
 
 	// Display Attack Range
 	PlayerControllerReference->CurrentSelectedAvatar->ShowAttackRange();
+}
+
+
+void UWidget_HUD_Battle::SwitchCommand()
+{
+	if (!PlayerControllerReference)
+		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+	PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToControl;
 }

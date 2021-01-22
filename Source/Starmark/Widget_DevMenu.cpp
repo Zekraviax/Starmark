@@ -63,7 +63,7 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 	FString ContextString, PrimaryTypeString, SecondaryTypeString, CombinationTypeString, TextBoxName;
 	TArray<FName> CombinationTypesRowNames, MoveEffectiveness_RowNames, AvatarResistances_RowNames;
 	TMap<FName, FRealCurve*> MoveEffectiveness_BaseTypeChartRowMap, AvatarResistances_BaseTypeChartRowMap;
-	FCharacter_CombinationTypes* CombinationType;
+	FAvatar_CombinationTypes* CombinationType;
 	FRealCurve* Value;
 	int CurrentTypeEffectivenessValue = 1;
 
@@ -107,10 +107,10 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 		
 		// Get Combination Name
 		for (auto& Name : CombinationTypesRowNames) {
-			CombinationType = CombinationTypesDataTable->FindRow<FCharacter_CombinationTypes>(Name, ContextString);
+			CombinationType = CombinationTypesDataTable->FindRow<FAvatar_CombinationTypes>(Name, ContextString);
 
-			PrimaryTypeString = UEnum::GetDisplayValueAsText<ECharacter_Types>(CombinationType->PrimaryType).ToString();
-			SecondaryTypeString = UEnum::GetDisplayValueAsText<ECharacter_Types>(CombinationType->SecondaryType).ToString();
+			PrimaryTypeString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CombinationType->PrimaryType).ToString();
+			SecondaryTypeString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CombinationType->SecondaryType).ToString();
 
 			PrimaryTypeString = PrimaryTypeString.Right(PrimaryTypeString.Len() - 2);
 			SecondaryTypeString = SecondaryTypeString.Right(SecondaryTypeString.Len() - 2);
@@ -119,7 +119,7 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 				PrimaryTypeString == SecondaryTypeDropdown->GetSelectedOption()) {
 				if (SecondaryTypeString == PrimaryTypeDropdown->GetSelectedOption() ||
 					SecondaryTypeString == SecondaryTypeDropdown->GetSelectedOption()) {
-					CombinationTypeString = UEnum::GetDisplayValueAsText<ECharacter_Types>(CombinationType->CombinationType).ToString();
+					CombinationTypeString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CombinationType->CombinationType).ToString();
 					CombinationTypeString = CombinationTypeString.Right(CombinationTypeString.Len() - 2);
 
 					CombinationTypeText->SetText(FText::FromString(CombinationTypeString));

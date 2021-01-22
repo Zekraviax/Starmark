@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+
+#include "Components/TextBlock.h"
+
 #include "Widget_HUD_Battle.generated.h"
 
 // Forward Declarations
@@ -18,6 +21,8 @@ public:
 	// --------------------------------------------------
 
 	// ------------------------- Widget
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* TurnOrderTextBlock;
 
 	// ------------------------- References
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
@@ -32,4 +37,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AttackCommand();
+
+	UFUNCTION(BlueprintCallable)
+	void SwitchCommand();
 };
