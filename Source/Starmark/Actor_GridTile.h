@@ -45,4 +45,11 @@ public:
 // ------------------------- Grid Tile
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid Tile")
 	TArray<E_GridTile_TraversalProperties> TraversalProperties;
+
+// Functions
+// --------------------------------------------------
+
+// ------------------------- Grid Tile
+	UFUNCTION(BlueprintCallable)
+	void UpdateGridTileState();
 };

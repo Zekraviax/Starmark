@@ -118,7 +118,7 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 	if (ActorSelected && ActorSelected_DynamicMaterial) {
 		if (PlayerControllerReference->CurrentSelectedAvatar != this) {
 			ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Blue);
-			//ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, ActorSelected->RelativeLocation.Z));
+			ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, ActorSelected->RelativeLocation.Z));
 			ActorSelected->SetVisibility(true);
 		}
 	}

@@ -61,7 +61,7 @@ void APlayerController_Base::UpdateSelectedAvatar()
 
 	CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
 	CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
-	//CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+	CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
 }
 
 
