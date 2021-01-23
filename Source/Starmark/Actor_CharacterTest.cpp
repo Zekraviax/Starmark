@@ -47,7 +47,7 @@ void AActor_CharacterTest::BeginPlay()
 
 	// Dynamic Material
 	DynamicMaterial = UMaterialInstanceDynamic::Create(StaticMaterial, this);
-	StaticMeshComponent->SetMaterial(0, DynamicMaterial);
+	//StaticMeshComponent->SetMaterial(0, DynamicMaterial);
 }
 
 // Called every frame

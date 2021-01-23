@@ -1,6 +1,10 @@
 #include "RecastNavMesh_GraphAStar.h"
 
 
+#include "Engine/World.h"
+#include "Actor_GridTile.h"
+
+
 DECLARE_CYCLE_STAT(TEXT("Custom Pathfinding"), STAT_Navigation_CustomPathfinding, STATGROUP_Navigation)
 
 
@@ -222,6 +226,19 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 				}
 
 
+
+
+				// Line Trace Variables
+				FHitResult LineTraceResult;
+				FVector End;
+				TEnumAsByte<EObjectTypeQuery> ObjectToTrace = EObjectTypeQuery::ObjectTypeQuery1;
+				TArray<TEnumAsByte<EObjectTypeQuery> > ObjectsToTraceAsByte;
+				ObjectsToTraceAsByte.Add(ObjectToTrace);
+				//FCollisionQueryParams QueryParams;
+
+
+
+
 				FVector TileStartLocation = FVector(Query.StartLocation.X, Query.StartLocation.Y, 0.f).GridSnap(200.f) + FVector(0.f, 0.f, Query.StartLocation.Z) + FVector(n0->getxPos() - 16, n0->getyPos() - 16, 0) * 200;
 				// generate moves (child nodes) in all possible directions
 				for (i = 0; i < dir; i++)
@@ -234,15 +251,45 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 					FVector HitLocation;
 					bool Reachable = Cast<ARecastNavMesh>(Query.NavData.Get())->NavMeshRaycast(Query.NavData.Get(), TileStartLocation, TileLocation, HitLocation, Query.QueryFilter, Query.Owner.Get());
 
-					// Debugging: view tiles traversed (Warning: Lags terribly when trying to path to unreachable location)
-					//if (Reachable)
-					//{
-					//	DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f), FColor::Red, false, 0.5f);
-					//}
+
+
+
+					// Check if the tile is occupied or is an obstacle
+					// Line Trace for a GridTile Actor and get it's TraversalProperties
+					// Use DrawDebugLine to view the Line Trace
+					End = FVector(TileLocation.X, TileLocation.Y, (TileLocation.Z - 100.f));
+					bool SuccessfulLineTrace = RecastNavMesh->GetWorld()->LineTraceSingleByObjectType(LineTraceResult, TileLocation, End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
+
+					//if (SuccessfulLineTrace)
+					//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Found Actor: %s"), *LineTraceResult.Actor->GetName()));
 					//else
-					//{
-					//	DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f) / 2.f, FColor::Green, false, 0.5f);
-					//}
+					//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("Line Trace Failed"));
+					if (SuccessfulLineTrace) {
+						if (Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Occupied) ||
+							Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Wall)) {
+							Reachable = true;
+						}
+					}
+
+
+
+
+					// Debugging: view tiles traversed (Warning: Lags terribly when trying to path to unreachable location)
+					if (Reachable)
+					{
+						if (SuccessfulLineTrace) {
+							if (Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Occupied) ||
+								Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Wall)) {
+								DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f), FColor::Yellow, false, 2.5f);
+							}
+						} else {
+							DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, 2.5f);
+						}
+					}
+					else
+					{
+						DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f) / 2.f, FColor::Green, false, 2.5f);
+					}
 
 					if (!(xdx<0 || xdx>n - 1 || ydy<0 || ydy>m - 1 || map[xdx][ydy] == 1
 						|| closed_nodes_map[xdx][ydy] == 1 || Reachable))

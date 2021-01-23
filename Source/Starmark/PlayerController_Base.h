@@ -11,6 +11,7 @@
 // Forward Declarations
 //class ACharacter_Pathfinder;
 
+// Unique Enums
 UENUM(BlueprintType)
 enum class E_PlayerCharacter_ClickModes : uint8
 {

@@ -101,8 +101,10 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 	ActorSelected->SetMaterial(0, ActorSelected_DynamicMaterial);
 
 	// Snap Actor to Grid
+	// The Z Value needs to be retained or else the character will probably clip through the floor
+	//FVector OriginalActorLocation = GetActorLocation();
 	FVector ActorLocationSnappedToGrid = GetActorLocation().GridSnap(200.f);
-	ActorLocationSnappedToGrid.Z = 1;
+	ActorLocationSnappedToGrid.Z = GetActorLocation().Z;
 	SetActorLocation(ActorLocationSnappedToGrid);
 }
 

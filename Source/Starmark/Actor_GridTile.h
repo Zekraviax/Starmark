@@ -2,7 +2,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
+#include "Components/StaticMeshComponent.h"
+
 #include "Actor_GridTile.generated.h"
+
+
+// Unique Enums
+UENUM(BlueprintType)
+enum class E_GridTile_TraversalProperties : uint8
+{
+	E_None,
+	E_Wall,
+	E_Occupied,
+};
 
 
 UCLASS()
@@ -22,4 +35,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+// Variables
+// --------------------------------------------------
+
+// ------------------------- Components
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UStaticMeshComponent* Floor;
+
+// ------------------------- Grid Tile
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid Tile")
+	TArray<E_GridTile_TraversalProperties> TraversalProperties;
 };

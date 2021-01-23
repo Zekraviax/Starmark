@@ -19,14 +19,12 @@ void APlayerController_Base::SetupInputComponent()
 {
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
-
 }
 
 
 void APlayerController_Base::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-
 }
 
 
@@ -63,7 +61,7 @@ void APlayerController_Base::UpdateSelectedAvatar()
 
 	CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
 	CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
-	CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+	//CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
 }
 
 
@@ -86,7 +84,7 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 				}
 			}
 		}
-		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") && PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter) {
+		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") || ClickedActor->GetClass()->GetName().Contains("GridTile") && PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter) {
 			// If all else fails, assume we clicked on a plane that we can move our controller Avatar on
 			Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
 		}

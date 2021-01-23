@@ -5,7 +5,15 @@
 AActor_GridTile::AActor_GridTile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	// Initialize Components
+	Floor = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Floor"));
+	Floor->SetupAttachment(RootComponent);
+
+	FTransform FloorTransform;
+	FloorTransform.SetScale3D(FVector(2.f, 2.f, 1.f));
+	Floor->SetRelativeTransform(FloorTransform);
 
 }
 
@@ -22,4 +30,3 @@ void AActor_GridTile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
