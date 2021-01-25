@@ -1,0 +1,3 @@
+---,Type,TakesMoreDamageFromTypes,TakesLessDamageFromTypes
+Fire,"E_Fire","(E_Dark)","(E_Earth)"
+Water,"E_Fire","(E_Water)","(E_Air)"

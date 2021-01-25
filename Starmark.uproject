@@ -14,5 +14,8 @@
 				"NavigationSystem"
 			]
 		}
+	],
+	"TargetPlatforms": [
+		"WindowsNoEditor"
 	]
 }

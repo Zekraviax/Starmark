@@ -4,9 +4,9 @@
 #include "NavigationSystem.h"
 #include "AI/NavigationSystemBase.h"
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
 #include "Character_Pathfinder.h"
 #include "Engine/World.h"
+
 
 APlayerController_Pathfinder::APlayerController_Pathfinder()
 {

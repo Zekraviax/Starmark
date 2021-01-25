@@ -49,51 +49,51 @@ UENUM(BlueprintType)
 enum class EAvatar_Types : uint8
 {
 	// Base Elements
-	E_Fire,
-	E_Water,
-	E_Earth,
-	E_Air,
-	E_Light,
-	E_Dark,
-	E_Arcane,
+	E_Fire							UMETA(DisplayName = "Fire"),
+	E_Water							UMETA(DisplayName = "Water"),
+	E_Air							UMETA(DisplayName = "Air"),
+	E_Earth							UMETA(DisplayName = "Earth"),
+	E_Light							UMETA(DisplayName = "Light"),
+	E_Dark							UMETA(DisplayName = "Dark"),
+	E_Arcane						UMETA(DisplayName = "Arcane"),
 	// Combination Elements
-	E_Hex,
-	E_Fae,
-	E_Illusion,
-	E_PSI,
-	E_Runic,
-	E_Spirit,
-	E_Balance,
-	E_Toxin,
-	E_Diabolic,
-	E_Metal,
-	E_Cosmic,
-	E_Divine,
-	E_Nuclear,
-	E_Prism,
-	E_Cyber,
-	E_Steam,
-	E_Nature,
-	E_Ice,
-	E_Magma,
-	E_Electric,
-	E_Sound,
+	E_Hex							UMETA(DisplayName = "Hex"),
+	E_Fae							UMETA(DisplayName = "Fae"),
+	E_Illusion						UMETA(DisplayName = "Illusion"),
+	E_PSI							UMETA(DisplayName = "PSI"),
+	E_Runic							UMETA(DisplayName = "Runic"),
+	E_Spirit						UMETA(DisplayName = "Spirit"),
+	E_Balance						UMETA(DisplayName = "Balance"),
+	E_Toxin							UMETA(DisplayName = "Chem"),
+	E_Diabolic						UMETA(DisplayName = "Diabolic"),
+	E_Metal							UMETA(DisplayName = "Metal"),
+	E_Cosmic						UMETA(DisplayName = "Cosmic"),
+	E_Divine						UMETA(DisplayName = "Divine"),
+	E_Nuclear						UMETA(DisplayName = "Nuclear"),
+	E_Prism							UMETA(DisplayName = "Prism"),
+	E_Cyber							UMETA(DisplayName = "Cyber"),
+	E_Steam							UMETA(DisplayName = "Steam"),
+	E_Nature						UMETA(DisplayName = "Nature"),
+	E_Ice							UMETA(DisplayName = "Ice"),
+	E_Magma							UMETA(DisplayName = "Magma"),
+	E_Electric						UMETA(DisplayName = "Electric"),
+	E_Sound							UMETA(DisplayName = "Sound"),
 	// Placeholder
-	E_None,
+	E_None							UMETA(DisplayName = "N/A"),
 };
 
 UENUM(BlueprintType)
 enum class EAvatar_Marks : uint8
 {
-	E_Romp,
-	E_Slith,
-	E_Roa,
-	E_Skip,
-	E_Flok,
-	E_Gup,
-	E_Xash,
-	E_Zwor,
-	E_Kop,
+	E_Romp							UMETA(DisplayName = "Romp"),
+	E_Slith							UMETA(DisplayName = "Slith"),
+	E_Roa							UMETA(DisplayName = "Roa"),
+	E_Skip							UMETA(DisplayName = "Skip"),
+	E_Flok							UMETA(DisplayName = "Flok"),
+	E_Gup							UMETA(DisplayName = "Gup"),
+	E_Xash							UMETA(DisplayName = "Xash"),
+	E_Zwor							UMETA(DisplayName = "Zwor"),
+	E_Kop							UMETA(DisplayName = "Kop"),
 };
 
 //------------------------- Grid
@@ -155,7 +155,7 @@ struct STARMARK_API FPlayer_Data
 
 //------------------------- Avatar
 USTRUCT(BlueprintType)
-struct STARMARK_API FAvatar_TypeChart : public FTableRowBase
+struct STARMARK_API FAvatar_SimpleTypeChart : public FTableRowBase
 {
 	GENERATED_BODY()
 
@@ -163,16 +163,57 @@ struct STARMARK_API FAvatar_TypeChart : public FTableRowBase
 	EAvatar_Types Type;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EAvatar_Types TakesMoreDamageFromType;
+	TArray<EAvatar_Types> TakesMoreDamageFromTypes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EAvatar_Types TakesLessDamageFromType;
+	TArray<EAvatar_Types> TakesLessDamageFromTypes;
 
-	FAvatar_TypeChart()
+	FAvatar_SimpleTypeChart()
 	{
 		Type = EAvatar_Types::E_Fire;
-		TakesMoreDamageFromType = EAvatar_Types::E_Water;
-		TakesLessDamageFromType = EAvatar_Types::E_Air;
+		TakesMoreDamageFromTypes.Add(EAvatar_Types::E_Water);
+		TakesLessDamageFromTypes.Add(EAvatar_Types::E_Air);
+		//TakesMoreDamageFromType = EAvatar_Types::E_Water;
+		//TakesLessDamageFromType = EAvatar_Types::E_Air;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct STARMARK_API FAvatar_UltimateTypeChart : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAvatar_Types Type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<EAvatar_Types> CombinationTypes;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//TArray<EAvatar_Types> TakesMoreDamageFromTypes;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//TArray<EAvatar_Types> TakesLessDamageFromTypes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<EAvatar_Types> DoesMoreDamageToTypes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<EAvatar_Types> DoesLessDamageToTypes;
+
+	FAvatar_UltimateTypeChart()
+	{
+		Type = EAvatar_Types::E_Hex;
+		CombinationTypes.Add(EAvatar_Types::E_Arcane);
+		CombinationTypes.Add(EAvatar_Types::E_Dark);
+		//TakesMoreDamageFromTypes.Add(EAvatar_Types::E_Earth);
+		//TakesMoreDamageFromTypes.Add(EAvatar_Types::E_Arcane);
+		//TakesLessDamageFromTypes.Add(EAvatar_Types::E_Light);
+		//TakesLessDamageFromTypes.Add(EAvatar_Types::E_Dark);
+		//DoesMoreDamageToTypes.Add(EAvatar_Types::E_Earth);
+		//DoesMoreDamageToTypes.Add(EAvatar_Types::E_Dark);
+		//DoesLessDamageToTypes.Add(EAvatar_Types::E_Light);
+		//DoesLessDamageToTypes.Add(EAvatar_Types::E_Air);
 	}
 };
 

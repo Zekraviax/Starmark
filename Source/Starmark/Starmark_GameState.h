@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
+
+#include "Engine/Datatable.h"
+
 #include "Starmark_GameState.generated.h"
 
 // Forward Declarations
@@ -22,6 +25,9 @@ public:
 // ------------------------- References
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
 	APlayerController_Base* PlayerControllerReference;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
+	UDataTable* TypeEffectivenessDataTableReference;
 
 // ------------------------- Battle
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")

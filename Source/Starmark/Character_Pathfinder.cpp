@@ -215,6 +215,9 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Launch Attack")));
 
+	// Check for type advantage or disadvantage
+
+
 	Target->CurrentHealthPoints -= FMath::Clamp<int>((AvatarData.BaseStats.Attack + CurrentSelectedAttack.BasePower) - Target->AvatarData.BaseStats.Defence, 1, 999999999);
 
 	// End this Avatar's turn
