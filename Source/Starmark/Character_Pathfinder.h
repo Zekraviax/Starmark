@@ -73,10 +73,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	FAvatar_Struct AvatarData;
 
-// ------------------------- Battle
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	int CurrentLevel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	int CurrentHealthPoints;
 
+// ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	FAvatar_AttackStruct CurrentSelectedAttack;
 

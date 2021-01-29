@@ -24,7 +24,7 @@ protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
 	
 public:
-// Base Variables
+// Variables
 // --------------------------------------------------
 
 // ------------------------- Components
@@ -55,4 +55,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	ACharacter_Pathfinder* LinkedAvatar;
 
+// Functions
+// --------------------------------------------------
+
+// ------------------------- Avatar
+	UFUNCTION()
+	void SetAvatarData();
 };

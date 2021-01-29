@@ -333,6 +333,9 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	FString AvatarName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Nickname;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EAvatar_Types PrimaryType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -350,6 +353,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	FAvatar_Struct()
 	{
 		AvatarName = "Default";
+		Nickname = "";
 		Mark = EAvatar_Marks::E_Flok;
 		PrimaryType = EAvatar_Types::E_Air;
 		SecondaryType = EAvatar_Types::E_None;

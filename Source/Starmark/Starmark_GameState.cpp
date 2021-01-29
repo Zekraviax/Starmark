@@ -15,13 +15,31 @@ void AStarmark_GameState::SetTurnOrder(UWidget_HUD_Battle* Battle_HUD)
 	if (!PlayerControllerReference)
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
+	// Use Nested Loops to compare Avatars' Speeds.
 	for (int i = 0; i < FoundActors.Num(); i++) {
 		//AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
-		AvatarTurnOrder.Insert(Cast<ACharacter_Pathfinder>(FoundActors[i]), i);
+		if (AvatarTurnOrder.Num() <= 0) {
+			AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
+		} else {
+			for (int j = 0; j < AvatarTurnOrder.Num(); j++) {
+				if (Cast<ACharacter_Pathfinder>(FoundActors[i])->AvatarData.BaseStats.Speed >= AvatarTurnOrder[j]->AvatarData.BaseStats.Speed && 
+					!AvatarTurnOrder.Contains(Cast<ACharacter_Pathfinder>(FoundActors[i]))) {
+					AvatarTurnOrder.Insert(Cast<ACharacter_Pathfinder>(FoundActors[i]), j);
+					break;
+				}
+				// If we reach the end of the array and the Avatar isn't faster than any of the other Avatars, just add it at the end
+				if (j == AvatarTurnOrder.Num() - 1 && !AvatarTurnOrder.Contains(Cast<ACharacter_Pathfinder>(FoundActors[i]))) {
+					AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
+				}
+			}
+		}
 	}
 
 	// Set Player's Avatar to the first in the list
-	PlayerControllerReference->CurrentSelectedAvatar = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[0]);
+	if (AvatarTurnOrder.Num() > 0) {
+		PlayerControllerReference->CurrentSelectedAvatar = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[0]);
+	}
+
 	CurrentAvatarTurnIndex = 0;
 
 	// Update the Player's HUD
@@ -51,4 +69,11 @@ void AStarmark_GameState::AvatarEndTurn()
 	}
 
 	PlayerControllerReference->CurrentSelectedAvatar = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[CurrentAvatarTurnIndex]);
+
+	// Update player's HUD
+	//if (BattleHUD_Reference) {
+	//	for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
+
+	//	}
+	//}
 }

@@ -11,7 +11,7 @@ APlayerController_Base::APlayerController_Base()
 {
 	bShowMouseCursor = true;
 
-	PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToControl;
+	PlayerClickMode = E_PlayerCharacter_ClickModes::E_Nothing;
 }
 
 
@@ -41,7 +41,7 @@ void APlayerController_Base::SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* 
 			CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
 			//CurrentSelectedAvatar->ActorSelected->SetWorldLocation(FVector(CurrentSelectedAvatar->GetActorLocation().X, CurrentSelectedAvatar->GetActorLocation().Y, 1.f));
 
-			CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+			CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
 
 			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("Found Actor"));
 			break;
@@ -66,7 +66,7 @@ void APlayerController_Base::UpdateSelectedAvatar()
 	CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
 
 	if (CurrentSelectedAvatar->ActorSelected_DynamicMaterial)
-		CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+		CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
 }
 
 
