@@ -14,7 +14,9 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "PlayerController_Base.h"
+#include "WidgetComponent_AvatarBattleData.h"
 #include "Starmark_GameState.h"
+#include "Starmark_GameMode.h"
 
 
 ACharacter_Pathfinder::ACharacter_Pathfinder()
@@ -71,6 +73,10 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	ActorSelected->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
 	ActorSelected->SetVisibility(false);
 
+	// AvatarBattleData WidgetComponent
+	AvatarBattleData_Component = CreateDefaultSubobject<UWidgetComponent>("AvatarBattleData_Component");
+	AvatarBattleData_Component->SetupAttachment(RootComponent);
+
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -106,6 +112,18 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 	FVector ActorLocationSnappedToGrid = GetActorLocation().GridSnap(200.f);
 	ActorLocationSnappedToGrid.Z = GetActorLocation().Z;
 	SetActorLocation(ActorLocationSnappedToGrid);
+
+	// Create Avatar Battle Data WidgetComponent
+	if (AvatarBattleDataComponent_Class) {
+		AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
+
+		if (AvatarBattleDataComponent_Reference->IsValidLowLevel()) {
+			AvatarBattleDataComponent_Reference->LinkedAvatar = this;
+			AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
+		} else {
+			AvatarBattleData_Component->DestroyComponent();
+		}
+	}
 }
 
 
@@ -122,6 +140,10 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 			ActorSelected->SetVisibility(true);
 		}
 	}
+
+	// Show AvatarBattleDataWidget
+	if (AvatarBattleDataComponent_Reference)
+		AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
 
@@ -132,6 +154,10 @@ void ACharacter_Pathfinder::OnAvatarCursorOverEnd()
 
 	if (ActorSelected && PlayerControllerReference->CurrentSelectedAvatar != this)
 		ActorSelected->SetVisibility(false);
+
+	// Hide AvatarBattleDataWidget
+	if (AvatarBattleDataComponent_Reference)
+		AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 
@@ -213,12 +239,37 @@ void ACharacter_Pathfinder::ShowAttackRange()
 
 void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 {
+	FAvatar_UltimateTypeChart* MoveTypeChartRow;
+	FAvatar_UltimateTypeChart* TargetTypeChartRow;
+	FString ContextString, MoveTypeAsString, TargetTypeAsString;
+	float CurrentDamage = CurrentSelectedAttack.BasePower;
+
+	MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CurrentSelectedAttack.Type).ToString();
+	TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
+
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Launch Attack")));
 
 	// Check for type advantage or disadvantage
+	//if (UltimateTypeChartDataTable) {
+	MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
+	TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
+	//}
 
+	// Compare each Move type against the Target type
+	//for (int i = 0; i < MoveTypeChartRow->CombinationTypes.Num(); i++) {
+	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
+		// 2x Damage
+		if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j])) {
+			CurrentDamage = CurrentDamage * 2;
+		}
+		// 0.5x Damage
+		else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j])) {
+			CurrentDamage = CurrentDamage / 2;
+		}
+	}
+	//}
 
-	Target->CurrentHealthPoints -= FMath::Clamp<int>((AvatarData.BaseStats.Attack + CurrentSelectedAttack.BasePower) - Target->AvatarData.BaseStats.Defence, 1, 999999999);
+	Target->CurrentHealthPoints -= FMath::Clamp<int>((AvatarData.BaseStats.Attack + CurrentDamage) - Target->AvatarData.BaseStats.Defence, 1, 999999999);
 
 	// End this Avatar's turn
 	GetWorld()->GetGameState<AStarmark_GameState>()->AvatarEndTurn();

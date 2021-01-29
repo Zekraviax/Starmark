@@ -4,12 +4,15 @@
 #include "GameFramework/Character.h"
 
 #include "Components/DecalComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Starmark_GameMode.h"
 
 #include "Character_Pathfinder.generated.h"
 
 // Forward Declarations
 class APlayerController_Base;
+class UWidgetComponent_AvatarBattleData;
+
 
 UCLASS()
 class STARMARK_API ACharacter_Pathfinder : public ACharacter
@@ -57,12 +60,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UWidgetComponent* AvatarBattleData_Component;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	TSubclassOf<UWidgetComponent_AvatarBattleData> AvatarBattleDataComponent_Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UWidgetComponent_AvatarBattleData* AvatarBattleDataComponent_Reference;
+
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	FAvatar_Struct AvatarData;
 
 // ------------------------- Battle
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int CurrentHealthPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
@@ -70,6 +82,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
 	TArray<ACharacter_Pathfinder*> ValidAttackTargetsArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UDataTable* UltimateTypeChartDataTable;
 
 // ------------------------- Other
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Other")
