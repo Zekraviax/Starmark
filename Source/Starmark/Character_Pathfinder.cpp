@@ -84,6 +84,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	// Battle Testing
 	CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
 	CurrentLevel = 1;
+	CurrentTileMoves = 2;
 
 	CurrentSelectedAttack.BasePower = 1;
 	CurrentSelectedAttack.BaseRange = 3;
@@ -135,7 +136,10 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 	AvatarData.BaseStats.Speed = FMath::RandRange(5, 15);
 	AvatarData.BaseStats.Evade = FMath::RandRange(5, 15);
 	AvatarData.BaseStats.Power = FMath::RandRange(5, 15);
+	AvatarData.MaximumTileMoves = FMath::RandRange(3, 7);
+
 	CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
+	CurrentTileMoves = AvatarData.MaximumTileMoves;
 }
 
 

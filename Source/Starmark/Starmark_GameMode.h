@@ -329,26 +329,43 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+// ------------------------- Base Data
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
 	FString AvatarName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
 	FString Nickname;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
 	EAvatar_Types PrimaryType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
 	EAvatar_Types SecondaryType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
 	EAvatar_Marks Mark;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+// ------------------------- Battle
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<FAvatar_AttackStruct> AttacksArray;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	FAvatar_BaseStats BaseStats;
+
+	// CurrentHealthPoints
+	// MaximumTileMoves
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int MaximumTileMoves;
+
+	// CurrentTileMoves
+	// MaximumMovePoints
+	// CurrentMovePoints
+	// MaximumActionPoints
+	// CUrrentActionPoints
+
+// ------------------------- Appearance
+	// 3D Model
+	// Material
 
 	FAvatar_Struct()
 	{
@@ -357,6 +374,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		Mark = EAvatar_Marks::E_Flok;
 		PrimaryType = EAvatar_Types::E_Air;
 		SecondaryType = EAvatar_Types::E_None;
+		MaximumTileMoves = 5;
 	}
 };
 

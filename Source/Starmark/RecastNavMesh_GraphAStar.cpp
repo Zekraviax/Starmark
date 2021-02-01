@@ -2,7 +2,11 @@
 
 
 #include "Engine/World.h"
+#include "NavigationData.h"
 #include "Actor_GridTile.h"
+#include "PlayerController_Base.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "AIController.h"
 
 
 DECLARE_CYCLE_STAT(TEXT("Custom Pathfinding"), STAT_Navigation_CustomPathfinding, STATGROUP_Navigation)
@@ -144,6 +148,9 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 			static int open_nodes_map[n][m];	// map of open (not-yet-tried) nodes
 			static int dir_map[n][m];			// map of directions
 
+			int CurrentPathLength = 0;
+			int AvatarMovesRemaining = Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->CurrentTileMoves;
+
 			// A-star algorithm.
 			FVector PathLocation = Query.EndLocation.GridSnap(200);
 			FVector EndTile = (Query.EndLocation.GridSnap(200) - Query.StartLocation.GridSnap(200)) / 200 + FVector(16.f, 16.f, 0.f);
@@ -190,7 +197,10 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 				// quit searching when the goal state is reached
 				if (x == EndTile.X && y == EndTile.Y)
 				{
+					//CurrentPathLength = 0;
+
 					Result.Path->GetPathPoints().Add(FNavPathPoint(PathLocation));
+
 					// generate the path from finish to start
 					// by following the directions
 					while (!(x == 16 && y == 16))
@@ -210,16 +220,70 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 							PathLocation += FVector(0, -200, 0);
 							break;
 						}
+
 						Result.Path->GetPathPoints().Add(FNavPathPoint(PathLocation));
+
 						x += dx[j];
 						y += dy[j];
+
 					}
+
 
 					// garbage collection
 					delete n0;
 					// empty the leftover nodes
 					while (!(pq[pqi].Num() == 0)) pq[pqi].HeapPopDiscard(nodePredicate(), true);
 					Algo::Reverse(Result.Path->GetPathPoints());
+
+
+
+
+
+					//for (int k = 1; k < NewResult.Path->GetPathPoints().Num(); k++) {
+					for (int k = Result.Path->GetPathPoints().Num() - 1; k >= 0; k--) {
+						//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("k: %d  /  Avatar Moves Remaining: %d"), k, AvatarMovesRemaining));
+
+						if (Result.Path->GetPathPoints().IsValidIndex(k) && k < AvatarMovesRemaining) {
+							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 175.f), FColor::Green, false, 2.5f);
+							// Subtract One TileMove from the Avatar
+						}
+						else if (Result.Path->GetPathPoints().IsValidIndex(k) && k == AvatarMovesRemaining) {
+							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 250.f), FColor::Yellow, false, 2.5f);
+							Cast<AAIController>(Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", Result.Path->GetPathPointLocation(k).Position);
+						}
+						else {
+							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 100.f), FColor::Red, false, 2.5f);
+							Result.Path->GetPathPoints().RemoveAt(k, 1, false);
+						}
+					}
+
+
+					////for (int k = 1; k < NewResult.Path->GetPathPoints().Num(); k++) {
+					//for (int k = Result.Path->GetPathPoints().Num() - 1; k >= 0; k--) {
+					//	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("k: %d  /  Avatar Moves Remaining: %d"), k, AvatarMovesRemaining));
+
+					//	if (Result.Path->GetPathPoints().IsValidIndex(k)) {
+					//		if (k > AvatarMovesRemaining) {
+					//			DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 250.f), FColor::Red, false, 2.5f);
+					//			//NewPathArray.Add(Result.Path->GetPathPointLocation(k).Position);
+					//		}
+					//		else if (k == AvatarMovesRemaining) {
+					//			DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 100.f), FColor::Green, false, 2.5f);
+					//			//Result.Path->GoalActor = nullptr;
+					//			//Result.Path->UpdateLastRepathGoalLocation();
+
+					//			// Change the Avatar's Target Location instead of the path
+
+					//			//NewPathArray.Add(Result.Path->GetPathPointLocation(k).Position);
+					//		}
+					//		//else {
+					//		//	DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 175.f), FColor::Yellow, false, 2.5f);
+					//		//}
+					//	}
+					//}
+
+
+
 					Result.Path->MarkReady();
 					Result.Result = ENavigationQueryResult::Success;
 					return Result;
@@ -260,10 +324,6 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 					End = FVector(TileLocation.X, TileLocation.Y, (TileLocation.Z - 100.f));
 					bool SuccessfulLineTrace = RecastNavMesh->GetWorld()->LineTraceSingleByObjectType(LineTraceResult, TileLocation, End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
 
-					//if (SuccessfulLineTrace)
-					//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Found Actor: %s"), *LineTraceResult.Actor->GetName()));
-					//else
-					//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("Line Trace Failed"));
 					if (SuccessfulLineTrace) {
 						if (Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Occupied) ||
 							Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Wall)) {
@@ -271,25 +331,33 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 						}
 					}
 
+					// Check if the Avatar has enough TileMoves to travel this far
+					//if (CurrentPathLength > Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->CurrentTileMoves) {
+					//	  Reachable = true;
+					//}
+
 
 
 
 					// Debugging: view tiles traversed (Warning: Lags terribly when trying to path to unreachable location)
-					if (Reachable)
+					/*if (Reachable)
 					{
 						if (SuccessfulLineTrace) {
 							if (Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Occupied) ||
-								Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Wall)) {
+								Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Wall) ||
+								CurrentPathLength <= Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->CurrentTileMoves) {
 								DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f), FColor::Yellow, false, 2.5f);
 							}
-						} else {
+						}
+						else {
 							DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, 2.5f);
 						}
 					}
+
 					else
 					{
 						DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f) / 2.f, FColor::Green, false, 2.5f);
-					}
+					}*/
 
 					if (!(xdx<0 || xdx>n - 1 || ydy<0 || ydy>m - 1 || map[xdx][ydy] == 1
 						|| closed_nodes_map[xdx][ydy] == 1 || Reachable))
@@ -307,6 +375,8 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 							pq[pqi].HeapPush(*m0, nodePredicate());
 							// mark its parent node direction
 							dir_map[xdx][ydy] = (i + dir / 2) % dir;
+
+							CurrentPathLength++;
 						}
 						else if (open_nodes_map[xdx][ydy] > m0->getPriority())
 						{
@@ -327,7 +397,7 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 							}
 							pq[pqi].HeapPopDiscard(nodePredicate(), true); // remove the wanted node
 
-																		   // empty the larger size pq to the smaller one
+							// empty the larger size pq to the smaller one
 							if (pq[pqi].Num() > pq[1 - pqi].Num()) pqi = 1 - pqi;
 							while (!(pq[pqi].Num() == 0))
 							{
@@ -336,6 +406,8 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 							}
 							pqi = 1 - pqi;
 							pq[pqi].HeapPush(*m0, nodePredicate()); // add the better node instead
+
+							CurrentPathLength++;
 						}
 						else delete m0; // garbage collection
 					}
