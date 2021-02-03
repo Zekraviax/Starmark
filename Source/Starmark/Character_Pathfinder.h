@@ -71,7 +71,13 @@ public:
 
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	FDataTableRowHandle AvatarDataTableValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	FAvatar_Struct AvatarData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	FAvatar_ElementalEssences ElementalEssences;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	int CurrentLevel;
@@ -80,9 +86,18 @@ public:
 	int CurrentHealthPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	int CurrentManaPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	int CurrentTileMoves;
 
 // ------------------------- Battle
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	TArray<FAvatar_AttackStruct> AttacksArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	TArray<FAvatar_AttackStruct> AllKnownAttacks;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	FAvatar_AttackStruct CurrentSelectedAttack;
 

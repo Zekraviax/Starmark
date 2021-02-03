@@ -265,25 +265,25 @@ struct STARMARK_API FAvatar_BaseStats
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float HealthPoints;
+	int HealthPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ManaPoints;
+	int ManaPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Attack;
+	int Attack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Defence;
+	int Defence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Speed;
+	int Speed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Evade;
+	int Evade;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Power;
+	int Power;
 
 	FAvatar_BaseStats()
 	{
@@ -296,6 +296,46 @@ struct STARMARK_API FAvatar_BaseStats
 		Power = 1;
 	}
 };
+
+
+USTRUCT(BlueprintType)
+struct STARMARK_API FAvatar_ElementalEssences
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int FireEssence;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int WaterEssence;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AirEssence;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int EarthEssence;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int LightEssence;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int DarkEssence;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int ArcaneEssence;
+
+	FAvatar_ElementalEssences()
+	{
+		FireEssence = 0;
+		WaterEssence = 0;
+		AirEssence = 0;
+		EarthEssence = 0;
+		LightEssence = 0;
+		DarkEssence = 0;
+		ArcaneEssence = 0;
+	}
+};
+
 
 USTRUCT(BlueprintType)
 struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
@@ -346,26 +386,58 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	EAvatar_Marks Mark;
 
 // ------------------------- Battle
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	TArray<FAvatar_AttackStruct> AttacksArray;
+	// Instinct Abilities
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	FAvatar_BaseStats BaseStats;
 
-	// CurrentHealthPoints
-	// MaximumTileMoves
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int MaximumTileMoves;
 
-	// CurrentTileMoves
-	// MaximumMovePoints
-	// CurrentMovePoints
-	// MaximumActionPoints
-	// CUrrentActionPoints
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int MaximumMovePoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int MaximumActionPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	float SameTypeAttackBonusMultiplier;
+
 
 // ------------------------- Appearance
 	// 3D Model
 	// Material
+	// Default Colour
+	// Animations
+
+// ------------------------- Other Data Tables
+	// Attacks Learned by Buying with Essence
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other DataTables")
+	TArray<FDataTableRowHandle> AttacksLearnedByBuyingWithEssence;
+
+// ------------------------- Encyclopedia
+	// Number
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Encyclopedia")
+	int EncyclopediaNumber;
+
+	// Height Range
+	// Weight Range
+
+	// Lore
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Encyclopedia")
+	FString Lore;
+
+
+// ------------------------- Other Data
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
+	int Tier;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
+	int TokensRequired;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
+	FVector2D Size;
+
 
 	FAvatar_Struct()
 	{
@@ -374,7 +446,15 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		Mark = EAvatar_Marks::E_Flok;
 		PrimaryType = EAvatar_Types::E_Air;
 		SecondaryType = EAvatar_Types::E_None;
-		MaximumTileMoves = 5;
+		MaximumTileMoves = 2;
+		MaximumMovePoints = 1;
+		MaximumActionPoints = 1;
+		SameTypeAttackBonusMultiplier = 150;
+		EncyclopediaNumber = 0;
+		Lore = "Default";
+		Tier = 1;
+		TokensRequired = 1;
+		Size = FVector2D(1, 1);
 	}
 };
 

@@ -82,13 +82,14 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	// Battle Testing
-	CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
 	CurrentLevel = 1;
-	CurrentTileMoves = 2;
+	//CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
+	//CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
+	//CurrentTileMoves = 2;
 
-	CurrentSelectedAttack.BasePower = 1;
-	CurrentSelectedAttack.BaseRange = 3;
-	CurrentSelectedAttack.Name = "Kick";
+	//CurrentSelectedAttack.BasePower = 1;
+	//CurrentSelectedAttack.BaseRange = 3;
+	//CurrentSelectedAttack.Name = "Kick";
 }
 
 
@@ -128,17 +129,25 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 		}
 	}
 
+	// Set Individual Avatar's Data
+	FString ContextString;
+	if (AvatarDataTableValue.DataTable->IsValidLowLevel()) {
+		AvatarData = *AvatarDataTableValue.GetRow<FAvatar_Struct>(ContextString);
+	}
+
+
 	// Randomize Stats
-	AvatarData.BaseStats.HealthPoints = FMath::RandRange(50, 150);
-	AvatarData.BaseStats.ManaPoints = FMath::RandRange(25, 75);
-	AvatarData.BaseStats.Attack = FMath::RandRange(5, 15);
-	AvatarData.BaseStats.Defence = FMath::RandRange(5, 15);
-	AvatarData.BaseStats.Speed = FMath::RandRange(5, 15);
-	AvatarData.BaseStats.Evade = FMath::RandRange(5, 15);
-	AvatarData.BaseStats.Power = FMath::RandRange(5, 15);
-	AvatarData.MaximumTileMoves = FMath::RandRange(3, 7);
+	//AvatarData.BaseStats.HealthPoints = FMath::RandRange(50, 150);
+	//AvatarData.BaseStats.ManaPoints = FMath::RandRange(25, 75);
+	//AvatarData.BaseStats.Attack = FMath::RandRange(5, 15);
+	//AvatarData.BaseStats.Defence = FMath::RandRange(5, 15);
+	//AvatarData.BaseStats.Speed = FMath::RandRange(5, 15);
+	//AvatarData.BaseStats.Evade = FMath::RandRange(5, 15);
+	//AvatarData.BaseStats.Power = FMath::RandRange(5, 15);
+	//AvatarData.MaximumTileMoves = FMath::RandRange(3, 7);
 
 	CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
+	CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
 	CurrentTileMoves = AvatarData.MaximumTileMoves;
 }
 
