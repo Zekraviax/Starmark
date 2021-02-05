@@ -116,6 +116,12 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 	ActorLocationSnappedToGrid.Z = GetActorLocation().Z;
 	SetActorLocation(ActorLocationSnappedToGrid);
 
+	// Set Individual Avatar's Data
+	FString ContextString;
+	if (AvatarDataTableValue.DataTable->IsValidLowLevel()) {
+		AvatarData = *AvatarDataTableValue.GetRow<FAvatar_Struct>(ContextString);
+	}
+
 	// Create Avatar Battle Data WidgetComponent
 	if (AvatarBattleDataComponent_Class) {
 		AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
@@ -128,13 +134,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 			AvatarBattleData_Component->DestroyComponent();
 		}
 	}
-
-	// Set Individual Avatar's Data
-	FString ContextString;
-	if (AvatarDataTableValue.DataTable->IsValidLowLevel()) {
-		AvatarData = *AvatarDataTableValue.GetRow<FAvatar_Struct>(ContextString);
-	}
-
 
 	// Randomize Stats
 	//AvatarData.BaseStats.HealthPoints = FMath::RandRange(50, 150);

@@ -238,7 +238,6 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 
 
 
-
 					//for (int k = 1; k < NewResult.Path->GetPathPoints().Num(); k++) {
 					for (int k = Result.Path->GetPathPoints().Num() - 1; k >= 0; k--) {
 						//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("k: %d  /  Avatar Moves Remaining: %d"), k, AvatarMovesRemaining));
@@ -257,30 +256,6 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 						}
 					}
 
-
-					////for (int k = 1; k < NewResult.Path->GetPathPoints().Num(); k++) {
-					//for (int k = Result.Path->GetPathPoints().Num() - 1; k >= 0; k--) {
-					//	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("k: %d  /  Avatar Moves Remaining: %d"), k, AvatarMovesRemaining));
-
-					//	if (Result.Path->GetPathPoints().IsValidIndex(k)) {
-					//		if (k > AvatarMovesRemaining) {
-					//			DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 250.f), FColor::Red, false, 2.5f);
-					//			//NewPathArray.Add(Result.Path->GetPathPointLocation(k).Position);
-					//		}
-					//		else if (k == AvatarMovesRemaining) {
-					//			DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 100.f), FColor::Green, false, 2.5f);
-					//			//Result.Path->GoalActor = nullptr;
-					//			//Result.Path->UpdateLastRepathGoalLocation();
-
-					//			// Change the Avatar's Target Location instead of the path
-
-					//			//NewPathArray.Add(Result.Path->GetPathPointLocation(k).Position);
-					//		}
-					//		//else {
-					//		//	DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 175.f), FColor::Yellow, false, 2.5f);
-					//		//}
-					//	}
-					//}
 
 
 
@@ -331,33 +306,29 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 						}
 					}
 
-					// Check if the Avatar has enough TileMoves to travel this far
-					//if (CurrentPathLength > Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->CurrentTileMoves) {
-					//	  Reachable = true;
-					//}
 
 
 
 
 					// Debugging: view tiles traversed (Warning: Lags terribly when trying to path to unreachable location)
-					/*if (Reachable)
-					{
-						if (SuccessfulLineTrace) {
-							if (Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Occupied) ||
-								Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Wall) ||
-								CurrentPathLength <= Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->CurrentTileMoves) {
-								DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f), FColor::Yellow, false, 2.5f);
-							}
-						}
-						else {
-							DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, 2.5f);
-						}
-					}
+					//if (Reachable)
+					//{
+					//	if (SuccessfulLineTrace) {
+					//		if (Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Occupied) ||
+					//			Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Wall) ||
+					//			CurrentPathLength <= Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->CurrentTileMoves) {
+					//			DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f), FColor::Yellow, false, 2.5f);
+					//		}
+					//	}
+					//	else {
+					//		DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, 2.5f);
+					//	}
+					//}
 
-					else
-					{
-						DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f) / 2.f, FColor::Green, false, 2.5f);
-					}*/
+					//else
+					//{
+					//	DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f) / 2.f, FColor::Green, false, 2.5f);
+					//}
 
 					if (!(xdx<0 || xdx>n - 1 || ydy<0 || ydy>m - 1 || map[xdx][ydy] == 1
 						|| closed_nodes_map[xdx][ydy] == 1 || Reachable))

@@ -409,6 +409,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	// Material
 	// Default Colour
 	// Animations
+	// Menu Image(s)
 
 // ------------------------- Other Data Tables
 	// Attacks Learned by Buying with Essence
