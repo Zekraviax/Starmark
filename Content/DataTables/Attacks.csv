@@ -1,0 +1,4 @@
+---,Name,Type,BasePower,BaseRange,AttackPattern,AttackEffectsOnTarget
+Punch,"Punch","E_Fire","3","1","Circle",""
+Kick,"Kick","E_Earth","2","2","Circle",""
+MagicShock,"MagicShock","E_Arcane","1","1","EightWayCross","(AddParalyzeStatus)"

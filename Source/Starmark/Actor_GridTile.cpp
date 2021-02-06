@@ -32,7 +32,13 @@ void AActor_GridTile::Tick(float DeltaTime)
 }
 
 
-// ------------------------- Grid Tile
+// ------------------------- Battle
+void AActor_GridTile::OnMouseBeginOver()
+{
+
+}
+
+
 void AActor_GridTile::UpdateGridTileState()
 {
 	// Clear TraversalProperties that aren't permanent (e.g. Occupied)

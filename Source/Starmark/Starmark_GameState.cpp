@@ -61,19 +61,45 @@ void AStarmark_GameState::AvatarEndTurn()
 	if (!PlayerControllerReference)
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
+	// Reset Decals
+	PlayerControllerReference->UpdateSelectedAvatar();
+
 	CurrentAvatarTurnIndex++;
 
 	// Reset Round
-	if (CurrentAvatarTurnIndex > AvatarTurnOrder.Num()) {
+	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num()) {
 		CurrentAvatarTurnIndex = 0;
 	}
 
 	PlayerControllerReference->CurrentSelectedAvatar = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[CurrentAvatarTurnIndex]);
+	AvatarBeginTurn();
+}
 
-	// Update player's HUD
-	//if (BattleHUD_Reference) {
-	//	for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
 
-	//	}
-	//}
+void AStarmark_GameState::AvatarBeginTurn()
+{
+	ACharacter_Pathfinder* AvatarRef = PlayerControllerReference->CurrentSelectedAvatar;
+
+	if (!PlayerControllerReference)
+		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+	// Reset Decals
+	PlayerControllerReference->UpdateSelectedAvatar();
+
+	// Reset Moves
+	AvatarRef->CurrentTileMoves = AvatarRef->AvatarData.MaximumTileMoves;
+
+	// Apply Status Effects
+	for (int i = AvatarRef->CurrentStatusEffectsArray.Num() - 1; i == 0; i--) {
+		AvatarRef->CurrentStatusEffectsArray[i].TurnsRemaining--;
+
+		if (!AvatarRef->CurrentStatusEffectsArray[i].TurnsRemaining == 0) {
+			// Switch On Status Effect Name
+			if (AvatarRef->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
+				AvatarRef->CurrentTileMoves = FMath::FloorToInt(AvatarRef->CurrentTileMoves / 2);
+			}
+		} else {
+
+		}
+	}
 }

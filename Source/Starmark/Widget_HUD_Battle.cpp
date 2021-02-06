@@ -3,6 +3,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "PlayerController_Base.h"
+#include "Starmark_GameState.h"
 
 
 // ------------------------- Commands
@@ -33,4 +34,9 @@ void UWidget_HUD_Battle::SwitchCommand()
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToControl;
+}
+
+void UWidget_HUD_Battle::EndCommand()
+{
+	GetWorld()->GetGameState<AStarmark_GameState>()->AvatarEndTurn();
 }

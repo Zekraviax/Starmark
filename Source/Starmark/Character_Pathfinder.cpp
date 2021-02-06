@@ -15,6 +15,7 @@
 #include "DrawDebugHelpers.h"
 #include "PlayerController_Base.h"
 #include "WidgetComponent_AvatarBattleData.h"
+#include "AttackEffects_FunctionLibrary.h"
 #include "Starmark_GameState.h"
 #include "Starmark_GameMode.h"
 
@@ -87,9 +88,6 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	//CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
 	//CurrentTileMoves = 2;
 
-	//CurrentSelectedAttack.BasePower = 1;
-	//CurrentSelectedAttack.BaseRange = 3;
-	//CurrentSelectedAttack.Name = "Kick";
 }
 
 
@@ -134,6 +132,8 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 			AvatarBattleData_Component->DestroyComponent();
 		}
 	}
+
+	CurrentSelectedAttack = *AvatarData.AttacksLearnedByBuyingWithEssence[0].GetRow<FAvatar_AttackStruct>(ContextString);
 
 	// Randomize Stats
 	//AvatarData.BaseStats.HealthPoints = FMath::RandRange(50, 150);
@@ -291,16 +291,13 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 	MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CurrentSelectedAttack.Type).ToString();
 	TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
 
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Launch Attack")));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Launch Attack")));
 
 	// Check for type advantage or disadvantage
-	//if (UltimateTypeChartDataTable) {
 	MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
 	TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
-	//}
 
 	// Compare each Move type against the Target type
-	//for (int i = 0; i < MoveTypeChartRow->CombinationTypes.Num(); i++) {
 	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
 		// 2x Damage
 		if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j])) {
@@ -311,16 +308,17 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 			CurrentDamage = CurrentDamage / 2;
 		}
 	}
-	//}
 
-	Target->CurrentHealthPoints -= FMath::Clamp<int>((AvatarData.BaseStats.Attack + CurrentDamage) - Target->AvatarData.BaseStats.Defence, 1, 999999999);
+	// Subtract Health
+	Target->CurrentHealthPoints -= ((AvatarData.BaseStats.Attack + CurrentDamage) - Target->AvatarData.BaseStats.Defence) + 1;
+
+	// Apply move effects after the damage has been dealt
+	for (int i = 0; i < CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
+		//SwitchOnAttackEffect();
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Paralyze Target")));
+		UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(CurrentSelectedAttack.AttackEffectsOnTarget[i], this, Target);
+	}
 
 	// End this Avatar's turn
 	GetWorld()->GetGameState<AStarmark_GameState>()->AvatarEndTurn();
-
-	// Reset Decals
-	if (!PlayerControllerReference)
-		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-
-	PlayerControllerReference->UpdateSelectedAvatar();
 }

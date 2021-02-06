@@ -50,4 +50,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AvatarEndTurn();
 
+	UFUNCTION(BlueprintCallable)
+	void AvatarBeginTurn();
 };

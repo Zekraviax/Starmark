@@ -40,4 +40,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SwitchCommand();
+
+	UFUNCTION(BlueprintCallable)
+	void EndCommand();
 };

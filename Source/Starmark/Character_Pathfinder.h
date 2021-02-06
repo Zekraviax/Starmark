@@ -107,6 +107,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	UDataTable* UltimateTypeChartDataTable;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
+	TArray<FAvatar_StatusEffect> CurrentStatusEffectsArray;
+
 // ------------------------- Other
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Other")
 	APlayerController_Base* PlayerControllerReference;

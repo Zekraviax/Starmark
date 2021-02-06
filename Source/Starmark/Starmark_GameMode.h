@@ -19,6 +19,7 @@ enum class EPlayer_Hemispheres : uint8
 	E_Southern,
 };
 
+
 UENUM(BlueprintType)
 enum class EPlayer_Pronouns : uint8
 {
@@ -26,6 +27,7 @@ enum class EPlayer_Pronouns : uint8
 	E_Feminine,
 	E_Neutral
 };
+
 
 UENUM(BlueprintType)
 enum class EPlayer_Horoscopes : uint8
@@ -43,6 +45,7 @@ enum class EPlayer_Horoscopes : uint8
 	E_Scorpio,
 	E_Sagittarius,
 };
+
 
 //------------------------- Avatar
 UENUM(BlueprintType)
@@ -82,6 +85,7 @@ enum class EAvatar_Types : uint8
 	E_None							UMETA(DisplayName = "N/A"),
 };
 
+
 UENUM(BlueprintType)
 enum class EAvatar_Marks : uint8
 {
@@ -96,6 +100,7 @@ enum class EAvatar_Marks : uint8
 	E_Kop							UMETA(DisplayName = "Kop"),
 };
 
+
 //------------------------- Grid
 UENUM(BlueprintType)
 enum class EHTileOrientationFlag : uint8
@@ -104,6 +109,25 @@ enum class EHTileOrientationFlag : uint8
 	POINTY,
 	NONE
 };
+
+
+//------------------------- Battle
+UENUM(BlueprintType)
+enum class EBattle_AttackPatterns : uint8
+{
+	Circle,
+	FourWayCross,
+	EightWayCross,
+};
+
+
+UENUM(BlueprintType)
+enum class EBattle_AttackEffects : uint8
+{
+	// Status Effects
+	AddParalyzeStatus,
+};
+
 
 
 // Structs
@@ -338,6 +362,36 @@ struct STARMARK_API FAvatar_ElementalEssences
 
 
 USTRUCT(BlueprintType)
+struct STARMARK_API FAvatar_StatusEffect : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* Image;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int TurnsRemaining;
+
+	FAvatar_StatusEffect() 
+	{
+		Name = "Default";
+		Image = nullptr;
+		TurnsRemaining = 1;
+	}
+
+	FAvatar_StatusEffect(FString InName, UTexture2D* InImage, int InTurnsRemaining)
+	{
+		Name = InName;
+		Image = InImage;
+		TurnsRemaining = InTurnsRemaining;
+	}
+};
+
+
+USTRUCT(BlueprintType)
 struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -354,12 +408,23 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int BaseRange;
 
+	// Attack Pattern
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EBattle_AttackPatterns AttackPattern;
+
+	// Effect: On attack launch
+	// Effect: On Self
+	// Effect: On Target(s)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<EBattle_AttackEffects> AttackEffectsOnTarget;
+
 	FAvatar_AttackStruct()
 	{
 		Name = "Default";
 		Type = EAvatar_Types::E_Air;
 		BasePower = 1;
 		BaseRange = 1;
+		AttackPattern = EBattle_AttackPatterns::Circle;
 	}
 };
 

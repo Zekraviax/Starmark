@@ -49,7 +49,10 @@ public:
 // Functions
 // --------------------------------------------------
 
-// ------------------------- Grid Tile
+// ------------------------- Battle
+	UFUNCTION(BlueprintCallable)
+	void OnMouseBeginOver();
+
 	UFUNCTION(BlueprintCallable)
 	void UpdateGridTileState();
 };
