@@ -8,9 +8,6 @@ void UWidgetComponent_AvatarBattleData::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	//SetDrawAtDesiredSize(true);
-	//SetWidgetSpace(EWidgetSpace::Screen);
-	//SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 

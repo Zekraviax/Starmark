@@ -323,6 +323,31 @@ struct STARMARK_API FAvatar_BaseStats
 
 
 USTRUCT(BlueprintType)
+struct STARMARK_API FAvatar_Size
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int SizeX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int SizeY;
+
+	FAvatar_Size()
+	{
+		SizeX = 1;
+		SizeY = 1;
+	}
+
+	FAvatar_Size(int InSizeX, int InSizeY)
+	{
+		SizeX = InSizeX;
+		SizeY = InSizeY;
+	}
+};
+
+
+USTRUCT(BlueprintType)
 struct STARMARK_API FAvatar_ElementalEssences
 {
 	GENERATED_BODY()
@@ -470,6 +495,9 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 
 
 // ------------------------- Appearance
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
+	FAvatar_Size Size;
+
 	// 3D Model
 	// Material
 	// Default Colour
@@ -501,9 +529,6 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
 	int TokensRequired;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
-	FVector2D Size;
-
 
 	FAvatar_Struct()
 	{
@@ -520,7 +545,6 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		Lore = "Default";
 		Tier = 1;
 		TokensRequired = 1;
-		Size = FVector2D(1, 1);
 	}
 };
 

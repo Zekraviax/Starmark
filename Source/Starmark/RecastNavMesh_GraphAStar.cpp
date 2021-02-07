@@ -242,11 +242,14 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 					for (int k = Result.Path->GetPathPoints().Num() - 1; k >= 0; k--) {
 						//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("k: %d  /  Avatar Moves Remaining: %d"), k, AvatarMovesRemaining));
 
-						if (Result.Path->GetPathPoints().IsValidIndex(k) && k < AvatarMovesRemaining - 1) {
+						if (Result.Path->GetPathPoints().IsValidIndex(k) && k == 0) {
+							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 50), FColor::Blue, false, 2.5f);
+						}
+						else if (Result.Path->GetPathPoints().IsValidIndex(k) && k < AvatarMovesRemaining) {
 							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 175.f), FColor::Green, false, 2.5f);
 							// Subtract One TileMove from the Avatar
 						}
-						else if (Result.Path->GetPathPoints().IsValidIndex(k) && k == AvatarMovesRemaining - 1) {
+						else if (Result.Path->GetPathPoints().IsValidIndex(k) && k == AvatarMovesRemaining) {
 							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 250.f), FColor::Yellow, false, 2.5f);
 							Cast<AAIController>(Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", Result.Path->GetPathPointLocation(k).Position);
 						}
@@ -257,10 +260,10 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 					}
 
 					// Subtract Moves
-					Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->CurrentTileMoves -= Result.Path->GetPathPoints().Num();
+					Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->CurrentTileMoves -= Result.Path->GetPathPoints().Num() - 1;
 
 
-
+					
 
 					Result.Path->MarkReady();
 					Result.Result = ENavigationQueryResult::Success;

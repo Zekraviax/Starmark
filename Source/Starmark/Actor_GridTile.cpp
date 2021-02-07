@@ -1,6 +1,9 @@
 #include "Actor_GridTile.h"
 
 
+#include "Character_Pathfinder.h"
+
+
 // Sets default values
 AActor_GridTile::AActor_GridTile()
 {
@@ -53,15 +56,14 @@ void AActor_GridTile::UpdateGridTileState()
 	bool SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, GetActorLocation(), End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
 
 	if (SuccessfulLineTrace) {
-		//GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Green, FString::Printf(TEXT("Found Actor: %s"), *LineTraceResult.Actor->GetName()));
-		TraversalProperties.Add(E_GridTile_TraversalProperties::E_Occupied);
+		//TraversalProperties.Add(E_GridTile_TraversalProperties::E_Occupied);
+		
+		// Tell the Avatar to update Tiles based on its Size
+		Cast<ACharacter_Pathfinder>(LineTraceResult.Actor)->SetTilesOccupiedBySize();
 	} 
-	//else {
-	//	GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Red, ("Line Trace Failed"));
-	//}
 
 	// If the TraversalProperties array is empty, add the default Property
 	if (TraversalProperties.Num() <= 0) {
-		TraversalProperties.Add(E_GridTile_TraversalProperties::E_None);
+		TraversalProperties.AddUnique(E_GridTile_TraversalProperties::E_None);
 	}
 }

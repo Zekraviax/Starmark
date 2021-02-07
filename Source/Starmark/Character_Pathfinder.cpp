@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "DrawDebugHelpers.h"
+#include "Actor_GridTile.h"
 #include "PlayerController_Base.h"
 #include "WidgetComponent_AvatarBattleData.h"
 #include "AttackEffects_FunctionLibrary.h"
@@ -87,7 +88,6 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	//CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
 	//CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
 	//CurrentTileMoves = 2;
-
 }
 
 
@@ -106,6 +106,10 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 
 	ActorSelected_DynamicMaterial = UMaterialInstanceDynamic::Create(ActorSelected->GetMaterial(0), this);
 	ActorSelected->SetMaterial(0, ActorSelected_DynamicMaterial);
+
+	// Hitbox for unusually sized Avatars
+	//SetRootComponent(Mesh);
+	//CapsuleComponent->AttachTo(RootComponent);
 
 	// Snap Actor to Grid
 	// The Z Value needs to be retained or else the character will probably clip through the floor
@@ -165,9 +169,9 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 			// Switch colours based on player's click command
 			switch (PlayerControllerReference->PlayerClickMode)
 			{
-			case (E_PlayerCharacter_ClickModes::E_MoveCharacter):
-				ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Blue);
-				break;
+			//case (E_PlayerCharacter_ClickModes::E_MoveCharacter):
+			//	ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Blue);
+			//	break;
 			case (E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack):
 				ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
 				break;
@@ -175,7 +179,7 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 				ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Yellow);
 				break;
 			default:
-				ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::White);
+				ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
 				break;
 			}
 
@@ -314,11 +318,43 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 
 	// Apply move effects after the damage has been dealt
 	for (int i = 0; i < CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
-		//SwitchOnAttackEffect();
-		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Paralyze Target")));
 		UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(CurrentSelectedAttack.AttackEffectsOnTarget[i], this, Target);
 	}
 
 	// End this Avatar's turn
 	GetWorld()->GetGameState<AStarmark_GameState>()->AvatarEndTurn();
+}
+
+
+void ACharacter_Pathfinder::SetTilesOccupiedBySize()
+{
+	FHitResult LineTraceResult;
+	TEnumAsByte<EObjectTypeQuery> ObjectToTrace = EObjectTypeQuery::ObjectTypeQuery1;
+	TArray<TEnumAsByte<EObjectTypeQuery>>ObjectsToTraceAsByte;
+	ObjectsToTraceAsByte.Add(ObjectToTrace);
+	FVector End = FVector(GetActorLocation().X, GetActorLocation().Y, 0.f);
+	FVector Start = GetActorLocation();
+
+	for (int x = 0; x < AvatarData.Size.SizeX; x++) {
+		for (int y = 0; y < AvatarData.Size.SizeY; y++) {
+			bool SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, Start, FVector(Start.X - (200 * x), Start.Y - (200 * y), 0.f), FCollisionObjectQueryParams(ObjectsToTraceAsByte));
+
+			if (SuccessfulLineTrace) {
+				Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.AddUnique(E_GridTile_TraversalProperties::E_Occupied);
+				DrawDebugBox(GetWorld(), FVector(Start.X - (200 * x), Start.Y - (200 * y), 0.f), FVector(50.f, 50.f, 100.f) / 1.5f, FColor::Red, false, 2.5f);
+
+				if (Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_None)) {
+					Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Remove(E_GridTile_TraversalProperties::E_None);
+				}
+			}
+		}
+	}
+
+	//for (int y = 0; y < AvatarData.Size.SizeY; y++) {
+	//	bool SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, Start, FVector(Start.X, Start.Y + (200 * y), 0.f), FCollisionObjectQueryParams(ObjectsToTraceAsByte));
+
+	//	if (SuccessfulLineTrace) {
+	//		Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.AddUnique(E_GridTile_TraversalProperties::E_Occupied);
+	//	}
+	//}
 }

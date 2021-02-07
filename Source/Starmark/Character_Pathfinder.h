@@ -137,4 +137,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LaunchAttack(ACharacter_Pathfinder* Target);
+
+	UFUNCTION(BlueprintCallable)
+	void SetTilesOccupiedBySize();
 };

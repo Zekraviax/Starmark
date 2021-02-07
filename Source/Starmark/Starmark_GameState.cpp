@@ -99,7 +99,9 @@ void AStarmark_GameState::AvatarBeginTurn()
 				AvatarRef->CurrentTileMoves = FMath::FloorToInt(AvatarRef->CurrentTileMoves / 2);
 			}
 		} else {
-
+			AvatarRef->CurrentStatusEffectsArray.RemoveAt(i);
 		}
 	}
+
+	// Re-Calculate Stats
 }

@@ -52,7 +52,7 @@ public:
 	UTextBlock* TypesText;
 
 // ------------------------- Avatar
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ACharacter_Pathfinder* LinkedAvatar;
 
 // Functions

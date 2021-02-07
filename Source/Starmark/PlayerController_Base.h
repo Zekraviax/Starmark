@@ -66,4 +66,7 @@ public:
 // ------------------------- Mouse
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryClick(AActor* ClickedActor);
+
+	UFUNCTION()
+	void UpdateCursorSelectedMaterial();
 };
