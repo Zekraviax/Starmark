@@ -524,6 +524,9 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 
 // ------------------------- Other Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
+	TArray<FIntPoint> OccupiedTiles;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
 	int Tier;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
@@ -543,6 +546,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		SameTypeAttackBonusMultiplier = 150;
 		EncyclopediaNumber = 0;
 		Lore = "Default";
+		OccupiedTiles.AddUnique(FIntPoint(0, 0));
 		Tier = 1;
 		TokensRequired = 1;
 	}
