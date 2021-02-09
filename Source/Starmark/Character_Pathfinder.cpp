@@ -334,16 +334,17 @@ void ACharacter_Pathfinder::SetTilesOccupiedBySize()
 	ObjectsToTraceAsByte.Add(ObjectToTrace);
 	FVector End = FVector(GetActorLocation().X, GetActorLocation().Y, 0.f);
 	FVector Start = GetActorLocation();
+	bool SuccessfulLineTrace;
 
 	for (int i = 0; i < AvatarData.OccupiedTiles.Num(); i++) {
 		//for (int y = 0; y < AvatarData.Size.SizeY; y++) {
 
 		End = FVector(Start.X + (200 * AvatarData.OccupiedTiles[i].X), Start.Y + (200 * AvatarData.OccupiedTiles[i].Y), 0.f);
-		bool SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, Start, End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
+		SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, Start, End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
 
 		//if (AvatarData.OccupiedTiles.Num() > 1) {
 		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Line Trace at Location: %s"), *Start.ToString()));
-		DrawDebugBox(GetWorld(), End, FVector(50.f, 50.f, 100.f) / 1.5f, FColor::Red, false, 2.5f);
+		//DrawDebugBox(GetWorld(), End, FVector(50.f, 50.f, 100.f) / 1.5f, FColor::Red, false, 2.5f);
 		//}
 
 		if (SuccessfulLineTrace) {
@@ -355,13 +356,4 @@ void ACharacter_Pathfinder::SetTilesOccupiedBySize()
 		}
 		//}
 	}
-
-
-	//for (int y = 0; y < AvatarData.Size.SizeY; y++) {
-	//	bool SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, Start, FVector(Start.X, Start.Y + (200 * y), 0.f), FCollisionObjectQueryParams(ObjectsToTraceAsByte));
-
-	//	if (SuccessfulLineTrace) {
-	//		Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.AddUnique(E_GridTile_TraversalProperties::E_Occupied);
-	//	}
-	//}
 }

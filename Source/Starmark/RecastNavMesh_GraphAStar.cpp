@@ -237,30 +237,56 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 
 
 
+					ACharacter_Pathfinder* AvatarReference = Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar;
+					FHitResult LineTraceResult;
+					TEnumAsByte<EObjectTypeQuery> ObjectToTrace = EObjectTypeQuery::ObjectTypeQuery1;
+					TArray<TEnumAsByte<EObjectTypeQuery>>ObjectsToTraceAsByte;
+					ObjectsToTraceAsByte.Add(ObjectToTrace);
+					FVector End, Start;
+					bool SuccessfulLineTrace;
 
-					//for (int k = 1; k < NewResult.Path->GetPathPoints().Num(); k++) {
+
 					for (int k = Result.Path->GetPathPoints().Num() - 1; k >= 0; k--) {
-						//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("k: %d  /  Avatar Moves Remaining: %d"), k, AvatarMovesRemaining));
 
 						if (Result.Path->GetPathPoints().IsValidIndex(k) && k == 0) {
-							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 50), FColor::Blue, false, 2.5f);
+							//DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 50), FColor::Blue, false, 2.5f);
 						}
 						else if (Result.Path->GetPathPoints().IsValidIndex(k) && k < AvatarMovesRemaining) {
-							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 175.f), FColor::Green, false, 2.5f);
+							//DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 175.f), FColor::Green, false, 2.5f);
 							// Subtract One TileMove from the Avatar
 						}
 						else if (Result.Path->GetPathPoints().IsValidIndex(k) && k == AvatarMovesRemaining) {
-							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 250.f), FColor::Yellow, false, 2.5f);
-							Cast<AAIController>(Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", Result.Path->GetPathPointLocation(k).Position);
+							//DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 250.f), FColor::Yellow, false, 2.5f);
+							Cast<AAIController>(AvatarReference->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", Result.Path->GetPathPointLocation(k).Position);
 						}
 						else {
-							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 100.f), FColor::Red, false, 2.5f);
+							//DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 100.f), FColor::Red, false, 2.5f);
 							Result.Path->GetPathPoints().RemoveAt(k, 1, false);
+						}
+
+						// Check for valid tiles in the next step of the Move, for each tile the Avatar occupies
+						if (Result.Path->GetPathPoints().IsValidIndex(k)) {
+							for (int m = 0; m < AvatarReference->AvatarData.OccupiedTiles.Num(); m++) {
+								FVector DrawBoxPosition = Result.Path->GetPathPointLocation(k).Position;
+								Start = FVector(DrawBoxPosition.X + (200 * AvatarReference->AvatarData.OccupiedTiles[m].X), DrawBoxPosition.Y + (200 * AvatarReference->AvatarData.OccupiedTiles[m].X), DrawBoxPosition.Z);
+								End = FVector(Start.X, Start.Y, Start.Z + 1.f);
+
+								SuccessfulLineTrace = Query.NavData->GetWorld()->LineTraceSingleByObjectType(LineTraceResult, Start, End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
+
+								if (SuccessfulLineTrace) {
+									DrawDebugBox(Query.NavData->GetWorld(), Start, FVector(50.f, 50.f, 250.f), FColor::Purple, false, 2.5f);
+								} else 
+								DrawDebugBox(Query.NavData->GetWorld(), Start, FVector(50.f, 50.f, 250.f), FColor::Red, false, 2.5f);
+							}
 						}
 					}
 
+					//for (int i = AvatarReference->AvatarData.OccupiedTiles.Num(); i == 0; i--) {
+
+					//}
+
 					// Subtract Moves
-					Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->CurrentTileMoves -= Result.Path->GetPathPoints().Num() - 1;
+					AvatarReference->CurrentTileMoves -= Result.Path->GetPathPoints().Num() - 1;
 
 
 					

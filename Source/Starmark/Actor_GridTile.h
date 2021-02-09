@@ -46,6 +46,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid Tile")
 	TArray<E_GridTile_TraversalProperties> TraversalProperties;
 
+	// Occupying Actor
+	UPROPERTY()
+	AActor* OccupyingActor;
+
 // Functions
 // --------------------------------------------------
 
