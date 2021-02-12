@@ -264,19 +264,29 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 							Result.Path->GetPathPoints().RemoveAt(k, 1, false);
 						}
 
+						//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Position: %s  /  Index: %d"), *Result.Path->GetPathPointLocation(k).Position.ToString(), k));
+
 						// Check for valid tiles in the next step of the Move, for each tile the Avatar occupies
-						if (Result.Path->GetPathPoints().IsValidIndex(k)) {
-							for (int m = 0; m < AvatarReference->AvatarData.OccupiedTiles.Num(); m++) {
-								FVector DrawBoxPosition = Result.Path->GetPathPointLocation(k).Position;
-								Start = FVector(DrawBoxPosition.X + (200 * AvatarReference->AvatarData.OccupiedTiles[m].X), DrawBoxPosition.Y + (200 * AvatarReference->AvatarData.OccupiedTiles[m].X), DrawBoxPosition.Z);
-								End = FVector(Start.X, Start.Y, Start.Z + 1.f);
+						//
+						if (Result.Path->GetPathPoints().IsValidIndex(k + 1) && k != Result.Path->GetPathPoints().Num() - 1) {
+							for (int n = 0; n < AvatarReference->AvatarData.OccupiedTiles.Num(); n++) {
+								FVector DrawBoxPosition = Result.Path->GetPathPointLocation(k + 1).Position;
+								Start = FVector((DrawBoxPosition.X + (200 * AvatarReference->AvatarData.OccupiedTiles[n].X)), (DrawBoxPosition.Y + (200 * AvatarReference->AvatarData.OccupiedTiles[n].Y)), AvatarReference->GetActorLocation().Z);
+								End = FVector(Start.X, Start.Y, -1.f);
+
+
 
 								SuccessfulLineTrace = Query.NavData->GetWorld()->LineTraceSingleByObjectType(LineTraceResult, Start, End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
 
-								if (SuccessfulLineTrace) {
-									DrawDebugBox(Query.NavData->GetWorld(), Start, FVector(50.f, 50.f, 250.f), FColor::Purple, false, 2.5f);
-								} else 
-								DrawDebugBox(Query.NavData->GetWorld(), Start, FVector(50.f, 50.f, 250.f), FColor::Red, false, 2.5f);
+								if (SuccessfulLineTrace)
+									DrawDebugBox(Query.NavData->GetWorld(), Start, FVector(50.f, 50.f, 200.f), FColor::Purple, false, 2.5f);
+								else {
+									DrawDebugBox(Query.NavData->GetWorld(), Start, FVector(50.f, 50.f, 250.f), FColor::Red, false, 2.5f); {
+
+									// Remove from Path
+									Result.Path->GetPathPoints().RemoveAt(k + 1, 1, false);
+									}
+								}
 							}
 						}
 					}
