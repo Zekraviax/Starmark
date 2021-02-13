@@ -239,7 +239,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 {
 	FVector TraceStartLocation, TraceEndLocation;
 	int TraceSphereRadius = (100 * (CurrentSelectedAttack.BaseRange * 2)), CapsuleHalfHeight = 300, TraceSphereSegments = 35;
-	float TraceDrawTime = 2.5f;
+	float TraceDrawTime = 12.5f;
 	const TArray<AActor*> TraceActorsToIgnore;
 	TArray<FHitResult> TraceHitResultArray;
 	FHitResult TraceHitResult;
@@ -269,7 +269,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 	// Four-Way Cross Trace
 	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
 		// North
-		TraceStartLocation = FVector(GetActorLocation().X + 100, GetActorLocation().Y, GetActorLocation().Z);
+		TraceStartLocation = FVector(GetActorLocation().X + 200, GetActorLocation().Y, GetActorLocation().Z);
 		TraceEndLocation = FVector(TraceStartLocation.X + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y, TraceStartLocation.Z);
 
 		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
@@ -282,7 +282,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		}
 
 		// South
-		TraceStartLocation = FVector(GetActorLocation().X - 100, GetActorLocation().Y, GetActorLocation().Z);
+		TraceStartLocation = FVector(GetActorLocation().X - 200, GetActorLocation().Y, GetActorLocation().Z);
 		TraceEndLocation = FVector(GetActorLocation().X - (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y, TraceStartLocation.Z);
 
 		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
@@ -295,7 +295,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		}
 
 		// East
-		TraceStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y - 100, GetActorLocation().Z);
+		TraceStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y - 200, GetActorLocation().Z);
 		TraceEndLocation = FVector(TraceStartLocation.X, TraceStartLocation.Y - (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Z);
 
 		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
@@ -308,7 +308,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		}
 
 		// West
-		TraceStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 100, GetActorLocation().Z);
+		TraceStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 200, GetActorLocation().Z);
 		TraceEndLocation = FVector(TraceStartLocation.X, TraceStartLocation.Y + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Z);
 
 		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
@@ -323,7 +323,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		// Eight-Way Cross
 		if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
 			// North-West
-			TraceStartLocation = FVector(GetActorLocation().X + 100, GetActorLocation().Y + 100, GetActorLocation().Z);
+			TraceStartLocation = FVector(GetActorLocation().X + 200, GetActorLocation().Y + 200, GetActorLocation().Z);
 			TraceEndLocation = FVector(TraceStartLocation.X + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Z);
 
 			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
@@ -336,8 +336,34 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			}
 
 			// South-West
-			TraceStartLocation = FVector(GetActorLocation().X - 100, GetActorLocation().Y + 100, GetActorLocation().Z);
+			TraceStartLocation = FVector(GetActorLocation().X - 200, GetActorLocation().Y + 200, GetActorLocation().Z);
 			TraceEndLocation = FVector(TraceStartLocation.X - (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Z);
+
+			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
+			DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
+
+			if (Hit) {
+				if (TraceHitResult.Actor->IsValidLowLevel())
+					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
+						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
+			}
+
+			// South-East
+			TraceStartLocation = FVector(GetActorLocation().X - 200, GetActorLocation().Y - 200, GetActorLocation().Z);
+			TraceEndLocation = FVector(TraceStartLocation.X - (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y - (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Z);
+
+			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
+			DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
+
+			if (Hit) {
+				if (TraceHitResult.Actor->IsValidLowLevel())
+					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
+						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
+			}
+
+			// North-East
+			TraceStartLocation = FVector(GetActorLocation().X + 200, GetActorLocation().Y - 200, GetActorLocation().Z);
+			TraceEndLocation = FVector(TraceStartLocation.X + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y - (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Z);
 
 			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
 			DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
