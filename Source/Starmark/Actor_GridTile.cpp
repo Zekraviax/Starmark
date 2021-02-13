@@ -50,7 +50,7 @@ void AActor_GridTile::UpdateGridTileState()
 	// Line Trace for an Avatar occupying this tile
 	FHitResult LineTraceResult;
 	TEnumAsByte<EObjectTypeQuery> ObjectToTrace = EObjectTypeQuery::ObjectTypeQuery3;
-	TArray<TEnumAsByte<EObjectTypeQuery> > ObjectsToTraceAsByte;
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectsToTraceAsByte;
 	ObjectsToTraceAsByte.Add(ObjectToTrace);
 	FVector End = FVector(GetActorLocation().X, GetActorLocation().Y, (GetActorLocation().Z + 100.f));
 	bool SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, GetActorLocation(), End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));

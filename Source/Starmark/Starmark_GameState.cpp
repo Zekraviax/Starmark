@@ -4,6 +4,7 @@
 #include "Character_Pathfinder.h"
 #include "Kismet/GameplayStatics.h"
 #include "Widget_HUD_Battle.h"
+#include "WidgetComponent_AvatarBattleData.h"
 #include "PlayerController_Base.h"
 
 
@@ -45,6 +46,9 @@ void AStarmark_GameState::SetTurnOrder(UWidget_HUD_Battle* Battle_HUD)
 	// Update the Player's HUD
 	if (Battle_HUD) {
 		BattleHUD_Reference = Battle_HUD;
+
+		BattleHUD_Reference->AvatarBattleDataWidget->LinkedAvatar = PlayerControllerReference->CurrentSelectedAvatar;
+		BattleHUD_Reference->AvatarBattleDataWidget->SetAvatarData();
 
 		for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
 			BattleHUD_Reference->TurnOrderTextBlock->SetText(FText::FromString(BattleHUD_Reference->TurnOrderTextBlock->GetText().ToString() + "\n" + AvatarTurnOrder[i]->AvatarData.AvatarName));
@@ -104,4 +108,10 @@ void AStarmark_GameState::AvatarBeginTurn()
 	}
 
 	// Re-Calculate Stats
+
+	// Update HUD
+	if (BattleHUD_Reference) {
+		BattleHUD_Reference->AvatarBattleDataWidget->LinkedAvatar = AvatarRef;
+		BattleHUD_Reference->AvatarBattleDataWidget->SetAvatarData();
+	}
 }

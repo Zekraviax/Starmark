@@ -16,8 +16,11 @@ void UWidgetComponent_AvatarBattleData::NativeTick(const FGeometry & MyGeometry,
 	Super::NativeTick(MyGeometry, DeltaTime);
 
 	if (LinkedAvatar) {
-		float HealthPercentValue = FMath::FInterpTo(HealthBar->Percent, (LinkedAvatar->CurrentHealthPoints / LinkedAvatar->AvatarData.BaseStats.HealthPoints), DeltaTime, 5.f);
+		float Division = float(LinkedAvatar->CurrentHealthPoints) / float(LinkedAvatar->AvatarData.BaseStats.HealthPoints);
+		float HealthPercentValue = FMath::FInterpTo(HealthBar->Percent, Division, DeltaTime, 4.f);
 		HealthBar->SetPercent(HealthPercentValue);
+
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Current Health: %d  /  Max Health: %d  /  Health Percent: %s"), LinkedAvatar->CurrentHealthPoints, LinkedAvatar->AvatarData.BaseStats.HealthPoints, *FString::SanitizeFloat(Division, 4)));
 	}
 }
 
@@ -29,7 +32,7 @@ void UWidgetComponent_AvatarBattleData::SetAvatarData()
 		if (NicknameText->GetText().ToString() != LinkedAvatar->AvatarData.Nickname) {
 			if (LinkedAvatar->AvatarData.Nickname != "" && LinkedAvatar->AvatarData.Nickname != LinkedAvatar->AvatarData.AvatarName) {
 				NicknameText->SetText(FText::FromString(LinkedAvatar->AvatarData.Nickname));
-			}else {
+			} else {
 				NicknameText->SetText(FText::FromString(""));
 			}
 		}
@@ -45,5 +48,8 @@ void UWidgetComponent_AvatarBattleData::SetAvatarData()
 		if (TypesText->GetText().ToString() != UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar->AvatarData.PrimaryType).ToString()) {
 			TypesText->SetText(FText::FromString(UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar->AvatarData.PrimaryType).ToString()));
 		}
+
+		float Division = float(LinkedAvatar->CurrentHealthPoints) / float(LinkedAvatar->AvatarData.BaseStats.HealthPoints);
+		HealthBar->SetPercent(Division);
 	}
 }

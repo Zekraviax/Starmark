@@ -291,10 +291,6 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 						}
 					}
 
-					//for (int i = AvatarReference->AvatarData.OccupiedTiles.Num(); i == 0; i--) {
-
-					//}
-
 					// Subtract Moves
 					AvatarReference->CurrentTileMoves -= Result.Path->GetPathPoints().Num() - 1;
 

@@ -9,6 +9,7 @@
 
 // Forward Declarations
 class APlayerController_Base;
+class UWidgetComponent_AvatarBattleData;
 
 
 UCLASS()
@@ -23,6 +24,9 @@ public:
 	// ------------------------- Widget
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TurnOrderTextBlock;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UWidgetComponent_AvatarBattleData* AvatarBattleDataWidget;
 
 	// ------------------------- References
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")

@@ -10,7 +10,6 @@ bool UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(EBattle_AttackEffects 
 	switch (AttackEffect)
 	{
 	case (EBattle_AttackEffects::AddParalyzeStatus):
-		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Paralyze Target")));
 		Attack_AddParalyze(Attacker, Defender);
 		break;
 	default:

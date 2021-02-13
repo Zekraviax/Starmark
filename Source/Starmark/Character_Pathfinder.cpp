@@ -237,27 +237,91 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 // ------------------------- Battle
 void ACharacter_Pathfinder::ShowAttackRange()
 {
-	FVector TraceSphereStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y, 55);
-	FVector TraceSphereEndLocation = FVector(TraceSphereStartLocation.X, TraceSphereStartLocation.Y, 56);
-	int TraceSphereRadius = (100 * (CurrentSelectedAttack.BaseRange * 2));
-	int CapsuleHalfHeight = 300;
-	int TraceSphereSegments = 35;
+	FVector TraceStartLocation, TraceEndLocation;
+	int TraceSphereRadius = (100 * (CurrentSelectedAttack.BaseRange * 2)), CapsuleHalfHeight = 300, TraceSphereSegments = 35;
 	float TraceDrawTime = 2.5f;
 	const TArray<AActor*> TraceActorsToIgnore;
 	TArray<FHitResult> TraceHitResultArray;
 	FHitResult TraceHitResult;
-	bool TraceComplex = false;
-	bool TraceIgnoreSelf = true;
-	FLinearColor TraceColour = FLinearColor::Red;
-	FLinearColor TraceHitColour = FLinearColor::Green;
+	bool TraceComplex = false, TraceIgnoreSelf = true, Hit;
+	FLinearColor TraceColour = FLinearColor::Red, TraceHitColour = FLinearColor::Green;
 	//EDrawDebugTrace::ForDuration;
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceTypeQuery;
 	TraceTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 
-	bool Hit;
+	
+	// Circle Trace
+	if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Circle) {
+		TraceStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y, 55);
+		TraceEndLocation = FVector(TraceStartLocation.X, TraceStartLocation.Y, 56);
 
-	Hit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), TraceSphereStartLocation, TraceSphereEndLocation, TraceSphereRadius, UEngineTypes::ConvertToTraceType(ECC_Pawn), TraceComplex,
-	TraceActorsToIgnore, EDrawDebugTrace::ForDuration, TraceHitResultArray, true, TraceColour, TraceHitColour, TraceDrawTime);
+		Hit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), TraceStartLocation, TraceEndLocation, TraceSphereRadius, UEngineTypes::ConvertToTraceType(ECC_Pawn), TraceComplex,
+			TraceActorsToIgnore, EDrawDebugTrace::ForDuration, TraceHitResultArray, true, TraceColour, TraceHitColour, TraceDrawTime);
+
+		if (Hit) {
+			for (int i = 0; i < TraceHitResultArray.Num(); i++) {
+				if (TraceHitResultArray[i].Actor->GetClass() == this->GetClass() && TraceHitResultArray[i].Actor != this) {
+					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResultArray[i].Actor));
+				}
+			}
+		}
+	}
+	// Four-Way Cross Trace
+	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
+		for (int i = 0; i < CurrentSelectedAttack.BaseRange; i++) {
+			// North
+			TraceStartLocation = FVector(GetActorLocation().X + (200 * i), GetActorLocation().Y, 100.f);
+			TraceEndLocation = FVector(TraceStartLocation.X, TraceStartLocation.Y, 0.f);
+
+			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
+			//DrawDebugBox(GetWorld(), TraceEndLocation, FVector(5.f, 5.f, 100.f) / 1.5f, FColor::Green, false, TraceDrawTime);
+
+			if (Hit) {
+				if (TraceHitResult.Actor->IsValidLowLevel())
+					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
+						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
+			}
+
+			// South
+			TraceStartLocation = FVector(GetActorLocation().X - (200 * i), GetActorLocation().Y, 100.f);
+			TraceEndLocation = FVector(TraceStartLocation.X, TraceStartLocation.Y, 0.f);
+
+			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
+			//DrawDebugBox(GetWorld(), TraceEndLocation, FVector(5.f, 5.f, 100.f) / 1.5f, FColor::Green, false, TraceDrawTime);
+
+			if (Hit) {
+				if (TraceHitResult.Actor->IsValidLowLevel())
+					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
+						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
+			}
+
+			// East
+			TraceStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y - (200 * i), 100.f);
+			TraceEndLocation = FVector(TraceStartLocation.X, TraceStartLocation.Y, 0.f);
+
+			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
+			//DrawDebugBox(GetWorld(), TraceEndLocation, FVector(5.f, 5.f, 100.f) / 1.5f, FColor::Green, false, TraceDrawTime);
+
+			if (Hit) {
+				if (TraceHitResult.Actor->IsValidLowLevel())
+					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
+						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
+			}
+
+			// West
+			TraceStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y + (200 * i), 100.f);
+			TraceEndLocation = FVector(TraceStartLocation.X, TraceStartLocation.Y, 0.f);
+
+			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
+			//DrawDebugBox(GetWorld(), TraceEndLocation, FVector(5.f, 5.f, 100.f) / 1.5f, FColor::Green, false, TraceDrawTime);
+
+			if (Hit) {
+				if (TraceHitResult.Actor->IsValidLowLevel())
+					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
+						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
+			}
+		}
+	}
 
 	//// X-Directional Attack
 	//for (int i = 1; i < CurrentSelectedAttack.BaseRange + 1; i++) {
@@ -270,14 +334,6 @@ void ACharacter_Pathfinder::ShowAttackRange()
 	//		FVector(TraceSphereEndLocation.X + (200 * i), TraceSphereEndLocation.Y, TraceSphereEndLocation.Z), TraceSphereRadius, CapsuleHalfHeight, UEngineTypes::ConvertToTraceType(ECC_Pawn), 
 	//		TraceComplex, TraceActorsToIgnore, EDrawDebugTrace::ForDuration, TraceHitResultArray, TraceIgnoreSelf, TraceColour, TraceHitColour, TraceDrawTime);
 	//}
-
-	if (Hit) {
-		for (int i = 0; i < TraceHitResultArray.Num(); i++) {
-			if (TraceHitResultArray[i].Actor->GetClass() == this->GetClass() && TraceHitResultArray[i].Actor != this) {
-				ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResultArray[i].Actor));
-			}
-		}
-	}
 
 	for (int i = 0; i < ValidAttackTargetsArray.Num(); i++) {
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Hit Actor: %s"), *ValidAttackTargetsArray[i]->GetName()));
