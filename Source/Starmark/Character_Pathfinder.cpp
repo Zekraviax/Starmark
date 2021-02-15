@@ -122,6 +122,13 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 	FString ContextString;
 	if (AvatarDataTableValue.DataTable->IsValidLowLevel()) {
 		AvatarData = *AvatarDataTableValue.GetRow<FAvatar_Struct>(ContextString);
+
+		// Get Attacks
+		for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
+			if (i < 4) {
+				AllKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
+			}
+		}
 	}
 
 	// Create Avatar Battle Data WidgetComponent

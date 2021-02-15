@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 
 #include "Components/TextBlock.h"
+#include "Components/UniformGridPanel.h"
 
 #include "Widget_HUD_Battle.generated.h"
 
@@ -18,22 +19,29 @@ class STARMARK_API UWidget_HUD_Battle : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	// Variables
-	// --------------------------------------------------
+// Variables
+// --------------------------------------------------
 
-	// ------------------------- Widget
+// ------------------------- Components
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TurnOrderTextBlock;
+
+	UPROPERTY(meta = (BindWidget))
+	UUniformGridPanel* AvatarAttacksBox;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataWidget;
 
-	// ------------------------- References
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
+// ------------------------- References
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	APlayerController_Base* PlayerControllerReference;
 
 // Functions
 // --------------------------------------------------
+
+// ------------------------- Widget
+	UFUNCTION(BlueprintCallable)
+	void UpdateAvatarAttacksComponents();
 
 // ------------------------- Commands
 	UFUNCTION(BlueprintCallable)

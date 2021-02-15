@@ -9,6 +9,9 @@
 
 #include "WidgetComponent_AvatarAttack.generated.h"
 
+// Forward Declarations
+class UWidget_HUD_Battle;
+
 
 UCLASS()
 class STARMARK_API UWidgetComponent_AvatarAttack : public UUserWidget
@@ -26,9 +29,13 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* AttackNameText;
 
-// ------------------------- Avatar
-	UPROPERTY()
+// ------------------------- References
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UWidget_HUD_Battle* BattleHUDReference;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FAvatar_AttackStruct BoundAttack;
+
 
 // Functions
 // --------------------------------------------------
@@ -39,5 +46,4 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnButtonPressed();
-
 };
