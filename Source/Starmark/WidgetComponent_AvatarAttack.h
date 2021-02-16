@@ -10,7 +10,8 @@
 #include "WidgetComponent_AvatarAttack.generated.h"
 
 // Forward Declarations
-class UWidget_HUD_Battle;
+class ACharacter_Pathfinder;
+class APlayerController_Base;
 
 
 UCLASS()
@@ -30,19 +31,25 @@ public:
 	UTextBlock* AttackNameText;
 
 // ------------------------- References
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UWidget_HUD_Battle* BattleHUDReference;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//UWidget_HUD_Battle* BattleHUDReference;
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//FAvatar_AttackStruct BoundAttack;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FAvatar_AttackStruct BoundAttack;
+	APlayerController_Base* PlayerControllerReference;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int AvatarAttackIndex;
 
 
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Widget
-	UFUNCTION()
-	void OnWidgetBegin();
+	//UFUNCTION()
+	//void OnWidgetBegin();
 
 	UFUNCTION(BlueprintCallable)
 	void OnButtonPressed();

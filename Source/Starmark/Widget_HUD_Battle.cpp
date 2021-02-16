@@ -16,6 +16,10 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 	for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
 		if (PlayerControllerReference->CurrentSelectedAvatar->AllKnownAttacks.IsValidIndex(i)) {
 			Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AttackNameText->SetText(FText::FromString(PlayerControllerReference->CurrentSelectedAvatar->AllKnownAttacks[i].Name));
+
+			Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->PlayerControllerReference = PlayerControllerReference;
+			Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AvatarAttackIndex = i;
+
 			AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Visible);
 		}
 		else {
@@ -49,11 +53,6 @@ void UWidget_HUD_Battle::AttackCommand()
 		UpdateAvatarAttacksComponents();
 		AvatarAttacksBox->SetVisibility(ESlateVisibility::Visible);
 	}
-
-	//PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack;
-
-	//// Display Attack Range
-	//PlayerControllerReference->CurrentSelectedAvatar->ShowAttackRange();
 }
 
 
