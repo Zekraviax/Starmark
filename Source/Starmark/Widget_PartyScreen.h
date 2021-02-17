@@ -20,5 +20,7 @@ public:
 // Functions
 // --------------------------------------------------
 
-// ------------------------- 
+// ------------------------- Widget
+	UFUNCTION(BlueprintCallable)
+	void OnWidgetOpened();
 };

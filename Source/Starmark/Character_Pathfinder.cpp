@@ -123,9 +123,17 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 	if (AvatarDataTableValue.DataTable->IsValidLowLevel()) {
 		AvatarData = *AvatarDataTableValue.GetRow<FAvatar_Struct>(ContextString);
 
-		// Get Attacks
+		// Add Simple Attacks First, then Other Attacks
+		if (AvatarData.SimpleAttacks.Num() > 0) {
+			for (int i = 0; i < AvatarData.SimpleAttacks.Num(); i++) {
+				if (i < 2) {
+					AllKnownAttacks.Add(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
+				}
+			}
+		}
+
 		for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
-			if (i < 4) {
+			if (AllKnownAttacks.Num() < 4) {
 				AllKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
 			}
 		}
@@ -394,7 +402,7 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 	FAvatar_UltimateTypeChart* MoveTypeChartRow;
 	FAvatar_UltimateTypeChart* TargetTypeChartRow;
 	FString ContextString, MoveTypeAsString, TargetTypeAsString;
-	float CurrentDamage = CurrentSelectedAttack.BasePower;
+	float CurrentDamage = 1;
 
 	MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CurrentSelectedAttack.Type).ToString();
 	TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
@@ -404,6 +412,12 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 	// Check for type advantage or disadvantage
 	MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
 	TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
+
+	float AD = AvatarData.BaseStats.Attack / Target->AvatarData.BaseStats.Defence;
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Attack / Defence: %f"), AD));
+
+	// Attack Damage Formula
+	CurrentDamage = (FMath::CeilToInt(((AvatarData.BaseStats.Attack / Target->AvatarData.BaseStats.Defence) * CurrentSelectedAttack.BasePower) * 1.3)) + 2;
 
 	// Compare each Move type against the Target type
 	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
@@ -418,7 +432,7 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 	}
 
 	// Subtract Health
-	Target->CurrentHealthPoints -= ((AvatarData.BaseStats.Attack + CurrentDamage) - Target->AvatarData.BaseStats.Defence) + 1;
+	Target->CurrentHealthPoints -= CurrentDamage;
 
 	// Apply move effects after the damage has been dealt
 	for (int i = 0; i < CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {

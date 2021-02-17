@@ -505,7 +505,9 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	// Menu Image(s)
 
 // ------------------------- Other Data Tables
-	// Attacks Learned by Buying with Essence
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other DataTables")
+	TArray<FDataTableRowHandle> SimpleAttacks;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other DataTables")
 	TArray<FDataTableRowHandle> AttacksLearnedByBuyingWithEssence;
 

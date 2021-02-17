@@ -51,5 +51,8 @@ void UWidgetComponent_AvatarBattleData::SetAvatarData()
 
 		float Division = float(LinkedAvatar->CurrentHealthPoints) / float(LinkedAvatar->AvatarData.BaseStats.HealthPoints);
 		HealthBar->SetPercent(Division);
+
+		if (HealthDisplayText->IsValidLowLevel())
+			HealthDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar->CurrentHealthPoints) + " / " + FString::FromInt(LinkedAvatar->AvatarData.BaseStats.HealthPoints)));
 	}
 }

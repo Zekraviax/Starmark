@@ -4,12 +4,6 @@
 
 
 // ------------------------- Widget
-//void UWidgetComponent_AvatarAttack::OnWidgetBegin()
-//{
-//
-//}
-
-
 void UWidgetComponent_AvatarAttack::OnButtonPressed()
 {
 	if (AvatarAttackIndex > -1 && PlayerControllerReference) {

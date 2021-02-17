@@ -23,7 +23,7 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 			AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Visible);
 		}
 		else {
-			AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Collapsed);
+			AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
@@ -39,7 +39,7 @@ void UWidget_HUD_Battle::MoveCommand()
 
 	// Hide Avatar Attacks Box
 	if (AvatarAttacksBox)
-		AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
+		AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
 }
 
 
@@ -64,7 +64,7 @@ void UWidget_HUD_Battle::SwitchCommand()
 	PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToControl;
 
 	if (AvatarAttacksBox)
-		AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
+		AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UWidget_HUD_Battle::EndCommand()
@@ -72,5 +72,5 @@ void UWidget_HUD_Battle::EndCommand()
 	GetWorld()->GetGameState<AStarmark_GameState>()->AvatarEndTurn();
 
 	if (AvatarAttacksBox)
-		AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
+		AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
 }

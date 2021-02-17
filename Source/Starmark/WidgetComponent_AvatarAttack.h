@@ -31,12 +31,6 @@ public:
 	UTextBlock* AttackNameText;
 
 // ------------------------- References
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	//UWidget_HUD_Battle* BattleHUDReference;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	//FAvatar_AttackStruct BoundAttack;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	APlayerController_Base* PlayerControllerReference;
 
@@ -48,9 +42,6 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Widget
-	//UFUNCTION()
-	//void OnWidgetBegin();
-
 	UFUNCTION(BlueprintCallable)
 	void OnButtonPressed();
 };
