@@ -402,22 +402,24 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 	FAvatar_UltimateTypeChart* MoveTypeChartRow;
 	FAvatar_UltimateTypeChart* TargetTypeChartRow;
 	FString ContextString, MoveTypeAsString, TargetTypeAsString;
-	float CurrentDamage = 1;
+	int CurrentDamage = 1;
 
 	MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CurrentSelectedAttack.Type).ToString();
 	TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
-
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Launch Attack")));
 
 	// Check for type advantage or disadvantage
 	MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
 	TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
 
-	float AD = AvatarData.BaseStats.Attack / Target->AvatarData.BaseStats.Defence;
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Attack / Defence: %f"), AD));
-
 	// Attack Damage Formula
-	CurrentDamage = (FMath::CeilToInt(((AvatarData.BaseStats.Attack / Target->AvatarData.BaseStats.Defence) * CurrentSelectedAttack.BasePower) * 1.3)) + 2;
+	CurrentDamage = FMath::CeilToInt(AvatarData.BaseStats.Attack * CurrentSelectedAttack.BasePower);
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 1 = %d"), CurrentDamage));
+	CurrentDamage = FMath::CeilToInt(CurrentDamage / Target->AvatarData.BaseStats.Defence);
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 2 = %d"), CurrentDamage));
+	CurrentDamage = FMath::CeilToInt((AvatarData.BaseStats.Power / 2) * CurrentDamage);
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 3 = %d"), CurrentDamage));
+	CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 3 = %d"), CurrentDamage));
 
 	// Compare each Move type against the Target type
 	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
@@ -431,6 +433,7 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 		}
 	}
 
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage Final = %d"), CurrentDamage));
 	// Subtract Health
 	Target->CurrentHealthPoints -= CurrentDamage;
 
