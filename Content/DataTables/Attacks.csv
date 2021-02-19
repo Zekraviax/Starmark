@@ -1,4 +1,4 @@
----,Name,Type,BasePower,BaseRange,AttackPattern,AttackEffectsOnTarget
-Punch,"Punch","E_Fire","3","1","Circle",""
-Kick,"Kick","E_Earth","2","2","Circle",""
-MagicShock,"MagicShock","E_Arcane","1","1","EightWayCross","(AddParalyzeStatus)"
+---,Name,Type,BasePower,BaseRange,ManaCost,AttackPattern,AttackEffectsOnTarget
+MagicShock,"Magic Shock","E_Arcane","10","1","25","Circle","(AddParalyzeStatus)"
+FlameJet,"Flame Jet","E_Fire","60","5","30","EightWayCross",""
+BigSlappy,"BigSlappy","E_Balance","100","2","75","FourWayCross",""

@@ -54,5 +54,8 @@ void UWidgetComponent_AvatarBattleData::SetAvatarData()
 
 		if (HealthDisplayText->IsValidLowLevel())
 			HealthDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar->CurrentHealthPoints) + " / " + FString::FromInt(LinkedAvatar->AvatarData.BaseStats.HealthPoints)));
+
+		if (ManaDisplayText->IsValidLowLevel())
+			ManaDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar->CurrentManaPoints) + " / " + FString::FromInt(LinkedAvatar->AvatarData.BaseStats.ManaPoints)));
 	}
 }

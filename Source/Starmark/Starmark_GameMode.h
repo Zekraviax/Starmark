@@ -433,6 +433,9 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int BaseRange;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int ManaCost;
+
 	// Attack Pattern
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EBattle_AttackPatterns AttackPattern;
@@ -449,6 +452,7 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 		Type = EAvatar_Types::E_Air;
 		BasePower = 1;
 		BaseRange = 1;
+		ManaCost = 1;
 		AttackPattern = EBattle_AttackPatterns::Circle;
 	}
 };

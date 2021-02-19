@@ -139,6 +139,11 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 		}
 	}
 
+	CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
+	CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
+	CurrentTileMoves = AvatarData.MaximumTileMoves;
+	CurrentSelectedAttack = *AvatarData.AttacksLearnedByBuyingWithEssence[0].GetRow<FAvatar_AttackStruct>(ContextString);
+
 	// Create Avatar Battle Data WidgetComponent
 	if (AvatarBattleDataComponent_Class) {
 		AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
@@ -152,8 +157,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 		}
 	}
 
-	CurrentSelectedAttack = *AvatarData.AttacksLearnedByBuyingWithEssence[0].GetRow<FAvatar_AttackStruct>(ContextString);
-
 	// Randomize Stats
 	//AvatarData.BaseStats.HealthPoints = FMath::RandRange(50, 150);
 	//AvatarData.BaseStats.ManaPoints = FMath::RandRange(25, 75);
@@ -163,10 +166,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 	//AvatarData.BaseStats.Evade = FMath::RandRange(5, 15);
 	//AvatarData.BaseStats.Power = FMath::RandRange(5, 15);
 	//AvatarData.MaximumTileMoves = FMath::RandRange(3, 7);
-
-	CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
-	CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
-	CurrentTileMoves = AvatarData.MaximumTileMoves;
 }
 
 
@@ -406,6 +405,14 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 
 	MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CurrentSelectedAttack.Type).ToString();
 	TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
+
+	// Check for mana
+	if (CurrentManaPoints >= CurrentSelectedAttack.ManaCost) {
+		CurrentManaPoints -= CurrentSelectedAttack.ManaCost;
+	}
+	else {
+		return;
+	}
 
 	// Check for type advantage or disadvantage
 	MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);

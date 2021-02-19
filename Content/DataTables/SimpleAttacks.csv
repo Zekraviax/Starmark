@@ -1,0 +1,3 @@
+---,Name,Type,BasePower,BaseRange,ManaCost,AttackPattern,AttackEffectsOnTarget
+Punch,"Punch","E_Fire","10","1","0","Circle",""
+Kick,"Kick","E_Earth","10","1","0","Circle",""

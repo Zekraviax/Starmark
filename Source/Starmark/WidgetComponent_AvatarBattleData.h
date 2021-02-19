@@ -54,6 +54,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* HealthDisplayText;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* ManaDisplayText;
+
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ACharacter_Pathfinder* LinkedAvatar;
