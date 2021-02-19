@@ -53,6 +53,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	FVector CursorLocationSnappedToGrid;
 
+// ------------------------- Player
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
+	TArray<FAvatar_Struct> PlayerParty;
+
 // Functions
 // --------------------------------------------------
 

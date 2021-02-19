@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Widget_PartyScreen.generated.h"
+#include "Widget_PartyCreate.generated.h"
 
 
 UCLASS()
-class STARMARK_API UWidget_PartyScreen : public UUserWidget
+class STARMARK_API UWidget_PartyCreate : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -15,15 +15,11 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
-	
+
 
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Widget
-	UFUNCTION(BlueprintCallable)
-	void OnWidgetOpened();
-
-	UFUNCTION(BlueprintCallable)
-	void OnPauseButtonPressed();
+	
 };

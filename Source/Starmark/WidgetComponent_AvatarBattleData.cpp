@@ -16,11 +16,15 @@ void UWidgetComponent_AvatarBattleData::NativeTick(const FGeometry & MyGeometry,
 	Super::NativeTick(MyGeometry, DeltaTime);
 
 	if (LinkedAvatar) {
-		float Division = float(LinkedAvatar->CurrentHealthPoints) / float(LinkedAvatar->AvatarData.BaseStats.HealthPoints);
-		float HealthPercentValue = FMath::FInterpTo(HealthBar->Percent, Division, DeltaTime, 4.f);
-		HealthBar->SetPercent(HealthPercentValue);
+		// Interpolate Health and Mana bar values
+		HealthBar->SetPercent(FMath::FInterpTo(HealthBar->Percent, (float(LinkedAvatar->CurrentHealthPoints) / float(LinkedAvatar->AvatarData.BaseStats.HealthPoints)), DeltaTime, 4.f));
+		ManaBar->SetPercent(FMath::FInterpTo(ManaBar->Percent, (float(LinkedAvatar->CurrentManaPoints) / float(LinkedAvatar->AvatarData.BaseStats.ManaPoints)), DeltaTime, 4.f));
 
-		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Current Health: %d  /  Max Health: %d  /  Health Percent: %s"), LinkedAvatar->CurrentHealthPoints, LinkedAvatar->AvatarData.BaseStats.HealthPoints, *FString::SanitizeFloat(Division, 4)));
+		// Interpolate Health and Mana text values
+		HealthDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(FMath::FInterpTo(FCString::Atof(*HealthDisplayText->GetText().ToString()), float(LinkedAvatar->CurrentHealthPoints), DeltaTime, 5.f))) + 
+			" / " + FString::FromInt(LinkedAvatar->AvatarData.BaseStats.HealthPoints)));
+		ManaDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(FMath::FInterpTo(FCString::Atof(*ManaDisplayText->GetText().ToString()), float(LinkedAvatar->CurrentManaPoints), DeltaTime, 5.f))) +
+			" / " + FString::FromInt(LinkedAvatar->AvatarData.BaseStats.ManaPoints)));
 	}
 }
 
