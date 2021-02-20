@@ -39,11 +39,8 @@ void APlayerController_Base::SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* 
 
 			CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
 			CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
-			//CurrentSelectedAvatar->ActorSelected->SetWorldLocation(FVector(CurrentSelectedAvatar->GetActorLocation().X, CurrentSelectedAvatar->GetActorLocation().Y, 1.f));
 
 			CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
-
-			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("Found Actor"));
 			break;
 		}
 	}

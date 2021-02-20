@@ -82,13 +82,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	int CurrentLevel;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = "Avatar")
 	int CurrentHealthPoints;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = "Avatar")
 	int CurrentManaPoints;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = "Avatar")
 	int CurrentTileMoves;
 
 // ------------------------- Battle
@@ -109,6 +109,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
 	TArray<FAvatar_StatusEffect> CurrentStatusEffectsArray;
+
+// ------------------------- AI
+	
 
 // ------------------------- Other
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Other")

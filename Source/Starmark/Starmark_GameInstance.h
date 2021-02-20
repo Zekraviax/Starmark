@@ -7,9 +7,6 @@
 
 #include "Starmark_GameInstance.generated.h"
 
-// Forward Declarations
-//class AStarmark_GameMode;
-
 
 UCLASS()
 class STARMARK_API UStarmark_GameInstance : public UGameInstance
@@ -17,10 +14,17 @@ class STARMARK_API UStarmark_GameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
-// Base Variables
+// Variables
 // --------------------------------------------------
 
 // ------------------------- Player
 	UPROPERTY()
 	FPlayer_Data PlayerData;
+
+// Functions
+// --------------------------------------------------
+
+// ------------------------- Multi-player
+	UFUNCTION(BlueprintImplementableEvent)
+	void BeginHostingGame();
 };

@@ -85,9 +85,6 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 
 	// Battle Testing
 	CurrentLevel = 1;
-	//CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
-	//CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
-	//CurrentTileMoves = 2;
 }
 
 
@@ -113,7 +110,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 
 	// Snap Actor to Grid
 	// The Z Value needs to be retained or else the character will probably clip through the floor
-	//FVector OriginalActorLocation = GetActorLocation();
 	FVector ActorLocationSnappedToGrid = GetActorLocation().GridSnap(200.f);
 	ActorLocationSnappedToGrid.Z = GetActorLocation().Z;
 	SetActorLocation(ActorLocationSnappedToGrid);
@@ -156,16 +152,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 			AvatarBattleData_Component->DestroyComponent();
 		}
 	}
-
-	// Randomize Stats
-	//AvatarData.BaseStats.HealthPoints = FMath::RandRange(50, 150);
-	//AvatarData.BaseStats.ManaPoints = FMath::RandRange(25, 75);
-	//AvatarData.BaseStats.Attack = FMath::RandRange(5, 15);
-	//AvatarData.BaseStats.Defence = FMath::RandRange(5, 15);
-	//AvatarData.BaseStats.Speed = FMath::RandRange(5, 15);
-	//AvatarData.BaseStats.Evade = FMath::RandRange(5, 15);
-	//AvatarData.BaseStats.Power = FMath::RandRange(5, 15);
-	//AvatarData.MaximumTileMoves = FMath::RandRange(3, 7);
 }
 
 
@@ -177,7 +163,6 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 
 	if (ActorSelected && ActorSelected_DynamicMaterial) {
 		// When the player hovers over an actor they aren't controlling
-
 		if (PlayerControllerReference->CurrentSelectedAvatar != this) {
 
 			// Switch colours based on player's click command
@@ -187,13 +172,13 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 			//	ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Blue);
 			//	break;
 			case (E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack):
-				ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+				CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
 				break;
 			case (E_PlayerCharacter_ClickModes::E_SelectCharacterToControl):
-				ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Yellow);
+				CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Yellow);
 				break;
 			default:
-				ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+				CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
 				break;
 			}
 
@@ -228,8 +213,8 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 	if (!PlayerControllerReference)
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
-	if (ActorSelected && ActorSelected_DynamicMaterial) {
-		ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+	if (ActorSelected && CursorToWorld_DynamicMaterial) {
+		CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
 		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
 		ActorSelected->SetVisibility(true);
 		CursorToWorld->SetVisibility(true);
