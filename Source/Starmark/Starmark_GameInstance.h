@@ -25,6 +25,6 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Multi-player
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void BeginHostingGame();
+	//UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	//void BeginHostingGame();
 };

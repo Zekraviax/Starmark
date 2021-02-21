@@ -85,6 +85,9 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 
 	// Battle Testing
 	CurrentLevel = 1;
+
+	// Multiplayer
+	bReplicates = true;
 }
 
 
@@ -138,7 +141,9 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 	CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
 	CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
 	CurrentTileMoves = AvatarData.MaximumTileMoves;
-	CurrentSelectedAttack = *AvatarData.AttacksLearnedByBuyingWithEssence[0].GetRow<FAvatar_AttackStruct>(ContextString);
+
+	if (AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0)
+		CurrentSelectedAttack = *AvatarData.AttacksLearnedByBuyingWithEssence[0].GetRow<FAvatar_AttackStruct>(ContextString);
 
 	// Create Avatar Battle Data WidgetComponent
 	if (AvatarBattleDataComponent_Class) {

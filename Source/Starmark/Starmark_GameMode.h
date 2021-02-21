@@ -794,5 +794,10 @@ UCLASS()
 class STARMARK_API AStarmark_GameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public:
+// Functions
+// --------------------------------------------------
+
+// ------------------------- Base	
 };

@@ -45,30 +45,33 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Controller")
 	E_PlayerCharacter_ClickModes PlayerClickMode;
 
-// ------------------------- Pawn
+// ------------------------- Avatar
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Pawn")
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
-
-// ------------------------- Grid
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	FVector CursorLocationSnappedToGrid;
 
 // ------------------------- Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
 	TArray<FAvatar_Struct> PlayerParty;
 
+// ------------------------- Grid
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+	FVector CursorLocationSnappedToGrid;
+
 // Functions
 // --------------------------------------------------
 
-// ------------------------- Base
+// ------------------------- Avatar
 	UFUNCTION(BlueprintCallable)
 	void SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* RandomPawnReference);
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateSelectedAvatar();
 
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	void SpawnPartyMember();
+
 // ------------------------- Mouse
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
 	void OnPrimaryClick(AActor* ClickedActor);
 
 	UFUNCTION()

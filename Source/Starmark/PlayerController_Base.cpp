@@ -28,7 +28,7 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 }
 
 
-// ------------------------- Base
+// ------------------------- Avatar
 void APlayerController_Base::SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* RandomPawnReference)
 {
 	for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
@@ -59,16 +59,33 @@ void APlayerController_Base::UpdateSelectedAvatar()
 			FoundActor->CursorToWorld->SetVisibility(false);
 	}
 
-	CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
-	CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
+	if (CurrentSelectedAvatar->IsValidLowLevel()) {
+		CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
+		CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
 
-	if (CurrentSelectedAvatar->ActorSelected_DynamicMaterial)
-		CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+		if (CurrentSelectedAvatar->ActorSelected_DynamicMaterial)
+			CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+	}
+}
+
+
+void APlayerController_Base::SpawnPartyMember_Implementation()
+{
+	//if (PlayerParty.Num() > 0) {
+		ACharacter_Pathfinder* NewAvatar = GetWorld()->SpawnActor<ACharacter_Pathfinder>(ACharacter_Pathfinder::StaticClass(), FVector::ZeroVector , FRotator::ZeroRotator);
+		NewAvatar->BeginPlayWorkaroundFunction();
+	//}
+}
+
+
+bool APlayerController_Base::SpawnPartyMember_Validate()
+{
+	return true;
 }
 
 
 // ------------------------- Mouse
-void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
+void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("Clicked Actor Class: &s", ClickedActor->GetClass()->GetName()));
 
@@ -90,10 +107,16 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 			// If all else fails, assume we clicked on a plane that we can move our controller Avatar on
 			Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
 		}
-		else {
-			// Do nothing
-		}
+		//else {
+		//	// Do nothing
+		//}
 	}
+}
+
+
+bool APlayerController_Base::OnPrimaryClick_Validate(AActor* ClickedActor)
+{
+	return true;
 }
 
 
