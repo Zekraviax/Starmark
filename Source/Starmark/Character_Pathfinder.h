@@ -5,7 +5,10 @@
 
 #include "Components/DecalComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Engine/SkeletalMesh.h"
 #include "Starmark_GameMode.h"
+#include "Engine.h"
+#include "UnrealNetwork.h"
 
 #include "Character_Pathfinder.generated.h"
 
@@ -69,6 +72,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataComponent_Reference;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	USkeletalMesh* SkeletalMeshReference;
+	//TSubclassOf<USkeletalMesh> SkeletalMeshReference;
+
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	FDataTableRowHandle AvatarDataTableValue;
@@ -114,7 +121,7 @@ public:
 	
 
 // ------------------------- Other
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Other")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
 	APlayerController_Base* PlayerControllerReference;
 
 // Functions

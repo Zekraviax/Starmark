@@ -67,7 +67,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateSelectedAvatar();
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, WithValidation)
 	void SpawnPartyMember();
 
 // ------------------------- Mouse

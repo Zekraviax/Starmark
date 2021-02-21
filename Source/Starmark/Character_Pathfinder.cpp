@@ -87,8 +87,21 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	CurrentLevel = 1;
 
 	// Multiplayer
-	bReplicates = true;
+	bReplicates = true; 
+	bReplicateMovement = true; 
+	//bReplicateInstigator = true; 
+	bNetUseOwnerRelevancy = true;
 }
+
+
+//void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const 
+//{
+//	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
+//
+//	DOREPLIFETIME(ACharacter_Pathfinder, CurrentHealthPoints);
+//	//DOREPLIFETIME(AUnrealShmupCharacter, IsDead); 
+//}
+
 
 
 void ACharacter_Pathfinder::Tick(float DeltaSeconds)
@@ -157,6 +170,11 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 			AvatarBattleData_Component->DestroyComponent();
 		}
 	}
+
+	// Set Skeletal Mesh
+	//if (SkeletalMeshReference && Mesh) {
+
+	//}
 }
 
 

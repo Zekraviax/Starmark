@@ -72,7 +72,8 @@ void APlayerController_Base::UpdateSelectedAvatar()
 void APlayerController_Base::SpawnPartyMember_Implementation()
 {
 	//if (PlayerParty.Num() > 0) {
-		ACharacter_Pathfinder* NewAvatar = GetWorld()->SpawnActor<ACharacter_Pathfinder>(ACharacter_Pathfinder::StaticClass(), FVector::ZeroVector , FRotator::ZeroRotator);
+		ACharacter_Pathfinder* NewAvatar = GetWorld()->SpawnActor<ACharacter_Pathfinder>(ACharacter_Pathfinder::StaticClass(), FVector(0.f, 0.f, 91.f) , FRotator::ZeroRotator);
+		CurrentSelectedAvatar = NewAvatar;
 		NewAvatar->BeginPlayWorkaroundFunction();
 	//}
 }
@@ -104,8 +105,10 @@ void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor)
 			}
 		}
 		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") || ClickedActor->GetClass()->GetName().Contains("GridTile") && PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter) {
-			// If all else fails, assume we clicked on a plane that we can move our controller Avatar on
-			Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
+			// If all else fails, assume we clicked on a plane that we can move our controller Avatar to
+			if (CurrentSelectedAvatar->GetController()->IsValidLowLevel()) {
+				Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
+			}
 		}
 		//else {
 		//	// Do nothing
