@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameMode.h"
 
 #include "Engine/DataTable.h"
 
@@ -791,7 +791,7 @@ const struct FHPointyOrientation : FHTileOrientation
 
 
 UCLASS()
-class STARMARK_API AStarmark_GameMode : public AGameModeBase
+class STARMARK_API AStarmark_GameMode : public AGameMode
 {
 	GENERATED_BODY()
 
