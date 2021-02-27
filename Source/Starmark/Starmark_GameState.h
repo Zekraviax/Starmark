@@ -45,7 +45,7 @@ public:
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)
-	void SetTurnOrder(UWidget_HUD_Battle* Battle_HUD);
+	void SetTurnOrder(TArray<APlayerController_Base*> PlayerControllers);
 
 	UFUNCTION(BlueprintCallable)
 	void AvatarEndTurn();

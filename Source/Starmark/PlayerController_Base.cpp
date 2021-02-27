@@ -5,6 +5,9 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/World.h"
+#include "Widget_HUD_Battle.h"
+#include "WidgetComponent_AvatarBattleData.h"
+#include "Starmark_GameState.h"
 
 
 APlayerController_Base::APlayerController_Base()
@@ -25,6 +28,20 @@ void APlayerController_Base::SetupInputComponent()
 void APlayerController_Base::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+}
+
+
+// ------------------------- Widgets
+void APlayerController_Base::UpdateBattleWidget(UWidget_HUD_Battle* BattleHUDReference)
+{
+	BattleHUDReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar;
+	BattleHUDReference->AvatarBattleDataWidget->SetAvatarData();
+	//AvatarTurnOrder.Num()
+	AStarmark_GameState* GameStateRef = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+
+	for (int i = 0; i < GameStateRef->AvatarTurnOrder.Num(); i++) {
+		BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + GameStateRef->AvatarTurnOrder[i]->AvatarData.AvatarName));
+	}
 }
 
 

@@ -9,6 +9,7 @@
 #include "PlayerController_Base.generated.h"
 
 // Forward Declarations
+class UWidget_HUD_Battle;
 //class ACharacter_Pathfinder;
 
 // Unique Enums
@@ -45,6 +46,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Controller")
 	E_PlayerCharacter_ClickModes PlayerClickMode;
 
+// ------------------------- Widgets
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	//UWidget_HUD_Battle* BattleHUDReference;
+
 // ------------------------- Avatar
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Pawn")
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
@@ -59,6 +64,10 @@ public:
 
 // Functions
 // --------------------------------------------------
+
+// ------------------------- Widgets
+	UFUNCTION(BlueprintCallable)
+	void UpdateBattleWidget(UWidget_HUD_Battle* BattleHUDReference);
 
 // ------------------------- Avatar
 	UFUNCTION(BlueprintCallable)
