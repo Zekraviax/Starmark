@@ -80,7 +80,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	FDataTableRowHandle AvatarDataTableValue;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Avatar")
 	FAvatar_Struct AvatarData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
@@ -128,7 +128,7 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Base
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Client, Unreliable)
 	void BeginPlayWorkaroundFunction();
 
 // ------------------------- Cursor

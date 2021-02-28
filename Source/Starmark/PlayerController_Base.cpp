@@ -18,6 +18,16 @@ APlayerController_Base::APlayerController_Base()
 }
 
 
+void APlayerController_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
+
+	DOREPLIFETIME(APlayerController_Base, CurrentSelectedAvatar);
+	DOREPLIFETIME(APlayerController_Base, BattleHUDCodeReference);
+	DOREPLIFETIME(APlayerController_Base, PlayerParty);
+}
+
+
 void APlayerController_Base::SetupInputComponent()
 {
 	// set up gameplay key bindings
@@ -39,8 +49,10 @@ void APlayerController_Base::UpdateBattleWidget(UWidget_HUD_Battle* BattleHUDRef
 	//AvatarTurnOrder.Num()
 	AStarmark_GameState* GameStateRef = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
-	for (int i = 0; i < GameStateRef->AvatarTurnOrder.Num(); i++) {
-		BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + GameStateRef->AvatarTurnOrder[i]->AvatarData.AvatarName));
+	if (GameStateRef) {
+		for (int i = 0; i < GameStateRef->AvatarTurnOrder.Num(); i++) {
+			BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + GameStateRef->AvatarTurnOrder[i]->AvatarData.AvatarName));
+		}
 	}
 }
 
@@ -66,6 +78,8 @@ void APlayerController_Base::SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* 
 
 void APlayerController_Base::UpdateSelectedAvatar()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("PlayerController UpdateSelectedAvatar"));
+
 	for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
 		ACharacter_Pathfinder* FoundActor = *Itr;
 
@@ -105,8 +119,6 @@ bool APlayerController_Base::SpawnPartyMember_Validate()
 // ------------------------- Mouse
 void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ("Clicked Actor Class: &s", ClickedActor->GetClass()->GetName()));
-
 	if (ClickedActor) {
 		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
 			// Select Avatar To Control
@@ -123,13 +135,12 @@ void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor)
 		}
 		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") || ClickedActor->GetClass()->GetName().Contains("GridTile") && PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter) {
 			// If all else fails, assume we clicked on a plane that we can move our controller Avatar to
-			if (CurrentSelectedAvatar->GetController()->IsValidLowLevel()) {
-				Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
+			if (CurrentSelectedAvatar) {
+				if (CurrentSelectedAvatar->GetController()->IsValidLowLevel()) {
+					Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
+				}
 			}
 		}
-		//else {
-		//	// Do nothing
-		//}
 	}
 }
 

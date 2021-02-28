@@ -5,6 +5,8 @@
 
 #include "Actor_CharacterTest.h"
 #include "Character_Pathfinder.h"
+#include "Engine.h"
+#include "UnrealNetwork.h"
 
 #include "PlayerController_Base.generated.h"
 
@@ -47,15 +49,15 @@ public:
 	E_PlayerCharacter_ClickModes PlayerClickMode;
 
 // ------------------------- Widgets
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
-	//UWidget_HUD_Battle* BattleHUDReference;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Widgets")
+	UWidget_HUD_Battle* BattleHUDCodeReference;
 
 // ------------------------- Avatar
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Pawn")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category = "Pawn")
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
 
 // ------------------------- Player
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	TArray<FAvatar_Struct> PlayerParty;
 
 // ------------------------- Grid

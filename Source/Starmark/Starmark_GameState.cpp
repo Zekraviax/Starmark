@@ -36,22 +36,22 @@ void AStarmark_GameState::SetTurnOrder(TArray<APlayerController_Base*> PlayerCon
 	CurrentAvatarTurnIndex = 0;
 
 	// Set Player's Avatar to the first in the list
-	for (int i = 0; i < PlayerControllers.Num(); i++) {
-		// Update All Avatar's Decals
-		PlayerControllers[i]->UpdateSelectedAvatar();
+	//for (int i = 0; i < PlayerControllers.Num(); i++) {
+	//	// Update All Avatar's Decals
+	//	PlayerControllers[i]->UpdateSelectedAvatar();
 
-		// Update the Player's HUD
-		//if (PlayerControllers[i]->BattleHUDReference) {
-		//	//BattleHUD_Reference = PlayerControllers[i]->BattleHUDReference;
+	//	// Update the Player's HUD
+	//	//if (PlayerControllers[i]->BattleHUDReference) {
+	//	//	//BattleHUD_Reference = PlayerControllers[i]->BattleHUDReference;
 
-		//	PlayerControllers[i]->BattleHUDReference->AvatarBattleDataWidget->LinkedAvatar = PlayerControllers[i]->CurrentSelectedAvatar;
-		//	PlayerControllers[i]->BattleHUDReference->AvatarBattleDataWidget->SetAvatarData();
-		//	//PlayerControllers[i]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(FString::FromInt(AvatarTurnOrder.Num())));
-		//}
-		//else {
-		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Battle HUD Reference Not Valid")));
-		//}
-	}
+	//	//	PlayerControllers[i]->BattleHUDReference->AvatarBattleDataWidget->LinkedAvatar = PlayerControllers[i]->CurrentSelectedAvatar;
+	//	//	PlayerControllers[i]->BattleHUDReference->AvatarBattleDataWidget->SetAvatarData();
+	//	//	//PlayerControllers[i]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(FString::FromInt(AvatarTurnOrder.Num())));
+	//	//}
+	//	//else {
+	//	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Battle HUD Reference Not Valid")));
+	//	//}
+	//}
 
 	//for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
 	//	for (int j = 0; j < PlayerControllers.Num(); j++) {

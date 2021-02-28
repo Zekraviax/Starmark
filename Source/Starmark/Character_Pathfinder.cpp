@@ -94,13 +94,12 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 }
 
 
-//void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const 
-//{
-//	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
-//
-//	DOREPLIFETIME(ACharacter_Pathfinder, CurrentHealthPoints);
-//	//DOREPLIFETIME(AUnrealShmupCharacter, IsDead); 
-//}
+void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const 
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
+
+	DOREPLIFETIME(ACharacter_Pathfinder, AvatarData);
+}
 
 
 
@@ -112,8 +111,10 @@ void ACharacter_Pathfinder::Tick(float DeltaSeconds)
 
 
 // ------------------------- Base
-void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
+void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("BeginPlayWorkaround: %s"), *AvatarData.AvatarName));
+
 	CursorToWorld_DynamicMaterial = UMaterialInstanceDynamic::Create(CursorToWorld->GetMaterial(0), this);
 	CursorToWorld->SetMaterial(0, CursorToWorld_DynamicMaterial);
 
@@ -132,22 +133,23 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 
 	// Set Individual Avatar's Data
 	FString ContextString;
-	if (AvatarDataTableValue.DataTable->IsValidLowLevel()) {
-		AvatarData = *AvatarDataTableValue.GetRow<FAvatar_Struct>(ContextString);
 
-		// Add Simple Attacks First, then Other Attacks
-		if (AvatarData.SimpleAttacks.Num() > 0) {
-			for (int i = 0; i < AvatarData.SimpleAttacks.Num(); i++) {
-				if (i < 2) {
-					AllKnownAttacks.Add(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
-				}
+	//if (AvatarData.AvatarName == "Default") {
+	//	AvatarData = *AvatarDataTableValue.GetRow<FAvatar_Struct>(ContextString);
+	//}
+
+	// Add Simple Attacks First, then Other Attacks
+	if (AvatarData.SimpleAttacks.Num() > 0) {
+		for (int i = 0; i < AvatarData.SimpleAttacks.Num(); i++) {
+			if (i < 2) {
+				AllKnownAttacks.Add(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
 			}
 		}
+	}
 
-		for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
-			if (AllKnownAttacks.Num() < 4) {
-				AllKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
-			}
+	for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
+		if (AllKnownAttacks.Num() < 4) {
+			AllKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
 		}
 	}
 
@@ -166,10 +168,15 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction()
 			AvatarBattleDataComponent_Reference->LinkedAvatar = this;
 			AvatarBattleDataComponent_Reference->SetAvatarData();
 			AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
-		} else {
+		}
+		else {
 			AvatarBattleData_Component->DestroyComponent();
 		}
 	}
+
+	//if (PlayerControllerReference->BattleHUDWidget) {
+
+	//}
 
 	// Set Skeletal Mesh
 	//if (SkeletalMeshReference && Mesh) {

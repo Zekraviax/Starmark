@@ -33,7 +33,7 @@ public:
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataWidget;
 
 // ------------------------- References
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlayerController_Base* PlayerControllerReference;
 
 // Functions
