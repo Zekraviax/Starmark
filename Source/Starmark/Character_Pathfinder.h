@@ -121,15 +121,15 @@ public:
 	
 
 // ------------------------- Other
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Other")
 	APlayerController_Base* PlayerControllerReference;
 
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Base
-	UFUNCTION(BlueprintCallable, Client, Unreliable)
-	void BeginPlayWorkaroundFunction();
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void BeginPlayWorkaroundFunction(FAvatar_Struct NewAvatarData, UWidget_HUD_Battle* BattleHUDReference = nullptr);
 
 // ------------------------- Cursor
 	UFUNCTION(BlueprintCallable)

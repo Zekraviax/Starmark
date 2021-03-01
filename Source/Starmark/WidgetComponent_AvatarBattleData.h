@@ -5,6 +5,7 @@
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Starmark_GameMode.h"
 
 #include "WidgetComponent_AvatarBattleData.generated.h"
 
@@ -59,12 +60,12 @@ public:
 
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ACharacter_Pathfinder* LinkedAvatar;
+	FAvatar_Struct LinkedAvatar;
 
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Avatar
-	UFUNCTION()
-	void SetAvatarData();
+	UFUNCTION(BlueprintCallable)
+	void UpdateAvatarData(FAvatar_Struct NewLinkedAvatar);
 };

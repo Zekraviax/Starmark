@@ -44,14 +44,19 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 // ------------------------- Widgets
 void APlayerController_Base::UpdateBattleWidget(UWidget_HUD_Battle* BattleHUDReference)
 {
-	BattleHUDReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar;
-	BattleHUDReference->AvatarBattleDataWidget->SetAvatarData();
-	//AvatarTurnOrder.Num()
-	AStarmark_GameState* GameStateRef = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+	if (BattleHUDReference->IsValidLowLevel()) {
+		BattleHUDCodeReference = BattleHUDReference;
+	}
 
-	if (GameStateRef) {
-		for (int i = 0; i < GameStateRef->AvatarTurnOrder.Num(); i++) {
-			BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + GameStateRef->AvatarTurnOrder[i]->AvatarData.AvatarName));
+	if (BattleHUDReference->IsValidLowLevel() && CurrentSelectedAvatar) {
+		BattleHUDReference->AvatarBattleDataWidget->UpdateAvatarData(PlayerParty[0]);
+
+		AStarmark_GameState* GameStateRef = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+
+		if (GameStateRef) {
+			for (int i = 0; i < GameStateRef->AvatarTurnOrder.Num(); i++) {
+				BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + GameStateRef->AvatarTurnOrder[i]->AvatarData.AvatarName));
+			}
 		}
 	}
 }
@@ -105,7 +110,7 @@ void APlayerController_Base::SpawnPartyMember_Implementation()
 	//if (PlayerParty.Num() > 0) {
 		ACharacter_Pathfinder* NewAvatar = GetWorld()->SpawnActor<ACharacter_Pathfinder>(ACharacter_Pathfinder::StaticClass(), FVector(0.f, 0.f, 91.f) , FRotator::ZeroRotator);
 		CurrentSelectedAvatar = NewAvatar;
-		NewAvatar->BeginPlayWorkaroundFunction();
+		//NewAvatar->BeginPlayWorkaroundFunction();
 	//}
 }
 

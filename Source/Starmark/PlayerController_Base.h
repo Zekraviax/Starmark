@@ -45,7 +45,7 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Controller
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Controller")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller")
 	E_PlayerCharacter_ClickModes PlayerClickMode;
 
 // ------------------------- Widgets
@@ -53,7 +53,7 @@ public:
 	UWidget_HUD_Battle* BattleHUDCodeReference;
 
 // ------------------------- Avatar
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category = "Pawn")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Pawn")
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
 
 // ------------------------- Player

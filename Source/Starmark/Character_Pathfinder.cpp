@@ -15,6 +15,7 @@
 #include "DrawDebugHelpers.h"
 #include "Actor_GridTile.h"
 #include "PlayerController_Base.h"
+#include "Widget_HUD_Battle.h"
 #include "WidgetComponent_AvatarBattleData.h"
 #include "AttackEffects_FunctionLibrary.h"
 #include "Starmark_GameState.h"
@@ -99,6 +100,7 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
 
 	DOREPLIFETIME(ACharacter_Pathfinder, AvatarData);
+	DOREPLIFETIME(ACharacter_Pathfinder, PlayerControllerReference);
 }
 
 
@@ -111,9 +113,9 @@ void ACharacter_Pathfinder::Tick(float DeltaSeconds)
 
 
 // ------------------------- Base
-void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation()
+void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_Struct NewAvatarData, UWidget_HUD_Battle* BattleHUDReference)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("BeginPlayWorkaround: %s"), *AvatarData.AvatarName));
+	FString ContextString;
 
 	CursorToWorld_DynamicMaterial = UMaterialInstanceDynamic::Create(CursorToWorld->GetMaterial(0), this);
 	CursorToWorld->SetMaterial(0, CursorToWorld_DynamicMaterial);
@@ -132,8 +134,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation()
 	SetActorLocation(ActorLocationSnappedToGrid);
 
 	// Set Individual Avatar's Data
-	FString ContextString;
-
 	//if (AvatarData.AvatarName == "Default") {
 	//	AvatarData = *AvatarDataTableValue.GetRow<FAvatar_Struct>(ContextString);
 	//}
@@ -165,8 +165,8 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation()
 		AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
 
 		if (AvatarBattleDataComponent_Reference->IsValidLowLevel()) {
-			AvatarBattleDataComponent_Reference->LinkedAvatar = this;
-			AvatarBattleDataComponent_Reference->SetAvatarData();
+			//AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
+			//AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
 			AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else {
@@ -174,8 +174,22 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation()
 		}
 	}
 
-	//if (PlayerControllerReference->BattleHUDWidget) {
+	//if (PlayerControllerReference) {
+	//	//AvatarData = NewAvatarData;
+	//	//PlayerControllerReference->BattleHUDCodeReference->AvatarBattleDataWidget->LinkedAvatar = this;
+	//	PlayerControllerReference->UpdateBattleWidget(BattleHUDReference);
+	//}
+	//else {
+	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("BattleHUDReference Not Valid")));
+	//}
 
+	//if (BattleHUDReference) {
+	//	//AvatarData = NewAvatarData;
+	//	BattleHUDReference->AvatarBattleDataWidget->LinkedAvatar = this;
+	//	//PlayerControllerReference->UpdateBattleWidget(BattleHUDReference);
+	//}
+	//else {
+	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("BattleHUDReference Not Valid")));
 	//}
 
 	// Set Skeletal Mesh

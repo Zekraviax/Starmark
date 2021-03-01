@@ -113,7 +113,7 @@ void AStarmark_GameState::AvatarBeginTurn()
 
 	// Update HUD
 	if (BattleHUD_Reference) {
-		BattleHUD_Reference->AvatarBattleDataWidget->LinkedAvatar = AvatarRef;
-		BattleHUD_Reference->AvatarBattleDataWidget->SetAvatarData();
+		//BattleHUD_Reference->AvatarBattleDataWidget->LinkedAvatar = AvatarRef->AvatarData;
+		//BattleHUD_Reference->AvatarBattleDataWidget->SetAvatarData();
 	}
 }

@@ -15,51 +15,60 @@ void UWidgetComponent_AvatarBattleData::NativeTick(const FGeometry & MyGeometry,
 {
 	Super::NativeTick(MyGeometry, DeltaTime);
 
-	if (LinkedAvatar) {
+	//if (LinkedAvatar) {
 		// Interpolate Health and Mana bar values
-		HealthBar->SetPercent(FMath::FInterpTo(HealthBar->Percent, (float(LinkedAvatar->CurrentHealthPoints) / float(LinkedAvatar->AvatarData.BaseStats.HealthPoints)), DeltaTime, 4.f));
-		ManaBar->SetPercent(FMath::FInterpTo(ManaBar->Percent, (float(LinkedAvatar->CurrentManaPoints) / float(LinkedAvatar->AvatarData.BaseStats.ManaPoints)), DeltaTime, 4.f));
+		HealthBar->SetPercent(FMath::FInterpTo(HealthBar->Percent, (float(LinkedAvatar.BaseStats.HealthPoints) / float(LinkedAvatar.BaseStats.HealthPoints)), DeltaTime, 4.f));
+		ManaBar->SetPercent(FMath::FInterpTo(ManaBar->Percent, (float(LinkedAvatar.BaseStats.ManaPoints) / float(LinkedAvatar.BaseStats.ManaPoints)), DeltaTime, 4.f));
 
 		// Interpolate Health and Mana text values
-		HealthDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(FMath::FInterpTo(FCString::Atof(*HealthDisplayText->GetText().ToString()), float(LinkedAvatar->CurrentHealthPoints), DeltaTime, 5.f))) + 
-			" / " + FString::FromInt(LinkedAvatar->AvatarData.BaseStats.HealthPoints)));
-		ManaDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(FMath::FInterpTo(FCString::Atof(*ManaDisplayText->GetText().ToString()), float(LinkedAvatar->CurrentManaPoints), DeltaTime, 5.f))) +
-			" / " + FString::FromInt(LinkedAvatar->AvatarData.BaseStats.ManaPoints)));
-	}
+		HealthDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(FMath::FInterpTo(FCString::Atof(*HealthDisplayText->GetText().ToString()), float(LinkedAvatar.BaseStats.HealthPoints), DeltaTime, 5.f))) +
+			" / " + FString::FromInt(LinkedAvatar.BaseStats.HealthPoints)));
+		ManaDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(FMath::FInterpTo(FCString::Atof(*ManaDisplayText->GetText().ToString()), float(LinkedAvatar.BaseStats.ManaPoints), DeltaTime, 5.f))) +
+			" / " + FString::FromInt(LinkedAvatar.BaseStats.ManaPoints)));
+	//}
 }
 
 
 // ------------------------- Avatar
-void UWidgetComponent_AvatarBattleData::SetAvatarData()
+void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinkedAvatar)
 {
-	if (LinkedAvatar) {
-		if (NicknameText->GetText().ToString() != LinkedAvatar->AvatarData.Nickname) {
-			if (LinkedAvatar->AvatarData.Nickname != "" && LinkedAvatar->AvatarData.Nickname != LinkedAvatar->AvatarData.AvatarName) {
-				NicknameText->SetText(FText::FromString(LinkedAvatar->AvatarData.Nickname));
+	//if (NewLinkedAvatar) {
+	LinkedAvatar = NewLinkedAvatar;
+	//}
+
+	//if (LinkedAvatar) {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("CurrentSelectedAvatar: %s"), *LinkedAvatar.AvatarName));
+
+		//if (NicknameText->GetText().ToString() != LinkedAvatar.Nickname) {
+			if (LinkedAvatar.Nickname != "" && LinkedAvatar.Nickname != LinkedAvatar.AvatarName) {
+				NicknameText->SetText(FText::FromString(LinkedAvatar.Nickname));
 			} else {
 				NicknameText->SetText(FText::FromString(""));
 			}
-		}
+		//}
 
-		if (LevelText->GetText().ToString() != FString::FromInt(LinkedAvatar->CurrentLevel)) {
-			LevelText->SetText(FText::FromString(FString::FromInt(LinkedAvatar->CurrentLevel)));
-		}
+		//if (LevelText->GetText().ToString() != FString::FromInt(1)) {
+			LevelText->SetText(FText::FromString(FString::FromInt(1)));
+		//}
 
-		if (AvatarText->GetText().ToString() != LinkedAvatar->AvatarData.AvatarName) {
-			AvatarText->SetText(FText::FromString(LinkedAvatar->AvatarData.AvatarName));
-		}
+		//if (AvatarText->GetText().ToString() != LinkedAvatar.AvatarName) {
+			AvatarText->SetText(FText::FromString(LinkedAvatar.AvatarName));
+		//}
 
-		if (TypesText->GetText().ToString() != UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar->AvatarData.PrimaryType).ToString()) {
-			TypesText->SetText(FText::FromString(UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar->AvatarData.PrimaryType).ToString()));
-		}
+		//if (TypesText->GetText().ToString() != UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar.PrimaryType).ToString()) {
+			TypesText->SetText(FText::FromString(UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar.PrimaryType).ToString()));
+		//}
 
-		float Division = float(LinkedAvatar->CurrentHealthPoints) / float(LinkedAvatar->AvatarData.BaseStats.HealthPoints);
+		float Division = float(LinkedAvatar.BaseStats.HealthPoints) / float(LinkedAvatar.BaseStats.HealthPoints);
 		HealthBar->SetPercent(Division);
 
 		if (HealthDisplayText->IsValidLowLevel())
-			HealthDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar->CurrentHealthPoints) + " / " + FString::FromInt(LinkedAvatar->AvatarData.BaseStats.HealthPoints)));
+			HealthDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.BaseStats.HealthPoints) + " / " + FString::FromInt(LinkedAvatar.BaseStats.HealthPoints)));
 
 		if (ManaDisplayText->IsValidLowLevel())
-			ManaDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar->CurrentManaPoints) + " / " + FString::FromInt(LinkedAvatar->AvatarData.BaseStats.ManaPoints)));
-	}
+			ManaDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.BaseStats.ManaPoints) + " / " + FString::FromInt(LinkedAvatar.BaseStats.ManaPoints)));
+	//}
+	//else {
+	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("LinkedAvatar Not Valid")));
+	//}
 }
