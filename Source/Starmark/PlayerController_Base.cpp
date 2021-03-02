@@ -105,20 +105,20 @@ void APlayerController_Base::UpdateSelectedAvatar()
 }
 
 
-void APlayerController_Base::SpawnPartyMember_Implementation()
-{
-	//if (PlayerParty.Num() > 0) {
-		ACharacter_Pathfinder* NewAvatar = GetWorld()->SpawnActor<ACharacter_Pathfinder>(ACharacter_Pathfinder::StaticClass(), FVector(0.f, 0.f, 91.f) , FRotator::ZeroRotator);
-		CurrentSelectedAvatar = NewAvatar;
-		//NewAvatar->BeginPlayWorkaroundFunction();
-	//}
-}
-
-
-bool APlayerController_Base::SpawnPartyMember_Validate()
-{
-	return true;
-}
+//void APlayerController_Base::SpawnPartyMember_Implementation()
+//{
+//	//if (PlayerParty.Num() > 0) {
+//		ACharacter_Pathfinder* NewAvatar = GetWorld()->SpawnActor<ACharacter_Pathfinder>(ACharacter_Pathfinder::StaticClass(), FVector(0.f, 0.f, 91.f) , FRotator::ZeroRotator);
+//		CurrentSelectedAvatar = NewAvatar;
+//		//NewAvatar->BeginPlayWorkaroundFunction();
+//	//}
+//}
+//
+//
+//bool APlayerController_Base::SpawnPartyMember_Validate()
+//{
+//	return true;
+//}
 
 
 // ------------------------- Mouse
