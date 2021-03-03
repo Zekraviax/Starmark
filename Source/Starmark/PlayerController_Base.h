@@ -82,7 +82,8 @@ public:
 	//void SpawnPartyMember();
 
 // ------------------------- Mouse
-	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	//UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	UFUNCTION(BlueprintCallable)
 	void OnPrimaryClick(AActor* ClickedActor);
 
 	UFUNCTION()

@@ -53,12 +53,12 @@ void AStarmark_GameState::SetTurnOrder(TArray<APlayerController_Base*> PlayerCon
 	//	//}
 	//}
 
-	//for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
-	//	for (int j = 0; j < PlayerControllers.Num(); j++) {
-	//		PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(FString::FromInt(i)));
-	//		//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + AvatarTurnOrder[i]->AvatarData.AvatarName));
-	//	}
-	//}
+	for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
+		for (int j = 0; j < PlayerControllers.Num(); j++) {
+			//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(FString::FromInt(i)));
+			//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + AvatarTurnOrder[i]->AvatarData.AvatarName));
+		}
+	}
 }
 
 
