@@ -6,6 +6,8 @@
 #include "Widget_HUD_Battle.h"
 #include "WidgetComponent_AvatarBattleData.h"
 #include "PlayerController_Base.h"
+#include "Starmark_PlayerState.h"
+#include "GameFramework/Controller.h"
 
 
 void AStarmark_GameState::SetTurnOrder(TArray<APlayerController_Base*> PlayerControllers)
@@ -53,12 +55,18 @@ void AStarmark_GameState::SetTurnOrder(TArray<APlayerController_Base*> PlayerCon
 	//	//}
 	//}
 
-	for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
-		for (int j = 0; j < PlayerControllers.Num(); j++) {
-			//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(FString::FromInt(i)));
-			//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + AvatarTurnOrder[i]->AvatarData.AvatarName));
-		}
-	}
+	//for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
+	//for (int j = 0; j < PlayerControllers.Num(); j++) {
+	//	AStarmark_PlayerState* PlayerState = Cast<AStarmark_PlayerState>(PlayerControllers[j]->PlayerState);
+
+	//	if (PlayerState->PlayerState_BattleHUD->IsValidLowLevel())
+	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Battle HUD Valid")));
+	//	else 
+	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Battle HUD Not Valid")));
+	//	//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(FString::FromInt(i)));
+	//	//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + AvatarTurnOrder[i]->AvatarData.AvatarName));
+	//}
+	//}
 }
 
 

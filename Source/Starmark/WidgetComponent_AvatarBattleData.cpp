@@ -37,7 +37,7 @@ void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinke
 	//}
 
 	//if (LinkedAvatar) {
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("CurrentSelectedAvatar: %s"), *LinkedAvatar.AvatarName));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("CurrentSelectedAvatar: %s"), *LinkedAvatar.AvatarName));
 
 		//if (NicknameText->GetText().ToString() != LinkedAvatar.Nickname) {
 			if (LinkedAvatar.Nickname != "" && LinkedAvatar.Nickname != LinkedAvatar.AvatarName) {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameStateBase.h"
+#include "GameFramework/GameState.h"
 
 #include "Engine/Datatable.h"
 
@@ -14,7 +14,7 @@ class APlayerController_Base;
 
 
 UCLASS()
-class STARMARK_API AStarmark_GameState : public AGameStateBase
+class STARMARK_API AStarmark_GameState : public AGameState
 {
 	GENERATED_BODY()
 

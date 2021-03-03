@@ -117,6 +117,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
 	TArray<FAvatar_StatusEffect> CurrentStatusEffectsArray;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int IndexInPlayerParty;
+
 // ------------------------- AI
 	
 
