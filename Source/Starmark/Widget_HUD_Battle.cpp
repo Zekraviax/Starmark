@@ -32,8 +32,8 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 // ------------------------- Commands
 void UWidget_HUD_Battle::MoveCommand()
 {
-	if (!PlayerControllerReference)
-		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	//if (!PlayerControllerReference)
+	//	PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_MoveCharacter;
 
