@@ -124,67 +124,21 @@ void APlayerController_Base::UpdateSelectedAvatar()
 
 
 // ------------------------- Mouse
-void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
-{
-	// In multiplayer battles, we have to find the correct Avatar before we can move it
-	//TArray<AActor*> FoundActors;
-	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundActors);
-
-	if (!CurrentSelectedAvatar) {
-		CurrentSelectedAvatar = Cast<APlayerState_Base>(Cast<APlayerPawn_Static>(GetPawn())->GetPlayerState())->PlayerState_CurrentControlledAvatar;
-	}
-
-	//if (CurrentSelectedAvatar)
-	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("CurrentSelectedAvatar Valid")));
-	//else
-	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("CurrentSelectedAvatar Not Valid")));
-
-	if (ClickedActor) {
-		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
-			// Select Avatar To Control
-			if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
-				Cast<ACharacter_Pathfinder>(ClickedActor)->OnAvatarClicked();
-			}
-			// Select Avatar to Begin Attack
-			else if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack) {
-				// If we're attacking, and we clicked on a target in-range, launch an attack
-				if (CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(Cast<ACharacter_Pathfinder>(ClickedActor))) {
-					CurrentSelectedAvatar->LaunchAttack(Cast<ACharacter_Pathfinder>(ClickedActor));
-				}
-			}
-		}
-		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") || ClickedActor->GetClass()->GetName().Contains("GridTile") && PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter) {
-			// If all else fails, assume we clicked on a plane that we can move our controller Avatar to
-			if (CurrentSelectedAvatar) {
-				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("CurrentSelectedAvatar Valid")));
-				if (CurrentSelectedAvatar->GetController()->IsValidLowLevel()) {
-					//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("CurrentSelectedAvatar AI Controller: %s"), *CurrentSelectedAvatar->GetController()->GetName()));
-					Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
-				}
-			}
-		}
-	}
-
-	//switch (PlayerClickMode) {
-	//	case(E_PlayerCharacter_ClickModes::E_MoveCharacter):
-	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Click Mode: MoveCharacter")));
-	//		break;
-	//	case(E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack):
-	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Click Mode: SelectCharacterToAttack")));
-	//		break;
-	//	case(E_PlayerCharacter_ClickModes::E_SelectCharacterToControl):
-	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Click Mode: SelectCharacterToControl")));
-	//		break;
-	//	case(E_PlayerCharacter_ClickModes::E_Nothing):
-	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Click Mode: Nothing")));
-	//		break;
-	//	default:
-	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Default")));
-	//		break;
-	//}
-}
-//void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor)
+//void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 //{
+//	// In multiplayer battles, we have to find the correct Avatar before we can move it
+//	//TArray<AActor*> FoundActors;
+//	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundActors);
+//
+//	if (!CurrentSelectedAvatar) {
+//		CurrentSelectedAvatar = Cast<APlayerState_Base>(Cast<APlayerPawn_Static>(GetPawn())->GetPlayerState())->PlayerState_CurrentControlledAvatar;
+//	}
+//
+//	//if (CurrentSelectedAvatar)
+//	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("CurrentSelectedAvatar Valid")));
+//	//else
+//	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("CurrentSelectedAvatar Not Valid")));
+//
 //	if (ClickedActor) {
 //		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
 //			// Select Avatar To Control
@@ -202,19 +156,65 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 //		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") || ClickedActor->GetClass()->GetName().Contains("GridTile") && PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter) {
 //			// If all else fails, assume we clicked on a plane that we can move our controller Avatar to
 //			if (CurrentSelectedAvatar) {
+//				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("CurrentSelectedAvatar Valid")));
 //				if (CurrentSelectedAvatar->GetController()->IsValidLowLevel()) {
+//					//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("CurrentSelectedAvatar AI Controller: %s"), *CurrentSelectedAvatar->GetController()->GetName()));
 //					Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
 //				}
 //			}
 //		}
 //	}
-//}
 //
-//
-//bool APlayerController_Base::OnPrimaryClick_Validate(AActor* ClickedActor)
-//{
-//	return true;
+//	//switch (PlayerClickMode) {
+//	//	case(E_PlayerCharacter_ClickModes::E_MoveCharacter):
+//	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Click Mode: MoveCharacter")));
+//	//		break;
+//	//	case(E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack):
+//	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Click Mode: SelectCharacterToAttack")));
+//	//		break;
+//	//	case(E_PlayerCharacter_ClickModes::E_SelectCharacterToControl):
+//	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Click Mode: SelectCharacterToControl")));
+//	//		break;
+//	//	case(E_PlayerCharacter_ClickModes::E_Nothing):
+//	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Click Mode: Nothing")));
+//	//		break;
+//	//	default:
+//	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Default")));
+//	//		break;
+//	//}
 //}
+void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor)
+{
+	if (ClickedActor) {
+		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
+			// Select Avatar To Control
+			if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
+				Cast<ACharacter_Pathfinder>(ClickedActor)->OnAvatarClicked();
+			}
+			// Select Avatar to Begin Attack
+			else if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack) {
+				// If we're attacking, and we clicked on a target in-range, launch an attack
+				if (CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(Cast<ACharacter_Pathfinder>(ClickedActor))) {
+					CurrentSelectedAvatar->LaunchAttack(Cast<ACharacter_Pathfinder>(ClickedActor));
+				}
+			}
+		}
+		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") || ClickedActor->GetClass()->GetName().Contains("GridTile") && PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter) {
+			// If all else fails, assume we clicked on a plane that we can move our controller Avatar to
+			if (CurrentSelectedAvatar) {
+				if (CurrentSelectedAvatar->GetController()->IsValidLowLevel()) {
+					Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
+				}
+			}
+		}
+	}
+}
+
+
+bool APlayerController_Base::OnPrimaryClick_Validate(AActor* ClickedActor)
+{
+	return true;
+}
 
 
 void APlayerController_Base::UpdateCursorSelectedMaterial()
