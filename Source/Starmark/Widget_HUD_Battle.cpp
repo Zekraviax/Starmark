@@ -11,14 +11,17 @@
 void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 {
 	if (!PlayerControllerReference)
-		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PlayerController Not Valid")));
+
+	if (!PlayerControllerReference->CurrentSelectedAvatar)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CurrentSelectedAvatar Not Valid")));
 
 	for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
 		if (PlayerControllerReference->CurrentSelectedAvatar->AllKnownAttacks.IsValidIndex(i)) {
-			Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AttackNameText->SetText(FText::FromString(PlayerControllerReference->CurrentSelectedAvatar->AllKnownAttacks[i].Name));
+			//Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AttackNameText->SetText(FText::FromString(PlayerControllerReference->CurrentSelectedAvatar->AllKnownAttacks[i].Name));
 
-			Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->PlayerControllerReference = PlayerControllerReference;
-			Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AvatarAttackIndex = i;
+			//Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->PlayerControllerReference = PlayerControllerReference;
+			//Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AvatarAttackIndex = i;
 
 			AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Visible);
 		}
@@ -32,8 +35,8 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 // ------------------------- Commands
 void UWidget_HUD_Battle::MoveCommand()
 {
-	//if (!PlayerControllerReference)
-	//	PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (!PlayerControllerReference)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PlayerController Not Valid")));
 
 	PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_MoveCharacter;
 
@@ -45,13 +48,17 @@ void UWidget_HUD_Battle::MoveCommand()
 
 void UWidget_HUD_Battle::AttackCommand()
 {
-	if (!PlayerControllerReference)
-		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	//if (!PlayerControllerReference)
+	//	PlayerControllerReference = NewPlayerControllerReference;
 
 	// Show Avatar Attacks Box
 	if (AvatarAttacksBox) {
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Avatar Attacks Box Valid")));
 		UpdateAvatarAttacksComponents();
 		AvatarAttacksBox->SetVisibility(ESlateVisibility::Visible);
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Avatar Attacks Box Not Valid")));
 	}
 }
 

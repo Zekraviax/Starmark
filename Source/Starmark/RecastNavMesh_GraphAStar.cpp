@@ -300,7 +300,7 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 					Result.Path->MarkReady();
 					Result.Result = ENavigationQueryResult::Success;
 
-					GEngine->AddOnScreenDebugMessage(-1, 0.2f, FColor::Red, FString::Printf(TEXT("Path Length: %d"), Result.Path->GetPathPoints().Num() ));
+					//GEngine->AddOnScreenDebugMessage(-1, 0.2f, FColor::Red, FString::Printf(TEXT("Path Length: %d"), Result.Path->GetPathPoints().Num() ));
 
 					return Result;
 				}
