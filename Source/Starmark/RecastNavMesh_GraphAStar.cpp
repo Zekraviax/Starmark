@@ -435,3 +435,11 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 
 	return Result;
 }
+
+
+//void ARecastNavMesh_GraphAStar::BlueprintFindPath(TArray<FVector>& OutPathPoints)
+//{
+//	FNavAgentProperties NavAgentProperties;
+//
+//	//FPathFindingResult Path = FindPath(NavAgentProperties, )
+//}

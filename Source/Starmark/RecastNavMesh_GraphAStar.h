@@ -25,4 +25,7 @@ class STARMARK_API ARecastNavMesh_GraphAStar : public ARecastNavMesh
 	ARecastNavMesh_GraphAStar(const FObjectInitializer& ObjectInitializer);
 
 	static FPathFindingResult FindPath(const FNavAgentProperties& AgentProperties, const FPathFindingQuery& Query);
+
+	//UFUNCTION(Blueprintcallable)
+	//void BlueprintFindPath(TArray<FVector>& OutPathPoints);
 };
