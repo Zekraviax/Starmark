@@ -117,6 +117,8 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 {
 	FString ContextString;
 
+	//AvatarData = NewAvatarData;
+
 	CursorToWorld_DynamicMaterial = UMaterialInstanceDynamic::Create(CursorToWorld->GetMaterial(0), this);
 	CursorToWorld->SetMaterial(0, CursorToWorld_DynamicMaterial);
 
