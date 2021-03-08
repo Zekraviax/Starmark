@@ -173,7 +173,7 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 			AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else {
-			AvatarBattleData_Component->DestroyComponent();
+			//AvatarBattleData_Component->DestroyComponent();
 		}
 	}
 
@@ -205,33 +205,33 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 // ------------------------- Cursor
 void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 {
-	if (!PlayerControllerReference)
-		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	//if (!PlayerControllerReference)
+	//	PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	if (ActorSelected && ActorSelected_DynamicMaterial) {
 		// When the player hovers over an actor they aren't controlling
-		if (PlayerControllerReference->CurrentSelectedAvatar != this) {
+		//if (PlayerControllerReference->CurrentSelectedAvatar != this) {
 
 			// Switch colours based on player's click command
-			switch (PlayerControllerReference->PlayerClickMode)
-			{
+			//switch (PlayerControllerReference->PlayerClickMode)
+			//{
 			//case (E_PlayerCharacter_ClickModes::E_MoveCharacter):
 			//	ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Blue);
 			//	break;
-			case (E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack):
-				CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
-				break;
-			case (E_PlayerCharacter_ClickModes::E_SelectCharacterToControl):
-				CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Yellow);
-				break;
-			default:
+			//case (E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack):
+			//	CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+			//	break;
+			//case (E_PlayerCharacter_ClickModes::E_SelectCharacterToControl):
+			//	CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Yellow);
+			//	break;
+			//default:
 				CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
-				break;
-			}
+			//	break;
+			//}
 
 			ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
 			ActorSelected->SetVisibility(true);
-		}
+		//}
 	}
 
 	// Show AvatarBattleDataWidget
