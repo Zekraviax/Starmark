@@ -54,7 +54,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UDecalComponent* CursorToWorld;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UMaterialInstanceDynamic* CursorToWorld_DynamicMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -102,19 +102,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<FAvatar_AttackStruct> AttacksArray;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
 	TArray<FAvatar_AttackStruct> AllKnownAttacks;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	FAvatar_AttackStruct CurrentSelectedAttack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<ACharacter_Pathfinder*> ValidAttackTargetsArray;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	UDataTable* UltimateTypeChartDataTable;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<FAvatar_StatusEffect> CurrentStatusEffectsArray;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")

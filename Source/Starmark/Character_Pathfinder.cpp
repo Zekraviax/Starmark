@@ -101,6 +101,7 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 	DOREPLIFETIME(ACharacter_Pathfinder, AvatarData);
 	DOREPLIFETIME(ACharacter_Pathfinder, PlayerControllerReference);
+	DOREPLIFETIME(ACharacter_Pathfinder, AllKnownAttacks);
 }
 
 
@@ -167,8 +168,8 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 		AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
 
 		if (AvatarBattleDataComponent_Reference->IsValidLowLevel()) {
-			//AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
-			//AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
+			AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
+			AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
 			AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else {
