@@ -486,13 +486,28 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	FAvatar_BaseStats BaseStats;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int CurrentHealthPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int CurrentManaPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int MaximumTileMoves;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int CurrentTileMoves;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int MaximumMovePoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int CurrentMovePoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int MaximumActionPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int CurrentActionPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	float SameTypeAttackBonusMultiplier;
@@ -546,9 +561,14 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		Mark = EAvatar_Marks::E_Flok;
 		PrimaryType = EAvatar_Types::E_Air;
 		SecondaryType = EAvatar_Types::E_None;
+		CurrentHealthPoints = 1;
+		CurrentManaPoints = 1;
 		MaximumTileMoves = 2;
+		CurrentTileMoves = 2;
 		MaximumMovePoints = 1;
+		CurrentMovePoints = 1;
 		MaximumActionPoints = 1;
+		CurrentActionPoints = 1;
 		SameTypeAttackBonusMultiplier = 150;
 		EncyclopediaNumber = 0;
 		Lore = "Default";

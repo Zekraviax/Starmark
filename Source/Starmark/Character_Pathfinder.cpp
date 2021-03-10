@@ -475,7 +475,7 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage Final = %d"), CurrentDamage));
 	// Subtract Health
-	Target->CurrentHealthPoints -= CurrentDamage;
+	Target->AvatarData.CurrentHealthPoints -= CurrentDamage;
 
 	// Apply move effects after the damage has been dealt
 	for (int i = 0; i < CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
