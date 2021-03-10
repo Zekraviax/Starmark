@@ -10,13 +10,13 @@
 // ------------------------- Widget
 void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 {
-	if (!PlayerControllerReference)
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PlayerController Not Valid")));
+	//if (!PlayerControllerReference)
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PlayerController Not Valid")));
 	//else
 	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("PlayerController Valid")));
 
-	if (!PlayerControllerReference->CurrentSelectedAvatar)
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CurrentSelectedAvatar Not Valid")));
+	//if (!PlayerControllerReference->CurrentSelectedAvatar)
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CurrentSelectedAvatar Not Valid")));
 	//else
 	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("CurrentSelectedAvatar Valid")));
 

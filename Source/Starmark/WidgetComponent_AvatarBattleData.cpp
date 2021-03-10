@@ -17,14 +17,18 @@ void UWidgetComponent_AvatarBattleData::NativeTick(const FGeometry & MyGeometry,
 
 	//if (LinkedAvatar) {
 		// Interpolate Health and Mana bar values
-		HealthBar->SetPercent(FMath::FInterpTo(HealthBar->Percent, (float(LinkedAvatar.BaseStats.HealthPoints) / float(LinkedAvatar.BaseStats.HealthPoints)), DeltaTime, 4.f));
-		ManaBar->SetPercent(FMath::FInterpTo(ManaBar->Percent, (float(LinkedAvatar.BaseStats.ManaPoints) / float(LinkedAvatar.BaseStats.ManaPoints)), DeltaTime, 4.f));
+		//HealthBar->SetPercent(FMath::FInterpTo(HealthBar->Percent, (float(LinkedAvatar.BaseStats.HealthPoints) / float(LinkedAvatar.BaseStats.HealthPoints)), DeltaTime, 4.f));
+		//ManaBar->SetPercent(FMath::FInterpTo(ManaBar->Percent, (float(LinkedAvatar.BaseStats.ManaPoints) / float(LinkedAvatar.BaseStats.ManaPoints)), DeltaTime, 4.f));
+		HealthBar->SetPercent(float(LinkedAvatar.BaseStats.HealthPoints) / float(LinkedAvatar.BaseStats.HealthPoints));
+		ManaBar->SetPercent(float(LinkedAvatar.BaseStats.ManaPoints) / float(LinkedAvatar.BaseStats.ManaPoints));	
 
 		// Interpolate Health and Mana text values
-		HealthDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(FMath::FInterpTo(FCString::Atof(*HealthDisplayText->GetText().ToString()), float(LinkedAvatar.BaseStats.HealthPoints), DeltaTime, 5.f))) +
-			" / " + FString::FromInt(LinkedAvatar.BaseStats.HealthPoints)));
-		ManaDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(FMath::FInterpTo(FCString::Atof(*ManaDisplayText->GetText().ToString()), float(LinkedAvatar.BaseStats.ManaPoints), DeltaTime, 5.f))) +
-			" / " + FString::FromInt(LinkedAvatar.BaseStats.ManaPoints)));
+		//HealthDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(FMath::FInterpTo(FCString::Atof(*HealthDisplayText->GetText().ToString()), float(LinkedAvatar.BaseStats.HealthPoints), DeltaTime, 5.f))) +
+		//	" / " + FString::FromInt(LinkedAvatar.BaseStats.HealthPoints)));
+		//ManaDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(FMath::FInterpTo(FCString::Atof(*ManaDisplayText->GetText().ToString()), float(LinkedAvatar.BaseStats.ManaPoints), DeltaTime, 5.f))) +
+		//	" / " + FString::FromInt(LinkedAvatar.BaseStats.ManaPoints)));
+		HealthDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(float(LinkedAvatar.BaseStats.HealthPoints))) + " / " + FString::FromInt(LinkedAvatar.BaseStats.HealthPoints)));
+		ManaDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(float(LinkedAvatar.BaseStats.ManaPoints))) + " / " + FString::FromInt(LinkedAvatar.BaseStats.ManaPoints)));
 	//}
 }
 

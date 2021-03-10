@@ -308,6 +308,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			for (int i = 0; i < TraceHitResultArray.Num(); i++) {
 				if (TraceHitResultArray[i].Actor->GetClass() == this->GetClass() && TraceHitResultArray[i].Actor != this) {
 					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResultArray[i].Actor));
+					//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("ValidAttackTargets: %d"), ValidAttackTargetsArray.Num()));
 				}
 			}
 		}

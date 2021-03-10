@@ -85,7 +85,7 @@ void AStarmark_GameState::AvatarEndTurn()
 		CurrentAvatarTurnIndex = 0;
 	}
 
-	PlayerControllerReference->CurrentSelectedAvatar = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[CurrentAvatarTurnIndex]);
+	//PlayerControllerReference->CurrentSelectedAvatar = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[CurrentAvatarTurnIndex]);
 	AvatarBeginTurn();
 }
 
