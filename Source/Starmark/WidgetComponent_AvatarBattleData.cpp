@@ -61,14 +61,14 @@ void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinke
 			TypesText->SetText(FText::FromString(UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar.PrimaryType).ToString()));
 		//}
 
-		float Division = float(LinkedAvatar.BaseStats.HealthPoints) / float(LinkedAvatar.BaseStats.HealthPoints);
+		float Division = float(LinkedAvatar.CurrentHealthPoints) / float(LinkedAvatar.BaseStats.HealthPoints);
 		HealthBar->SetPercent(Division);
 
 		if (HealthDisplayText->IsValidLowLevel())
-			HealthDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.BaseStats.HealthPoints) + " / " + FString::FromInt(LinkedAvatar.BaseStats.HealthPoints)));
+			HealthDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.CurrentHealthPoints) + " / " + FString::FromInt(LinkedAvatar.BaseStats.HealthPoints)));
 
 		if (ManaDisplayText->IsValidLowLevel())
-			ManaDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.BaseStats.ManaPoints) + " / " + FString::FromInt(LinkedAvatar.BaseStats.ManaPoints)));
+			ManaDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.CurrentManaPoints) + " / " + FString::FromInt(LinkedAvatar.BaseStats.ManaPoints)));
 	//}
 	//else {
 	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("LinkedAvatar Not Valid")));

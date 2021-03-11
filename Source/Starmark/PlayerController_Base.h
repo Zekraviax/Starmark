@@ -69,7 +69,7 @@ public:
 
 // ------------------------- Widgets
 	UFUNCTION(BlueprintCallable)
-	void UpdateBattleWidget(UWidget_HUD_Battle* BattleHUDReference);
+	void UpdateBattleWidget(UWidget_HUD_Battle* BattleHUDReference, FAvatar_Struct NewAvatarData);
 
 // ------------------------- Avatar
 	UFUNCTION(BlueprintCallable)

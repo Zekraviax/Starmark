@@ -44,14 +44,14 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 
 
 // ------------------------- Widgets
-void APlayerController_Base::UpdateBattleWidget(UWidget_HUD_Battle* BattleHUDReference)
+void APlayerController_Base::UpdateBattleWidget(UWidget_HUD_Battle* BattleHUDReference, FAvatar_Struct NewAvatarData)
 {
 	if (BattleHUDReference->IsValidLowLevel()) {
 		BattleHUDCodeReference = BattleHUDReference;
 	}
 
 	if (BattleHUDReference->IsValidLowLevel() && CurrentSelectedAvatar) {
-		//BattleHUDReference->AvatarBattleDataWidget->UpdateAvatarData(PlayerParty[0]);
+		BattleHUDReference->AvatarBattleDataWidget->UpdateAvatarData(NewAvatarData);
 
 		AStarmark_GameState* GameStateRef = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
