@@ -440,14 +440,14 @@ void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* T
 	TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
 
 	// Check for mana
-	if (CurrentManaPoints >= CurrentSelectedAttack.ManaCost) {
-		CurrentManaPoints -= CurrentSelectedAttack.ManaCost;
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Enough Mana")));
-	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Not Enough Mana")));
-		return;
-	}
+	//if (CurrentManaPoints >= CurrentSelectedAttack.ManaCost) {
+	//	CurrentManaPoints -= CurrentSelectedAttack.ManaCost;
+	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Enough Mana")));
+	//}
+	//else {
+	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Not Enough Mana")));
+	//	return;
+	//}
 
 	// Check for type advantage or disadvantage
 	MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
@@ -592,6 +592,10 @@ void ACharacter_Pathfinder::SetTilesOccupiedBySize()
 void ACharacter_Pathfinder::UpdatePlayerBattleHUD()
 {
 	if (PlayerControllerReference) {
-		PlayerControllerReference->BattleHUDCodeReference->AvatarBattleDataWidget->UpdateAvatarData(AvatarData);
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("PlayerControllerReference Valid")));
+		//PlayerControllerReference->BattleHUDCodeReference->AvatarBattleDataWidget->UpdateAvatarData(AvatarData);
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("PlayerControllerReference Not Valid")));
 	}
 }

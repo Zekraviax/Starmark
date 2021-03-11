@@ -51,14 +51,14 @@ void APlayerController_Base::UpdateBattleWidget(UWidget_HUD_Battle* BattleHUDRef
 	}
 
 	if (BattleHUDReference->IsValidLowLevel() && CurrentSelectedAvatar) {
-		BattleHUDReference->AvatarBattleDataWidget->UpdateAvatarData(PlayerParty[0]);
+		//BattleHUDReference->AvatarBattleDataWidget->UpdateAvatarData(PlayerParty[0]);
 
 		AStarmark_GameState* GameStateRef = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
 		if (GameStateRef) {
-			for (int i = 0; i < GameStateRef->AvatarTurnOrder.Num(); i++) {
+			/*for (int i = 0; i < GameStateRef->AvatarTurnOrder.Num(); i++) {
 				BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + GameStateRef->AvatarTurnOrder[i]->AvatarData.AvatarName));
-			}
+			}*/
 		}
 	}
 }
