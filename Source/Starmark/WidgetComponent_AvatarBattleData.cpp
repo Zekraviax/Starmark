@@ -36,9 +36,7 @@ void UWidgetComponent_AvatarBattleData::NativeTick(const FGeometry & MyGeometry,
 // ------------------------- Avatar
 void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinkedAvatar)
 {
-	//if (NewLinkedAvatar) {
 	LinkedAvatar = NewLinkedAvatar;
-	//}
 
 	//if (LinkedAvatar) {
 		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("CurrentSelectedAvatar: %s"), *LinkedAvatar.AvatarName));

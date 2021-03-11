@@ -148,9 +148,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ShowAttackRange();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void LaunchAttack(ACharacter_Pathfinder* Target);
 
 	UFUNCTION(BlueprintCallable)
 	void SetTilesOccupiedBySize();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdatePlayerBattleHUD();
 };

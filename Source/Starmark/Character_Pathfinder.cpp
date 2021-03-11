@@ -424,12 +424,12 @@ void ACharacter_Pathfinder::ShowAttackRange()
 	}
 
 	for (int i = 0; i < ValidAttackTargetsArray.Num(); i++) {
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Hit Actor: %s"), *ValidAttackTargetsArray[i]->GetName()));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Hit Actor: %s"), *ValidAttackTargetsArray[i]->GetName()));
 	}
 }
 
 
-void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
+void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* Target)
 {
 	FAvatar_UltimateTypeChart* MoveTypeChartRow;
 	FAvatar_UltimateTypeChart* TargetTypeChartRow;
@@ -442,8 +442,10 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 	// Check for mana
 	if (CurrentManaPoints >= CurrentSelectedAttack.ManaCost) {
 		CurrentManaPoints -= CurrentSelectedAttack.ManaCost;
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Enough Mana")));
 	}
 	else {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Not Enough Mana")));
 		return;
 	}
 
@@ -473,9 +475,20 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 		}
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage Final = %d"), CurrentDamage));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Final Damage  = %d"), CurrentDamage));
+
 	// Subtract Health
-	Target->AvatarData.CurrentHealthPoints -= CurrentDamage;
+	if (Target) {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Target Valid")));
+		Target->AvatarData.CurrentHealthPoints -= CurrentDamage;
+		Target->UpdatePlayerBattleHUD();
+	} else {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Target Not Valid")));
+	}
+
+	// Update AvatarDataWidgets
+	//Target->PlayerControllerReference->HUD
+
 
 	// Apply move effects after the damage has been dealt
 	for (int i = 0; i < CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
@@ -485,6 +498,62 @@ void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 	// End this Avatar's turn
 	GetWorld()->GetGameState<AStarmark_GameState>()->AvatarEndTurn();
 }
+//void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
+//{
+//	FAvatar_UltimateTypeChart* MoveTypeChartRow;
+//	FAvatar_UltimateTypeChart* TargetTypeChartRow;
+//	FString ContextString, MoveTypeAsString, TargetTypeAsString;
+//	int CurrentDamage = 1;
+//
+//	MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CurrentSelectedAttack.Type).ToString();
+//	TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
+//
+//	// Check for mana
+//	if (CurrentManaPoints >= CurrentSelectedAttack.ManaCost) {
+//		CurrentManaPoints -= CurrentSelectedAttack.ManaCost;
+//	}
+//	else {
+//		return;
+//	}
+//
+//	// Check for type advantage or disadvantage
+//	MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
+//	TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
+//
+//	// Attack Damage Formula
+//	CurrentDamage = FMath::CeilToInt(AvatarData.BaseStats.Attack * CurrentSelectedAttack.BasePower);
+//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 1 = %d"), CurrentDamage));
+//	CurrentDamage = FMath::CeilToInt(CurrentDamage / Target->AvatarData.BaseStats.Defence);
+//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 2 = %d"), CurrentDamage));
+//	CurrentDamage = FMath::CeilToInt((AvatarData.BaseStats.Power / 2) * CurrentDamage);
+//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 3 = %d"), CurrentDamage));
+//	CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
+//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 3 = %d"), CurrentDamage));
+//
+//	// Compare each Move type against the Target type
+//	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
+//		// 2x Damage
+//		if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j])) {
+//			CurrentDamage = CurrentDamage * 2;
+//		}
+//		// 0.5x Damage
+//		else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j])) {
+//			CurrentDamage = CurrentDamage / 2;
+//		}
+//	}
+//
+//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage Final = %d"), CurrentDamage));
+//	// Subtract Health
+//	Target->AvatarData.CurrentHealthPoints -= CurrentDamage;
+//
+//	// Apply move effects after the damage has been dealt
+//	for (int i = 0; i < CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
+//		UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(CurrentSelectedAttack.AttackEffectsOnTarget[i], this, Target);
+//	}
+//
+//	// End this Avatar's turn
+//	GetWorld()->GetGameState<AStarmark_GameState>()->AvatarEndTurn();
+//}
 
 
 void ACharacter_Pathfinder::SetTilesOccupiedBySize()
@@ -516,5 +585,13 @@ void ACharacter_Pathfinder::SetTilesOccupiedBySize()
 			}
 		}
 		//}
+	}
+}
+
+
+void ACharacter_Pathfinder::UpdatePlayerBattleHUD()
+{
+	if (PlayerControllerReference) {
+		PlayerControllerReference->BattleHUDCodeReference->AvatarBattleDataWidget->UpdateAvatarData(AvatarData);
 	}
 }
