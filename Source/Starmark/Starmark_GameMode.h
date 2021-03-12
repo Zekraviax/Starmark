@@ -7,6 +7,9 @@
 
 #include "Starmark_GameMode.generated.h"
 
+// Forward Declarations
+class ACharacter_Pathfinder;
+
 
 // Enums
 // --------------------------------------------------
@@ -819,5 +822,7 @@ public:
 // Functions
 // --------------------------------------------------
 
-// ------------------------- Base	
+// ------------------------- Battle
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void GameMode_LaunchAttack(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 };

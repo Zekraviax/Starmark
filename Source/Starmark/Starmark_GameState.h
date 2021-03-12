@@ -52,4 +52,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AvatarBeginTurn();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void GameState_LaunchAttack(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 };
