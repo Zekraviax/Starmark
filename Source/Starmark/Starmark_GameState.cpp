@@ -8,6 +8,7 @@
 #include "PlayerController_Base.h"
 #include "Starmark_PlayerState.h"
 #include "GameFramework/Controller.h"
+#include "Engine/World.h"
 
 
 void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerController_Base*>& PlayerControllers)
@@ -36,9 +37,9 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 		}
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Avatar Turn Order Length: %d"), AvatarTurnOrder.Num()));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Avatar Turn Order Length: %d"), AvatarTurnOrder.Num()));
 
-	CurrentAvatarTurnIndex = 0;
+	//CurrentAvatarTurnIndex = 0;
 
 	// Set Player's Avatar to the first in the list
 	//for (int i = 0; i < PlayerControllers.Num(); i++) {
@@ -58,10 +59,12 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	//	//}
 	//}
 
+	//PlayerControllersArray = PlayerControllers;
+
 	//for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
 	for (int j = 0; j < PlayerControllers.Num(); j++) {
 		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerControllers[j]) {
-			//PlayerControllers[j]->IsCurrentlyActingPlayer = true;
+			PlayerControllers[j]->IsCurrentlyActingPlayer = true;
 			//PlayerControllers[j]->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
 		} else {
 			PlayerControllers[j]->IsCurrentlyActingPlayer = false;
@@ -80,13 +83,13 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 }
 
 
-void AStarmark_GameState::AvatarEndTurn()
+void AStarmark_GameState::AvatarEndTurn_Implementation(const TArray<APlayerController_Base*>& PlayerControllers)
 {
-	if (!PlayerControllerReference)
-		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	//if (!PlayerControllerReference)
+	//	PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	// Reset Decals
-	PlayerControllerReference->UpdateSelectedAvatar();
+	//PlayerControllerReference->UpdateSelectedAvatar();
 
 	CurrentAvatarTurnIndex++;
 
@@ -95,8 +98,40 @@ void AStarmark_GameState::AvatarEndTurn()
 		CurrentAvatarTurnIndex = 0;
 	}
 
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Avatars: %d  /  Turn Index: %d"), AvatarTurnOrder.Num(), CurrentAvatarTurnIndex));
+
+	for (int j = 0; j < PlayerControllers.Num(); j++) {
+		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerControllers[j]) {
+			PlayerControllers[j]->IsCurrentlyActingPlayer = true;
+			//PlayerControllers[j]->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
+		}
+		else {
+			PlayerControllers[j]->IsCurrentlyActingPlayer = false;
+		}
+	}
+
+	//// Set Controlling Player
+	//for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	//{
+	//	APlayerController_Base* PlayerController = Cast<APlayerController_Base>(*Iterator);
+	//	if (PlayerController)
+	//	{
+	//		if (PlayerController->IsValidLowLevel()) {
+	//			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
+	//				PlayerController->IsCurrentlyActingPlayer = true;
+	//				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("PlayerController Valid")));
+	//			}
+	//			else {
+	//				PlayerController->IsCurrentlyActingPlayer = false;
+	//				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("PlayerController Not Valid")));
+	//			}
+	//		}
+	//	}
+	//}
+
 	//PlayerControllerReference->CurrentSelectedAvatar = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[CurrentAvatarTurnIndex]);
-	AvatarBeginTurn();
+
+	//AvatarBeginTurn();
 }
 
 
@@ -133,6 +168,16 @@ void AStarmark_GameState::AvatarBeginTurn()
 	//if (BattleHUD_Reference) {
 		//BattleHUD_Reference->AvatarBattleDataWidget->LinkedAvatar = AvatarRef->AvatarData;
 		//BattleHUD_Reference->AvatarBattleDataWidget->SetAvatarData();
+	//}
+
+	//for (int j = 0; j < PlayerArray.Num(); j++) {
+	//	if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerControllers[j]) {
+	//		PlayerControllers[j]->IsCurrentlyActingPlayer = true;
+	//		//PlayerControllers[j]->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
+	//	}
+	//	else {
+	//		PlayerControllers[j]->IsCurrentlyActingPlayer = false;
+	//	}
 	//}
 }
 

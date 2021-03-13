@@ -80,7 +80,7 @@ void UWidget_HUD_Battle::SwitchCommand()
 
 void UWidget_HUD_Battle::EndCommand()
 {
-	GetWorld()->GetGameState<AStarmark_GameState>()->AvatarEndTurn();
+	//GetWorld()->GetGameState<AStarmark_GameState>()->AvatarEndTurn_Implementation();
 
 	if (AvatarAttacksBox)
 		AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);

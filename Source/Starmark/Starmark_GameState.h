@@ -40,6 +40,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
 	int CurrentAvatarTurnIndex;
 
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	//TArray<APlayerController_Base*> PlayerControllersArray;
+
 // Functions
 // --------------------------------------------------
 
@@ -47,8 +50,8 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SetTurnOrder(const TArray<APlayerController_Base*>& PlayerControllers);
 
-	UFUNCTION(BlueprintCallable)
-	void AvatarEndTurn();
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void AvatarEndTurn(const TArray<APlayerController_Base*>& PlayerControllers);
 
 	UFUNCTION(BlueprintCallable)
 	void AvatarBeginTurn();
