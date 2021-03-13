@@ -10,7 +10,7 @@
 #include "GameFramework/Controller.h"
 
 
-void AStarmark_GameState::SetTurnOrder(TArray<APlayerController_Base*> PlayerControllers)
+void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerController_Base*>& PlayerControllers)
 {
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundActors);
@@ -18,6 +18,7 @@ void AStarmark_GameState::SetTurnOrder(TArray<APlayerController_Base*> PlayerCon
 	// Use Nested Loops to compare Avatars' Speeds.
 	for (int i = 0; i < FoundActors.Num(); i++) {
 		//AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
+
 		if (AvatarTurnOrder.Num() <= 0) {
 			AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
 		} else {
@@ -34,6 +35,8 @@ void AStarmark_GameState::SetTurnOrder(TArray<APlayerController_Base*> PlayerCon
 			}
 		}
 	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Avatar Turn Order Length: %d"), AvatarTurnOrder.Num()));
 
 	CurrentAvatarTurnIndex = 0;
 
@@ -56,16 +59,23 @@ void AStarmark_GameState::SetTurnOrder(TArray<APlayerController_Base*> PlayerCon
 	//}
 
 	//for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
-	//for (int j = 0; j < PlayerControllers.Num(); j++) {
-	//	AStarmark_PlayerState* PlayerState = Cast<AStarmark_PlayerState>(PlayerControllers[j]->PlayerState);
+	for (int j = 0; j < PlayerControllers.Num(); j++) {
+		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerControllers[j]) {
+			//PlayerControllers[j]->IsCurrentlyActingPlayer = true;
+			//PlayerControllers[j]->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
+		} else {
+			PlayerControllers[j]->IsCurrentlyActingPlayer = false;
+		}
 
-	//	if (PlayerState->PlayerState_BattleHUD->IsValidLowLevel())
-	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Battle HUD Valid")));
-	//	else 
-	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Battle HUD Not Valid")));
-	//	//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(FString::FromInt(i)));
-	//	//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + AvatarTurnOrder[i]->AvatarData.AvatarName));
-	//}
+		/*AStarmark_PlayerState* PlayerState = Cast<AStarmark_PlayerState>(PlayerControllers[j]->PlayerState);
+
+		if (PlayerControllers[j]->BattleHUDCodeReference->IsValidLowLevel())
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Battle HUD Valid")));
+		else 
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Battle HUD Not Valid")));*/
+		//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(FString::FromInt(i)));
+		//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + AvatarTurnOrder[i]->AvatarData.AvatarName));
+	}
 	//}
 }
 
@@ -120,10 +130,10 @@ void AStarmark_GameState::AvatarBeginTurn()
 	// Re-Calculate Stats
 
 	// Update HUD
-	if (BattleHUD_Reference) {
+	//if (BattleHUD_Reference) {
 		//BattleHUD_Reference->AvatarBattleDataWidget->LinkedAvatar = AvatarRef->AvatarData;
 		//BattleHUD_Reference->AvatarBattleDataWidget->SetAvatarData();
-	}
+	//}
 }
 
 

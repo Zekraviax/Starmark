@@ -16,6 +16,7 @@ APlayerController_Base::APlayerController_Base()
 {
 	bShowMouseCursor = true;
 
+	IsCurrentlyActingPlayer = false;
 	PlayerClickMode = E_PlayerCharacter_ClickModes::E_Nothing;
 }
 
@@ -56,9 +57,9 @@ void APlayerController_Base::UpdateBattleWidget(UWidget_HUD_Battle* BattleHUDRef
 		AStarmark_GameState* GameStateRef = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
 		if (GameStateRef) {
-			/*for (int i = 0; i < GameStateRef->AvatarTurnOrder.Num(); i++) {
-				BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + GameStateRef->AvatarTurnOrder[i]->AvatarData.AvatarName));
-			}*/
+			//for (int i = 0; i < GameStateRef->AvatarTurnOrder.Num(); i++) {
+			//	BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + GameStateRef->AvatarTurnOrder[i]->AvatarData.AvatarName));
+			//}
 		}
 	}
 }
@@ -139,7 +140,7 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 	//else
 	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("ClickedActor Not Valid")));
 
-	if (ClickedActor) {
+	if (ClickedActor && IsCurrentlyActingPlayer) {
 		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
 			// Select Avatar To Control
 			if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {

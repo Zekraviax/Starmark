@@ -60,6 +60,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	TArray<FAvatar_Struct> PlayerParty;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
+	bool IsCurrentlyActingPlayer;
+
 // ------------------------- Grid
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	FVector CursorLocationSnappedToGrid;
