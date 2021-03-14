@@ -110,11 +110,6 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 void ACharacter_Pathfinder::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	// Update player in player party
-	if (IndexInPlayerParty >= -1) {
-
-	}
 }
 
 
@@ -488,7 +483,6 @@ void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* T
 	// Subtract Health
 	PlayerControllerReference->Server_SubtractHealth_Implementation(Target, CurrentDamage);
 
-
 	// Apply move effects after the damage has been dealt
 	for (int i = 0; i < CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
 		UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(CurrentSelectedAttack.AttackEffectsOnTarget[i], this, Target);
@@ -591,11 +585,12 @@ void ACharacter_Pathfinder::SetTilesOccupiedBySize()
 }
 
 
-void ACharacter_Pathfinder::UpdatePlayerBattleHUD()
+void ACharacter_Pathfinder::UpdatePlayerParty()
 {
 	if (PlayerControllerReference) {
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("PlayerControllerReference Valid")));
-		//PlayerControllerReference->BattleHUDCodeReference->AvatarBattleDataWidget->UpdateAvatarData(AvatarData);
+		//PlayerControllerReference->PlayerParty.EmplaceAt(IndexInPlayerParty, AvatarData);
+		PlayerControllerReference->PlayerParty[IndexInPlayerParty] = AvatarData;
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("PlayerControllerReference Not Valid")));

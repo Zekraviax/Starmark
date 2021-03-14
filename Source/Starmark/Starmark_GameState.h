@@ -58,4 +58,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void GameState_LaunchAttack(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void EndOfBattle();
 };

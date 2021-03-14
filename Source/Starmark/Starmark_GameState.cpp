@@ -9,6 +9,7 @@
 #include "Starmark_PlayerState.h"
 #include "GameFramework/Controller.h"
 #include "Engine/World.h"
+#include "Character_Pathfinder.h"
 
 
 void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -215,4 +216,12 @@ void AStarmark_GameState::GameState_LaunchAttack_Implementation(ACharacter_Pathf
 	//}
 	if (this->HasAuthority())
 		Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->GameMode_LaunchAttack_Implementation(Attacker, Defender);
+}
+
+
+void AStarmark_GameState::EndOfBattle_Implementation()
+{
+	for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
+		Cast<APlayerController_Base>(AvatarTurnOrder[i]->PlayerControllerReference)->IsCurrentlyActingPlayer = false;
+	}
 }

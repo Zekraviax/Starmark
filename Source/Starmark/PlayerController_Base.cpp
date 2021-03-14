@@ -235,5 +235,5 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 // ------------------------- Battle
 void APlayerController_Base::Server_SubtractHealth_Implementation(ACharacter_Pathfinder* Defender, int DamageDealt)
 {
-	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Combat_SubtractHealth_Implementation(Defender, DamageDealt);
+	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Battle_SubtractHealth_Implementation(Defender, DamageDealt);
 }

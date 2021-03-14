@@ -827,5 +827,8 @@ public:
 	void GameMode_LaunchAttack(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void Combat_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
+	void Battle_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
+
+	UFUNCTION()
+	void Battle_AvatarDefeated(ACharacter_Pathfinder* Avatar);
 };

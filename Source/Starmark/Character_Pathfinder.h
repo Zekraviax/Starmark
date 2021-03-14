@@ -154,7 +154,7 @@ public:
 	void SetTilesOccupiedBySize();
 
 	UFUNCTION(BlueprintCallable)
-	void UpdatePlayerBattleHUD();
+	void UpdatePlayerParty();
 
 	UFUNCTION(BlueprintCallable)
 	void ReceiveAttack();
