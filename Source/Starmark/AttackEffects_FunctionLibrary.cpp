@@ -24,5 +24,4 @@ bool UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(EBattle_AttackEffects 
 void UAttackEffects_FunctionLibrary::Attack_AddParalyze(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
 {
 	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect("Paralyzed", nullptr, 3));
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Paralyze Target")));
 }

@@ -17,6 +17,7 @@ const static int dir = 4;
 const static int dx[dir] = { 1, 0, -1, 0 };
 const static int dy[dir] = { 0, 1, 0, -1 };
 
+
 UCLASS()
 class STARMARK_API ARecastNavMesh_GraphAStar : public ARecastNavMesh
 {
@@ -25,7 +26,4 @@ class STARMARK_API ARecastNavMesh_GraphAStar : public ARecastNavMesh
 	ARecastNavMesh_GraphAStar(const FObjectInitializer& ObjectInitializer);
 
 	static FPathFindingResult FindPath(const FNavAgentProperties& AgentProperties, const FPathFindingQuery& Query);
-
-	//UFUNCTION(Blueprintcallable)
-	//void BlueprintFindPath(TArray<FVector>& OutPathPoints);
 };

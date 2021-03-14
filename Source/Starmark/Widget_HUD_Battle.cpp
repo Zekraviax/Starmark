@@ -10,16 +10,6 @@
 // ------------------------- Widget
 void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 {
-	//if (!PlayerControllerReference)
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PlayerController Not Valid")));
-	//else
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("PlayerController Valid")));
-
-	//if (!PlayerControllerReference->CurrentSelectedAvatar)
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CurrentSelectedAvatar Not Valid")));
-	//else
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("CurrentSelectedAvatar Valid")));
-
 	for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
 		if (PlayerControllerReference->CurrentSelectedAvatar->AllKnownAttacks.IsValidIndex(i)) {
 			Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AttackNameText->SetText(FText::FromString(PlayerControllerReference->CurrentSelectedAvatar->AllKnownAttacks[i].Name));
@@ -52,9 +42,6 @@ void UWidget_HUD_Battle::MoveCommand()
 
 void UWidget_HUD_Battle::AttackCommand()
 {
-	//if (!PlayerControllerReference)
-	//	PlayerControllerReference = NewPlayerControllerReference;
-
 	// Show Avatar Attacks Box
 	if (AvatarAttacksBox) {
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Avatar Attacks Box Valid")));
@@ -80,8 +67,6 @@ void UWidget_HUD_Battle::SwitchCommand()
 
 void UWidget_HUD_Battle::EndCommand()
 {
-	//GetWorld()->GetGameState<AStarmark_GameState>()->AvatarEndTurn_Implementation();
-
 	if (AvatarAttacksBox)
 		AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
 }

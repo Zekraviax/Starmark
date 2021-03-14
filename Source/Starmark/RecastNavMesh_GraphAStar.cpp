@@ -257,24 +257,14 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 						}
 						else if (Result.Path->GetPathPoints().IsValidIndex(k) && k == AvatarMovesRemaining) {
 							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 250.f), FColor::Yellow, false, 2.5f);
-							//Cast<AAIController>(AvatarReference->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", Result.Path->GetPathPointLocation(k).Position);
 						}
-						else {
-							//DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 100.f), FColor::Red, false, 2.5f);
-							//Result.Path->GetPathPoints().RemoveAt(k, 1, false);
-						}
-
-						//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Position: %s  /  Index: %d"), *Result.Path->GetPathPointLocation(k).Position.ToString(), k));
 
 						// Check for valid tiles in the next step of the Move, for each tile the Avatar occupies
-						//
 						if (Result.Path->GetPathPoints().IsValidIndex(k + 1) && k != Result.Path->GetPathPoints().Num() - 1) {
 							for (int n = 0; n < AvatarReference->AvatarData.OccupiedTiles.Num(); n++) {
 								FVector DrawBoxPosition = Result.Path->GetPathPointLocation(k + 1).Position;
 								Start = FVector((DrawBoxPosition.X + (200 * AvatarReference->AvatarData.OccupiedTiles[n].X)), (DrawBoxPosition.Y + (200 * AvatarReference->AvatarData.OccupiedTiles[n].Y)), AvatarReference->GetActorLocation().Z);
 								End = FVector(Start.X, Start.Y, -1.f);
-
-
 
 								SuccessfulLineTrace = Query.NavData->GetWorld()->LineTraceSingleByObjectType(LineTraceResult, Start, End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
 
@@ -282,25 +272,17 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 									DrawDebugBox(Query.NavData->GetWorld(), Start, FVector(50.f, 50.f, 200.f), FColor::Purple, false, 2.5f);
 								else {
 									DrawDebugBox(Query.NavData->GetWorld(), Start, FVector(50.f, 50.f, 250.f), FColor::Red, false, 2.5f); {
-
-									// Remove from Path
-									//Result.Path->GetPathPoints().RemoveAt(k + 1, 1, false);
 									}
 								}
 							}
 						}
 					}
 
-					// Subtract Moves
-					//AvatarReference->CurrentTileMoves -= Result.Path->GetPathPoints().Num() - 1;
-
 
 					
 
 					Result.Path->MarkReady();
 					Result.Result = ENavigationQueryResult::Success;
-
-					//GEngine->AddOnScreenDebugMessage(-1, 0.2f, FColor::Red, FString::Printf(TEXT("Path Length: %d"), Result.Path->GetPathPoints().Num() ));
 
 					return Result;
 				}
@@ -314,7 +296,6 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 				TEnumAsByte<EObjectTypeQuery> ObjectToTrace = EObjectTypeQuery::ObjectTypeQuery1;
 				TArray<TEnumAsByte<EObjectTypeQuery> > ObjectsToTraceAsByte;
 				ObjectsToTraceAsByte.Add(ObjectToTrace);
-				//FCollisionQueryParams QueryParams;
 
 
 
@@ -438,11 +419,3 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 
 	return Result;
 }
-
-
-//void ARecastNavMesh_GraphAStar::BlueprintFindPath(TArray<FVector>& OutPathPoints)
-//{
-//	FNavAgentProperties NavAgentProperties;
-//
-//	//FPathFindingResult Path = FindPath(NavAgentProperties, )
-//}

@@ -200,8 +200,6 @@ struct STARMARK_API FAvatar_SimpleTypeChart : public FTableRowBase
 		Type = EAvatar_Types::E_Fire;
 		TakesMoreDamageFromTypes.Add(EAvatar_Types::E_Water);
 		TakesLessDamageFromTypes.Add(EAvatar_Types::E_Air);
-		//TakesMoreDamageFromType = EAvatar_Types::E_Water;
-		//TakesLessDamageFromType = EAvatar_Types::E_Air;
 	}
 };
 
@@ -216,12 +214,6 @@ struct STARMARK_API FAvatar_UltimateTypeChart : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<EAvatar_Types> CombinationTypes;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//TArray<EAvatar_Types> TakesMoreDamageFromTypes;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//TArray<EAvatar_Types> TakesLessDamageFromTypes;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<EAvatar_Types> DoesMoreDamageToTypes;
 
@@ -233,14 +225,6 @@ struct STARMARK_API FAvatar_UltimateTypeChart : public FTableRowBase
 		Type = EAvatar_Types::E_Hex;
 		CombinationTypes.Add(EAvatar_Types::E_Arcane);
 		CombinationTypes.Add(EAvatar_Types::E_Dark);
-		//TakesMoreDamageFromTypes.Add(EAvatar_Types::E_Earth);
-		//TakesMoreDamageFromTypes.Add(EAvatar_Types::E_Arcane);
-		//TakesLessDamageFromTypes.Add(EAvatar_Types::E_Light);
-		//TakesLessDamageFromTypes.Add(EAvatar_Types::E_Dark);
-		//DoesMoreDamageToTypes.Add(EAvatar_Types::E_Earth);
-		//DoesMoreDamageToTypes.Add(EAvatar_Types::E_Dark);
-		//DoesLessDamageToTypes.Add(EAvatar_Types::E_Light);
-		//DoesLessDamageToTypes.Add(EAvatar_Types::E_Air);
 	}
 };
 
@@ -580,237 +564,6 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		TokensRequired = 1;
 	}
 };
-
-
-//------------------------- Grid
-USTRUCT(BlueprintType)
-struct FHTileLayout
-{
-	GENERATED_USTRUCT_BODY()
-
-	FHTileLayout() {}
-
-	FHTileLayout(EHTileOrientationFlag orientation, float size, FVector origin) : TileOrientation(orientation), TileSize(size), Origin(origin) {
-	}
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EHTileOrientationFlag TileOrientation
-	{
-		EHTileOrientationFlag::NONE
-	};
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float TileSize
-	{
-		0
-	};
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector Origin {
-		FVector::ZeroVector
-	};
-};
-
-USTRUCT(BLueprintType)
-struct FHAxialCoord 
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FIntPoint QR
-	{
-		FIntPoint::ZeroValue
-	};
-
-	FHAxialCoord() {}
-
-	FHAxialCoord(int32 q, int32 r)
-	{
-		QR.X = q;
-		QR.Y = r;
-	}
-
-	FHAxialCoord(FIntPoint _qr) : QR(_qr)
-	{
-
-	}
-};
-
-USTRUCT(BlueprintType)
-struct FHCubeCoord
-{
-	GENERATED_USTRUCT_BODY()
-
-	FHCubeCoord() {}
-
-	FHCubeCoord(int32 q, int32 r, int32 s)
-	{
-		//check(q + r + s == 0);
-		QRS.X = q;
-		QRS.Y = r;
-		QRS.Z = s;
-	}
-
-	FHCubeCoord(FIntVector _v) : QRS(_v) {}
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FIntVector QRS 
-	{
-		FIntVector::ZeroValue
-	};
-
-	friend FHCubeCoord operator+ (const FHCubeCoord &lhs, const FHCubeCoord &rhs)
-	{
-		return FHCubeCoord 
-		{
-			lhs.QRS + rhs.QRS
-		};
-	}
-
-	friend FHCubeCoord operator-(const FHCubeCoord &lhs, const FHCubeCoord &rhs)
-	{
-		return FHCubeCoord
-		{ 
-			lhs.QRS - rhs.QRS 
-		};
-	}
-
-	friend FHCubeCoord operator*(const FHCubeCoord &lhs, int32 k)
-	{
-		return FHCubeCoord
-		{ 
-			lhs.QRS * k 
-		};
-	}
-
-	friend bool operator==(const FHCubeCoord &lhs, const FHCubeCoord &rhs)
-	{
-		return lhs.QRS == rhs.QRS;
-	}
-
-	friend bool operator!=(const FHCubeCoord &lhs, const FHCubeCoord &rhs)
-	{
-		return lhs.QRS != rhs.QRS;
-	}
-
-	friend uint32 GetTypeHash(const FHCubeCoord &Other)
-	{
-		FString TypeHash
-		{
-			Other.QRS.ToString()
-		};
-
-		return GetTypeHash(TypeHash);
-	}
-};
-
-USTRUCT(BlueprintType)
-struct FHFractional
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector QRS
-	{
-		FVector::ZeroVector
-	};
-
-	FHFractional() {}
-
-	FHFractional(float q, float r, float s)
-	{
-		QRS.X = q;
-		QRS.Y = r;
-		QRS.Z = q;
-	}
-
-	FHFractional(FVector _v) : QRS(_v)
-	{
-
-	}
-};
-
-USTRUCT(BlueprintType)
-struct FHDirections
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(BlueprintReadWrite)
-	TArray<FHCubeCoord> Directions;
-
-	FHDirections() {}
-};
-
-USTRUCT(BlueprintType)
-struct FHDiagonals
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(BlueprintReadWrite)
-	TArray<FHCubeCoord> Diagonals;
-
-	FHDiagonals() {}
-};
-
-USTRUCT(BlueprintType)
-struct FHTileOrientation
-{
-	GENERATED_USTRUCT_BODY()
-
-	// F variables are used in the GridToWorld conversion
-	// f0 and f1 for X coords, f2 and f3 for Y coords
-	double f0, f1, f2, f3;
-
-	// B variables are used in the WorldToGrid conversion
-	double b0, b1, b2, b3;
-
-	FHTileOrientation() 
-	{
-
-	}
-
-	friend bool operator==(const FHTileOrientation &lhs, const FHTileOrientation &rhs) 
-	{
-		return (lhs.f0 == rhs.f0) && (lhs.f1 == rhs.f1) && (lhs.f2 == rhs.f2) && (lhs.f3 == rhs.f3);
-	}
-
-
-};
-
-const struct FHFlatTopOrientation : FHTileOrientation
-{
-	FHFlatTopOrientation()
-	{
-		// UE4 | Original
-		f0 = -FMath::Sqrt(3.0) / 2.0;	// -f2 | f0 = 3/2
-		f1 = -FMath::Sqrt(3.0);			// -f3 | f1 = 0
-		f2 = 3.0 / 2.0;					//  f0 | f2 = sqrt(3)/2
-		f3 = 0.0;						//  f1 | f3 = sqrt(3)
-
-		b0 = 0.0;						// b1 | b0 = 2/3
-		b1 = 2.0 / 3.0;					// b0 | b1 = 0
-		b2 = FMath::Sqrt(3.0) / 3.0;	// b3 | b2 = -1/3
-		b3 = -1.0 / 3.0;				// b2 | b3 = sqrt(3)/3
-	}
-
-} HFlatTopLayout;
-
-const struct FHPointyOrientation : FHTileOrientation
-{
-	FHPointyOrientation()
-	{
-		f0 = 0.0;						// -f2 | f0 = sqrt(3)
-		f1 = -3.0 / 2.0;				// -f3 | f1 = sqrt(3)/2
-		f2 = FMath::Sqrt(3.0);			//  f0 | f2 = 0
-		f3 = FMath::Sqrt(3.0) / 2.0;	//  f1 | f3 = 3/2f
-
-		b0 = 1.0 / 3.0;					// -b1 | b0 = sqrt(3)/3
-		b1 = FMath::Sqrt(3.0) / 3.0;	//  b0 | b1 = -1/3
-		b2 = -2.0 / 3.0;				// -b3 | b2 = 0
-		b3 = 0.0;						//  b2 | b3 = 2/3
-	}
-
-} HPointyOrientation;
 
 
 UCLASS()

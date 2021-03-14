@@ -26,18 +26,14 @@ void AStarmark_GameMode::GameMode_LaunchAttack_Implementation(ACharacter_Pathfin
 void AStarmark_GameMode::Battle_SubtractHealth_Implementation(ACharacter_Pathfinder* Defender, int DamageDealt)
 {
 	if (Defender) {
-		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Defender Valid")));
 		Defender->AvatarData.CurrentHealthPoints -= DamageDealt;
 		Defender->UpdatePlayerParty();
 
 		if (Defender->AvatarData.CurrentHealthPoints <= 0) {
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Avatar Defeated")));
-			//Defender->Destroy();
+
 			Battle_AvatarDefeated(Defender);
 		}
-	}
-	else {
-		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Defender Not Valid")));
 	}
 }
 

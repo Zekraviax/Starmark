@@ -27,8 +27,6 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 
 	// Use Nested Loops to compare Avatars' Speeds.
 	for (int i = 0; i < FoundActors.Num(); i++) {
-		//AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
-
 		if (AvatarTurnOrder.Num() <= 0) {
 			AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
 		} else {
@@ -46,60 +44,18 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 		}
 	}
 
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Avatar Turn Order Length: %d"), AvatarTurnOrder.Num()));
-
-	//CurrentAvatarTurnIndex = 0;
-
-	// Set Player's Avatar to the first in the list
-	//for (int i = 0; i < PlayerControllers.Num(); i++) {
-	//	// Update All Avatar's Decals
-	//	PlayerControllers[i]->UpdateSelectedAvatar();
-
-	//	// Update the Player's HUD
-	//	//if (PlayerControllers[i]->BattleHUDReference) {
-	//	//	//BattleHUD_Reference = PlayerControllers[i]->BattleHUDReference;
-
-	//	//	PlayerControllers[i]->BattleHUDReference->AvatarBattleDataWidget->LinkedAvatar = PlayerControllers[i]->CurrentSelectedAvatar;
-	//	//	PlayerControllers[i]->BattleHUDReference->AvatarBattleDataWidget->SetAvatarData();
-	//	//	//PlayerControllers[i]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(FString::FromInt(AvatarTurnOrder.Num())));
-	//	//}
-	//	//else {
-	//	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Battle HUD Reference Not Valid")));
-	//	//}
-	//}
-
-	//PlayerControllersArray = PlayerControllers;
-
-	//for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
 	for (int j = 0; j < PlayerControllers.Num(); j++) {
 		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerControllers[j]) {
 			PlayerControllers[j]->IsCurrentlyActingPlayer = true;
-			//PlayerControllers[j]->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
 		} else {
 			PlayerControllers[j]->IsCurrentlyActingPlayer = false;
 		}
-
-		/*AStarmark_PlayerState* PlayerState = Cast<AStarmark_PlayerState>(PlayerControllers[j]->PlayerState);
-
-		if (PlayerControllers[j]->BattleHUDCodeReference->IsValidLowLevel())
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Battle HUD Valid")));
-		else 
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Battle HUD Not Valid")));*/
-		//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(FString::FromInt(i)));
-		//PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->SetText(FText::FromString(PlayerControllers[j]->BattleHUDReference->TurnOrderTextBlock->GetText().ToString() + "\n" + AvatarTurnOrder[i]->AvatarData.AvatarName));
 	}
-	//}
 }
 
 
 void AStarmark_GameState::AvatarEndTurn_Implementation(const TArray<APlayerController_Base*>& PlayerControllers)
 {
-	//if (!PlayerControllerReference)
-	//	PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-
-	// Reset Decals
-	//PlayerControllerReference->UpdateSelectedAvatar();
-
 	CurrentAvatarTurnIndex++;
 
 	// Reset Round
@@ -112,35 +68,11 @@ void AStarmark_GameState::AvatarEndTurn_Implementation(const TArray<APlayerContr
 	for (int j = 0; j < PlayerControllers.Num(); j++) {
 		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerControllers[j]) {
 			PlayerControllers[j]->IsCurrentlyActingPlayer = true;
-			//PlayerControllers[j]->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
 		}
 		else {
 			PlayerControllers[j]->IsCurrentlyActingPlayer = false;
 		}
 	}
-
-	//// Set Controlling Player
-	//for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
-	//{
-	//	APlayerController_Base* PlayerController = Cast<APlayerController_Base>(*Iterator);
-	//	if (PlayerController)
-	//	{
-	//		if (PlayerController->IsValidLowLevel()) {
-	//			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
-	//				PlayerController->IsCurrentlyActingPlayer = true;
-	//				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("PlayerController Valid")));
-	//			}
-	//			else {
-	//				PlayerController->IsCurrentlyActingPlayer = false;
-	//				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("PlayerController Not Valid")));
-	//			}
-	//		}
-	//	}
-	//}
-
-	//PlayerControllerReference->CurrentSelectedAvatar = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[CurrentAvatarTurnIndex]);
-
-	//AvatarBeginTurn();
 }
 
 
@@ -170,50 +102,11 @@ void AStarmark_GameState::AvatarBeginTurn()
 			AvatarRef->CurrentStatusEffectsArray.RemoveAt(i);
 		}
 	}
-
-	// Re-Calculate Stats
-
-	// Update HUD
-	//if (BattleHUD_Reference) {
-		//BattleHUD_Reference->AvatarBattleDataWidget->LinkedAvatar = AvatarRef->AvatarData;
-		//BattleHUD_Reference->AvatarBattleDataWidget->SetAvatarData();
-	//}
-
-	//for (int j = 0; j < PlayerArray.Num(); j++) {
-	//	if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerControllers[j]) {
-	//		PlayerControllers[j]->IsCurrentlyActingPlayer = true;
-	//		//PlayerControllers[j]->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
-	//	}
-	//	else {
-	//		PlayerControllers[j]->IsCurrentlyActingPlayer = false;
-	//	}
-	//}
 }
 
 
 void AStarmark_GameState::GameState_LaunchAttack_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
 {
-	//int CurrentDamage = 1;
-
-	//CurrentDamage = FMath::CeilToInt(Attacker->AvatarData.BaseStats.Attack * 50);
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 1 = %d"), CurrentDamage));
-	//CurrentDamage = FMath::CeilToInt(CurrentDamage / Defender->AvatarData.BaseStats.Defence);
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 2 = %d"), CurrentDamage));
-	//CurrentDamage = FMath::CeilToInt((Attacker->AvatarData.BaseStats.Power / 2) * CurrentDamage);
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 3 = %d"), CurrentDamage));
-	//CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 3 = %d"), CurrentDamage));
-
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Final Damage  = %d"), CurrentDamage));
-
-	//if (Defender) {
-	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Defender Valid")));
-	//	Defender->AvatarData.CurrentHealthPoints -= CurrentDamage;
-	//	Defender->UpdatePlayerBattleHUD();
-	//}
-	//else {
-	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Defender Not Valid")));
-	//}
 	if (this->HasAuthority())
 		Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->GameMode_LaunchAttack_Implementation(Attacker, Defender);
 }

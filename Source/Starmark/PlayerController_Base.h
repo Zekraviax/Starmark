@@ -12,7 +12,7 @@
 
 // Forward Declarations
 class UWidget_HUD_Battle;
-//class ACharacter_Pathfinder;
+
 
 // Unique Enums
 UENUM(BlueprintType)
@@ -81,16 +81,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateSelectedAvatar();
 
-	//UFUNCTION(BlueprintCallable, NetMulticast, Reliable, WithValidation)
-	//void SpawnPartyMember();
-
 // ------------------------- Mouse
-	//UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryClick(AActor* ClickedActor);
-
-	//UFUNCTION()
-	//void UpdateCursorSelectedMaterial();
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)

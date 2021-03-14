@@ -33,15 +33,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Battle")
 	TArray<ACharacter_Pathfinder*> AvatarTurnOrder;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle")
-	//UWidget_HUD_Battle* BattleHUD_Reference;
-
 	// The Index of the Avater whose turn it is, in the AvatarTurnOrder Array.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int CurrentAvatarTurnIndex;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	//TArray<APlayerController_Base*> PlayerControllersArray;
 
 // Functions
 // --------------------------------------------------

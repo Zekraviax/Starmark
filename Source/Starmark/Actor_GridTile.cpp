@@ -24,24 +24,16 @@ AActor_GridTile::AActor_GridTile()
 void AActor_GridTile::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void AActor_GridTile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 
 // ------------------------- Battle
-void AActor_GridTile::OnMouseBeginOver()
-{
-
-}
-
-
 void AActor_GridTile::UpdateGridTileState()
 {
 	// Clear TraversalProperties that aren't permanent (e.g. Occupied)
@@ -56,8 +48,6 @@ void AActor_GridTile::UpdateGridTileState()
 	bool SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, GetActorLocation(), End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
 
 	if (SuccessfulLineTrace) {
-		//TraversalProperties.Add(E_GridTile_TraversalProperties::E_Occupied);
-		
 		// Tell the Avatar to update Tiles based on its Size
 		Cast<ACharacter_Pathfinder>(LineTraceResult.Actor)->SetTilesOccupiedBySize();
 	} 

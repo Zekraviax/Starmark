@@ -29,4 +29,3 @@ void APlayerPawn_Static::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
-

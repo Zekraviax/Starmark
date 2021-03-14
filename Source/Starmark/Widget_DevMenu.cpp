@@ -51,8 +51,6 @@ void UWidget_DevMenu::OnColourDropdownChanged(E_DevMenu_ColourChangeDropdowns Dr
 				Material->SetVectorParameterValue("Colour3", Dye.Key());
 			}
 		}
-
-		//DyeChangeCharacter->Mesh->SetMaterial(0, Material);
 	}
 }
 
@@ -94,14 +92,12 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 			for (int i = 0; i < MoveEffectiveness_RowNames.Num(); i++) {
 				if (Cast<UTextBlock>(TypeTextBox)->GetName() == (MoveEffectiveness_RowNames[i].ToString() + "Move")) {
 					Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString("1"));
-					//break;
 				}
 			}
 
 			for (int i = 0; i < AvatarResistances_RowNames.Num(); i++) {
 				if (Cast<UTextBlock>(TypeTextBox)->GetName() == (AvatarResistances_RowNames[i].ToString() + "Avatar")) {
 					Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString("1"));
-					//break;
 				}
 			}
 		}		
@@ -112,9 +108,6 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 			PrimaryTypeString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CombinationType->PrimaryType).ToString();
 			SecondaryTypeString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CombinationType->SecondaryType).ToString();
 
-			//PrimaryTypeString = PrimaryTypeString.Right(PrimaryTypeString.Len() - 2);
-			//SecondaryTypeString = SecondaryTypeString.Right(SecondaryTypeString.Len() - 2);
-
 			if (PrimaryTypeString == PrimaryTypeDropdown->GetSelectedOption() ||
 				PrimaryTypeString == SecondaryTypeDropdown->GetSelectedOption()) {
 
@@ -122,7 +115,6 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 					SecondaryTypeString == SecondaryTypeDropdown->GetSelectedOption()) {
 
 					CombinationTypeString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CombinationType->CombinationType).ToString();
-					//CombinationTypeString = CombinationTypeString.Right(CombinationTypeString.Len() - 2);
 
 					CombinationTypeText->SetText(FText::FromString(CombinationTypeString));
 					break;
@@ -153,7 +145,6 @@ void UWidget_DevMenu::CalculateTypeStrengthsAndWeaknesses()
 						}
 
 						Cast<UTextBlock>(TypeTextBox)->SetText(FText::FromString(MoveEffectiveness_RowNames[i].ToString() + ": x" + Text.ToString()));
-						//break;
 					} else if (Cast<UTextBlock>(TypeTextBox)->GetName() == (AvatarResistances_RowNames[i].ToString() + "Avatar")) {
 						// Avatar Resistances
 						Value = *AvatarResistances_BaseTypeChartRowMap.Find(AvatarResistances_RowNames[i]);
@@ -210,10 +201,4 @@ void UWidget_DevMenu::OnEyesChanged(AActor_MorphTargetTest* MorphTargetTestChara
 			SkeletalMeshComponent->SetMaterial(0, RoundEyes_DynamicMaterial);
 		}
 	}
-}
-
-
-void UWidget_DevMenu::OnEyeColourChanged(AActor_MorphTargetTest* MorphTargetTestCharacter)
-{
-
 }

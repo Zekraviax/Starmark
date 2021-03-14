@@ -18,7 +18,4 @@ void UWidgetComponent_AvatarAttack::OnButtonPressed()
 		// Get new valid targets
 		PlayerControllerReference->CurrentSelectedAvatar->ShowAttackRange();
 	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("PlayerControllerReference Not Valid")));
-	}
 }

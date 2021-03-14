@@ -26,11 +26,6 @@ AActor_CharacterTest::AActor_CharacterTest()
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
 	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
-	//static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/Materials/P4T_Assets/CommandRing_Mat.CommandRing_Mat'"));
-	//if (DecalMaterialAsset.Succeeded())
-	//{
-	//	CursorToWorld->SetDecalMaterial(DecalMaterialAsset.Object);
-	//}
 	CursorToWorld->SetupAttachment(RootComponent);
 
 	// Create Actor Selected Decal
@@ -47,7 +42,6 @@ void AActor_CharacterTest::BeginPlay()
 
 	// Dynamic Material
 	DynamicMaterial = UMaterialInstanceDynamic::Create(StaticMaterial, this);
-	//StaticMeshComponent->SetMaterial(0, DynamicMaterial);
 }
 
 // Called every frame
@@ -55,21 +49,4 @@ void AActor_CharacterTest::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (CursorToWorld != nullptr)
-	{
-		if (APlayerController_Base* PC = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
-		{
-			//FHitResult TraceHitResult;
-			//PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
-			//FVector CursorFV = TraceHitResult.ImpactNormal;
-			//FRotator CursorR = CursorFV.Rotation();
-
-			// Snap Location To Grid
-			//FVector CursorSnappedToGrid = CursorFV.GridSnap(200.f);
-
-			//CursorToWorld->SetWorldLocation(CursorSnappedToGrid);
-			//PC->CursorLocationSnappedToGrid = CursorSnappedToGrid;
-			//CursorToWorld->SetWorldRotation(CursorR);
-		}
-	}
 }

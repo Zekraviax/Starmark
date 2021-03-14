@@ -32,5 +32,4 @@ public:
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)
 	void CheckVariables();
-	
 };

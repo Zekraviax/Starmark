@@ -122,7 +122,4 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnEyesChanged(AActor_MorphTargetTest* MorphTargetTestCharacter);
-
-	UFUNCTION(BlueprintCallable)
-	void OnEyeColourChanged(AActor_MorphTargetTest* MorphTargetTestCharacter);
 };
