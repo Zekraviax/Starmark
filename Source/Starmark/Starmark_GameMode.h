@@ -825,4 +825,7 @@ public:
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void GameMode_LaunchAttack(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void Combat_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
 };

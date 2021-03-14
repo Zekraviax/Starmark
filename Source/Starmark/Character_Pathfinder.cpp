@@ -92,6 +92,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	bReplicateMovement = true; 
 	//bReplicateInstigator = true; 
 	bNetUseOwnerRelevancy = true;
+	IndexInPlayerParty = -1;
 }
 
 
@@ -110,6 +111,10 @@ void ACharacter_Pathfinder::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	// Update player in player party
+	if (IndexInPlayerParty >= -1) {
+
+	}
 }
 
 
@@ -455,43 +460,33 @@ void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* T
 
 	// Use Gamemode's attack function
 	//Cast<AStarmark_GameState>(GetWorld()->GetGameState())->GameState_LaunchAttack_Implementation(this, Target);
-	//Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->GameMode_LaunchAttack_Implementation(this, Target);
 
 	// Attack Damage Formula
-	/*CurrentDamage = FMath::CeilToInt(AvatarData.BaseStats.Attack * CurrentSelectedAttack.BasePower);
+	CurrentDamage = FMath::CeilToInt(AvatarData.BaseStats.Attack * CurrentSelectedAttack.BasePower);
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 1 = %d"), CurrentDamage));
 	CurrentDamage = FMath::CeilToInt(CurrentDamage / Target->AvatarData.BaseStats.Defence);
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 2 = %d"), CurrentDamage));
 	CurrentDamage = FMath::CeilToInt((AvatarData.BaseStats.Power / 2) * CurrentDamage);
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 3 = %d"), CurrentDamage));
 	CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 3 = %d"), CurrentDamage));*/
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 4 = %d"), CurrentDamage));
 
 	// Compare each Move type against the Target type
-	//for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
-	//	// 2x Damage
-	//	if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j])) {
-	//		CurrentDamage = CurrentDamage * 2;
-	//	}
-	//	// 0.5x Damage
-	//	else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j])) {
-	//		CurrentDamage = CurrentDamage / 2;
-	//	}
-	//}
+	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
+		// 2x Damage
+		if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j])) {
+			CurrentDamage = CurrentDamage * 2;
+		}
+		// 0.5x Damage
+		else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j])) {
+			CurrentDamage = CurrentDamage / 2;
+		}
+	}
 
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Final Damage  = %d"), CurrentDamage));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Final Damage  = %d"), CurrentDamage));
 
 	// Subtract Health
-	//if (Target) {
-	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Target Valid")));
-	//	Target->AvatarData.CurrentHealthPoints -= CurrentDamage;
-	//	Target->UpdatePlayerBattleHUD();
-	//} else {
-	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Target Not Valid")));
-	//}
-
-	// Update AvatarDataWidgets
-	//Target->PlayerControllerReference->HUD
+	PlayerControllerReference->Server_SubtractHealth_Implementation(Target, CurrentDamage);
 
 
 	// Apply move effects after the damage has been dealt
@@ -502,6 +497,9 @@ void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* T
 	// End this Avatar's turn
 	//GetWorld()->GetGameState<AStarmark_GameState>()->AvatarEndTurn();
 }
+
+
+
 //void ACharacter_Pathfinder::LaunchAttack(ACharacter_Pathfinder* Target)
 //{
 //	FAvatar_UltimateTypeChart* MoveTypeChartRow;
@@ -601,5 +599,13 @@ void ACharacter_Pathfinder::UpdatePlayerBattleHUD()
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("PlayerControllerReference Not Valid")));
+	}
+}
+
+
+void ACharacter_Pathfinder::ReceiveAttack()
+{
+	if (AvatarData.CurrentHealthPoints <= 0) {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Avatar Defeated")));
 	}
 }

@@ -74,7 +74,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	USkeletalMesh* SkeletalMeshReference;
-	//TSubclassOf<USkeletalMesh> SkeletalMeshReference;
 
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
@@ -156,4 +155,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayerBattleHUD();
+
+	UFUNCTION(BlueprintCallable)
+	void ReceiveAttack();
 };

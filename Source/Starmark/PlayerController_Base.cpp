@@ -190,6 +190,8 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 	//		break;
 	//}
 }
+
+
 //void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor)
 //{
 //	if (ClickedActor) {
@@ -224,7 +226,14 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 //}
 
 
-void APlayerController_Base::UpdateCursorSelectedMaterial()
-{
+//void APlayerController_Base::UpdateCursorSelectedMaterial()
+//{
+//
+//}
 
+
+// ------------------------- Battle
+void APlayerController_Base::Server_SubtractHealth_Implementation(ACharacter_Pathfinder* Defender, int DamageDealt)
+{
+	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Combat_SubtractHealth_Implementation(Defender, DamageDealt);
 }

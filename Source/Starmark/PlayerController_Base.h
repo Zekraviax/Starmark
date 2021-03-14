@@ -89,6 +89,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryClick(AActor* ClickedActor);
 
-	UFUNCTION()
-	void UpdateCursorSelectedMaterial();
+	//UFUNCTION()
+	//void UpdateCursorSelectedMaterial();
+
+// ------------------------- Battle
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void Server_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
 };
