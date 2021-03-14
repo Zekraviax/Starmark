@@ -224,4 +224,6 @@ void AStarmark_GameState::EndOfBattle_Implementation()
 	for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
 		Cast<APlayerController_Base>(AvatarTurnOrder[i]->PlayerControllerReference)->IsCurrentlyActingPlayer = false;
 	}
+
+	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->EndOfBattle();
 }

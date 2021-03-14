@@ -55,3 +55,9 @@ void AStarmark_GameMode::Battle_AvatarDefeated(ACharacter_Pathfinder* Avatar)
 
 	Avatar->Destroy();
 }
+
+
+void AStarmark_GameMode::EndOfBattle_Implementation()
+{
+
+}
