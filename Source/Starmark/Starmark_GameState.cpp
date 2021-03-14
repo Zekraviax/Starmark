@@ -11,6 +11,14 @@
 #include "Engine/World.h"
 
 
+void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AStarmark_GameState, AvatarTurnOrder);
+}
+
+
 void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerController_Base*>& PlayerControllers)
 {
 	TArray<AActor*> FoundActors;
