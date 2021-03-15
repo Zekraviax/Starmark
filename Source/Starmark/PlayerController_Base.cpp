@@ -3,6 +3,7 @@
 
 #include "NavigationSystem.h"
 #include "AIController.h"
+#include "AIController_Avatar.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/World.h"
 #include "Widget_HUD_Battle.h"
@@ -41,6 +42,10 @@ void APlayerController_Base::SetupInputComponent()
 void APlayerController_Base::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+
+	if (CurrentSelectedAvatar) {
+		SetBattleWidgetAndLinkedAvatar(BattleWidgetReference, CurrentSelectedAvatar->AvatarData);
+	}
 }
 
 
@@ -80,7 +85,7 @@ void APlayerController_Base::UpdateSelectedAvatar()
 }
 
 
-// ------------------------- Mouse
+// ------------------------- Battle
 void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
 	if (!CurrentSelectedAvatar) {
@@ -112,7 +117,8 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 			// If all else fails, assume we clicked on a plane that we can move our controller Avatar to
 			if (CurrentSelectedAvatar) {
 				if (CurrentSelectedAvatar->GetController()->IsValidLowLevel()) {
-					Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
+					//Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
+					
 				}
 			}
 		}
@@ -120,7 +126,12 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 }
 
 
-// ------------------------- Battle
+void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector MoveLocation)
+{
+
+}
+
+
 void APlayerController_Base::Server_SubtractHealth_Implementation(ACharacter_Pathfinder* Defender, int DamageDealt)
 {
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Battle_SubtractHealth_Implementation(Defender, DamageDealt);

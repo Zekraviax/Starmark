@@ -12,6 +12,7 @@
 
 // Forward Declarations
 class UWidget_HUD_Battle;
+class AAIController_Avatar;
 
 
 // Unique Enums
@@ -53,8 +54,11 @@ public:
 	UWidget_HUD_Battle* BattleWidgetReference;
 
 // ------------------------- Avatar
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Pawn")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Avatar")
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	AController* AIControllerReference;
 
 // ------------------------- Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
@@ -78,11 +82,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateSelectedAvatar();
 
-// ------------------------- Mouse
+// ------------------------- Battle
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryClick(AActor* ClickedActor);
 
-// ------------------------- Battle
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void SendMoveCommandToServer(FVector MoveLocation);
+
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
 };
