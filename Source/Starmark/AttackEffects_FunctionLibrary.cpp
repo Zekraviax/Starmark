@@ -9,11 +9,11 @@ bool UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(EBattle_AttackEffects 
 {
 	switch (AttackEffect)
 	{
-	case (EBattle_AttackEffects::AddParalyzeStatus):
-		Attack_AddParalyze(Attacker, Defender);
-		break;
-	default:
-		break;
+		case (EBattle_AttackEffects::AddParalyzeStatus):
+			Attack_AddParalyze(Attacker, Defender);
+			break;
+		default:
+			break;
 	}
 
 	return true;

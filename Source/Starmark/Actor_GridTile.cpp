@@ -13,17 +13,16 @@ AActor_GridTile::AActor_GridTile()
 	// Initialize Components
 	Floor = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Floor"));
 	Floor->SetupAttachment(RootComponent);
-
-	FTransform FloorTransform;
-	FloorTransform.SetScale3D(FVector(2.f, 2.f, 1.f));
-	Floor->SetRelativeTransform(FloorTransform);
-
+	Floor->SetRelativeTransform(FTransform(FRotator::ZeroRotator, FVector::ZeroVector, FVector(2.f, 2.f, 1.f)));
 }
 
 // Called when the game starts or when spawned
 void AActor_GridTile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	DynamicMaterial = UMaterialInstanceDynamic::Create(Floor->GetMaterial(0), this);
+	Floor->SetMaterial(0, DynamicMaterial);
 }
 
 // Called every frame
@@ -42,13 +41,13 @@ void AActor_GridTile::UpdateGridTileState()
 	// Line Trace for an Avatar occupying this tile
 	FHitResult LineTraceResult;
 	TEnumAsByte<EObjectTypeQuery> ObjectToTrace = EObjectTypeQuery::ObjectTypeQuery3;
+	FVector End = FVector(GetActorLocation().X, GetActorLocation().Y, (GetActorLocation().Z + 100.f));
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectsToTraceAsByte;
 	ObjectsToTraceAsByte.Add(ObjectToTrace);
-	FVector End = FVector(GetActorLocation().X, GetActorLocation().Y, (GetActorLocation().Z + 100.f));
 	bool SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, GetActorLocation(), End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
 
+	// Tell the Avatar to update Tiles based on its Size
 	if (SuccessfulLineTrace) {
-		// Tell the Avatar to update Tiles based on its Size
 		Cast<ACharacter_Pathfinder>(LineTraceResult.Actor)->SetTilesOccupiedBySize();
 	} 
 
@@ -56,4 +55,16 @@ void AActor_GridTile::UpdateGridTileState()
 	if (TraversalProperties.Num() <= 0) {
 		TraversalProperties.AddUnique(E_GridTile_TraversalProperties::E_None);
 	}
+}
+
+
+void AActor_GridTile::OnMouseBeginHover()
+{
+	DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+}
+
+
+void AActor_GridTile::OnMouseEndHover()
+{
+	DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Black);
 }

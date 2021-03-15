@@ -42,9 +42,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* Floor;
 
-// ------------------------- Grid Tile
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid Tile")
+// ------------------------- Tile
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile")
 	TArray<E_GridTile_TraversalProperties> TraversalProperties;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Tile")
+	UMaterialInstanceDynamic* DynamicMaterial;
 
 	// Occupying Actor
 	UPROPERTY()
@@ -56,4 +59,10 @@ public:
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)
 	void UpdateGridTileState();
+
+	UFUNCTION(BlueprintCallable)
+	void OnMouseBeginHover();
+
+	UFUNCTION(BlueprintCallable)
+	void OnMouseEndHover();
 };

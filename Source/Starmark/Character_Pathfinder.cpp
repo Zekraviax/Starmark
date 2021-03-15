@@ -59,17 +59,18 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
-	// Battle Testing
-	CurrentLevel = 1;
-
 	// Multiplayer
 	bReplicates = true; 
 	bReplicateMovement = true; 
 	bNetUseOwnerRelevancy = true;
 	IndexInPlayerParty = -1;
+
+	// Battle Testing
+	CurrentLevel = 1;
 }
 
 
+// Replicated variables
 void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
@@ -103,27 +104,9 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 	ActorLocationSnappedToGrid.Z = GetActorLocation().Z;
 	SetActorLocation(ActorLocationSnappedToGrid);
 
-	// Add Simple Attacks First, then Other Attacks
-	if (AvatarData.SimpleAttacks.Num() > 0) {
-		for (int i = 0; i < AvatarData.SimpleAttacks.Num(); i++) {
-			if (i < 2) {
-				AllKnownAttacks.Add(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
-			}
-		}
-	}
-
-	for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
-		if (AllKnownAttacks.Num() < 4) {
-			AllKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
-		}
-	}
-
 	CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
 	CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
 	CurrentTileMoves = AvatarData.MaximumTileMoves;
-
-	if (AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0)
-		CurrentSelectedAttack = *AvatarData.AttacksLearnedByBuyingWithEssence[0].GetRow<FAvatar_AttackStruct>(ContextString);
 
 	// Create Avatar Battle Data WidgetComponent
 	if (AvatarBattleDataComponent_Class) {
@@ -135,6 +118,25 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 			AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
+
+	//Add Simple Attacks First, then Other Attacks
+	if (AvatarData.SimpleAttacks.Num() > 0) {
+		for (int i = 0; i < AvatarData.SimpleAttacks.Num(); i++) {
+			//AllKnownAttacks.AddUnique(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
+		}
+	}
+
+	if (AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0) {
+		for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
+			if (AllKnownAttacks.Num() < 4) {
+				//AllKnownAttacks.AddUnique(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
+			}
+		}
+	}
+
+	// Set default selected attack
+	if (AllKnownAttacks.Num() > 0)
+		CurrentSelectedAttack = AllKnownAttacks[0];
 }
 
 
@@ -177,8 +179,6 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 	if (ActorSelected && CursorToWorld_DynamicMaterial) {
 		CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
 		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
-		ActorSelected->SetVisibility(true);
-		CursorToWorld->SetVisibility(true);
 
 		PlayerControllerReference->CurrentSelectedAvatar = this;
 
