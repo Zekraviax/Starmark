@@ -64,9 +64,6 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	bReplicateMovement = true; 
 	bNetUseOwnerRelevancy = true;
 	IndexInPlayerParty = -1;
-
-	// Battle Testing
-	CurrentLevel = 1;
 }
 
 
@@ -104,9 +101,9 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 	ActorLocationSnappedToGrid.Z = GetActorLocation().Z;
 	SetActorLocation(ActorLocationSnappedToGrid);
 
-	CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
-	CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
-	CurrentTileMoves = AvatarData.MaximumTileMoves;
+	AvatarData.CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
+	AvatarData.CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
+	AvatarData.CurrentTileMoves = AvatarData.MaximumTileMoves;
 
 	// Create Avatar Battle Data WidgetComponent
 	if (AvatarBattleDataComponent_Class) {
@@ -122,14 +119,14 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 	//Add Simple Attacks First, then Other Attacks
 	if (AvatarData.SimpleAttacks.Num() > 0) {
 		for (int i = 0; i < AvatarData.SimpleAttacks.Num(); i++) {
-			//AllKnownAttacks.AddUnique(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
+			AllKnownAttacks.Add(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
 		}
 	}
 
 	if (AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0) {
 		for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
 			if (AllKnownAttacks.Num() < 4) {
-				//AllKnownAttacks.AddUnique(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
+				AllKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
 			}
 		}
 	}
@@ -137,6 +134,8 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 	// Set default selected attack
 	if (AllKnownAttacks.Num() > 0)
 		CurrentSelectedAttack = AllKnownAttacks[0];
+
+	//PlayerControllerReference->BattleWidgetReference->
 }
 
 

@@ -50,7 +50,7 @@ public:
 
 // ------------------------- Widgets
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Widgets")
-	UWidget_HUD_Battle* BattleHUDCodeReference;
+	UWidget_HUD_Battle* BattleWidgetReference;
 
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Pawn")
@@ -72,12 +72,9 @@ public:
 
 // ------------------------- Widgets
 	UFUNCTION(BlueprintCallable)
-	void UpdateBattleWidget(UWidget_HUD_Battle* BattleHUDReference, FAvatar_Struct NewAvatarData);
+	void SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData);
 
 // ------------------------- Avatar
-	UFUNCTION(BlueprintCallable)
-	void SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* RandomPawnReference);
-
 	UFUNCTION(BlueprintCallable)
 	void UpdateSelectedAvatar();
 

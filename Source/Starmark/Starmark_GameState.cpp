@@ -87,7 +87,7 @@ void AStarmark_GameState::AvatarBeginTurn()
 	PlayerControllerReference->UpdateSelectedAvatar();
 
 	// Reset Moves
-	AvatarRef->CurrentTileMoves = AvatarRef->AvatarData.MaximumTileMoves;
+	//AvatarRef->CurrentTileMoves = AvatarRef->AvatarData.MaximumTileMoves;
 
 	// Apply Status Effects
 	for (int i = AvatarRef->CurrentStatusEffectsArray.Num() - 1; i == 0; i--) {
@@ -96,7 +96,7 @@ void AStarmark_GameState::AvatarBeginTurn()
 		if (!AvatarRef->CurrentStatusEffectsArray[i].TurnsRemaining == 0) {
 			// Switch On Status Effect Name
 			if (AvatarRef->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
-				AvatarRef->CurrentTileMoves = FMath::FloorToInt(AvatarRef->CurrentTileMoves / 2);
+				//AvatarRef->CurrentTileMoves = FMath::FloorToInt(AvatarRef->CurrentTileMoves / 2);
 			}
 		} else {
 			AvatarRef->CurrentStatusEffectsArray.RemoveAt(i);

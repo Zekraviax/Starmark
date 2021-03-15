@@ -70,18 +70,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	FAvatar_ElementalEssences ElementalEssences;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
-	int CurrentLevel;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = "Avatar")
-	int CurrentHealthPoints;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = "Avatar")
-	int CurrentManaPoints;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = "Avatar")
-	int CurrentTileMoves;
-
 // ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<FAvatar_AttackStruct> AttacksArray;

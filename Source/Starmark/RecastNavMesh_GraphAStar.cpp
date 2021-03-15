@@ -149,7 +149,7 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 			static int dir_map[n][m];			// map of directions
 
 			int CurrentPathLength = 0;
-			int AvatarMovesRemaining = Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->CurrentTileMoves;
+			//int AvatarMovesRemaining = Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar->CurrentTileMoves;
 
 			// A-star algorithm.
 			FVector PathLocation = Query.EndLocation.GridSnap(200);
@@ -251,13 +251,13 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 						if (Result.Path->GetPathPoints().IsValidIndex(k) && k == 0) {
 							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 50), FColor::Blue, false, 2.5f);
 						}
-						else if (Result.Path->GetPathPoints().IsValidIndex(k) && k < AvatarMovesRemaining) {
-							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 175.f), FColor::Green, false, 2.5f);
-							// Subtract One TileMove from the Avatar
-						}
-						else if (Result.Path->GetPathPoints().IsValidIndex(k) && k == AvatarMovesRemaining) {
-							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 250.f), FColor::Yellow, false, 2.5f);
-						}
+						//else if (Result.Path->GetPathPoints().IsValidIndex(k) && k < AvatarMovesRemaining) {
+						//	DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 175.f), FColor::Green, false, 2.5f);
+						//	// Subtract One TileMove from the Avatar
+						//}
+						//else if (Result.Path->GetPathPoints().IsValidIndex(k) && k == AvatarMovesRemaining) {
+						//	DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 250.f), FColor::Yellow, false, 2.5f);
+						//}
 
 						// Check for valid tiles in the next step of the Move, for each tile the Avatar occupies
 						if (Result.Path->GetPathPoints().IsValidIndex(k + 1) && k != Result.Path->GetPathPoints().Num() - 1) {

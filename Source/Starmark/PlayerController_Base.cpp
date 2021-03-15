@@ -26,7 +26,7 @@ void APlayerController_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
 
 	DOREPLIFETIME(APlayerController_Base, CurrentSelectedAvatar);
-	DOREPLIFETIME(APlayerController_Base, BattleHUDCodeReference);
+	DOREPLIFETIME(APlayerController_Base, BattleWidgetReference);
 	DOREPLIFETIME(APlayerController_Base, PlayerParty);
 }
 
@@ -45,37 +45,19 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 
 
 // ------------------------- Widgets
-void APlayerController_Base::UpdateBattleWidget(UWidget_HUD_Battle* BattleHUDReference, FAvatar_Struct NewAvatarData)
+void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData)
 {
-	if (BattleHUDReference->IsValidLowLevel()) {
-		BattleHUDCodeReference = BattleHUDReference;
+	if (NewBattleWidgetReference->IsValidLowLevel()) {
+		BattleWidgetReference = NewBattleWidgetReference;
 	}
 
-	if (BattleHUDReference->IsValidLowLevel() && CurrentSelectedAvatar) {
-		BattleHUDReference->AvatarBattleDataWidget->UpdateAvatarData(NewAvatarData);
+	if (BattleWidgetReference->IsValidLowLevel() && CurrentSelectedAvatar) {
+		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(NewAvatarData);
 	}
 }
 
 
 // ------------------------- Avatar
-void APlayerController_Base::SetRandomPawnAsSelectedPawn(ACharacter_Pathfinder* RandomPawnReference)
-{
-	for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
-		ACharacter_Pathfinder* FoundActor = *Itr;
-
-		if (FoundActor == RandomPawnReference) {
-			CurrentSelectedAvatar = RandomPawnReference;
-
-			CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
-			CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
-
-			CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
-			break;
-		}
-	}
-}
-
-
 void APlayerController_Base::UpdateSelectedAvatar()
 {
 	for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
