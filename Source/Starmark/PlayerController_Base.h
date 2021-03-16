@@ -80,7 +80,7 @@ public:
 	void UpdateSelectedAvatar();
 
 // ------------------------- Battle
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void OnPrimaryClick(AActor* ClickedActor);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)

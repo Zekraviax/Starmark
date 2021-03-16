@@ -86,10 +86,9 @@ void APlayerController_Base::UpdateSelectedAvatar()
 
 
 // ------------------------- Battle
-void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
+void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor)
 {
-	//if (ClickedActor && IsCurrentlyActingPlayer) {
-	if (ClickedActor) {
+	if (ClickedActor && IsCurrentlyActingPlayer) {
 		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
 			// Select Avatar To Control
 			if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
@@ -118,14 +117,7 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 
 void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector MoveLocation)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("CurrentSelectedAvatar Valid")));
-
 	if (Cast<AAIController_Avatar>(CurrentSelectedAvatar->GetController())) {
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("AI Controller Valid")));
-		if (Cast<AAIController_Avatar>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->IsValidLowLevel()) {
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Blackboard Valid")));
-		}
-
 		Cast<AAIController_Avatar>(CurrentSelectedAvatar->GetController())->GetMoveCommandFromPlayer_Implementation(MoveLocation);
 	}
 }

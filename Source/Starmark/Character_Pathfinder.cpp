@@ -19,6 +19,7 @@
 #include "AttackEffects_FunctionLibrary.h"
 #include "Starmark_GameState.h"
 #include "Starmark_GameMode.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 
 ACharacter_Pathfinder::ACharacter_Pathfinder()
