@@ -50,6 +50,13 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 
 
 // ------------------------- Widgets
+void APlayerController_Base::CreateBattleWidget()
+{
+	BattleWidgetReference = CreateWidget<UWidget_HUD_Battle>(this, UWidget_HUD_Battle::StaticClass());
+	BattleWidgetReference->AddToViewport();
+}
+
+
 void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData)
 {
 	if (NewBattleWidgetReference->IsValidLowLevel()) {

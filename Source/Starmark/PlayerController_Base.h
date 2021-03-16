@@ -50,7 +50,7 @@ public:
 	E_PlayerCharacter_ClickModes PlayerClickMode;
 
 // ------------------------- Widgets
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Widgets")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Widgets")
 	UWidget_HUD_Battle* BattleWidgetReference;
 
 // ------------------------- Avatar
@@ -72,6 +72,9 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Widgets
+	UFUNCTION(BlueprintCallable)
+	void CreateBattleWidget();
+
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData);
 
