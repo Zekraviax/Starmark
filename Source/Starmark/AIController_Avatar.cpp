@@ -2,10 +2,13 @@
 
 
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 
 
 // ------------------------- AI
 void AAIController_Avatar::GetMoveCommandFromPlayer_Implementation(FVector MoveLocation)
 {
-	GetBlackboardComponent().SetValueAsVector("TargetLocation", MoveLocation);
+	if (GetBlackboardComponent()->IsValidLowLevel()) {
+		GetBlackboardComponent()->SetValueAsVector("TargetLocation", MoveLocation);
+	}
 }

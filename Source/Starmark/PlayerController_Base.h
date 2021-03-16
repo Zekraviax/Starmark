@@ -57,9 +57,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Avatar")
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
-	AController* AIControllerReference;
-
 // ------------------------- Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	TArray<FAvatar_Struct> PlayerParty;

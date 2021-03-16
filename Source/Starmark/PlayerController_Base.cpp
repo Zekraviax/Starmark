@@ -88,12 +88,8 @@ void APlayerController_Base::UpdateSelectedAvatar()
 // ------------------------- Battle
 void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
-	if (!CurrentSelectedAvatar) {
-		CurrentSelectedAvatar = Cast<APlayerState_Base>(Cast<APlayerPawn_Static>(GetPawn())->GetPlayerState())->PlayerState_CurrentControlledAvatar;
-	}
-
-
-	if (ClickedActor && IsCurrentlyActingPlayer) {
+	//if (ClickedActor && IsCurrentlyActingPlayer) {
+	if (ClickedActor) {
 		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
 			// Select Avatar To Control
 			if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
@@ -104,22 +100,16 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 				// If we're attacking, and we clicked on a valid target in-range, launch an attack
 				if (CurrentSelectedAvatar->ValidAttackTargetsArray.Num() > 0) {
 					if (CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(Cast<ACharacter_Pathfinder>(ClickedActor))) {
-						GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Launch Attack")));
 						CurrentSelectedAvatar->LaunchAttack_Implementation(CurrentSelectedAvatar->ValidAttackTargetsArray[0]);
 					}
 				}
-				else {
-					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("No Valid Targets")));
-				}
 			}
 		}
-		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") || ClickedActor->GetClass()->GetName().Contains("GridTile") && PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter) {
-			// If all else fails, assume we clicked on a plane that we can move our controller Avatar to
-			if (CurrentSelectedAvatar) {
-				if (CurrentSelectedAvatar->GetController()->IsValidLowLevel()) {
-					//Cast<AAIController>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->SetValueAsVector("TargetLocation", CursorLocationSnappedToGrid);
-					
-				}
+		// && PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter
+		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") || ClickedActor->GetClass()->GetName().Contains("GridTile")) {
+			// If all else fails, assume we clicked on a plane that we can move our controlled Avatar to
+			if (CurrentSelectedAvatar->IsValidLowLevel()) {
+				SendMoveCommandToServer_Implementation(ClickedActor->GetActorLocation());
 			}
 		}
 	}
@@ -128,7 +118,16 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 
 void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector MoveLocation)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("CurrentSelectedAvatar Valid")));
 
+	if (Cast<AAIController_Avatar>(CurrentSelectedAvatar->GetController())) {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("AI Controller Valid")));
+		if (Cast<AAIController_Avatar>(CurrentSelectedAvatar->GetController())->GetBlackboardComponent()->IsValidLowLevel()) {
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Blackboard Valid")));
+		}
+
+		Cast<AAIController_Avatar>(CurrentSelectedAvatar->GetController())->GetMoveCommandFromPlayer_Implementation(MoveLocation);
+	}
 }
 
 

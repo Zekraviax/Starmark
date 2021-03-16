@@ -13,6 +13,7 @@
 #include "DrawDebugHelpers.h"
 #include "Actor_GridTile.h"
 #include "PlayerController_Base.h"
+#include "AIController_Avatar.h"
 #include "Widget_HUD_Battle.h"
 #include "WidgetComponent_AvatarBattleData.h"
 #include "AttackEffects_FunctionLibrary.h"
@@ -58,6 +59,10 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	// AI
+	//AIControllerClass = AAIController_Avatar::StaticClass();
+	//AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	// Multiplayer
 	bReplicates = true; 
