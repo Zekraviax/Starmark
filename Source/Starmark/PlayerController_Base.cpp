@@ -52,8 +52,25 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 // ------------------------- Widgets
 void APlayerController_Base::CreateBattleWidget()
 {
-	BattleWidgetReference = CreateWidget<UWidget_HUD_Battle>(this, UWidget_HUD_Battle::StaticClass());
-	BattleWidgetReference->AddToViewport();
+	if (BattleWidgetChildClass) {
+		BattleWidgetReference = CreateWidget<UWidget_HUD_Battle>(this, BattleWidgetChildClass);
+
+		if (BattleWidgetReference) {
+			BattleWidgetReference->AddToViewport();
+
+		}
+	}
+}
+
+
+void APlayerController_Base::SetBattleWidgetVariables()
+{
+	if (BattleWidgetReference->IsValidLowLevel()) {
+		BattleWidgetReference->PlayerControllerReference = this;
+
+		if (CurrentSelectedAvatar)
+			BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
+	}
 }
 
 
@@ -64,7 +81,9 @@ void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* 
 	}
 
 	if (BattleWidgetReference->IsValidLowLevel() && CurrentSelectedAvatar) {
-		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(NewAvatarData);
+		if (BattleWidgetReference->AvatarBattleDataWidget->IsValidLowLevel()) {
+			BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(NewAvatarData);
+		}
 	}
 }
 
@@ -133,4 +152,10 @@ void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector Move
 void APlayerController_Base::Server_SubtractHealth_Implementation(ACharacter_Pathfinder* Defender, int DamageDealt)
 {
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Battle_SubtractHealth_Implementation(Defender, DamageDealt);
+}
+
+
+void APlayerController_Base::ChangeActingPlayerState_Implementation(bool NewActingPlayerState)
+{
+	IsCurrentlyActingPlayer = NewActingPlayerState;
 }

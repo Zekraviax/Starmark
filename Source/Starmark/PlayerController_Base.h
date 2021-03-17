@@ -50,6 +50,9 @@ public:
 	E_PlayerCharacter_ClickModes PlayerClickMode;
 
 // ------------------------- Widgets
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<UWidget_HUD_Battle> BattleWidgetChildClass;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Widgets")
 	UWidget_HUD_Battle* BattleWidgetReference;
 
@@ -76,6 +79,9 @@ public:
 	void CreateBattleWidget();
 
 	UFUNCTION(BlueprintCallable)
+	void SetBattleWidgetVariables();
+
+	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData);
 
 // ------------------------- Avatar
@@ -91,4 +97,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void ChangeActingPlayerState(bool NewActingPlayerState);
 };

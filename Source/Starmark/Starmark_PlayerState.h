@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
+
+#include "Starmark_GameMode.h"
+
 #include "Starmark_PlayerState.generated.h"
 
 // Forward Declarations
@@ -25,11 +28,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ACharacter_Pathfinder* PlayerState_CurrentControlledAvatar;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FAvatar_Struct> PlayerState_PlayerParty;
+
 
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)
-	void CheckVariables();
+	void GetPlayerControllerVariables();
 };
