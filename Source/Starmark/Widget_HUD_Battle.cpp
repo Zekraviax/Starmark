@@ -67,8 +67,21 @@ void UWidget_HUD_Battle::SwitchCommand()
 		AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
 }
 
+
 void UWidget_HUD_Battle::EndCommand()
 {
 	if (AvatarAttacksBox)
 		AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
+
+	if (PlayerControllerReference) {
+		if (PlayerControllerReference->IsCurrentlyActingPlayer) {
+			SendEndOfTurnCommandToPlayerController_Implementation();
+		}
+	}
+}
+
+
+void UWidget_HUD_Battle::SendEndOfTurnCommandToPlayerController_Implementation()
+{
+	PlayerControllerReference->SendEndOfTurnCommandToServer_Implementation();
 }

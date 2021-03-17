@@ -100,4 +100,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ChangeActingPlayerState(bool NewActingPlayerState);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void SendEndOfTurnCommandToServer();
 };

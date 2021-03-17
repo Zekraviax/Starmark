@@ -159,3 +159,9 @@ void APlayerController_Base::ChangeActingPlayerState_Implementation(bool NewActi
 {
 	IsCurrentlyActingPlayer = NewActingPlayerState;
 }
+
+
+void APlayerController_Base::SendEndOfTurnCommandToServer_Implementation()
+{
+	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->EndOfTurn();
+}
