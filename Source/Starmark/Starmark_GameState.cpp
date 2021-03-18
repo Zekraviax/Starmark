@@ -44,11 +44,15 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 		}
 	}
 
-	for (int j = 0; j < PlayerControllers.Num(); j++) {
-		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerControllers[j]) {
-			PlayerControllers[j]->IsCurrentlyActingPlayer = true;
+	for (int j = 0; j < PlayerArray.Num(); j++) {
+		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
+
+		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Current Damage 2 = %d")));
+			PlayerController->ChangeActingPlayerState_Implementation(true);
 		} else {
-			PlayerControllers[j]->IsCurrentlyActingPlayer = false;
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 2 = %d")));
+			PlayerController->ChangeActingPlayerState_Implementation(false);
 		}
 	}
 }
@@ -78,30 +82,30 @@ void AStarmark_GameState::AvatarEndTurn_Implementation(const TArray<APlayerContr
 
 void AStarmark_GameState::AvatarBeginTurn()
 {
-	ACharacter_Pathfinder* AvatarRef = PlayerControllerReference->CurrentSelectedAvatar;
+	//Character_Pathfinder* AvatarRef = PlayerControllerReference->CurrentSelectedAvatar;
 
-	if (!PlayerControllerReference)
-		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	////if (!PlayerControllerReference)
+	////	PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
-	// Reset Decals
-	PlayerControllerReference->UpdateSelectedAvatar();
+	//// Reset Decals
+	////PlayerControllerReference->UpdateSelectedAvatar();
 
-	// Reset Moves
+	//// Reset Moves
 	//AvatarRef->CurrentTileMoves = AvatarRef->AvatarData.MaximumTileMoves;
 
-	// Apply Status Effects
-	for (int i = AvatarRef->CurrentStatusEffectsArray.Num() - 1; i == 0; i--) {
-		AvatarRef->CurrentStatusEffectsArray[i].TurnsRemaining--;
+	//// Apply Status Effects
+	//for (int i = AvatarRef->CurrentStatusEffectsArray.Num() - 1; i == 0; i--) {
+	//	AvatarRef->CurrentStatusEffectsArray[i].TurnsRemaining--;
 
-		if (!AvatarRef->CurrentStatusEffectsArray[i].TurnsRemaining == 0) {
-			// Switch On Status Effect Name
-			if (AvatarRef->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
-				//AvatarRef->CurrentTileMoves = FMath::FloorToInt(AvatarRef->CurrentTileMoves / 2);
-			}
-		} else {
-			AvatarRef->CurrentStatusEffectsArray.RemoveAt(i);
-		}
-	}
+	//	if (!AvatarRef->CurrentStatusEffectsArray[i].TurnsRemaining == 0) {
+	//		// Switch On Status Effect Name
+	//		if (AvatarRef->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
+	//			//AvatarRef->CurrentTileMoves = FMath::FloorToInt(AvatarRef->CurrentTileMoves / 2);
+	//		}
+	//	} else {
+	//		AvatarRef->CurrentStatusEffectsArray.RemoveAt(i);
+	//	}
+	//}
 }
 
 

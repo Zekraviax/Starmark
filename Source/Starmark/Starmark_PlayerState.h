@@ -22,20 +22,27 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Player
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UWidget_HUD_Battle* PlayerState_BattleHUD;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//UWidget_HUD_Battle* PlayerState_BattleHUD;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ACharacter_Pathfinder* PlayerState_CurrentControlledAvatar;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//ACharacter_Pathfinder* PlayerState_CurrentControlledAvatar;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FAvatar_Struct> PlayerState_PlayerParty;
+
+// ------------------------- Avatar
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* AvatarDataTable;
 
 
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Battle
+	UFUNCTION(BlueprintCallable)
+	void CreateDefaultPlayerParty();
+
 	UFUNCTION(BlueprintCallable)
 	void GetPlayerControllerVariables();
 };

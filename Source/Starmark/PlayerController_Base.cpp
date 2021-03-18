@@ -9,7 +9,7 @@
 #include "Widget_HUD_Battle.h"
 #include "WidgetComponent_AvatarBattleData.h"
 #include "Starmark_GameState.h"
-#include "PlayerState_Base.h"
+#include "Starmark_PlayerState.h"
 #include "PlayerPawn_Static.h"
 
 
@@ -43,6 +43,11 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
+	if (IsCurrentlyActingPlayer) 
+		GEngine->AddOnScreenDebugMessage(-1, 0.15f, FColor::Green, FString::Printf(TEXT("IsCurrentlyActingPlayer")));
+	else
+		GEngine->AddOnScreenDebugMessage(-1, 0.15f, FColor::Red, FString::Printf(TEXT("IsNotCurrentlyActingPlayer")));
+
 	if (CurrentSelectedAvatar) {
 		SetBattleWidgetAndLinkedAvatar(BattleWidgetReference, CurrentSelectedAvatar->AvatarData);
 	}
@@ -52,12 +57,11 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 // ------------------------- Widgets
 void APlayerController_Base::CreateBattleWidget()
 {
-	if (BattleWidgetChildClass) {
+	if (BattleWidgetChildClass && IsLocalPlayerController()) {
 		BattleWidgetReference = CreateWidget<UWidget_HUD_Battle>(this, BattleWidgetChildClass);
 
 		if (BattleWidgetReference) {
 			BattleWidgetReference->AddToViewport();
-
 		}
 	}
 }
@@ -89,6 +93,28 @@ void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* 
 
 
 // ------------------------- Avatar
+void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
+{
+	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState());
+
+	// (Default) Player party initialization
+	if (PlayerStateReference->PlayerState_PlayerParty.Num() <= 0) {
+		PlayerStateReference->CreateDefaultPlayerParty();
+	}
+
+	// Widget initialization
+	CreateBattleWidget();
+	CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
+
+	if (BattleWidgetReference->IsValidLowLevel()) {
+		SetBattleWidgetVariables();
+	}
+
+	// Avatar initialization
+	CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
+}
+
+
 void APlayerController_Base::UpdateSelectedAvatar()
 {
 	for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
@@ -163,5 +189,5 @@ void APlayerController_Base::ChangeActingPlayerState_Implementation(bool NewActi
 
 void APlayerController_Base::SendEndOfTurnCommandToServer_Implementation()
 {
-	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->EndOfTurn();
+	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->EndOfTurn_Implementation();
 }

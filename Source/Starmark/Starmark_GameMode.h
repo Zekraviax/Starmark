@@ -585,7 +585,7 @@ public:
 	UFUNCTION()
 	void Battle_AvatarDefeated(ACharacter_Pathfinder* Avatar);
 
-	UFUNCTION()
+	UFUNCTION(Server, Reliable)
 	void EndOfTurn();
 
 	UFUNCTION(BlueprintNativeEvent)

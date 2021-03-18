@@ -23,11 +23,6 @@ public:
 // --------------------------------------------------
 
 // ------------------------- References
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
-	APlayerController_Base* PlayerControllerReference;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
-	UDataTable* TypeEffectivenessDataTableReference;
 
 // ------------------------- Battle
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Battle")

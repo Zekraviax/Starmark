@@ -54,18 +54,20 @@ void AStarmark_GameMode::Battle_AvatarDefeated(ACharacter_Pathfinder* Avatar)
 }
 
 
-void AStarmark_GameMode::EndOfTurn()
+void AStarmark_GameMode::EndOfTurn_Implementation()
 {
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
-	GameStateReference->CurrentAvatarTurnIndex++;
+	if (GameStateReference) {
+		GameStateReference->CurrentAvatarTurnIndex++;
 
-	if (GameStateReference->CurrentAvatarTurnIndex >= GameStateReference->AvatarTurnOrder.Num()) {
-		GameStateReference->CurrentAvatarTurnIndex = 0;
-	}
+		if (GameStateReference->CurrentAvatarTurnIndex >= GameStateReference->AvatarTurnOrder.Num()) {
+			GameStateReference->CurrentAvatarTurnIndex = 0;
+		}
 
-	for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
+		for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
 
+		}
 	}
 }
 
