@@ -41,13 +41,10 @@ public:
 	void SetTurnOrder(const TArray<APlayerController_Base*>& PlayerControllers);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void AvatarEndTurn(const TArray<APlayerController_Base*>& PlayerControllers);
+	void AvatarEndTurn();
 
 	UFUNCTION(BlueprintCallable)
 	void AvatarBeginTurn();
-
-	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void GameState_LaunchAttack(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void EndOfBattle();

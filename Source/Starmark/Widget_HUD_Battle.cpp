@@ -83,5 +83,5 @@ void UWidget_HUD_Battle::EndCommand()
 
 void UWidget_HUD_Battle::SendEndOfTurnCommandToPlayerController_Implementation()
 {
-	PlayerControllerReference->SendEndOfTurnCommandToServer_Implementation();
+	PlayerControllerReference->EndOfTurn_Implementation();
 }

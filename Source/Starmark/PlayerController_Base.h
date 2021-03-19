@@ -64,7 +64,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	TArray<FAvatar_Struct> PlayerParty;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	bool IsCurrentlyActingPlayer;
 
 // ------------------------- Grid
@@ -102,7 +102,13 @@ public:
 	void Server_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void ReceiveChangeActingPlayerStateFromServer(bool NewActingPlayerState);
+
+	UFUNCTION(BlueprintCallable)
 	void ChangeActingPlayerState(bool NewActingPlayerState);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void EndOfTurn();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();

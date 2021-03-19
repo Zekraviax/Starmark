@@ -28,6 +28,7 @@ void APlayerController_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 	DOREPLIFETIME(APlayerController_Base, CurrentSelectedAvatar);
 	DOREPLIFETIME(APlayerController_Base, BattleWidgetReference);
+	DOREPLIFETIME(APlayerController_Base, IsCurrentlyActingPlayer);
 	DOREPLIFETIME(APlayerController_Base, PlayerParty);
 }
 
@@ -42,11 +43,6 @@ void APlayerController_Base::SetupInputComponent()
 void APlayerController_Base::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-
-	if (IsCurrentlyActingPlayer) 
-		GEngine->AddOnScreenDebugMessage(-1, 0.15f, FColor::Green, FString::Printf(TEXT("IsCurrentlyActingPlayer")));
-	else
-		GEngine->AddOnScreenDebugMessage(-1, 0.15f, FColor::Red, FString::Printf(TEXT("IsNotCurrentlyActingPlayer")));
 
 	if (CurrentSelectedAvatar) {
 		SetBattleWidgetAndLinkedAvatar(BattleWidgetReference, CurrentSelectedAvatar->AvatarData);
@@ -112,6 +108,8 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 
 	// Avatar initialization
 	CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
+
+	//ChangeActingPlayerState_Implementation(true);
 }
 
 
@@ -181,13 +179,26 @@ void APlayerController_Base::Server_SubtractHealth_Implementation(ACharacter_Pat
 }
 
 
-void APlayerController_Base::ChangeActingPlayerState_Implementation(bool NewActingPlayerState)
+void APlayerController_Base::ReceiveChangeActingPlayerStateFromServer_Implementation(bool NewActingPlayerState)
+{
+	IsCurrentlyActingPlayer = NewActingPlayerState;
+	//ChangeActingPlayerState(NewActingPlayerState);
+}
+
+
+void APlayerController_Base::ChangeActingPlayerState(bool NewActingPlayerState)
 {
 	IsCurrentlyActingPlayer = NewActingPlayerState;
 }
 
 
+void APlayerController_Base::EndOfTurn_Implementation()
+{
+	SendEndOfTurnCommandToServer_Implementation();
+}
+
+
 void APlayerController_Base::SendEndOfTurnCommandToServer_Implementation()
 {
-	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->EndOfTurn_Implementation();
+	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn_Implementation();
 }

@@ -48,17 +48,15 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
 		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Current Damage 2 = %d")));
-			PlayerController->ChangeActingPlayerState_Implementation(true);
+			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(true);
 		} else {
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 2 = %d")));
-			PlayerController->ChangeActingPlayerState_Implementation(false);
+			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(false);
 		}
 	}
 }
 
 
-void AStarmark_GameState::AvatarEndTurn_Implementation(const TArray<APlayerController_Base*>& PlayerControllers)
+void AStarmark_GameState::AvatarEndTurn_Implementation()
 {
 	CurrentAvatarTurnIndex++;
 
@@ -69,12 +67,16 @@ void AStarmark_GameState::AvatarEndTurn_Implementation(const TArray<APlayerContr
 
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Avatars: %d  /  Turn Index: %d"), AvatarTurnOrder.Num(), CurrentAvatarTurnIndex));
 
-	for (int j = 0; j < PlayerControllers.Num(); j++) {
-		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerControllers[j]) {
-			PlayerControllers[j]->IsCurrentlyActingPlayer = true;
+	for (int j = 0; j < PlayerArray.Num(); j++) {
+		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
+
+		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Current Damage 2 = %d")));
+			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(true);
 		}
 		else {
-			PlayerControllers[j]->IsCurrentlyActingPlayer = false;
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 2 = %d")));
+			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(false);
 		}
 	}
 }
@@ -106,13 +108,6 @@ void AStarmark_GameState::AvatarBeginTurn()
 	//		AvatarRef->CurrentStatusEffectsArray.RemoveAt(i);
 	//	}
 	//}
-}
-
-
-void AStarmark_GameState::GameState_LaunchAttack_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
-{
-	if (this->HasAuthority())
-		Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->GameMode_LaunchAttack_Implementation(Attacker, Defender);
 }
 
 
