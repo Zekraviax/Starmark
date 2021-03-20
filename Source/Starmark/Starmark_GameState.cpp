@@ -56,6 +56,12 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 }
 
 
+void AStarmark_GameState::Receive_AvatarEndTurn_Implementation()
+{
+	AvatarEndTurn_Implementation();
+}
+
+
 void AStarmark_GameState::AvatarEndTurn_Implementation()
 {
 	CurrentAvatarTurnIndex++;
@@ -65,18 +71,16 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 		CurrentAvatarTurnIndex = 0;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Avatars: %d  /  Turn Index: %d"), AvatarTurnOrder.Num(), CurrentAvatarTurnIndex));
-
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
-		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Current Damage 2 = %d")));
-			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(true);
-		}
-		else {
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 2 = %d")));
-			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(false);
+		if (PlayerController) {
+			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
+				PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(true);
+			}
+			else {
+				PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(false);
+			}
 		}
 	}
 }

@@ -65,7 +65,7 @@ void APlayerController_Base::CreateBattleWidget()
 
 void APlayerController_Base::SetBattleWidgetVariables()
 {
-	if (BattleWidgetReference->IsValidLowLevel()) {
+	if (BattleWidgetReference) {
 		BattleWidgetReference->PlayerControllerReference = this;
 
 		if (CurrentSelectedAvatar)
@@ -94,22 +94,22 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState());
 
 	// (Default) Player party initialization
-	if (PlayerStateReference->PlayerState_PlayerParty.Num() <= 0) {
-		PlayerStateReference->CreateDefaultPlayerParty();
+	if (PlayerStateReference) {
+		if (PlayerStateReference->PlayerState_PlayerParty.Num() <= 0) {
+			PlayerStateReference->CreateDefaultPlayerParty();
+		}
+
+		// Widget initialization
+		CreateBattleWidget();
+		CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
+
+		if (BattleWidgetReference) {
+			SetBattleWidgetVariables();
+		}
+
+		// Avatar initialization
+		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
 	}
-
-	// Widget initialization
-	CreateBattleWidget();
-	CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
-
-	if (BattleWidgetReference->IsValidLowLevel()) {
-		SetBattleWidgetVariables();
-	}
-
-	// Avatar initialization
-	CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
-
-	//ChangeActingPlayerState_Implementation(true);
 }
 
 
@@ -181,8 +181,7 @@ void APlayerController_Base::Server_SubtractHealth_Implementation(ACharacter_Pat
 
 void APlayerController_Base::ReceiveChangeActingPlayerStateFromServer_Implementation(bool NewActingPlayerState)
 {
-	IsCurrentlyActingPlayer = NewActingPlayerState;
-	//ChangeActingPlayerState(NewActingPlayerState);
+	ChangeActingPlayerState(NewActingPlayerState);
 }
 
 
@@ -194,7 +193,7 @@ void APlayerController_Base::ChangeActingPlayerState(bool NewActingPlayerState)
 
 void APlayerController_Base::EndOfTurn_Implementation()
 {
-	SendEndOfTurnCommandToServer_Implementation();
+	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->Receive_AvatarEndTurn_Implementation();
 }
 
 

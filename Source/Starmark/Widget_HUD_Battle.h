@@ -55,7 +55,4 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void EndCommand();
-
-	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void SendEndOfTurnCommandToPlayerController();
 };

@@ -41,6 +41,9 @@ public:
 	void SetTurnOrder(const TArray<APlayerController_Base*>& PlayerControllers);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void Receive_AvatarEndTurn();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void AvatarEndTurn();
 
 	UFUNCTION(BlueprintCallable)
