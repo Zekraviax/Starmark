@@ -107,8 +107,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeActingPlayerState(bool NewActingPlayerState);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void EndOfTurn();
+	//UFUNCTION(BlueprintCallable, Server, Reliable)
+	//void EndOfTurn();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();

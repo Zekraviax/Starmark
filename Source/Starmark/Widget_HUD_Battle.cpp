@@ -10,7 +10,7 @@
 // ------------------------- Widget
 void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 {
-	if (AvatarAttacksBox->IsValidLowLevel()) {
+	if (AvatarAttacksBox) {
 		for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
 			if (PlayerControllerReference->CurrentSelectedAvatar->AllKnownAttacks.IsValidIndex(i)) {
 				Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AttackNameText->SetText(FText::FromString(PlayerControllerReference->CurrentSelectedAvatar->AllKnownAttacks[i].Name));
@@ -25,15 +25,15 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 			}
 		}
 	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Final Damage")));
+	}
 }
 
 
 // ------------------------- Commands
 void UWidget_HUD_Battle::MoveCommand()
 {
-	if (!PlayerControllerReference)
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PlayerController Not Valid")));
-
 	PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_MoveCharacter;
 
 	// Hide Avatar Attacks Box
@@ -46,12 +46,9 @@ void UWidget_HUD_Battle::AttackCommand()
 {
 	// Show Avatar Attacks Box
 	if (AvatarAttacksBox) {
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Avatar Attacks Box Valid")));
 		UpdateAvatarAttacksComponents();
+
 		AvatarAttacksBox->SetVisibility(ESlateVisibility::Visible);
-	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Avatar Attacks Box Not Valid")));
 	}
 }
 

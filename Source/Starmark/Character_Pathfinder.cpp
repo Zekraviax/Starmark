@@ -140,8 +140,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 	// Set default selected attack
 	if (AllKnownAttacks.Num() > 0)
 		CurrentSelectedAttack = AllKnownAttacks[0];
-
-	//PlayerControllerReference->BattleWidgetReference->
 }
 
 
@@ -378,7 +376,7 @@ void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* T
 		}
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Final Damage  = %d"), CurrentDamage));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Final Damage = %d"), CurrentDamage));
 
 	// Subtract Health
 	PlayerControllerReference->Server_SubtractHealth_Implementation(Target, CurrentDamage);
@@ -387,6 +385,9 @@ void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* T
 	for (int i = 0; i < CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
 		UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(CurrentSelectedAttack.AttackEffectsOnTarget[i], this, Target);
 	}
+
+	// Update the Avatar's Controller's HUD
+	PlayerControllerReference->SetBattleWidgetVariables();
 }
 
 
@@ -408,9 +409,8 @@ void ACharacter_Pathfinder::SetTilesOccupiedBySize()
 		if (SuccessfulLineTrace) {
 			Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.AddUnique(E_GridTile_TraversalProperties::E_Occupied);
 
-			if (Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_None)) {
+			if (Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_None))
 				Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Remove(E_GridTile_TraversalProperties::E_None);
-			}
 		}
 	}
 }
@@ -418,11 +418,7 @@ void ACharacter_Pathfinder::SetTilesOccupiedBySize()
 
 void ACharacter_Pathfinder::UpdatePlayerParty()
 {
-	if (PlayerControllerReference) {
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("PlayerControllerReference Valid")));
-		PlayerControllerReference->PlayerParty[IndexInPlayerParty] = AvatarData;
-	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("PlayerControllerReference Not Valid")));
-	}
+	if (PlayerControllerReference)
+		if (PlayerControllerReference->PlayerParty.IsValidIndex(IndexInPlayerParty))
+			PlayerControllerReference->PlayerParty[IndexInPlayerParty] = AvatarData;
 }

@@ -101,13 +101,14 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 
 		// Widget initialization
 		CreateBattleWidget();
-		CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
+		CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];	
 
 		if (BattleWidgetReference) {
 			SetBattleWidgetVariables();
 		}
 
 		// Avatar initialization
+		CurrentSelectedAvatar->IndexInPlayerParty = 0;
 		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
 	}
 }
@@ -141,11 +142,11 @@ void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor)
 	if (ClickedActor && IsCurrentlyActingPlayer) {
 		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
 			// Select Avatar To Control
-			if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
-				Cast<ACharacter_Pathfinder>(ClickedActor)->OnAvatarClicked();
-			}
+			//if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
+			//	Cast<ACharacter_Pathfinder>(ClickedActor)->OnAvatarClicked();
+			//}
 			// Select Avatar to Begin Attack
-			else if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack) {
+			if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack) {
 				// If we're attacking, and we clicked on a valid target in-range, launch an attack
 				if (CurrentSelectedAvatar->ValidAttackTargetsArray.Num() > 0) {
 					if (CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(Cast<ACharacter_Pathfinder>(ClickedActor))) {
@@ -154,9 +155,8 @@ void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor)
 				}
 			}
 		}
-		// && PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter
+		// If all else fails, assume we clicked on a plane that we can move our controlled Avatar to
 		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") || ClickedActor->GetClass()->GetName().Contains("GridTile")) {
-			// If all else fails, assume we clicked on a plane that we can move our controlled Avatar to
 			if (CurrentSelectedAvatar->IsValidLowLevel()) {
 				SendMoveCommandToServer_Implementation(ClickedActor->GetActorLocation());
 			}
@@ -188,12 +188,6 @@ void APlayerController_Base::ReceiveChangeActingPlayerStateFromServer_Implementa
 void APlayerController_Base::ChangeActingPlayerState(bool NewActingPlayerState)
 {
 	IsCurrentlyActingPlayer = NewActingPlayerState;
-}
-
-
-void APlayerController_Base::EndOfTurn_Implementation()
-{
-	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->Receive_AvatarEndTurn_Implementation();
 }
 
 

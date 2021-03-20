@@ -19,7 +19,7 @@ void AStarmark_GameMode::Battle_SubtractHealth_Implementation(ACharacter_Pathfin
 		Defender->UpdatePlayerParty();
 
 		if (Defender->AvatarData.CurrentHealthPoints <= 0) {
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Avatar Defeated")));
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Avatar Defeated  /  Index: %d"), Defender->IndexInPlayerParty));
 
 			Battle_AvatarDefeated(Defender);
 		}
