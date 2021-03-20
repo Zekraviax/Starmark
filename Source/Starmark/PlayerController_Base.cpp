@@ -29,6 +29,7 @@ void APlayerController_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(APlayerController_Base, CurrentSelectedAvatar);
 	DOREPLIFETIME(APlayerController_Base, BattleWidgetReference);
 	DOREPLIFETIME(APlayerController_Base, IsCurrentlyActingPlayer);
+	DOREPLIFETIME(APlayerController_Base, PlayerClickMode);
 	DOREPLIFETIME(APlayerController_Base, PlayerParty);
 }
 
@@ -108,13 +109,12 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 		}
 
 		// Avatar initialization
-		CurrentSelectedAvatar->IndexInPlayerParty = 0;
 		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
 	}
 }
 
 
-void APlayerController_Base::UpdateSelectedAvatar()
+void APlayerController_Base::UpdateAvatarsDecalsAndWidgets()
 {
 	for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
 		ACharacter_Pathfinder* FoundActor = *Itr;
@@ -127,8 +127,8 @@ void APlayerController_Base::UpdateSelectedAvatar()
 	}
 
 	if (CurrentSelectedAvatar->IsValidLowLevel()) {
-		CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
-		CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
+		//CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
+		//CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
 
 		if (CurrentSelectedAvatar->ActorSelected_DynamicMaterial)
 			CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
@@ -137,7 +137,7 @@ void APlayerController_Base::UpdateSelectedAvatar()
 
 
 // ------------------------- Battle
-void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor)
+void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor, FAvatar_AttackStruct CurrentSelectedAttack)
 {
 	if (ClickedActor && IsCurrentlyActingPlayer) {
 		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
@@ -146,13 +146,10 @@ void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor)
 			//	Cast<ACharacter_Pathfinder>(ClickedActor)->OnAvatarClicked();
 			//}
 			// Select Avatar to Begin Attack
-			if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack) {
+			if (CurrentSelectedAvatar != ClickedActor) {
+				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Final Damage = %d"), CurrentSelectedAvatar->ValidAttackTargetsArray.Num()));
 				// If we're attacking, and we clicked on a valid target in-range, launch an attack
-				if (CurrentSelectedAvatar->ValidAttackTargetsArray.Num() > 0) {
-					if (CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(Cast<ACharacter_Pathfinder>(ClickedActor))) {
-						CurrentSelectedAvatar->LaunchAttack_Implementation(CurrentSelectedAvatar->ValidAttackTargetsArray[0]);
-					}
-				}
+				CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(ClickedActor));
 			}
 		}
 		// If all else fails, assume we clicked on a plane that we can move our controlled Avatar to

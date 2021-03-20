@@ -43,6 +43,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CreateDefaultPlayerParty();
 
-	UFUNCTION(BlueprintCallable)
-	void GetPlayerControllerVariables();
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void PlayerState_OnPrimaryClick(AActor* ClickedActor, ACharacter_Pathfinder* CurrentAvatar);
 };

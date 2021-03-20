@@ -46,7 +46,7 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Controller
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Controller")
 	E_PlayerCharacter_ClickModes PlayerClickMode;
 
 // ------------------------- Widgets
@@ -89,11 +89,11 @@ public:
 	void OnRepNotify_CurrentSelectedAvatar();
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateSelectedAvatar();
+	void UpdateAvatarsDecalsAndWidgets();
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void OnPrimaryClick(AActor* ClickedActor);
+	void OnPrimaryClick(AActor* ClickedActor, FAvatar_AttackStruct CurrentSelectedAttack);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendMoveCommandToServer(FVector MoveLocation);
@@ -106,9 +106,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ChangeActingPlayerState(bool NewActingPlayerState);
-
-	//UFUNCTION(BlueprintCallable, Server, Reliable)
-	//void EndOfTurn();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();

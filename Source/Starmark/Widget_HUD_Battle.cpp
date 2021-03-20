@@ -25,9 +25,6 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 			}
 		}
 	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Final Damage")));
-	}
 }
 
 

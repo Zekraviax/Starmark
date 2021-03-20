@@ -77,7 +77,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
 	TArray<FAvatar_AttackStruct> AllKnownAttacks;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
 	FAvatar_AttackStruct CurrentSelectedAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")

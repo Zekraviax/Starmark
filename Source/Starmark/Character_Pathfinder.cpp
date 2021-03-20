@@ -81,6 +81,7 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(ACharacter_Pathfinder, AvatarData);
 	DOREPLIFETIME(ACharacter_Pathfinder, PlayerControllerReference);
 	DOREPLIFETIME(ACharacter_Pathfinder, AllKnownAttacks);
+	DOREPLIFETIME(ACharacter_Pathfinder, CurrentSelectedAttack);
 }
 
 
@@ -138,8 +139,11 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 	}
 
 	// Set default selected attack
-	if (AllKnownAttacks.Num() > 0)
+	if (AllKnownAttacks.Num() > 0) {
 		CurrentSelectedAttack = AllKnownAttacks[0];
+	}
+
+	IndexInPlayerParty = 0;
 }
 
 
