@@ -4,10 +4,11 @@
 #include "Widget_HUD_Battle.h"
 #include "Character_Pathfinder.h"
 #include "PlayerController_Base.h"
+#include "Starmark_GameState.h"
 
 
 // ------------------------- Battle
-void AStarmark_PlayerState::CreateDefaultPlayerParty()
+void AStarmark_PlayerState::PlayerState_BeginBattle()
 {
 	FAvatar_Struct* DefaultAvatar = AvatarDataTable->FindRow<FAvatar_Struct>(TEXT("BalanceBoy"), "");
 	PlayerState_PlayerParty.Add(*DefaultAvatar);
@@ -38,4 +39,37 @@ void AStarmark_PlayerState::PlayerState_OnPrimaryClick_Implementation(AActor* Cl
 			}
 		}
 	}
+}
+
+
+void AStarmark_PlayerState::Server_SubtractHealth_Implementation(ACharacter_Pathfinder* Defender, int DamageDealt)
+{
+	if (Defender) {
+		Defender->AvatarData.CurrentHealthPoints -= DamageDealt;
+		Defender->UpdatePlayerParty();
+
+		if (Defender->AvatarData.CurrentHealthPoints <= 0) {
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Avatar Defeated  /  Index: %d"), Defender->IndexInPlayerParty));
+
+			Battle_AvatarDefeated(Defender);
+		}
+	}
+}
+
+
+void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Pathfinder* Avatar)
+{
+	if (Avatar->PlayerControllerReference->PlayerParty.IsValidIndex(Avatar->IndexInPlayerParty)) {
+		Avatar->PlayerControllerReference->PlayerParty.RemoveAt(Avatar->IndexInPlayerParty);
+	}
+
+	if (Avatar->PlayerControllerReference->PlayerParty.Num() <= 0) {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player has run out of Avatars")));
+		Cast<AStarmark_GameState>(GetWorld()->GetGameState())->EndOfBattle_Implementation();
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player Avatars Remaining: %d"), Avatar->PlayerControllerReference->PlayerParty.Num()));
+	}
+
+	Avatar->Destroy();
 }

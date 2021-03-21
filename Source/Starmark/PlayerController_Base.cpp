@@ -19,6 +19,9 @@ APlayerController_Base::APlayerController_Base()
 
 	IsCurrentlyActingPlayer = false;
 	PlayerClickMode = E_PlayerCharacter_ClickModes::E_Nothing;
+
+	// Multiplayer
+	bReplicates = true;
 }
 
 
@@ -96,9 +99,7 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 
 	// (Default) Player party initialization
 	if (PlayerStateReference) {
-		if (PlayerStateReference->PlayerState_PlayerParty.Num() <= 0) {
-			PlayerStateReference->CreateDefaultPlayerParty();
-		}
+		PlayerStateReference->PlayerState_BeginBattle();
 
 		// Widget initialization
 		CreateBattleWidget();
@@ -137,7 +138,7 @@ void APlayerController_Base::UpdateAvatarsDecalsAndWidgets()
 
 
 // ------------------------- Battle
-void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor, FAvatar_AttackStruct CurrentSelectedAttack)
+void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
 	if (ClickedActor && IsCurrentlyActingPlayer) {
 		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
@@ -164,9 +165,10 @@ void APlayerController_Base::OnPrimaryClick_Implementation(AActor* ClickedActor,
 
 void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector MoveLocation)
 {
-	if (Cast<AAIController_Avatar>(CurrentSelectedAvatar->GetController())) {
-		Cast<AAIController_Avatar>(CurrentSelectedAvatar->GetController())->GetMoveCommandFromPlayer_Implementation(MoveLocation);
-	}
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Send Move Command To Server")));
+	//if (Cast<AAIController_Avatar>(CurrentSelectedAvatar->GetController())) {
+	//	Cast<AAIController_Avatar>(CurrentSelectedAvatar->GetController())->GetMoveCommandFromPlayer_Implementation(MoveLocation);
+	//}
 }
 
 

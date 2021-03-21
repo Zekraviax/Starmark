@@ -92,10 +92,10 @@ public:
 	void UpdateAvatarsDecalsAndWidgets();
 
 // ------------------------- Battle
-	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void OnPrimaryClick(AActor* ClickedActor, FAvatar_AttackStruct CurrentSelectedAttack);
+	UFUNCTION(BlueprintCallable)
+	void OnPrimaryClick(AActor* ClickedActor);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable)
+	UFUNCTION(BlueprintNativeEvent)
 	void SendMoveCommandToServer(FVector MoveLocation);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)

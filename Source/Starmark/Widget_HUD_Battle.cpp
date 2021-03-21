@@ -20,6 +20,7 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 
 				AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Visible);
 			}
+
 			else {
 				AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Hidden);
 			}

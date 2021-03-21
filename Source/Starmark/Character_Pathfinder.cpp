@@ -19,6 +19,7 @@
 #include "AttackEffects_FunctionLibrary.h"
 #include "Starmark_GameState.h"
 #include "Starmark_GameMode.h"
+#include "Starmark_PlayerState.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 
@@ -82,6 +83,7 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(ACharacter_Pathfinder, PlayerControllerReference);
 	DOREPLIFETIME(ACharacter_Pathfinder, AllKnownAttacks);
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentSelectedAttack);
+	DOREPLIFETIME(ACharacter_Pathfinder, IndexInPlayerParty);
 }
 
 
@@ -383,15 +385,13 @@ void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* T
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Final Damage = %d"), CurrentDamage));
 
 	// Subtract Health
-	PlayerControllerReference->Server_SubtractHealth_Implementation(Target, CurrentDamage);
+	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerControllerReference->PlayerState);
+	PlayerStateReference->Server_SubtractHealth_Implementation(Target, CurrentDamage);
 
 	// Apply move effects after the damage has been dealt
 	for (int i = 0; i < CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
 		UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(CurrentSelectedAttack.AttackEffectsOnTarget[i], this, Target);
 	}
-
-	// Update the Avatar's Controller's HUD
-	PlayerControllerReference->SetBattleWidgetVariables();
 }
 
 

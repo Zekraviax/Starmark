@@ -65,14 +65,15 @@ void AStarmark_GameMode::EndOfTurn_Implementation()
 			GameStateReference->CurrentAvatarTurnIndex = 0;
 		}
 
-		for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
+		//for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
 
-		}
+		//}
 	}
 }
 
 
+// Implemented in BP
 void AStarmark_GameMode::EndOfBattle_Implementation()
 {
-
+	
 }

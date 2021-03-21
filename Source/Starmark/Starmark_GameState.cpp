@@ -121,5 +121,7 @@ void AStarmark_GameState::EndOfBattle_Implementation()
 		Cast<APlayerController_Base>(AvatarTurnOrder[i]->PlayerControllerReference)->IsCurrentlyActingPlayer = false;
 	}
 
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("End Of Battle. Returning to Main Menu...")));
+
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->EndOfBattle();
 }

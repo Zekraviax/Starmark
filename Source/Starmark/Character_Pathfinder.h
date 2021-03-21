@@ -89,7 +89,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<FAvatar_StatusEffect> CurrentStatusEffectsArray;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
 	int IndexInPlayerParty;
 
 // ------------------------- Other

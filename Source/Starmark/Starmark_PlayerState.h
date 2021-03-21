@@ -41,8 +41,14 @@ public:
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)
-	void CreateDefaultPlayerParty();
+	void PlayerState_BeginBattle();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void PlayerState_OnPrimaryClick(AActor* ClickedActor, ACharacter_Pathfinder* CurrentAvatar);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void Server_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void Battle_AvatarDefeated(ACharacter_Pathfinder* Avatar);
 };

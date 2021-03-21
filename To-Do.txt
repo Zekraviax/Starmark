@@ -1,0 +1,6 @@
+* Move functions to their best possible files
+* Rename functions
+* Rename variables
+* Rename files (?)
+* prevent the player from interacting with the UI
+unless its their turn
