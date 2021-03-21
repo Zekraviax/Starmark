@@ -125,4 +125,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayerParty();
+
+	UFUNCTION(BlueprintCallable)
+	void AvatarBeginTurn();
 };

@@ -426,3 +426,31 @@ void ACharacter_Pathfinder::UpdatePlayerParty()
 		if (PlayerControllerReference->PlayerParty.IsValidIndex(IndexInPlayerParty))
 			PlayerControllerReference->PlayerParty[IndexInPlayerParty] = AvatarData;
 }
+
+
+void ACharacter_Pathfinder::AvatarBeginTurn()
+{
+	//if (!PlayerControllerReference)
+	//	PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+	// Reset Decals
+	//PlayerControllerReference->UpdateSelectedAvatar();
+
+	// Reset Moves
+	//AvatarData->CurrentTileMoves = AvatarData.MaximumTileMoves;
+
+	//// Apply Status Effects
+	//for (int i = AvatarData->CurrentStatusEffectsArray.Num() - 1; i == 0; i--) {
+	//	AvatarData->CurrentStatusEffectsArray[i].TurnsRemaining--;
+
+	//	if (!AvatarData->CurrentStatusEffectsArray[i].TurnsRemaining == 0) {
+	//		// Switch On Status Effect Name
+	//		if (AvatarData->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
+	//			//AvatarRef->CurrentTileMoves = FMath::FloorToInt(AvatarRef->CurrentTileMoves / 2);
+	//		}
+	//	}
+	//	else {
+	//		AvatarData->CurrentStatusEffectsArray.RemoveAt(i);
+	//	}
+	//}
+}
