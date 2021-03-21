@@ -112,6 +112,8 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 		// Avatar initialization
 		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
 	}
+
+	UpdateAvatarsDecalsAndWidgets();
 }
 
 
@@ -125,14 +127,16 @@ void APlayerController_Base::UpdateAvatarsDecalsAndWidgets()
 
 		if (FoundActor->CursorToWorld->IsValidLowLevel())
 			FoundActor->CursorToWorld->SetVisibility(false);
+
+		if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel())
+			FoundActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	if (CurrentSelectedAvatar->IsValidLowLevel()) {
-		//CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
-		//CurrentSelectedAvatar->CursorToWorld->SetVisibility(true);
-
 		if (CurrentSelectedAvatar->ActorSelected_DynamicMaterial)
 			CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+
+		CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
 	}
 }
 

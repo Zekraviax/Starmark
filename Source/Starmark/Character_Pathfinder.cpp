@@ -119,7 +119,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 		AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
 
 		if (AvatarBattleDataComponent_Reference->IsValidLowLevel()) {
-			AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
 			AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
 			AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 		}
@@ -153,26 +152,36 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 {
 	if (ActorSelected && ActorSelected_DynamicMaterial) {
-		CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+		//CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
 
 		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
-		ActorSelected->SetVisibility(true);
+		//ActorSelected->SetVisibility(true);
+
+		// Update the colour of the ActorSelected decal here
+		if (PlayerControllerReference->CurrentSelectedAvatar == this)
+			ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+		else
+			ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Yellow);
 	}
 
 	// Show AvatarBattleDataWidget
-	if (AvatarBattleDataComponent_Reference)
+	if (AvatarBattleDataComponent_Reference) {
 		AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+		// Update widget only when the Avatar is hovered
+		AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
+	}
 }
 
 
 void ACharacter_Pathfinder::OnAvatarCursorOverEnd()
 {
-	if (!PlayerControllerReference)
-		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	//if (!PlayerControllerReference)
+	//	PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	// When the player hovers over an actor they aren't controlling
-	if (ActorSelected && PlayerControllerReference->CurrentSelectedAvatar != this)
-		ActorSelected->SetVisibility(false);
+	//if (PlayerControllerReference->CurrentSelectedAvatar != this)
+	//ActorSelected->SetVisibility(false);
 
 	// Hide AvatarBattleDataWidget
 	if (AvatarBattleDataComponent_Reference)

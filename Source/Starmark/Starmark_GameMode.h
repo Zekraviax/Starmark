@@ -572,18 +572,28 @@ class STARMARK_API AStarmark_GameMode : public AGameMode
 	GENERATED_BODY()
 
 public:
+// Variables
+// --------------------------------------------------
+
+// ------------------------- Battle
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<APlayerController_Base*> PlayerControllerReferences;
+
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Battle
+	UFUNCTION(BlueprintCallable)
+	void OnPlayerPostLogin(APlayerController_Base* NewPlayerController);
+
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void GameMode_LaunchAttack(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+	void Server_BeginMultiplayerBattle();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void Server_SpawnAvatar(APlayerController_Base* PlayerController);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Battle_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
-
-	UFUNCTION()
-	void Battle_AvatarDefeated(ACharacter_Pathfinder* Avatar);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void EndOfBattle();
