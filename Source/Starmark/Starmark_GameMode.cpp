@@ -36,9 +36,10 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 {
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		//PlayerControllerReferences[i]
 		Server_SpawnAvatar_Implementation(PlayerControllerReferences[i]);
 	}
+
+	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->SetTurnOrder_Implementation(PlayerControllerReferences);
 }
 
 
@@ -51,7 +52,7 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	Location.Z = 100;
 	FActorSpawnParameters SpawnInfo;
 
-	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(Location, FRotator::ZeroRotator, SpawnInfo);
+	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
 
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
@@ -76,7 +77,13 @@ void AStarmark_GameMode::Battle_SubtractHealth_Implementation(ACharacter_Pathfin
 }
 
 
-// Implemented in BP
+//void AStarmark_GameMode::CallTimer_EndOfBattle()
+//{
+//	GetWorld()->GetTimerManager().SetTimer(EndOfBattleTimerHandle, this, &AStarmark_GameMode::EndOfBattle_Implementation, 3.f, false);
+//}
+
+
+// Implemented in Blueprints
 void AStarmark_GameMode::EndOfBattle_Implementation()
 {
 	

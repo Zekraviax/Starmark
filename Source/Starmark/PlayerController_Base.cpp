@@ -95,12 +95,6 @@ void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* 
 // ------------------------- Avatar
 void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 {
-	//AStarmark_PlayerState* PlayerStateReference = nullptr;
-
-	//while (PlayerStateReference == nullptr)
-	//{
-	//	PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
-	//}
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
 
 	// (Default) Player party initialization
@@ -117,9 +111,12 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 
 		// Avatar initialization
 		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
-	}
 
-	UpdateAvatarsDecalsAndWidgets();
+		UpdateAvatarsDecalsAndWidgets();
+	}
+	else {
+		GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.5f, false);
+	}
 }
 
 

@@ -60,6 +60,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_CurrentSelectedAvatar, Category = "Avatar")
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FTimerHandle PlayerStateTimerHandle;
+
 // ------------------------- Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	TArray<FAvatar_Struct> PlayerParty;

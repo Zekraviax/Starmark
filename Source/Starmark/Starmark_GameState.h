@@ -25,6 +25,7 @@ public:
 // ------------------------- References
 
 // ------------------------- Battle
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Battle")
 	TArray<ACharacter_Pathfinder*> AvatarTurnOrder;
 
