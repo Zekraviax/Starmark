@@ -95,7 +95,13 @@ void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* 
 // ------------------------- Avatar
 void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 {
-	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState());
+	//AStarmark_PlayerState* PlayerStateReference = nullptr;
+
+	//while (PlayerStateReference == nullptr)
+	//{
+	//	PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
+	//}
+	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
 
 	// (Default) Player party initialization
 	if (PlayerStateReference) {

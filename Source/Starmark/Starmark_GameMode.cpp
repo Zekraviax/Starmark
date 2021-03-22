@@ -17,26 +17,27 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 	FRotator Rotation;
 	FActorSpawnParameters SpawnInfo;
 
-	if (FoundPlayerStartActors[0]->IsValidLowLevel()) {
-		Location = FoundPlayerStartActors[0]->GetActorLocation();
-		Rotation = FoundPlayerStartActors[0]->GetActorRotation();
+	if (FoundPlayerStartActors.IsValidIndex(0)) {
+		if (FoundPlayerStartActors[0]->IsValidLowLevel()) {
+			Location = FoundPlayerStartActors[0]->GetActorLocation();
+			Rotation = FoundPlayerStartActors[0]->GetActorRotation();
+		}
 	}
 
-	NewPlayerController->Possess(GetWorld()->SpawnActor<APlayerPawn_Static>(Location, Rotation, SpawnInfo));
+	NewPlayerController->Possess(GetWorld()->SpawnActor<APlayerPawn_Static>(PlayerPawnBlueprintClass, Location, Rotation, SpawnInfo));
 
 	PlayerControllerReferences.Add(NewPlayerController);
 	if (PlayerControllerReferences.Num() >= 2) {
 		Server_BeginMultiplayerBattle_Implementation();
 	}
-
-	
 }
 
 
 void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 {
-	for (int i = 0; i, PlayerControllerReferences.Num(); i++) {
+	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		//PlayerControllerReferences[i]
+		Server_SpawnAvatar_Implementation(PlayerControllerReferences[i]);
 	}
 }
 

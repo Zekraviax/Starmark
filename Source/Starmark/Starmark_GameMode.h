@@ -9,6 +9,7 @@
 
 // Forward Declarations
 class ACharacter_Pathfinder;
+class APlayerPawn_Static;
 
 
 // Enums
@@ -578,6 +579,9 @@ public:
 // ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<APlayerController_Base*> PlayerControllerReferences;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<APlayerPawn_Static> PlayerPawnBlueprintClass;
 
 // Functions
 // --------------------------------------------------
