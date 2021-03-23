@@ -42,19 +42,19 @@ void AActor_GridTile::UpdateGridTileState()
 	FHitResult LineTraceResult;
 	TEnumAsByte<EObjectTypeQuery> ObjectToTrace = EObjectTypeQuery::ObjectTypeQuery3;
 	FVector End = FVector(GetActorLocation().X, GetActorLocation().Y, (GetActorLocation().Z + 100.f));
+
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectsToTraceAsByte;
 	ObjectsToTraceAsByte.Add(ObjectToTrace);
+
 	bool SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, GetActorLocation(), End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
 
 	// Tell the Avatar to update Tiles based on its Size
-	if (SuccessfulLineTrace) {
+	if (SuccessfulLineTrace)
 		Cast<ACharacter_Pathfinder>(LineTraceResult.Actor)->SetTilesOccupiedBySize();
-	} 
 
 	// If the TraversalProperties array is empty, add the default Property
-	if (TraversalProperties.Num() <= 0) {
+	if (TraversalProperties.Num() <= 0)
 		TraversalProperties.AddUnique(E_GridTile_TraversalProperties::E_None);
-	}
 }
 
 

@@ -29,19 +29,10 @@ public:
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
 
-	FORCEINLINE UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
-
 // Variables
 // --------------------------------------------------
 
 // ------------------------- Components
-	/** A decal that projects to the cursor location. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UDecalComponent* CursorToWorld;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	UMaterialInstanceDynamic* CursorToWorld_DynamicMaterial;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UDecalComponent* ActorSelected;
 
@@ -57,12 +48,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataComponent_Reference;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	USkeletalMesh* SkeletalMeshReference;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	//USkeletalMesh* SkeletalMeshReference;
 
 // ------------------------- Avatar
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
-	FDataTableRowHandle AvatarDataTableValue;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	//FDataTableRowHandle AvatarDataTableValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Avatar")
 	FAvatar_Struct AvatarData;
@@ -72,19 +63,16 @@ public:
 
 // ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	TArray<FAvatar_AttackStruct> AttacksArray;
+	UDataTable* UltimateTypeChartDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
-	TArray<FAvatar_AttackStruct> AllKnownAttacks;
+	TArray<FAvatar_AttackStruct> CurrentKnownAttacks;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
 	FAvatar_AttackStruct CurrentSelectedAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<ACharacter_Pathfinder*> ValidAttackTargetsArray;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	UDataTable* UltimateTypeChartDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<FAvatar_StatusEffect> CurrentStatusEffectsArray;
@@ -124,7 +112,7 @@ public:
 	void SetTilesOccupiedBySize();
 
 	UFUNCTION(BlueprintCallable)
-	void UpdatePlayerParty();
+	void UpdateAvatarDataInPlayerParty();
 
 	UFUNCTION(BlueprintCallable)
 	void AvatarBeginTurn();

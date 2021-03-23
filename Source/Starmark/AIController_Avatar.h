@@ -11,11 +11,6 @@ class STARMARK_API AAIController_Avatar : public AAIController
 	GENERATED_BODY()
 
 public:
-// Variables
-// --------------------------------------------------
-
-// -------------------------
-
 // Functions
 // --------------------------------------------------
 

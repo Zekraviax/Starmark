@@ -21,8 +21,8 @@ void UWidget_CharacterCreator::OnWidgetOpened()
 	}
 
 	if (Birthday_Month_DropDown->IsValidLowLevel()) {
-		for (int m = 1; m <= 12; m++) {
-			Birthday_Month_DropDown->AddOption(FString::FromInt(m));
+		for (int month = 1; month <= 12; month++) {
+			Birthday_Month_DropDown->AddOption(FString::FromInt(month));
 		}
 
 		Birthday_Month_DropDown->SetSelectedOption("1");

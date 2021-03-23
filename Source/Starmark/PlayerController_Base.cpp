@@ -128,9 +128,6 @@ void APlayerController_Base::UpdateAvatarsDecalsAndWidgets()
 		if (FoundActor->ActorSelected->IsValidLowLevel())
 			FoundActor->ActorSelected->SetVisibility(false);
 
-		if (FoundActor->CursorToWorld->IsValidLowLevel())
-			FoundActor->CursorToWorld->SetVisibility(false);
-
 		if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel())
 			FoundActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 	}

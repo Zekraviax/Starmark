@@ -17,14 +17,12 @@ class STARMARK_API UAttackEffects_FunctionLibrary : public UBlueprintFunctionLib
 	GENERATED_BODY()
 
 public:
-	//virtual UAttackEffects_FunctionLibrary();
-
 // Functions
 // --------------------------------------------------
 	UFUNCTION(BlueprintCallable)
 	static bool SwitchOnAttackEffect(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 
-// ------------------------- Status Effect Attacks
+// ------------------------- Status Effects
 	UFUNCTION(BlueprintCallable)
 	static void Attack_AddParalyze(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 

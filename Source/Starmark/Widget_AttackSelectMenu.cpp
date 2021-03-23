@@ -8,7 +8,7 @@
 void UWidget_AttackSelectMenu::OnWidgetOpened()
 {
 	if (AvatarReference) {
-		for (int i = 0; i < AvatarReference->AttacksArray.Num(); i++) {
+		for (int i = 0; i < AvatarReference->CurrentKnownAttacks.Num(); i++) {
 			WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
 		}
 	}

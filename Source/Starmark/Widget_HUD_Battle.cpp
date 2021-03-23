@@ -12,8 +12,8 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 {
 	if (AvatarAttacksBox) {
 		for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
-			if (PlayerControllerReference->CurrentSelectedAvatar->AllKnownAttacks.IsValidIndex(i)) {
-				Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AttackNameText->SetText(FText::FromString(PlayerControllerReference->CurrentSelectedAvatar->AllKnownAttacks[i].Name));
+			if (PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.IsValidIndex(i)) {
+				Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AttackNameText->SetText(FText::FromString(PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[i].Name));
 
 				Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->PlayerControllerReference = PlayerControllerReference;
 				Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AvatarAttackIndex = i;

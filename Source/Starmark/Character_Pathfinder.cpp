@@ -34,17 +34,10 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	bUseControllerRotationRoll = false;
 
 	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to face direction they move
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
-
-	// Cursor To World Decal
-	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
-	CursorToWorld->SetupAttachment(RootComponent);
-	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
-	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
-	CursorToWorld->SetVisibility(false);
 
 	// Actor Selected Decal
 	ActorSelected = CreateDefaultSubobject<UDecalComponent>("ActorSelected");
@@ -81,7 +74,7 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 	DOREPLIFETIME(ACharacter_Pathfinder, AvatarData);
 	DOREPLIFETIME(ACharacter_Pathfinder, PlayerControllerReference);
-	DOREPLIFETIME(ACharacter_Pathfinder, AllKnownAttacks);
+	DOREPLIFETIME(ACharacter_Pathfinder, CurrentKnownAttacks);
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentSelectedAttack);
 	DOREPLIFETIME(ACharacter_Pathfinder, IndexInPlayerParty);
 }
@@ -97,9 +90,6 @@ void ACharacter_Pathfinder::Tick(float DeltaSeconds)
 void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_Struct NewAvatarData, UWidget_HUD_Battle* BattleHUDReference)
 {
 	FString ContextString;
-
-	CursorToWorld_DynamicMaterial = UMaterialInstanceDynamic::Create(CursorToWorld->GetMaterial(0), this);
-	CursorToWorld->SetMaterial(0, CursorToWorld_DynamicMaterial);
 
 	ActorSelected_DynamicMaterial = UMaterialInstanceDynamic::Create(ActorSelected->GetMaterial(0), this);
 	ActorSelected->SetMaterial(0, ActorSelected_DynamicMaterial);
@@ -127,21 +117,21 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 	//Add Simple Attacks First, then Other Attacks
 	if (AvatarData.SimpleAttacks.Num() > 0) {
 		for (int i = 0; i < AvatarData.SimpleAttacks.Num(); i++) {
-			AllKnownAttacks.Add(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
+			CurrentKnownAttacks.Add(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
 		}
 	}
 
 	if (AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0) {
 		for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
-			if (AllKnownAttacks.Num() < 4) {
-				AllKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
+			if (CurrentKnownAttacks.Num() < 4) {
+				CurrentKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
 			}
 		}
 	}
 
 	// Set default selected attack
-	if (AllKnownAttacks.Num() > 0) {
-		CurrentSelectedAttack = AllKnownAttacks[0];
+	if (CurrentKnownAttacks.Num() > 0) {
+		CurrentSelectedAttack = CurrentKnownAttacks[0];
 	}
 
 	IndexInPlayerParty = 0;
@@ -194,8 +184,7 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 	if (!PlayerControllerReference)
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
-	if (ActorSelected && CursorToWorld_DynamicMaterial) {
-		CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+	if (ActorSelected) {
 		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
 
 		PlayerControllerReference->CurrentSelectedAvatar = this;
@@ -203,10 +192,8 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 		for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
 			ACharacter_Pathfinder* FoundActor = *Itr;
 
-			if (PlayerControllerReference->CurrentSelectedAvatar != FoundActor) {
+			if (PlayerControllerReference->CurrentSelectedAvatar != FoundActor)
 				FoundActor->ActorSelected->SetVisibility(false);
-				FoundActor->CursorToWorld->SetVisibility(false);
-			}
 		}
 	}
 }
@@ -237,9 +224,8 @@ void ACharacter_Pathfinder::ShowAttackRange()
 
 		if (Hit) {
 			for (int i = 0; i < TraceHitResultArray.Num(); i++) {
-				if (TraceHitResultArray[i].Actor->GetClass() == this->GetClass() && TraceHitResultArray[i].Actor != this) {
+				if (TraceHitResultArray[i].Actor->GetClass() == this->GetClass() && TraceHitResultArray[i].Actor != this)
 					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResultArray[i].Actor));
-				}
 			}
 		}
 	}
@@ -252,11 +238,10 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
 		DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
 
-		if (Hit) {
+		if (Hit)
 			if (TraceHitResult.Actor->IsValidLowLevel())
 				if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
 					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-		}
 
 		// South
 		TraceStartLocation = FVector(GetActorLocation().X - 200, GetActorLocation().Y, GetActorLocation().Z);
@@ -265,11 +250,10 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
 		DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
 
-		if (Hit) {
+		if (Hit)
 			if (TraceHitResult.Actor->IsValidLowLevel())
 				if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
 					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-		}
 
 		// East
 		TraceStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y - 200, GetActorLocation().Z);
@@ -278,11 +262,10 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
 		DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
 
-		if (Hit) {
+		if (Hit)
 			if (TraceHitResult.Actor->IsValidLowLevel())
 				if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
 					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-		}
 
 		// West
 		TraceStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 200, GetActorLocation().Z);
@@ -291,11 +274,10 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
 		DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
 
-		if (Hit) {
+		if (Hit)
 			if (TraceHitResult.Actor->IsValidLowLevel())
 				if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
 					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-		}
 
 		// Eight-Way Cross
 		if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
@@ -306,11 +288,10 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
 			DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
 
-			if (Hit) {
+			if (Hit)
 				if (TraceHitResult.Actor->IsValidLowLevel())
 					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
 						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-			}
 
 			// South-West
 			TraceStartLocation = FVector(GetActorLocation().X - 200, GetActorLocation().Y + 200, GetActorLocation().Z);
@@ -319,11 +300,10 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
 			DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
 
-			if (Hit) {
+			if (Hit)
 				if (TraceHitResult.Actor->IsValidLowLevel())
 					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
 						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-			}
 
 			// South-East
 			TraceStartLocation = FVector(GetActorLocation().X - 200, GetActorLocation().Y - 200, GetActorLocation().Z);
@@ -332,11 +312,10 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
 			DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
 
-			if (Hit) {
+			if (Hit)
 				if (TraceHitResult.Actor->IsValidLowLevel())
 					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
 						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-			}
 
 			// North-East
 			TraceStartLocation = FVector(GetActorLocation().X + 200, GetActorLocation().Y - 200, GetActorLocation().Z);
@@ -345,11 +324,10 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
 			DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
 
-			if (Hit) {
+			if (Hit)
 				if (TraceHitResult.Actor->IsValidLowLevel())
 					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
 						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-			}
 		}
 	}
 }
@@ -371,27 +349,20 @@ void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* T
 
 	// Attack Damage Formula
 	CurrentDamage = FMath::CeilToInt(AvatarData.BaseStats.Attack * CurrentSelectedAttack.BasePower);
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 1 = %d"), CurrentDamage));
 	CurrentDamage = FMath::CeilToInt(CurrentDamage / Target->AvatarData.BaseStats.Defence);
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 2 = %d"), CurrentDamage));
 	CurrentDamage = FMath::CeilToInt((AvatarData.BaseStats.Power / 2) * CurrentDamage);
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 3 = %d"), CurrentDamage));
 	CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Damage 4 = %d"), CurrentDamage));
 
 	// Compare each Move type against the Target type
 	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
 		// 2x Damage
-		if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j])) {
+		if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
 			CurrentDamage = CurrentDamage * 2;
-		}
-		// 0.5x Damage
-		else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j])) {
-			CurrentDamage = CurrentDamage / 2;
-		}
-	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Final Damage = %d"), CurrentDamage));
+		// 0.5x Damage
+		else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
+			CurrentDamage = CurrentDamage / 2;
+	}
 
 	// Subtract Health
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerControllerReference->PlayerState);
@@ -429,7 +400,7 @@ void ACharacter_Pathfinder::SetTilesOccupiedBySize()
 }
 
 
-void ACharacter_Pathfinder::UpdatePlayerParty()
+void ACharacter_Pathfinder::UpdateAvatarDataInPlayerParty()
 {
 	if (PlayerControllerReference)
 		if (PlayerControllerReference->PlayerParty.IsValidIndex(IndexInPlayerParty))
