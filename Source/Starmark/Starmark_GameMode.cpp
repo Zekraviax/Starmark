@@ -62,27 +62,6 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 }
 
 
-void AStarmark_GameMode::Battle_SubtractHealth_Implementation(ACharacter_Pathfinder* Defender, int DamageDealt)
-{
-	//if (Defender) {
-	//	Defender->AvatarData.CurrentHealthPoints -= DamageDealt;
-	//	Defender->UpdateAvatarDataInPlayerParty();
-
-	//	if (Defender->AvatarData.CurrentHealthPoints <= 0) {
-	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Avatar Defeated  /  Index: %d"), Defender->IndexInPlayerParty));
-
-	//		//Battle_AvatarDefeated(Defender);
-	//	}
-	//}
-}
-
-
-//void AStarmark_GameMode::CallTimer_EndOfBattle()
-//{
-//	GetWorld()->GetTimerManager().SetTimer(EndOfBattleTimerHandle, this, &AStarmark_GameMode::EndOfBattle_Implementation, 3.f, false);
-//}
-
-
 // Implemented in Blueprints
 void AStarmark_GameMode::EndOfBattle_Implementation()
 {

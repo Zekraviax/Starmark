@@ -602,12 +602,6 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_SpawnAvatar(APlayerController_Base* PlayerController);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void Battle_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
-
-	//UFUNCTION(BlueprintCallable)
-	//void CallTimer_EndOfBattle();
-
 	UFUNCTION(BlueprintNativeEvent)
 	void EndOfBattle();
 };

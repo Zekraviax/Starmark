@@ -261,9 +261,9 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 
 						// Check for valid tiles in the next step of the Move, for each tile the Avatar occupies
 						if (Result.Path->GetPathPoints().IsValidIndex(k + 1) && k != Result.Path->GetPathPoints().Num() - 1) {
-							for (int n = 0; n < AvatarReference->AvatarData.OccupiedTiles.Num(); n++) {
+							for (int number = 0; number < AvatarReference->AvatarData.OccupiedTiles.Num(); number++) {
 								FVector DrawBoxPosition = Result.Path->GetPathPointLocation(k + 1).Position;
-								Start = FVector((DrawBoxPosition.X + (200 * AvatarReference->AvatarData.OccupiedTiles[n].X)), (DrawBoxPosition.Y + (200 * AvatarReference->AvatarData.OccupiedTiles[n].Y)), AvatarReference->GetActorLocation().Z);
+								Start = FVector((DrawBoxPosition.X + (200 * AvatarReference->AvatarData.OccupiedTiles[number].X)), (DrawBoxPosition.Y + (200 * AvatarReference->AvatarData.OccupiedTiles[number].Y)), AvatarReference->GetActorLocation().Z);
 								End = FVector(Start.X, Start.Y, -1.f);
 
 								SuccessfulLineTrace = Query.NavData->GetWorld()->LineTraceSingleByObjectType(LineTraceResult, Start, End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));

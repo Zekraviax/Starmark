@@ -102,9 +102,6 @@ public:
 	void SendMoveCommandToServer(FVector MoveLocation);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void Server_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
-
-	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ReceiveChangeActingPlayerStateFromServer(bool NewActingPlayerState);
 
 	UFUNCTION(BlueprintCallable)

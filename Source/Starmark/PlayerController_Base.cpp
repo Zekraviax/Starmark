@@ -176,12 +176,6 @@ void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector Move
 }
 
 
-void APlayerController_Base::Server_SubtractHealth_Implementation(ACharacter_Pathfinder* Defender, int DamageDealt)
-{
-	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Battle_SubtractHealth_Implementation(Defender, DamageDealt);
-}
-
-
 void APlayerController_Base::ReceiveChangeActingPlayerStateFromServer_Implementation(bool NewActingPlayerState)
 {
 	ChangeActingPlayerState(NewActingPlayerState);
