@@ -244,8 +244,8 @@ void UWidget_CharacterCreator::CalculateMark()
 		MarkNumberAsCharArray.Add(MarkNumberAsString.LeftChop(1));
 		MarkNumberAsCharArray.Add(MarkNumberAsString.RightChop(1));
 
-		for (int n = 0; n < MarkNumberAsCharArray.Num(); n++) {
-			MarkNumberAsIntArray.Add(FCString::Atoi(*MarkNumberAsCharArray[n]));
+		for (int i = 0; i < MarkNumberAsCharArray.Num(); i++) {
+			MarkNumberAsIntArray.Add(FCString::Atoi(*MarkNumberAsCharArray[i]));
 		}
 
 		MarkNumberAsInt = 0;

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 
-#include "Starmark_GameMode.h"
+#include "Starmark_Variables.h"
 
 #include "Starmark_GameInstance.generated.h"
 

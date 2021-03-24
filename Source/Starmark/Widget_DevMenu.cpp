@@ -5,7 +5,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Actor_CharacterTest.h"
 #include "Actor_MorphTargetTest.h"
-#include "Starmark_GameMode.h"
+#include "Starmark_Variables.h"
 
 
 // ------------------------- Widgets

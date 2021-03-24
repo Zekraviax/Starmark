@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 
-#include "Starmark_GameMode.h"
+#include "Starmark_Variables.h"
 
 #include "AttackEffects_FunctionLibrary.generated.h"
 

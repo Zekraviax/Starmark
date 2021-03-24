@@ -5,7 +5,7 @@
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "Starmark_GameMode.h"
+#include "Starmark_Variables.h"
 
 #include "WidgetComponent_AvatarBattleData.generated.h"
 

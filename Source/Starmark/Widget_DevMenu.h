@@ -97,7 +97,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Face Customizer")
 	UMaterial* RoundEyes_Material;
 
-
 // Function
 // --------------------------------------------------
 

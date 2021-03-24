@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 
-#include "Starmark_GameMode.h"
+#include "Starmark_Variables.h"
 
 #include "Starmark_PlayerState.generated.h"
 

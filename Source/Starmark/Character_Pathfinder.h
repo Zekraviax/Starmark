@@ -6,7 +6,7 @@
 #include "Components/DecalComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMesh.h"
-#include "Starmark_GameMode.h"
+#include "Starmark_Variables.h"
 #include "Engine.h"
 #include "UnrealNetwork.h"
 
