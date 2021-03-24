@@ -27,9 +27,9 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 
 	// Use Nested Loops to compare Avatars' Speeds.
 	for (int i = 0; i < FoundActors.Num(); i++) {
-		if (AvatarTurnOrder.Num() <= 0) {
+		if (AvatarTurnOrder.Num() <= 0)
 			AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
-		} else {
+		else {
 			for (int j = 0; j < AvatarTurnOrder.Num(); j++) {
 				if (Cast<ACharacter_Pathfinder>(FoundActors[i])->AvatarData.BaseStats.Speed >= AvatarTurnOrder[j]->AvatarData.BaseStats.Speed && 
 					!AvatarTurnOrder.Contains(Cast<ACharacter_Pathfinder>(FoundActors[i]))) {
@@ -37,9 +37,8 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 					break;
 				}
 				// If we reach the end of the array and the Avatar isn't faster than any of the other Avatars, just add it at the end
-				if (j == AvatarTurnOrder.Num() - 1 && !AvatarTurnOrder.Contains(Cast<ACharacter_Pathfinder>(FoundActors[i]))) {
+				if (j == AvatarTurnOrder.Num() - 1 && !AvatarTurnOrder.Contains(Cast<ACharacter_Pathfinder>(FoundActors[i])))
 					AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
-				}
 			}
 		}
 	}
@@ -47,11 +46,10 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
-		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
+		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController)
 			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(true);
-		} else {
+		else
 			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(false);
-		}
 	}
 }
 
@@ -69,12 +67,10 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
 		if (PlayerController) {
-			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
+			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController)
 				PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(true);
-			}
-			else {
+			else
 				PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(false);
-			}
 		}
 	}
 }

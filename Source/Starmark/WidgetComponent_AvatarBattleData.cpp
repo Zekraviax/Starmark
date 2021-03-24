@@ -7,7 +7,6 @@
 void UWidgetComponent_AvatarBattleData::NativeConstruct()
 {
 	Super::NativeConstruct();
-
 }
 
 
@@ -28,11 +27,10 @@ void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinke
 {
 	LinkedAvatar = NewLinkedAvatar;
 
-	if (LinkedAvatar.Nickname != "" && LinkedAvatar.Nickname != LinkedAvatar.AvatarName) {
+	if (LinkedAvatar.Nickname != "" && LinkedAvatar.Nickname != LinkedAvatar.AvatarName)
 		NicknameText->SetText(FText::FromString(LinkedAvatar.Nickname));
-	} else {
+	else
 		NicknameText->SetText(FText::FromString(""));
-	}
 
 	LevelText->SetText(FText::FromString(FString::FromInt(1)));
 	AvatarText->SetText(FText::FromString(LinkedAvatar.AvatarName));

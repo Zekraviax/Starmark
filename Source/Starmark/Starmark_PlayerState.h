@@ -22,12 +22,6 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Player
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//UWidget_HUD_Battle* PlayerState_BattleHUD;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//ACharacter_Pathfinder* PlayerState_CurrentControlledAvatar;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FAvatar_Struct> PlayerState_PlayerParty;
 

@@ -152,7 +152,6 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 			//}
 			// Select Avatar to Begin Attack
 			if (CurrentSelectedAvatar != ClickedActor) {
-				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Final Damage = %d"), CurrentSelectedAvatar->ValidAttackTargetsArray.Num()));
 				// If we're attacking, and we clicked on a valid target in-range, launch an attack
 				CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(ClickedActor));
 			}

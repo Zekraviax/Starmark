@@ -586,9 +586,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ACharacter_Pathfinder> AvatarBlueprintClass;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//FTimerHandle EndOfBattleTimerHandle;
-
 // Functions
 // --------------------------------------------------
 

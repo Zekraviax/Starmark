@@ -21,9 +21,4 @@ public:
 	UPROPERTY()
 	FPlayer_Data PlayerData;
 
-// Functions
-// --------------------------------------------------
-
-// ------------------------- Multi-player
-
 };

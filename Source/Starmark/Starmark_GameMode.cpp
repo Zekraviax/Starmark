@@ -27,17 +27,15 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 	NewPlayerController->Possess(GetWorld()->SpawnActor<APlayerPawn_Static>(PlayerPawnBlueprintClass, Location, Rotation, SpawnInfo));
 
 	PlayerControllerReferences.Add(NewPlayerController);
-	if (PlayerControllerReferences.Num() >= 2) {
+	if (PlayerControllerReferences.Num() >= 2)
 		Server_BeginMultiplayerBattle_Implementation();
-	}
 }
 
 
 void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 {
-	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+	for (int i = 0; i < PlayerControllerReferences.Num(); i++)
 		Server_SpawnAvatar_Implementation(PlayerControllerReferences[i]);
-	}
 
 	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->SetTurnOrder_Implementation(PlayerControllerReferences);
 }
