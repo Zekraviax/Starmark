@@ -37,7 +37,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int AvatarAttackIndex;
 
-
 // Functions
 // --------------------------------------------------
 

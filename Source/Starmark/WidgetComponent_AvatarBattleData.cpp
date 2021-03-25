@@ -32,7 +32,7 @@ void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinke
 	else
 		NicknameText->SetText(FText::FromString(""));
 
-	LevelText->SetText(FText::FromString(FString::FromInt(1)));
+	TierText->SetText(FText::FromString(FString::FromInt(1)));
 	AvatarText->SetText(FText::FromString(LinkedAvatar.AvatarName));
 	TypesText->SetText(FText::FromString(UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar.PrimaryType).ToString()));
 

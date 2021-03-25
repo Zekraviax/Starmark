@@ -29,11 +29,6 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
-	// Health Bar
-	// Mana Bar
-	// Name
-	// Types
-	// Level
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UProgressBar* HealthBar;
 
@@ -47,7 +42,7 @@ public:
 	UTextBlock* NicknameText;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UTextBlock* LevelText;
+	UTextBlock* TierText;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* TypesText;
