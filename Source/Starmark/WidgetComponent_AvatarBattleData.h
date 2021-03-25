@@ -9,6 +9,7 @@
 
 #include "WidgetComponent_AvatarBattleData.generated.h"
 
+
 // Forward Declarations
 class ACharacter_Pathfinder;
 

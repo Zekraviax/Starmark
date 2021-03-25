@@ -4,6 +4,7 @@
 #include "GameFramework/PlayerState.h"
 #include "PlayerState_Base.generated.h"
 
+
 // Forward Declarations
 class ACharacter_Pathfinder;
 

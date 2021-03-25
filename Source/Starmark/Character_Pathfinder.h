@@ -12,6 +12,7 @@
 
 #include "Character_Pathfinder.generated.h"
 
+
 // Forward Declarations
 class APlayerController_Base;
 class UWidgetComponent_AvatarBattleData;

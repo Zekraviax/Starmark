@@ -6,10 +6,11 @@
 #include "Widget_HUD_Battle.h"
 #include "WidgetComponent_AvatarBattleData.h"
 #include "PlayerController_Base.h"
+#include "Character_Pathfinder.h"
 #include "Starmark_PlayerState.h"
+#include "Starmark_GameMode.h"
 #include "GameFramework/Controller.h"
 #include "Engine/World.h"
-#include "Character_Pathfinder.h"
 
 
 void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -79,7 +80,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 void AStarmark_GameState::EndOfBattle_Implementation()
 {
 	for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
-		Cast<APlayerController_Base>(AvatarTurnOrder[i]->PlayerControllerReference)->IsCurrentlyActingPlayer = false;
+		Cast<APlayerController_Base>(AvatarTurnOrder[i]->PlayerControllerReference)->ChangeActingPlayerState(false);
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("End Of Battle. Returning to Main Menu...")));

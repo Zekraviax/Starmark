@@ -9,6 +9,7 @@
 
 #include "WidgetComponent_AvatarAttack.generated.h"
 
+
 // Forward Declarations
 class ACharacter_Pathfinder;
 class APlayerController_Base;

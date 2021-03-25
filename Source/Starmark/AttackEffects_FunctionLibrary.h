@@ -7,6 +7,7 @@
 
 #include "AttackEffects_FunctionLibrary.generated.h"
 
+
 // Forward Declarations
 class ACharacter_Pathfinder;
 

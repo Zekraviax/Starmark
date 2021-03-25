@@ -1,6 +1,10 @@
+Refactor:
 * Move functions to their best possible files
 * Rename functions
 * Rename variables
 * Rename files (?)
-* prevent the player from interacting with the UI
-unless its their turn
+* Remove redundant UFUNCTION and UPROPERTY macros.
+
+Multiplayer:
+* Fix the broken AvatarData widgets attached to Avatars
+* Fix the ActorSelected decal functions

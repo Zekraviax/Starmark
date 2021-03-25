@@ -5,8 +5,10 @@
 
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
+#include "Components/Button.h"
 
 #include "Widget_HUD_Battle.generated.h"
+
 
 // Forward Declarations
 class APlayerController_Base;
@@ -32,6 +34,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataWidget;
 
+	// Buttons
+	UPROPERTY(meta = (BindWidget))
+	UButton* MoveCommandButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* AttackCommandButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SwitchCommandButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* EndTurnCommandButton;
+
 // ------------------------- References
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlayerController_Base* PlayerControllerReference;
@@ -42,6 +57,12 @@ public:
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
 	void UpdateAvatarAttacksComponents();
+
+	UFUNCTION(BlueprintCallable)
+	void OnPlayerClick();
+
+	UFUNCTION(BlueprintCallable)
+	void OnPlayerCurrentlyActingStateChanged();
 
 // ------------------------- Commands
 	UFUNCTION(BlueprintCallable)

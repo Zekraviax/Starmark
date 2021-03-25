@@ -7,6 +7,7 @@
 
 #include "Starmark_PlayerState.generated.h"
 
+
 // Forward Declarations
 class UWidget_HUD_Battle;
 class ACharacter_Pathfinder;
