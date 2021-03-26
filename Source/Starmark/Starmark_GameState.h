@@ -31,7 +31,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int CurrentAvatarTurnIndex;
 
-
 // Functions
 // --------------------------------------------------
 

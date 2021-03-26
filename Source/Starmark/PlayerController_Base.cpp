@@ -5,12 +5,14 @@
 #include "AIController.h"
 #include "AIController_Avatar.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Widget_HUD_Battle.h"
 #include "WidgetComponent_AvatarBattleData.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
 #include "PlayerPawn_Static.h"
+#include "Player_SaveData.h"
 
 
 APlayerController_Base::APlayerController_Base()
@@ -87,6 +89,22 @@ void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* 
 	if (BattleWidgetReference->IsValidLowLevel() && CurrentSelectedAvatar) {
 		if (BattleWidgetReference->AvatarBattleDataWidget->IsValidLowLevel()) {
 			BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(NewAvatarData);
+		}
+	}
+}
+
+
+// ------------------------- Player
+void APlayerController_Base::LoadPlayerProfile()
+{
+	//Cast<AStarmark_GameInstance>()
+	USaveGame* SaveGameObject = UGameplayStatics::LoadGameFromSlot("PlayerProfile", 0);
+
+	if (SaveGameObject->IsValidLowLevel()) {
+		UPlayer_SaveData* PlayerProfile = Cast<UPlayer_SaveData>(SaveGameObject);
+
+		if (PlayerProfile->IsValidLowLevel()) {
+			Cast<AStarmark_PlayerState>(PlayerState)->UpdatePlayerData(PlayerProfile);
 		}
 	}
 }

@@ -11,6 +11,7 @@
 // Forward Declarations
 class UWidget_HUD_Battle;
 class ACharacter_Pathfinder;
+class UPlayer_SaveData;
 
 
 UCLASS()
@@ -26,6 +27,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FAvatar_Struct> PlayerState_PlayerParty;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPlayer_SaveData* PlayerProfileReference;
+
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarDataTable;
@@ -33,6 +37,10 @@ public:
 
 // Functions
 // --------------------------------------------------
+
+// ------------------------- Player
+	UFUNCTION(BlueprintCallable)
+	void UpdatePlayerData(UPlayer_SaveData* PlayerProfile);
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)

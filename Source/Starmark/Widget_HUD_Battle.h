@@ -59,6 +59,9 @@ public:
 	void UpdateAvatarAttacksComponents();
 
 	UFUNCTION(BlueprintCallable)
+	void UpdateTurnOrderText();
+
+	UFUNCTION(BlueprintCallable)
 	void OnPlayerClick();
 
 	UFUNCTION(BlueprintCallable)

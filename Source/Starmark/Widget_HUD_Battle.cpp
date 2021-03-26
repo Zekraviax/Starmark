@@ -27,6 +27,18 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 }
 
 
+void UWidget_HUD_Battle::UpdateTurnOrderText()
+{
+	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+
+	if (GameStateReference->IsValidLowLevel()) {
+		for (int i = 0; i < GameStateReference->AvatarTurnOrder.Num(); i++) {
+			TurnOrderTextBlock->SetText(FText::FromString(TurnOrderTextBlock->GetText().ToString() + GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->PlayerState->GetPlayerName() + "\n"));
+		}
+	}
+}
+
+
 void UWidget_HUD_Battle::OnPlayerClick()
 {
 	// Hide Avatar Attacks Box if an AttackButton wasn't clicked

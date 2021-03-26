@@ -4,7 +4,21 @@
 #include "Widget_HUD_Battle.h"
 #include "Character_Pathfinder.h"
 #include "PlayerController_Base.h"
+#include "Player_SaveData.h"
 #include "Starmark_GameState.h"
+
+
+// ------------------------- Player
+void AStarmark_PlayerState::UpdatePlayerData(UPlayer_SaveData* PlayerProfile)
+{
+	if (PlayerProfile->IsValidLowLevel()) {
+		PlayerProfileReference = PlayerProfile;
+	}
+
+	if (PlayerProfileReference->IsValidLowLevel()) {
+		SetPlayerName(PlayerProfileReference->Name);
+	}
+}
 
 
 // ------------------------- Battle

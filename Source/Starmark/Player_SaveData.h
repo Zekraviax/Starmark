@@ -9,5 +9,12 @@ UCLASS()
 class STARMARK_API UPlayer_SaveData : public USaveGame
 {
 	GENERATED_BODY()
-	
+
+public:
+// Variables
+// --------------------------------------------------
+
+// ------------------------- Base
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
 };

@@ -25,8 +25,10 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 	}
 
 	NewPlayerController->Possess(GetWorld()->SpawnActor<APlayerPawn_Static>(PlayerPawnBlueprintClass, Location, Rotation, SpawnInfo));
-
 	PlayerControllerReferences.Add(NewPlayerController);
+
+
+
 	if (PlayerControllerReferences.Num() >= 2)
 		Server_BeginMultiplayerBattle_Implementation();
 }

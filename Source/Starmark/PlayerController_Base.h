@@ -88,6 +88,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData);
 
+// ------------------------- Player
+	UFUNCTION(BlueprintCallable)
+	void LoadPlayerProfile();
+
 // ------------------------- Avatar
 	UFUNCTION(BlueprintCallable)
 	void OnRepNotify_CurrentSelectedAvatar();
