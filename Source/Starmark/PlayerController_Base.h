@@ -14,6 +14,7 @@
 // Forward Declarations
 class UWidget_HUD_Battle;
 class AAIController_Avatar;
+class UPlayer_SaveData;
 
 
 // Unique Enums
@@ -70,6 +71,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	bool IsCurrentlyActingPlayer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
+	UPlayer_SaveData* PlayerProfileReference;
 
 // ------------------------- Grid
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")

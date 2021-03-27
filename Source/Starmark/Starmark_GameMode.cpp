@@ -5,6 +5,7 @@
 #include "PlayerPawn_Static.h"
 #include "Actor_GridTile.h"
 #include "Starmark_GameState.h"
+#include "Widget_HUD_Battle.h"
 
 
 // ------------------------- Battle
@@ -27,8 +28,6 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 	NewPlayerController->Possess(GetWorld()->SpawnActor<APlayerPawn_Static>(PlayerPawnBlueprintClass, Location, Rotation, SpawnInfo));
 	PlayerControllerReferences.Add(NewPlayerController);
 
-
-
 	if (PlayerControllerReferences.Num() >= 2)
 		Server_BeginMultiplayerBattle_Implementation();
 }
@@ -40,22 +39,26 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 		Server_SpawnAvatar_Implementation(PlayerControllerReferences[i]);
 
 	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->SetTurnOrder_Implementation(PlayerControllerReferences);
+
+	//for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+	//	PlayerControllerReferences[i]->BattleWidgetReference->UpdateTurnOrderText("123");
+	//}
 }
 
 
 void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Base* PlayerController)
 {
+	FActorSpawnParameters SpawnInfo;
 	TArray<AActor*> FoundGridTiletActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTiletActors);
-
 	FVector Location = FoundGridTiletActors[FMath::RandRange(0, FoundGridTiletActors.Num() - 1)]->GetActorLocation();
-	Location.Z = 100;
-	FActorSpawnParameters SpawnInfo;
-
 	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
 
+	Location.Z = 100;
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
+
+	//PlayerController->BattleWidgetReference->UpdateTurnOrderText("asd");
 
 	if (HasAuthority())
 		PlayerController->OnRepNotify_CurrentSelectedAvatar();

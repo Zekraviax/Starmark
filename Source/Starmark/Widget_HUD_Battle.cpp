@@ -27,15 +27,12 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 }
 
 
-void UWidget_HUD_Battle::UpdateTurnOrderText()
+void UWidget_HUD_Battle::UpdateTurnOrderText(FString NewText)
 {
-	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Update Turn Order Text")));
 
-	if (GameStateReference->IsValidLowLevel()) {
-		for (int i = 0; i < GameStateReference->AvatarTurnOrder.Num(); i++) {
-			TurnOrderTextBlock->SetText(FText::FromString(TurnOrderTextBlock->GetText().ToString() + GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->PlayerState->GetPlayerName() + "\n"));
-		}
-	}
+	if (TurnOrderTextBlock->IsValidLowLevel())
+		TurnOrderTextBlock->SetText(FText::FromString("Turn Order:\n" + NewText));
 }
 
 

@@ -36,6 +36,7 @@ void APlayerController_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(APlayerController_Base, IsCurrentlyActingPlayer);
 	DOREPLIFETIME(APlayerController_Base, PlayerClickMode);
 	DOREPLIFETIME(APlayerController_Base, PlayerParty);
+	DOREPLIFETIME(APlayerController_Base, PlayerProfileReference);
 }
 
 
@@ -64,6 +65,13 @@ void APlayerController_Base::CreateBattleWidget()
 
 		if (BattleWidgetReference) {
 			BattleWidgetReference->AddToViewport();
+
+			if (Cast<AStarmark_GameState>(GetWorld()->GetGameState())) {
+				BattleWidgetReference->UpdateTurnOrderText(Cast<AStarmark_GameState>(GetWorld()->GetGameState())->CurrentTurnOrderText);
+			}
+			else {
+				BattleWidgetReference->UpdateTurnOrderText("rty");
+			}
 		}
 	}
 }
@@ -106,6 +114,8 @@ void APlayerController_Base::LoadPlayerProfile()
 		if (PlayerProfile->IsValidLowLevel()) {
 			Cast<AStarmark_PlayerState>(PlayerState)->UpdatePlayerData(PlayerProfile);
 		}
+
+		PlayerProfileReference = PlayerProfile;
 	}
 }
 

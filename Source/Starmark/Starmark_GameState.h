@@ -31,6 +31,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int CurrentAvatarTurnIndex;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	FString CurrentTurnOrderText;
+
 // Functions
 // --------------------------------------------------
 

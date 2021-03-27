@@ -6,6 +6,7 @@
 #include "Widget_HUD_Battle.h"
 #include "WidgetComponent_AvatarBattleData.h"
 #include "PlayerController_Base.h"
+#include "Player_SaveData.h"
 #include "Character_Pathfinder.h"
 #include "Starmark_PlayerState.h"
 #include "Starmark_GameMode.h"
@@ -26,6 +27,9 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundActors);
 
+	// Assemble turn order text
+	FString AssembledTurnOrderText;
+
 	// Use Nested Loops to compare Avatars' Speeds.
 	for (int i = 0; i < FoundActors.Num(); i++) {
 		if (AvatarTurnOrder.Num() <= 0)
@@ -42,16 +46,22 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 					AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
 			}
 		}
+
+		if (AvatarTurnOrder[i]->PlayerControllerReference->PlayerProfileReference->IsValidLowLevel())
+			AssembledTurnOrderText.Append(AvatarTurnOrder[i]->AvatarData.AvatarName + " / " + AvatarTurnOrder[i]->PlayerControllerReference->PlayerProfileReference->Name + "\n");
 	}
 
-	// Set Turn Order Text
-
+	CurrentTurnOrderText = AssembledTurnOrderText;
+	
+	// Set CurrentActingPlayer states
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
+		//if (PlayerController->BattleWidgetReference->IsValidLowLevel())
+		//	PlayerController->BattleWidgetReference->UpdateTurnOrderText(AssembledTurnOrderText);
+
 		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
 			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(true);
-			AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference->BattleWidgetReference->UpdateTurnOrderText();
 		} else
 			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(false);
 	}
