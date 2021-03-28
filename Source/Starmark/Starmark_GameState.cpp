@@ -60,13 +60,13 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
-		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
+		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController)
 			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(true);
-		} else
+		else
 			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(false);
-	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Turn Order Text: %s"), *CurrentTurnOrderText));
+		PlayerController->SetBattleWidgetVariables();
+	}
 }
 
 

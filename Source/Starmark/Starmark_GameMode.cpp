@@ -26,6 +26,8 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 	}
 
 	NewPlayerController->Possess(GetWorld()->SpawnActor<APlayerPawn_Static>(PlayerPawnBlueprintClass, Location, Rotation, SpawnInfo));
+	NewPlayerController->LoadPlayerProfile();
+
 	PlayerControllerReferences.Add(NewPlayerController);
 
 	if (PlayerControllerReferences.Num() >= 2)
@@ -47,10 +49,12 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	FActorSpawnParameters SpawnInfo;
 	TArray<AActor*> FoundGridTiletActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTiletActors);
-	FVector Location = FoundGridTiletActors[FMath::RandRange(0, FoundGridTiletActors.Num() - 1)]->GetActorLocation();
-	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
 
-	Location.Z = 100;
+	FVector Location = FoundGridTiletActors[FMath::RandRange(0, FoundGridTiletActors.Num() - 1)]->GetActorLocation();	
+	Location.Z = 95;
+
+
+	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 

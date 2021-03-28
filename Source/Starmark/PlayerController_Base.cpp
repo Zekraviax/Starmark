@@ -51,6 +51,14 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
+	/*AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+	if (GameStateReference->IsValidLowLevel()) {
+		GEngine->AddOnScreenDebugMessage(-1, 0.2f, FColor::Red, FString::Printf(TEXT("Turn Order Text: %s"), *GameStateReference->CurrentTurnOrderText));
+
+		if (BattleWidgetReference->IsValidLowLevel())
+			BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
+	}*/
+
 	if (CurrentSelectedAvatar) {
 		SetBattleWidgetAndLinkedAvatar(BattleWidgetReference, CurrentSelectedAvatar->AvatarData);
 	}
@@ -72,11 +80,15 @@ void APlayerController_Base::CreateBattleWidget()
 
 void APlayerController_Base::SetBattleWidgetVariables()
 {
+	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+
 	if (BattleWidgetReference) {
 		BattleWidgetReference->PlayerControllerReference = this;
 
 		if (CurrentSelectedAvatar)
 			BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
+
+		BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
 	}
 }
 
@@ -93,7 +105,6 @@ void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* 
 		}
 	}
 }
-
 
 // ------------------------- Player
 void APlayerController_Base::LoadPlayerProfile()
@@ -117,7 +128,6 @@ void APlayerController_Base::LoadPlayerProfile()
 void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 {
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
-	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(PlayerState);
 
 	// (Default) Player party initialization
 	if (PlayerStateReference) {
@@ -129,8 +139,6 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 
 		if (BattleWidgetReference) {
 			SetBattleWidgetVariables();
-
-			BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
 		}
 
 		// Avatar initialization
@@ -205,8 +213,6 @@ void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector Move
 
 void APlayerController_Base::ReceiveChangeActingPlayerStateFromServer_Implementation(bool NewActingPlayerState)
 {
-	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
-
 	ChangeActingPlayerState(NewActingPlayerState);
 }
 
@@ -214,9 +220,6 @@ void APlayerController_Base::ReceiveChangeActingPlayerStateFromServer_Implementa
 void APlayerController_Base::ChangeActingPlayerState(bool NewActingPlayerState)
 {
 	IsCurrentlyActingPlayer = NewActingPlayerState;
-
-	if (BattleWidgetReference)
-		BattleWidgetReference->OnPlayerCurrentlyActingStateChanged();
 }
 
 
