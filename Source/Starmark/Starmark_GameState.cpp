@@ -19,6 +19,7 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStarmark_GameState, AvatarTurnOrder);
+	DOREPLIFETIME(AStarmark_GameState, CurrentTurnOrderText);
 }
 
 
@@ -49,6 +50,8 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 
 		if (AvatarTurnOrder[i]->PlayerControllerReference->PlayerProfileReference->IsValidLowLevel())
 			AssembledTurnOrderText.Append(AvatarTurnOrder[i]->AvatarData.AvatarName + " / " + AvatarTurnOrder[i]->PlayerControllerReference->PlayerProfileReference->Name + "\n");
+		else
+			AssembledTurnOrderText.Append(AvatarTurnOrder[i]->AvatarData.AvatarName + "\n");
 	}
 
 	CurrentTurnOrderText = AssembledTurnOrderText;
@@ -57,14 +60,13 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
-		//if (PlayerController->BattleWidgetReference->IsValidLowLevel())
-		//	PlayerController->BattleWidgetReference->UpdateTurnOrderText(AssembledTurnOrderText);
-
 		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
 			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(true);
 		} else
 			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(false);
 	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Current Turn Order Text: %s"), *CurrentTurnOrderText));
 }
 
 

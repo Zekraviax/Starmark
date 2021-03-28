@@ -39,10 +39,6 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 		Server_SpawnAvatar_Implementation(PlayerControllerReferences[i]);
 
 	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->SetTurnOrder_Implementation(PlayerControllerReferences);
-
-	//for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-	//	PlayerControllerReferences[i]->BattleWidgetReference->UpdateTurnOrderText("123");
-	//}
 }
 
 
@@ -57,8 +53,6 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	Location.Z = 100;
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
-
-	//PlayerController->BattleWidgetReference->UpdateTurnOrderText("asd");
 
 	if (HasAuthority())
 		PlayerController->OnRepNotify_CurrentSelectedAvatar();

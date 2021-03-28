@@ -29,8 +29,6 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 
 void UWidget_HUD_Battle::UpdateTurnOrderText(FString NewText)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Update Turn Order Text")));
-
 	if (TurnOrderTextBlock->IsValidLowLevel())
 		TurnOrderTextBlock->SetText(FText::FromString("Turn Order:\n" + NewText));
 }
