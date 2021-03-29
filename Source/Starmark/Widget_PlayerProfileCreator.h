@@ -2,7 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+
+#include "Components/EditableText.h"
+
 #include "Widget_PlayerProfileCreator.generated.h"
+
+// Forward Declarations
+class UWidget_MainMenu;
+class USaveGame;
 
 
 UCLASS()
@@ -14,15 +21,27 @@ public:
 // Variables
 // --------------------------------------------------
 
-// ------------------------- Widget
+// ------------------------- Components
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UEditableText* NameEntryField;
+
+// ------------------------- References
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWidget_MainMenu> MainMenuWidget_Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UWidget_MainMenu* MainMenuWidget_Reference;
 	
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
-	void OnWidgetOpened();
+	void OnWidgetOpened(USaveGame* PlayerProfile);
 
 	UFUNCTION(BlueprintCallable)
-	void OnSaveGameButtonPressed();
+	void OnSaveGameButtonPressed(USaveGame* PlayerProfile);
+
+	UFUNCTION(BlueprintCallable)
+	void OnExitButtonPressed();
 };
