@@ -12,15 +12,6 @@
 // ------------------------- Widget
 void UWidget_PlayerProfileCreator::OnWidgetOpened()
 {
-	//if (PlayerProfile->IsValidLowLevel()) {
-	//	UPlayer_SaveData* PlayerProfileData = Cast<UPlayer_SaveData>(PlayerProfile);
-
-	//	NameEntryField->SetText(FText::FromString(PlayerProfileData->Name));
-	//}
-	//else {
-	//NameEntryField->SetText(FText::FromString("Default"));
-	//}
-
 	// Get the list of Player Profiles
 	ProfilesList = Cast<USaveData_PlayerProfilesList>(UGameplayStatics::LoadGameFromSlot("PlayerProfilesList", 0));
 

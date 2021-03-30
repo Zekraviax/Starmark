@@ -10,11 +10,19 @@
 // Forward Declarations
 class UPlayer_SaveData;
 
+// Delegates
+DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(UPlayer_SaveData*, );
+
 
 UCLASS()
 class STARMARK_API UWidgetComponent_PlayerProfile : public UUserWidget
 {
 	GENERATED_BODY()
+
+// ------------------------- Delegate Parameters
+	UPROPERTY()
+	UPlayer_SaveData* PlayerProfileDelegate;
+
 
 public:
 // Variables
