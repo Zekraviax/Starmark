@@ -4,12 +4,15 @@
 #include "Blueprint/UserWidget.h"
 
 #include "Components/EditableText.h"
+#include "Components/ScrollBox.h"
 
 #include "Widget_PlayerProfileCreator.generated.h"
 
 // Forward Declarations
 class UWidget_MainMenu;
 class USaveGame;
+class USaveData_PlayerProfilesList;
+class UWidgetComponent_PlayerProfile;
 
 
 UCLASS()
@@ -25,22 +28,35 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UEditableText* NameEntryField;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UScrollBox* PlayerProfilesScrollBox;
+
 // ------------------------- References
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UWidget_MainMenu> MainMenuWidget_Class;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UWidget_MainMenu* MainMenuWidget_Reference;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWidgetComponent_PlayerProfile> PlayerProfileWidgetComponent_Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UWidgetComponent_PlayerProfile* PlayerProfileWidgetComponent_Reference;
+
+// ------------------------- Save Data
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USaveData_PlayerProfilesList* ProfilesList;
 	
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
-	void OnWidgetOpened(USaveGame* PlayerProfile);
+	void OnWidgetOpened();
 
 	UFUNCTION(BlueprintCallable)
-	void OnSaveGameButtonPressed(USaveGame* PlayerProfile);
+	void OnSaveGameButtonPressed();
 
 	UFUNCTION(BlueprintCallable)
 	void OnExitButtonPressed();
