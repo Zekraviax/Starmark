@@ -23,6 +23,8 @@ public:
 // Variables
 // --------------------------------------------------
 
+// ------------------------- Lobby
+
 // ------------------------- Battle
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Battle")
 	TArray<ACharacter_Pathfinder*> AvatarTurnOrder;
@@ -36,6 +38,10 @@ public:
 
 // Functions
 // --------------------------------------------------
+
+// ------------------------- Lobby
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void UpdateAllPlayersInLobby();
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)

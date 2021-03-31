@@ -6,10 +6,12 @@
 #include "Widget_HUD_Battle.h"
 #include "WidgetComponent_AvatarBattleData.h"
 #include "PlayerController_Base.h"
+#include "PlayerController_Lobby.h"
 #include "Player_SaveData.h"
 #include "Character_Pathfinder.h"
 #include "Starmark_PlayerState.h"
 #include "Starmark_GameMode.h"
+#include "Widget_ServerHost.h"
 #include "GameFramework/Controller.h"
 #include "Engine/World.h"
 
@@ -23,6 +25,20 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 }
 
 
+// ------------------------- Lobby
+void AStarmark_GameState::UpdateAllPlayersInLobby_Implementation()
+{
+	for (int i = 0; i < PlayerArray.Num(); i++) {
+		APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
+
+		//if (PlayerController->LobbyWidget_Reference->IsValidLowLevel())
+		//	//if (PlayerArray.Num() >= 2)
+		//		PlayerController->LobbyWidget_Reference->ReadyButton->SetIsEnabled(true);
+	}
+}
+
+
+// ------------------------- Battle
 void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerController_Base*>& PlayerControllers)
 {
 	TArray<AActor*> FoundActors;
