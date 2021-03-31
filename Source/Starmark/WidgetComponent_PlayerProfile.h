@@ -11,7 +11,7 @@
 class UPlayer_SaveData;
 
 // Delegates
-DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(UPlayer_SaveData*, );
+//DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(UPlayer_SaveData*, );
 
 
 UCLASS()

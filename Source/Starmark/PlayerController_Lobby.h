@@ -29,6 +29,6 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Widgets
-	UFUNCTION(BlueprintCallable)
-	void AddLobbyMenuToScreen();
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void PlayerJoinedMultiplayerLobby(int CurrentPlayerCount);
 };
