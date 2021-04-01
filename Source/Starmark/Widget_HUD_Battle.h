@@ -31,7 +31,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UUniformGridPanel* AvatarAttacksBox;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataWidget;
 
 	// Buttons

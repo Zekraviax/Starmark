@@ -3,15 +3,13 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
-#include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "Components/VerticalBox.h"
 
-#include "Widget_ServerHost.generated.h"
+#include "WidgetComponent_LobbyPlayerVals.generated.h"
 
 
 UCLASS()
-class STARMARK_API UWidget_ServerHost : public UUserWidget
+class STARMARK_API UWidgetComponent_LobbyPlayerVals : public UUserWidget
 {
 	GENERATED_BODY()
 	
@@ -21,11 +19,8 @@ public:
 
 // ------------------------- Components
 	UPROPERTY(meta = (BindWidget))
-	UButton* ReadyButton;
+	UTextBlock* PlayerNameText;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* ReadyButtonText;
-
-	UPROPERTY(meta = (BindWidget))
-	UVerticalBox* PlayerListVerticalBox;
+	UTextBlock* PlayerReadyStatus;
 };

@@ -7,6 +7,7 @@
 
 // Forward Declarations
 class UWidget_ServerHost;
+class UWidgetComponent_LobbyPlayerVals;
 
 
 UCLASS()
@@ -25,10 +26,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UWidget_ServerHost* LobbyWidget_Reference;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWidgetComponent_LobbyPlayerVals> LobbyPlayerVals_Class;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UWidgetComponent_LobbyPlayerVals* LobbyPlayerVals_Reference;
+
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Widgets
 	UFUNCTION(BlueprintCallable, Client, Reliable)
-	void PlayerJoinedMultiplayerLobby(int CurrentPlayerCount);
+	void PlayerJoinedMultiplayerLobby();
+
+	UFUNCTION()
+	void UpdatePlayersInLobby(TArray<FString> PlayerNames, TArray<FString> PlayerReadyStatuses);
 };

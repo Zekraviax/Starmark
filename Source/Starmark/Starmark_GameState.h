@@ -12,6 +12,7 @@
 class ACharacter_Pathfinder;
 class UWidget_HUD_Battle;
 class APlayerController_Base;
+class UWidgetComponent_LobbyPlayerVals;
 
 
 UCLASS()
@@ -23,24 +24,29 @@ public:
 // Variables
 // --------------------------------------------------
 
-// ------------------------- Lobby
+// ------------------------- Widgets
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWidgetComponent_LobbyPlayerVals> LobbyPlayerVals_Class;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UWidgetComponent_LobbyPlayerVals* LobbyPlayerVals_Reference;
 
 // ------------------------- Battle
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Battle")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
 	TArray<ACharacter_Pathfinder*> AvatarTurnOrder;
 
 	// The Index of the Avater whose turn it is, in the AvatarTurnOrder Array.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int CurrentAvatarTurnIndex;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString CurrentTurnOrderText;
 
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Lobby
-	UFUNCTION(BlueprintCallable, Client, Reliable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void UpdateAllPlayersInLobby();
 
 // ------------------------- Battle

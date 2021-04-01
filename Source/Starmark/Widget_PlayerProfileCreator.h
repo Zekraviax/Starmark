@@ -25,10 +25,10 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	UEditableText* NameEntryField;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	UScrollBox* PlayerProfilesScrollBox;
 
 // ------------------------- References

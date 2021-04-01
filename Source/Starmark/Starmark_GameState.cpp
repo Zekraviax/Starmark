@@ -4,14 +4,15 @@
 #include "Character_Pathfinder.h"
 #include "Kismet/GameplayStatics.h"
 #include "Widget_HUD_Battle.h"
+#include "Widget_ServerHost.h"
 #include "WidgetComponent_AvatarBattleData.h"
+#include "WidgetComponent_LobbyPlayerVals.h"
 #include "PlayerController_Base.h"
 #include "PlayerController_Lobby.h"
 #include "Player_SaveData.h"
 #include "Character_Pathfinder.h"
 #include "Starmark_PlayerState.h"
 #include "Starmark_GameMode.h"
-#include "Widget_ServerHost.h"
 #include "GameFramework/Controller.h"
 #include "Engine/World.h"
 
@@ -28,12 +29,22 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 // ------------------------- Lobby
 void AStarmark_GameState::UpdateAllPlayersInLobby_Implementation()
 {
+	TArray<FString> PlayerNames, PlayerReadyStatuses;
+
+	for (int i = 0; i < PlayerArray.Num(); i++) {
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Update Player In Lobby: %s"), *PlayerArray[i]->GetPawn()->GetController()->GetClass()->GetName()));
+
+		APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
+
+		//PlayerNames.Add(Cast<AStarmark_PlayerState>(PlayerController->PlayerState)->PlayerProfileReference->Name);
+		PlayerReadyStatuses.Add("Ready");
+	}
+
 	for (int i = 0; i < PlayerArray.Num(); i++) {
 		APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
 
-		//if (PlayerController->LobbyWidget_Reference->IsValidLowLevel())
-		//	//if (PlayerArray.Num() >= 2)
-		//		PlayerController->LobbyWidget_Reference->ReadyButton->SetIsEnabled(true);
+		if (PlayerController->IsValidLowLevel())
+			PlayerController->UpdatePlayersInLobby(PlayerNames, PlayerReadyStatuses);
 	}
 }
 
