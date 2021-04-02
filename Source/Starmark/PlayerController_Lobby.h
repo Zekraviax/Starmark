@@ -32,6 +32,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidgetComponent_LobbyPlayerVals* LobbyPlayerVals_Reference;
 
+// ------------------------- Lobby
+	UPROPERTY()
+	bool ReadyStatus;
+
 // Functions
 // --------------------------------------------------
 

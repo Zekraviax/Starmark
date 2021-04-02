@@ -32,12 +32,14 @@ void AStarmark_GameState::UpdateAllPlayersInLobby_Implementation()
 	TArray<FString> PlayerNames, PlayerReadyStatuses;
 
 	for (int i = 0; i < PlayerArray.Num(); i++) {
-		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Update Player In Lobby: %s"), *PlayerArray[i]->GetPawn()->GetController()->GetClass()->GetName()));
-
 		APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
-
-		//PlayerNames.Add(Cast<AStarmark_PlayerState>(PlayerController->PlayerState)->PlayerProfileReference->Name);
-		PlayerReadyStatuses.Add("Ready");
+		
+		if (PlayerController->IsValidLowLevel()) {
+			if (PlayerController->ReadyStatus)
+				PlayerReadyStatuses.Add("Ready");
+			else
+				PlayerReadyStatuses.Add("Not Ready");
+		}
 	}
 
 	for (int i = 0; i < PlayerArray.Num(); i++) {

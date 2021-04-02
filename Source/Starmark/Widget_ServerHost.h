@@ -6,8 +6,12 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Components/ScrollBox.h"
 
 #include "Widget_ServerHost.generated.h"
+
+// Forward Declarations
+class UWidgetComponent_PlayerProfile;
 
 
 UCLASS()
@@ -28,4 +32,21 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* PlayerListVerticalBox;
+
+	UPROPERTY(meta = (BindWidget))
+	UScrollBox* PlayerProfilesScrollBox;
+
+// ------------------------- Widgets
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWidgetComponent_PlayerProfile> PlayerProfile_Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UWidgetComponent_PlayerProfile* PlayerProfile_Reference;
+
+// Functions
+// --------------------------------------------------
+
+// ------------------------- Player
+	UFUNCTION()
+	void GetAllPlayerProfiles();
 };

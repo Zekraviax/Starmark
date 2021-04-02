@@ -10,7 +10,7 @@
 // ------------------------- Widgets
 void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 {
-	//AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
 	if (!LobbyWidget_Reference->IsValidLowLevel() && LobbyWidget_Class->IsValidLowLevel() && IsLocalPlayerController()) {
 		// Must assign a local controller
@@ -19,17 +19,16 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 		if (GetWorld()->IsServer()) {
 			LobbyWidget_Reference->ReadyButtonText->SetText(FText::FromString("Begin Game"));
 			LobbyWidget_Reference->ReadyButton->SetIsEnabled(true);
-
-			//if (CurrentPlayerCount <= 1)
-			//	LobbyWidget_Reference->ReadyButton->SetIsEnabled(false);
-			//else
-			//	LobbyWidget_Reference->ReadyButton->SetIsEnabled(true);
-
 		}
+
+		LobbyWidget_Reference->AddToViewport();
 	}
 
 	if (LobbyWidget_Reference->IsValidLowLevel()) {
-		LobbyWidget_Reference->AddToViewport();
+		LobbyWidget_Reference->GetAllPlayerProfiles();
+
+		if (GameStateReference->IsValidLowLevel())
+			GameStateReference->UpdateAllPlayersInLobby_Implementation();
 	}
 
 	SetInputMode(FInputModeGameAndUI());
@@ -54,15 +53,5 @@ void APlayerController_Lobby::UpdatePlayersInLobby(TArray<FString> PlayerNames, 
 
 			LobbyWidget_Reference->PlayerListVerticalBox->AddChild(LobbyPlayerVals_Reference);
 		}
-
-		//LobbyPlayerVals_Reference = CreateWidget<UWidgetComponent_LobbyPlayerVals>(this, LobbyPlayerVals_Class);
-		//LobbyPlayerVals_Reference->PlayerReadyStatus->SetText(FText::FromString("Ready"));
-
-		//if (Cast<AStarmark_PlayerState>(PlayerState)->PlayerProfileReference->IsValidLowLevel())
-		//	LobbyPlayerVals_Reference->PlayerNameText->SetText(FText::FromString(Cast<AStarmark_PlayerState>(PlayerState)->PlayerProfileReference->Name));
-		//else
-		//	LobbyPlayerVals_Reference->PlayerNameText->SetText(FText::FromString("Default"));
-
-		//LobbyWidget_Reference->PlayerListVerticalBox->AddChild(LobbyPlayerVals_Reference);
 	}
 }
