@@ -31,23 +31,24 @@ void AStarmark_GameState::UpdateAllPlayersInLobby_Implementation()
 {
 	TArray<FString> PlayerNames, PlayerReadyStatuses;
 
-	for (int i = 0; i < PlayerArray.Num(); i++) {
-		APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
-		
-		if (PlayerController->IsValidLowLevel()) {
-			if (PlayerController->ReadyStatus)
-				PlayerReadyStatuses.Add("Ready");
-			else
-				PlayerReadyStatuses.Add("Not Ready");
-		}
-	}
+	//for (int i = 0; i < PlayerArray.Num(); i++) {
+	//	APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
+	//	
+	//	if (PlayerController->IsValidLowLevel()) {
+	//		PlayerReadyStatuses.Add(PlayerController->ReadyStatus);
+	//		//if (PlayerController->ReadyStatus)
+	//		//	PlayerReadyStatuses.Add("Ready");
+	//		//else
+	//		//	PlayerReadyStatuses.Add("Not Ready");
+	//	}
+	//}
 
-	for (int i = 0; i < PlayerArray.Num(); i++) {
-		APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
+	//for (int i = 0; i < PlayerArray.Num(); i++) {
+	//	APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
 
-		if (PlayerController->IsValidLowLevel())
-			PlayerController->UpdatePlayersInLobby(PlayerNames, PlayerReadyStatuses);
-	}
+	//	if (PlayerController->IsValidLowLevel())
+	//		PlayerController->UpdatePlayersInLobby(PlayerNames, PlayerReadyStatuses, true);
+	//}
 }
 
 

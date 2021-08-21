@@ -19,6 +19,8 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 		if (GetWorld()->IsServer()) {
 			LobbyWidget_Reference->ReadyButtonText->SetText(FText::FromString("Begin Game"));
 			LobbyWidget_Reference->ReadyButton->SetIsEnabled(true);
+
+			Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerReadyStatus = "Host";
 		}
 
 		LobbyWidget_Reference->AddToViewport();
@@ -27,8 +29,10 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 	if (LobbyWidget_Reference->IsValidLowLevel()) {
 		LobbyWidget_Reference->GetAllPlayerProfiles();
 
-		if (GameStateReference->IsValidLowLevel())
-			GameStateReference->UpdateAllPlayersInLobby_Implementation();
+		// GameStateReference is not valid on non-host machines
+		// Replace with a function that runs on player controllers
+		//if (GameStateReference->IsValidLowLevel())
+		//	GameStateReference->UpdateAllPlayersInLobby_Implementation();
 	}
 
 	SetInputMode(FInputModeGameAndUI());
@@ -36,7 +40,7 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 }
 
 
-void APlayerController_Lobby::UpdatePlayersInLobby(TArray<FString> PlayerNames, TArray<FString> PlayerReadyStatuses)
+void APlayerController_Lobby::UpdatePlayersInLobby(TArray<FString> PlayerNames, TArray<FString> PlayerReadyStatuses, bool ClearCurrentPlayers)
 {
 	if (LobbyWidget_Reference->IsValidLowLevel()) {
 		LobbyWidget_Reference->PlayerListVerticalBox->ClearChildren();

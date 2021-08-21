@@ -21,6 +21,19 @@ void AStarmark_PlayerState::UpdatePlayerData(UPlayer_SaveData* PlayerProfile)
 }
 
 
+// ------------------------- Lobby
+void AStarmark_PlayerState::ChangePlayerReadyStatus()
+{
+	if (PlayerReadyStatus == "Not Ready") {
+		PlayerReadyStatus = "Ready";
+	} else if (PlayerReadyStatus == "Ready") {
+		PlayerReadyStatus = "Not Ready";
+	} else {
+		PlayerReadyStatus = "Not Ready";
+	}
+}
+
+
 // ------------------------- Battle
 void AStarmark_PlayerState::PlayerState_BeginBattle()
 {

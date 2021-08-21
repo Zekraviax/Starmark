@@ -8,3 +8,8 @@ Refactor:
 Multiplayer:
 * Fix the broken AvatarData widgets attached to Avatars
 * Fix the ActorSelected decal functions
+* Fix the ServerHost widget not displaying players properly.
+* Players need to be able to set their own names.
+
+Blueprints-To-Code:
+* Starmark_GameMode_Blueprint

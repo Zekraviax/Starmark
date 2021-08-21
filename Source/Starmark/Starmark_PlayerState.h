@@ -30,6 +30,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPlayer_SaveData* PlayerProfileReference;
 
+// ------------------------- Lobby
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString PlayerReadyStatus = "Not Ready";
+
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarDataTable;
@@ -41,6 +45,10 @@ public:
 // ------------------------- Player
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayerData(UPlayer_SaveData* PlayerProfile);
+
+	// ------------------------- Lobby
+	UFUNCTION(BlueprintCallable)
+	void ChangePlayerReadyStatus();
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)

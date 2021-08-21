@@ -33,8 +33,7 @@ public:
 	UWidgetComponent_LobbyPlayerVals* LobbyPlayerVals_Reference;
 
 // ------------------------- Lobby
-	UPROPERTY()
-	bool ReadyStatus;
+
 
 // Functions
 // --------------------------------------------------
@@ -43,6 +42,6 @@ public:
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void PlayerJoinedMultiplayerLobby();
 
-	UFUNCTION()
-	void UpdatePlayersInLobby(TArray<FString> PlayerNames, TArray<FString> PlayerReadyStatuses);
+	UFUNCTION(BlueprintCallable)
+	void UpdatePlayersInLobby(TArray<FString> PlayerNames, TArray<FString> PlayerReadyStatuses, bool ClearCurrentPlayers);
 };
