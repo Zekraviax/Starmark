@@ -10,6 +10,9 @@ Multiplayer:
 * Fix the ActorSelected decal functions
 * Fix the ServerHost widget not displaying players properly.
 * Players need to be able to set their own names.
+* Check if all players are ready before launching a multiplayer match.
 
-Blueprints-To-Code:
+Blueprints-To-Code Conversions:
 * Starmark_GameMode_Blueprint
+* Starmark_GameMode_Lobby_Blueprint
+* Starmark_PlayerState_Blueprint

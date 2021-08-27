@@ -4,6 +4,7 @@
 #include "GameFramework/PlayerState.h"
 
 #include "Starmark_Variables.h"
+#include "UnrealNetwork.h"
 
 #include "Starmark_PlayerState.generated.h"
 
@@ -20,6 +21,8 @@ class STARMARK_API AStarmark_PlayerState : public APlayerState
 	GENERATED_BODY()
 
 public:
+	AStarmark_PlayerState();
+
 // Variables
 // --------------------------------------------------
 
@@ -31,7 +34,7 @@ public:
 	UPlayer_SaveData* PlayerProfileReference;
 
 // ------------------------- Lobby
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString PlayerReadyStatus = "Not Ready";
 
 // ------------------------- Avatar

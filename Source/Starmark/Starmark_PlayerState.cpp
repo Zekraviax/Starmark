@@ -8,6 +8,20 @@
 #include "Starmark_GameState.h"
 
 
+AStarmark_PlayerState::AStarmark_PlayerState()
+{
+	bReplicates = true;
+}
+
+
+void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AStarmark_PlayerState, PlayerReadyStatus);
+}
+
+
 // ------------------------- Player
 void AStarmark_PlayerState::UpdatePlayerData(UPlayer_SaveData* PlayerProfile)
 {
