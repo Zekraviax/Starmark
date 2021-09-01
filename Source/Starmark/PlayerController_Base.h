@@ -100,8 +100,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnRepNotify_CurrentSelectedAvatar();
 
-	UFUNCTION(BlueprintCallable)
-	void UpdateAvatarsDecalsAndWidgets();
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void UpdateAvatarsDecalsAndWidgets(APlayerController_Base* CurrentlyActingPlayer);
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)
@@ -115,6 +115,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ChangeActingPlayerState(bool NewActingPlayerState);
+
+	UFUNCTION(Client, Unreliable)
+	void Client_ChangePlayerState(bool NewActingPlayerState);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();

@@ -42,10 +42,11 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	// Actor Selected Decal
 	ActorSelected = CreateDefaultSubobject<UDecalComponent>("ActorSelected");
 	ActorSelected->SetupAttachment(RootComponent);
+	ActorSelected->SetVisibility(true);
+	ActorSelected->SetHiddenInGame(false);
 	ActorSelected->DecalSize = FVector(32.0f, 64.0f, 64.0f);
 	ActorSelected->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 	ActorSelected->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
-	ActorSelected->SetVisibility(false);
 
 	// AvatarBattleData WidgetComponent
 	AvatarBattleData_Component = CreateDefaultSubobject<UWidgetComponent>("AvatarBattleData_Component");
@@ -434,3 +435,25 @@ void ACharacter_Pathfinder::AvatarBeginTurn()
 	//	}
 	//}
 }
+
+
+//void ACharacter_Pathfinder::UpdateAvatarSelectedDecal_Implementation(APlayerController_Base* CurrentlyActingPlayer)
+//{
+//	//if (CurrentlyActingPlayer == PlayerControllerReference) 
+//	//	ActorSelected->SetVisibility(true);
+//	//else
+//	//	ActorSelected->SetVisibility(false);
+//
+//	Client_UpdateAvatarSelectedDecal(CurrentlyActingPlayer);
+//}
+//
+//
+//void ACharacter_Pathfinder::Client_UpdateAvatarSelectedDecal(APlayerController_Base* CurrentlyActingPlayer)
+//{
+//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Purple, FString::Printf(TEXT("CurrentlyActingPlayer: %s, PlayerController: %s"), *CurrentlyActingPlayer->GetFName().ToString(), *PlayerControllerReference->GetFName().ToString()));
+//
+//	if (CurrentlyActingPlayer == PlayerControllerReference)
+//		ActorSelected->SetVisibility(true);
+//	else
+//		ActorSelected->SetVisibility(false);
+//}

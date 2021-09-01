@@ -117,4 +117,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AvatarBeginTurn();
+
+	//UFUNCTION(BlueprintCallable, Server, Reliable)
+	//void UpdateAvatarSelectedDecal(APlayerController_Base* CurrentlyActingPlayer);
+
+	//UFUNCTION(BlueprintCallable)
+	//void Client_UpdateAvatarSelectedDecal(APlayerController_Base* CurrentlyActingPlayer);
 };

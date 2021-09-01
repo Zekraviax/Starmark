@@ -143,8 +143,6 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 
 		// Avatar initialization
 		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
-
-		UpdateAvatarsDecalsAndWidgets();
 	}
 	else {
 		GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.5f, false);
@@ -152,23 +150,37 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 }
 
 
-void APlayerController_Base::UpdateAvatarsDecalsAndWidgets()
+void APlayerController_Base::UpdateAvatarsDecalsAndWidgets_Implementation(APlayerController_Base* CurrentlyActingPlayer)
 {
 	for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
 		ACharacter_Pathfinder* FoundActor = *Itr;
 
-		if (FoundActor->ActorSelected->IsValidLowLevel())
-			FoundActor->ActorSelected->SetVisibility(false);
+		//if (FoundActor->ActorSelected->IsValidLowLevel())
+		//	FoundActor->ActorSelected->SetVisibility(false);
 
 		if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel())
 			FoundActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	if (CurrentSelectedAvatar->IsValidLowLevel()) {
-		if (CurrentSelectedAvatar->ActorSelected_DynamicMaterial)
+		if (CurrentSelectedAvatar->ActorSelected_DynamicMaterial) {
 			CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+		}
 
-		CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
+		if (CurrentlyActingPlayer->IsValidLowLevel()) {
+			if (CurrentlyActingPlayer == this) {
+				CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
+			}
+			else {
+				CurrentSelectedAvatar->ActorSelected->SetVisibility(false);
+			}
+
+			if (GetNetMode() == ENetMode::NM_ListenServer) {
+				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Purple, FString::Printf(TEXT("CurrentlyActingPlayer: %s"), *CurrentlyActingPlayer->GetFName().ToString()));
+				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Purple, FString::Printf(TEXT("PlayerController: %s"), *this->GetFName().ToString()));
+			}
+
+		}
 	}
 }
 
@@ -220,6 +232,12 @@ void APlayerController_Base::ReceiveChangeActingPlayerStateFromServer_Implementa
 void APlayerController_Base::ChangeActingPlayerState(bool NewActingPlayerState)
 {
 	IsCurrentlyActingPlayer = NewActingPlayerState;
+}
+
+
+void APlayerController_Base::Client_ChangePlayerState_Implementation(bool NewActingPlayerState)
+{
+
 }
 
 

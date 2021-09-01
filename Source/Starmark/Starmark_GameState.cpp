@@ -104,6 +104,10 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 {
 	CurrentAvatarTurnIndex++;
 
+	TArray<ACharacter_Pathfinder*> AvatarArray;
+	TArray<bool> IsPlayerActingArray;
+	APlayerController_Base* CurrentlyActingPlayer = nullptr;
+
 	// Reset Round
 	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num()) {
 		CurrentAvatarTurnIndex = 0;
@@ -113,11 +117,19 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
 		if (PlayerController) {
-			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController)
-				PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(true);
-			else
-				PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(false);
+			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
+				PlayerController->IsCurrentlyActingPlayer = true;
+				CurrentlyActingPlayer = PlayerController;
+			} else {
+				PlayerController->IsCurrentlyActingPlayer = false;
+			}
 		}
+	}
+
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Players: %s"), *FString::FromInt(PlayerArray.Num())));
+	for (int j = 0; j < PlayerArray.Num(); j++) {
+		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
+		PlayerController->UpdateAvatarsDecalsAndWidgets(CurrentlyActingPlayer);
 	}
 }
 

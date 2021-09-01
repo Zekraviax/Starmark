@@ -11,6 +11,7 @@ Multiplayer:
 * Fix the ServerHost widget not displaying players properly.
 * Players need to be able to set their own names.
 * Check if all players are ready before launching a multiplayer match.
+* Players shouldn’t be able to end the turn if it’s not theirs.
 
 Blueprints-To-Code Conversions:
 * Starmark_GameMode_Blueprint
