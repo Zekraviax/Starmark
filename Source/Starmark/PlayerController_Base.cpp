@@ -88,7 +88,7 @@ void APlayerController_Base::SetBattleWidgetVariables()
 		if (CurrentSelectedAvatar)
 			BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
 
-		BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
+		//BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
 	}
 }
 
@@ -150,37 +150,26 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 }
 
 
-void APlayerController_Base::UpdateAvatarsDecalsAndWidgets_Implementation(APlayerController_Base* CurrentlyActingPlayer)
+void APlayerController_Base::UpdateAvatarsDecalsAndWidgets_Implementation(ACharacter_Pathfinder* CurrentlyActingAvatar)
 {
-	for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
-		ACharacter_Pathfinder* FoundActor = *Itr;
+	TArray<AActor*> Avatars;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
 
-		//if (FoundActor->ActorSelected->IsValidLowLevel())
-		//	FoundActor->ActorSelected->SetVisibility(false);
+	for (int i = 0; i < Avatars.Num(); i++) {
+		ACharacter_Pathfinder* FoundActor = Cast<ACharacter_Pathfinder>(Avatars[i]);
 
 		if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel())
 			FoundActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
-	}
 
-	if (CurrentSelectedAvatar->IsValidLowLevel()) {
-		if (CurrentSelectedAvatar->ActorSelected_DynamicMaterial) {
-			CurrentSelectedAvatar->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
-		}
-
-		if (CurrentlyActingPlayer->IsValidLowLevel()) {
-			if (CurrentlyActingPlayer == this) {
-				CurrentSelectedAvatar->ActorSelected->SetVisibility(true);
-			}
-			else {
-				CurrentSelectedAvatar->ActorSelected->SetVisibility(false);
-			}
-
-			if (GetNetMode() == ENetMode::NM_ListenServer) {
-				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Purple, FString::Printf(TEXT("CurrentlyActingPlayer: %s"), *CurrentlyActingPlayer->GetFName().ToString()));
-				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Purple, FString::Printf(TEXT("PlayerController: %s"), *this->GetFName().ToString()));
-			}
-
-		}
+		//if (CurrentlyActingAvatar->IsValidLowLevel())
+		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Purple, FString::Printf(TEXT("%s  /  %s"), *CurrentlyActingAvatar->GetFName().ToString(), *FoundActor->GetFName().ToString()));
+		//else 
+		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("CurrentlyActingAvatar Not Valid")));
+		
+		if (FoundActor == CurrentlyActingAvatar) 
+			FoundActor->ActorSelected->SetVisibility(true);
+		else
+			FoundActor->ActorSelected->SetVisibility(false);
 	}
 }
 
@@ -217,27 +206,6 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector MoveLocation)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Send Move Command To Server")));
-	//if (Cast<AAIController_Avatar>(CurrentSelectedAvatar->GetController())) {
-	//	Cast<AAIController_Avatar>(CurrentSelectedAvatar->GetController())->GetMoveCommandFromPlayer_Implementation(MoveLocation);
-	//}
-}
-
-
-void APlayerController_Base::ReceiveChangeActingPlayerStateFromServer_Implementation(bool NewActingPlayerState)
-{
-	ChangeActingPlayerState(NewActingPlayerState);
-}
-
-
-void APlayerController_Base::ChangeActingPlayerState(bool NewActingPlayerState)
-{
-	IsCurrentlyActingPlayer = NewActingPlayerState;
-}
-
-
-void APlayerController_Base::Client_ChangePlayerState_Implementation(bool NewActingPlayerState)
-{
-
 }
 
 

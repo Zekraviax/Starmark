@@ -101,7 +101,7 @@ public:
 	void OnRepNotify_CurrentSelectedAvatar();
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void UpdateAvatarsDecalsAndWidgets(APlayerController_Base* CurrentlyActingPlayer);
+	void UpdateAvatarsDecalsAndWidgets(ACharacter_Pathfinder* CurrentlyActingAvatar);
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)
@@ -109,15 +109,6 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void SendMoveCommandToServer(FVector MoveLocation);
-
-	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void ReceiveChangeActingPlayerStateFromServer(bool NewActingPlayerState);
-
-	UFUNCTION(BlueprintCallable)
-	void ChangeActingPlayerState(bool NewActingPlayerState);
-
-	UFUNCTION(Client, Unreliable)
-	void Client_ChangePlayerState(bool NewActingPlayerState);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();

@@ -72,6 +72,7 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 					AvatarTurnOrder.Insert(Cast<ACharacter_Pathfinder>(FoundActors[i]), j);
 					break;
 				}
+
 				// If we reach the end of the array and the Avatar isn't faster than any of the other Avatars, just add it at the end
 				if (j == AvatarTurnOrder.Num() - 1 && !AvatarTurnOrder.Contains(Cast<ACharacter_Pathfinder>(FoundActors[i])))
 					AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
@@ -90,11 +91,6 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
-		if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController)
-			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(true);
-		else
-			PlayerController->ReceiveChangeActingPlayerStateFromServer_Implementation(false);
-
 		PlayerController->SetBattleWidgetVariables();
 	}
 }
@@ -107,6 +103,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	TArray<ACharacter_Pathfinder*> AvatarArray;
 	TArray<bool> IsPlayerActingArray;
 	APlayerController_Base* CurrentlyActingPlayer = nullptr;
+	ACharacter_Pathfinder* CurrentlyActingAvatar = nullptr;
 
 	// Reset Round
 	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num()) {
@@ -120,26 +117,22 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
 				PlayerController->IsCurrentlyActingPlayer = true;
 				CurrentlyActingPlayer = PlayerController;
+				CurrentlyActingAvatar = CurrentlyActingPlayer->CurrentSelectedAvatar;
 			} else {
 				PlayerController->IsCurrentlyActingPlayer = false;
 			}
 		}
 	}
 
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Players: %s"), *FString::FromInt(PlayerArray.Num())));
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
-		PlayerController->UpdateAvatarsDecalsAndWidgets(CurrentlyActingPlayer);
+		PlayerController->UpdateAvatarsDecalsAndWidgets(CurrentlyActingAvatar);
 	}
 }
 
 
 void AStarmark_GameState::EndOfBattle_Implementation()
 {
-	for (int i = 0; i < AvatarTurnOrder.Num(); i++) {
-		Cast<APlayerController_Base>(AvatarTurnOrder[i]->PlayerControllerReference)->ChangeActingPlayerState(false);
-	}
-
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("End Of Battle. Returning to Main Menu...")));
 
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->EndOfBattle();

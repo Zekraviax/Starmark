@@ -411,49 +411,5 @@ void ACharacter_Pathfinder::UpdateAvatarDataInPlayerParty()
 
 void ACharacter_Pathfinder::AvatarBeginTurn()
 {
-	//if (!PlayerControllerReference)
-	//	PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
-	// Reset Decals
-	//PlayerControllerReference->UpdateSelectedAvatar();
-
-	// Reset Moves
-	//AvatarData->CurrentTileMoves = AvatarData.MaximumTileMoves;
-
-	//// Apply Status Effects
-	//for (int i = AvatarData->CurrentStatusEffectsArray.Num() - 1; i == 0; i--) {
-	//	AvatarData->CurrentStatusEffectsArray[i].TurnsRemaining--;
-
-	//	if (!AvatarData->CurrentStatusEffectsArray[i].TurnsRemaining == 0) {
-	//		// Switch On Status Effect Name
-	//		if (AvatarData->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
-	//			//AvatarRef->CurrentTileMoves = FMath::FloorToInt(AvatarRef->CurrentTileMoves / 2);
-	//		}
-	//	}
-	//	else {
-	//		AvatarData->CurrentStatusEffectsArray.RemoveAt(i);
-	//	}
-	//}
 }
-
-
-//void ACharacter_Pathfinder::UpdateAvatarSelectedDecal_Implementation(APlayerController_Base* CurrentlyActingPlayer)
-//{
-//	//if (CurrentlyActingPlayer == PlayerControllerReference) 
-//	//	ActorSelected->SetVisibility(true);
-//	//else
-//	//	ActorSelected->SetVisibility(false);
-//
-//	Client_UpdateAvatarSelectedDecal(CurrentlyActingPlayer);
-//}
-//
-//
-//void ACharacter_Pathfinder::Client_UpdateAvatarSelectedDecal(APlayerController_Base* CurrentlyActingPlayer)
-//{
-//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Purple, FString::Printf(TEXT("CurrentlyActingPlayer: %s, PlayerController: %s"), *CurrentlyActingPlayer->GetFName().ToString(), *PlayerControllerReference->GetFName().ToString()));
-//
-//	if (CurrentlyActingPlayer == PlayerControllerReference)
-//		ActorSelected->SetVisibility(true);
-//	else
-//		ActorSelected->SetVisibility(false);
-//}

@@ -53,7 +53,7 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SetTurnOrder(const TArray<APlayerController_Base*>& PlayerControllers);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void AvatarEndTurn();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
