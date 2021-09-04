@@ -92,6 +92,7 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
 		PlayerController->SetBattleWidgetVariables();
+		PlayerController->UpdateAvatarsDecalsAndWidgets(AvatarTurnOrder[0]);
 	}
 }
 
