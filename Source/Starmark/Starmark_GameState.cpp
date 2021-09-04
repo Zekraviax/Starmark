@@ -29,7 +29,7 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 // ------------------------- Lobby
 void AStarmark_GameState::UpdateAllPlayersInLobby_Implementation()
 {
-	TArray<FString> PlayerNames, PlayerReadyStatuses;
+	//TArray<FString> PlayerNames, PlayerReadyStatuses;
 
 	//for (int i = 0; i < PlayerArray.Num(); i++) {
 	//	APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
@@ -92,7 +92,7 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
 		PlayerController->SetBattleWidgetVariables();
-		PlayerController->UpdateAvatarsDecalsAndWidgets(AvatarTurnOrder[0]);
+		//PlayerController->UpdateAvatarsDecalsAndWidgets(AvatarTurnOrder[0]);
 	}
 }
 
@@ -103,13 +103,11 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 	TArray<ACharacter_Pathfinder*> AvatarArray;
 	TArray<bool> IsPlayerActingArray;
-	APlayerController_Base* CurrentlyActingPlayer = nullptr;
 	ACharacter_Pathfinder* CurrentlyActingAvatar = nullptr;
 
 	// Reset Round
-	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num()) {
+	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num())
 		CurrentAvatarTurnIndex = 0;
-	}
 
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
@@ -117,8 +115,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 		if (PlayerController) {
 			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
 				PlayerController->IsCurrentlyActingPlayer = true;
-				CurrentlyActingPlayer = PlayerController;
-				CurrentlyActingAvatar = CurrentlyActingPlayer->CurrentSelectedAvatar;
+				CurrentlyActingAvatar = PlayerController->CurrentSelectedAvatar;
 			} else {
 				PlayerController->IsCurrentlyActingPlayer = false;
 			}

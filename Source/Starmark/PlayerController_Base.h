@@ -48,14 +48,14 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Controller
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Controller")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "PLayerController_Base")
 	E_PlayerCharacter_ClickModes PlayerClickMode;
 
 // ------------------------- Widgets
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PLayerController_Base - Widgets")
 	TSubclassOf<UWidget_HUD_Battle> BattleWidgetChildClass;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Widgets")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "PLayerController_Base - Widgets")
 	UWidget_HUD_Battle* BattleWidgetReference;
 
 // ------------------------- Avatar
@@ -74,6 +74,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	UPlayer_SaveData* PlayerProfileReference;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
+	int UniquePlayerID;
 
 // ------------------------- Grid
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")

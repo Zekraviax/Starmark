@@ -81,9 +81,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
 	int IndexInPlayerParty;
 
-// ------------------------- Other
+// ------------------------- Owning Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Other")
 	APlayerController_Base* PlayerControllerReference;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Other")
+	int PlayerControllerUniqueID;
 
 // Functions
 // --------------------------------------------------

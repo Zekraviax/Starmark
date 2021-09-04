@@ -37,6 +37,7 @@ void APlayerController_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(APlayerController_Base, PlayerClickMode);
 	DOREPLIFETIME(APlayerController_Base, PlayerParty);
 	DOREPLIFETIME(APlayerController_Base, PlayerProfileReference);
+	DOREPLIFETIME(APlayerController_Base, UniquePlayerID);
 }
 
 
@@ -59,9 +60,8 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 			BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
 	}*/
 
-	if (CurrentSelectedAvatar) {
+	if (CurrentSelectedAvatar)
 		SetBattleWidgetAndLinkedAvatar(BattleWidgetReference, CurrentSelectedAvatar->AvatarData);
-	}
 }
 
 
@@ -78,6 +78,7 @@ void APlayerController_Base::CreateBattleWidget()
 }
 
 
+// Need to pass the text as a variable as opposed to getting the text from the game state
 void APlayerController_Base::SetBattleWidgetVariables()
 {
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
@@ -88,7 +89,8 @@ void APlayerController_Base::SetBattleWidgetVariables()
 		if (CurrentSelectedAvatar)
 			BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
 
-		//BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
+		//if (BattleWidgetReference->IsValidLowLevel())
+		//	BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
 	}
 }
 
@@ -157,17 +159,23 @@ void APlayerController_Base::UpdateAvatarsDecalsAndWidgets_Implementation(AChara
 
 	for (int i = 0; i < Avatars.Num(); i++) {
 		ACharacter_Pathfinder* FoundActor = Cast<ACharacter_Pathfinder>(Avatars[i]);
+		FoundActor->ActorSelected->SetVisibility(true);
 
 		if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel())
 			FoundActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 
-		//if (CurrentlyActingAvatar->IsValidLowLevel())
-		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Purple, FString::Printf(TEXT("%s  /  %s"), *CurrentlyActingAvatar->GetFName().ToString(), *FoundActor->GetFName().ToString()));
-		//else 
-		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("CurrentlyActingAvatar Not Valid")));
-		
-		if (FoundActor == CurrentlyActingAvatar) 
+		if (FoundActor == CurrentlyActingAvatar) {
 			FoundActor->ActorSelected->SetVisibility(true);
+
+			if (FoundActor->ActorSelected_DynamicMaterial->IsValidLowLevel()) {
+				//GEngine->AddOnScreenDebugMessage(-1, 0.2f, FColor::Red, FString::Printf(TEXT("Actor's PlayerUniqueID: %s  /  Player's UniqueID"), *FString::FromInt(FoundActor->PlayerControllerUniqueID), *FString::FromInt(UniquePlayerID)));
+
+				if (FoundActor->PlayerControllerUniqueID == UniquePlayerID)
+					FoundActor->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+				else
+					FoundActor->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+			}
+		}
 		else
 			FoundActor->ActorSelected->SetVisibility(false);
 	}

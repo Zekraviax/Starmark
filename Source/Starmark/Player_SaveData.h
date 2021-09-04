@@ -16,5 +16,5 @@ public:
 
 // ------------------------- Base
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString Name;
+	FString Name = "Default";
 };

@@ -5,6 +5,9 @@ Refactor:
 * Rename files (?)
 * Remove redundant UFUNCTION and UPROPERTY macros.
 
+Core Gameplay:
+* Fix Avatars not setting tiles to be occupied and unoccupied.
+
 Multiplayer:
 * Fix the broken AvatarData widgets attached to Avatars
 * Fix the ActorSelected decal functions
@@ -12,8 +15,13 @@ Multiplayer:
 * Players need to be able to set their own names.
 * Check if all players are ready before launching a multiplayer match.
 * Players shouldn’t be able to end the turn if it’s not theirs.
+* Have the ActorSelected decals change colour whether not it the player controlling them is currently acting or not.
 
 Blueprints-To-Code Conversions:
 * Starmark_GameMode_Blueprint
 * Starmark_GameMode_Lobby_Blueprint
 * Starmark_PlayerState_Blueprint
+
+Other:
+* Fix TEnumAsByte compiler warning
+* Remove pathfinding draws.
