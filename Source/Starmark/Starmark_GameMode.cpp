@@ -5,6 +5,7 @@
 #include "PlayerPawn_Static.h"
 #include "Actor_GridTile.h"
 #include "Starmark_GameState.h"
+#include "Starmark_PlayerState.h"
 #include "Widget_HUD_Battle.h"
 
 
@@ -26,34 +27,59 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 	}
 
 	NewPlayerController->Possess(GetWorld()->SpawnActor<APlayerPawn_Static>(PlayerPawnBlueprintClass, Location, Rotation, SpawnInfo));
-	NewPlayerController->LoadPlayerProfile();
 
 	PlayerControllerReferences.Add(NewPlayerController);
 
 	UniquePlayerIDCounter++;
 	NewPlayerController->UniquePlayerID = UniquePlayerIDCounter;
 
+	Cast<AStarmark_PlayerState>(NewPlayerController->GetPawn()->GetPlayerState())->PlayerState_BeginBattle();
+
 	if (PlayerControllerReferences.Num() >= 2)
-		Server_BeginMultiplayerBattle_Implementation();
+		Server_BeginMultiplayerBattle();
 }
 
 
 void AStarmark_GameMode::Multicast_SendUpdateToAllPlayers_Implementation()
 {
-	for (int i = 0; i < PlayerControllerReferences.Num(); i++)
+	TArray<ACharacter_Pathfinder*> FoundActors = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarTurnOrder;
+	FString AssembledTurnOrderText;
+
+	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+		Server_SpawnAvatar_Implementation(PlayerControllerReferences[i]);
+		PlayerControllerReferences[i]->OnRepNotify_CurrentSelectedAvatar();
+	}
+
+	for (int i = 0; i < FoundActors.Num(); i++) {
+		if (Cast<AStarmark_PlayerState>(FoundActors[i]->PlayerControllerReference->GetPawn()->GetPlayerState())->IsValidLowLevel())
+			AssembledTurnOrderText.Append(FoundActors[i]->AvatarData.AvatarName + " / " + Cast<AStarmark_PlayerState>(FoundActors[i]->PlayerControllerReference->GetPawn()->GetPlayerState())->ReplicatedPlayerName + "\n");
+		else
+			AssembledTurnOrderText.Append(FoundActors[i]->AvatarData.AvatarName + "\n");
+	}
+
+	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->CurrentTurnOrderText = AssembledTurnOrderText;
+
+	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		PlayerControllerReferences[i]->UpdateAvatarsDecalsAndWidgets(Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarTurnOrder[0]);
+		PlayerControllerReferences[i]->SetBattleWidgetVariables();
+	}
 }
 
 
 void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 {
-	for (int i = 0; i < PlayerControllerReferences.Num(); i++)
+	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		Server_SpawnAvatar_Implementation(PlayerControllerReferences[i]);
+
+
+
+		//if (HasAuthority())
+		//	PlayerControllerReferences[i]->OnRepNotify_CurrentSelectedAvatar();
+	}
 
 	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->SetTurnOrder_Implementation(PlayerControllerReferences);
 
-	GetWorld()->GetTimerManager().SetTimer(FirstUpdateTimerHandle, this, &AStarmark_GameMode::Multicast_SendUpdateToAllPlayers_Implementation, 1.f, false);
-	//Multicast_SendUpdateToAllPlayers_Implementation();
+	GetWorld()->GetTimerManager().SetTimer(FirstUpdateTimerHandle, this, &AStarmark_GameMode::Multicast_SendUpdateToAllPlayers_Implementation, 3.f, false);
 }
 
 
@@ -72,8 +98,8 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	NewAvatarActor->PlayerControllerUniqueID = PlayerController->UniquePlayerID;
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 
-	if (HasAuthority())
-		PlayerController->OnRepNotify_CurrentSelectedAvatar();
+	//if (HasAuthority())
+	//	PlayerController->OnRepNotify_CurrentSelectedAvatar();
 }
 
 

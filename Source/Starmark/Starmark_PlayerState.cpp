@@ -5,7 +5,9 @@
 #include "Character_Pathfinder.h"
 #include "PlayerController_Base.h"
 #include "Player_SaveData.h"
+#include "Starmark_GameInstance.h"
 #include "Starmark_GameState.h"
+#include "SaveData_PlayerProfilesList.h"
 
 
 AStarmark_PlayerState::AStarmark_PlayerState()
@@ -19,40 +21,53 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerReadyStatus);
+	DOREPLIFETIME(AStarmark_PlayerState, ReplicatedPlayerName);
+}
+
+
+void AStarmark_PlayerState::LoadPlayerProfileInPlayerState(FString ProfileName)
+{
+	USaveData_PlayerProfilesList* PlayerProfilesSaveGameObject = Cast<USaveData_PlayerProfilesList>(UGameplayStatics::LoadGameFromSlot("PlayerProfilesList", 0));
+	UPlayer_SaveData* FoundPlayerProfile = nullptr;
+
+	// Check if the selected profile exists and is valid
+	for (int i = 0; i < PlayerProfilesSaveGameObject->PlayerProfileNames.Num(); i++) {
+		if (PlayerProfilesSaveGameObject->PlayerProfileNames[i] == ProfileName) {
+			FoundPlayerProfile = Cast<UPlayer_SaveData>(UGameplayStatics::LoadGameFromSlot(ProfileName, 0));
+
+			if (FoundPlayerProfile->IsValidLowLevel()) {
+				SetPlayerName(FoundPlayerProfile->Name);
+				PlayerProfileReference = FoundPlayerProfile;
+
+
+				UpdatePlayerData();
+				Cast<UStarmark_GameInstance>(GetGameInstance())->PlayerProfileReference = PlayerProfileReference;
+			}
+		}
+	}
 }
 
 
 // ------------------------- Player
-void AStarmark_PlayerState::UpdatePlayerData(UPlayer_SaveData* PlayerProfile)
+void AStarmark_PlayerState::UpdatePlayerData_Implementation()
 {
-	if (PlayerProfile->IsValidLowLevel()) {
-		PlayerProfileReference = PlayerProfile;
-	}
-
-	if (PlayerProfileReference->IsValidLowLevel()) {
-		SetPlayerName(PlayerProfileReference->Name);
-	}
-}
-
-
-// ------------------------- Lobby
-void AStarmark_PlayerState::ChangePlayerReadyStatus()
-{
-	if (PlayerReadyStatus == "Not Ready") {
-		PlayerReadyStatus = "Ready";
-	} else if (PlayerReadyStatus == "Ready") {
-		PlayerReadyStatus = "Not Ready";
-	} else {
-		PlayerReadyStatus = "Not Ready";
-	}
+	if (PlayerProfileReference->IsValidLowLevel())
+		ReplicatedPlayerName = PlayerProfileReference->Name;
 }
 
 
 // ------------------------- Battle
 void AStarmark_PlayerState::PlayerState_BeginBattle()
 {
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(GetGameInstance());
 	FAvatar_Struct* DefaultAvatar = AvatarDataTable->FindRow<FAvatar_Struct>(TEXT("BalanceBoy"), "");
 	PlayerState_PlayerParty.Add(*DefaultAvatar);
+
+	if (GameInstanceReference->PlayerProfileReference->IsValidLowLevel()) {
+		ReplicatedPlayerName = GameInstanceReference->PlayerProfileReference->Name;
+
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("ReplicatedPlayerName: %s"), *ReplicatedPlayerName));
+	}
 }
 
 

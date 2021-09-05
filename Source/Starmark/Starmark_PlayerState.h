@@ -33,6 +33,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPlayer_SaveData* PlayerProfileReference;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	FString ReplicatedPlayerName = "Default";
+
 // ------------------------- Lobby
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString PlayerReadyStatus = "Not Ready";
@@ -47,11 +50,14 @@ public:
 
 // ------------------------- Player
 	UFUNCTION(BlueprintCallable)
-	void UpdatePlayerData(UPlayer_SaveData* PlayerProfile);
+	void LoadPlayerProfileInPlayerState(FString ProfileName);
 
-	// ------------------------- Lobby
-	UFUNCTION(BlueprintCallable)
-	void ChangePlayerReadyStatus();
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void UpdatePlayerData();
+
+// ------------------------- Lobby
+	//UFUNCTION(BlueprintCallable)
+	//void ChangePlayerReadyStatus();
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)

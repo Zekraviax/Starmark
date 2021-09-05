@@ -11,6 +11,7 @@
 #include "WidgetComponent_AvatarBattleData.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
+#include "Starmark_GameInstance.h"
 #include "PlayerPawn_Static.h"
 #include "Player_SaveData.h"
 
@@ -52,14 +53,6 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	/*AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
-	if (GameStateReference->IsValidLowLevel()) {
-		GEngine->AddOnScreenDebugMessage(-1, 0.2f, FColor::Red, FString::Printf(TEXT("Turn Order Text: %s"), *GameStateReference->CurrentTurnOrderText));
-
-		if (BattleWidgetReference->IsValidLowLevel())
-			BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
-	}*/
-
 	if (CurrentSelectedAvatar)
 		SetBattleWidgetAndLinkedAvatar(BattleWidgetReference, CurrentSelectedAvatar->AvatarData);
 }
@@ -71,9 +64,8 @@ void APlayerController_Base::CreateBattleWidget()
 	if (BattleWidgetChildClass && IsLocalPlayerController()) {
 		BattleWidgetReference = CreateWidget<UWidget_HUD_Battle>(this, BattleWidgetChildClass);
 
-		if (BattleWidgetReference) {
+		if (BattleWidgetReference)
 			BattleWidgetReference->AddToViewport();
-		}
 	}
 }
 
@@ -83,72 +75,64 @@ void APlayerController_Base::SetBattleWidgetVariables()
 {
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
+	CreateBattleWidget();
+
 	if (BattleWidgetReference) {
 		BattleWidgetReference->PlayerControllerReference = this;
 
 		if (CurrentSelectedAvatar)
 			BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
 
-		//if (BattleWidgetReference->IsValidLowLevel())
-		//	BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
+		if (BattleWidgetReference->IsValidLowLevel())
+			BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
 	}
 }
 
 
 void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData)
 {
-	if (NewBattleWidgetReference->IsValidLowLevel()) {
+	if (NewBattleWidgetReference->IsValidLowLevel())
 		BattleWidgetReference = NewBattleWidgetReference;
-	}
 
-	if (BattleWidgetReference->IsValidLowLevel() && CurrentSelectedAvatar) {
-		if (BattleWidgetReference->AvatarBattleDataWidget->IsValidLowLevel()) {
+	if (BattleWidgetReference->IsValidLowLevel() && CurrentSelectedAvatar)
+		if (BattleWidgetReference->AvatarBattleDataWidget->IsValidLowLevel())
 			BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(NewAvatarData);
-		}
-	}
 }
 
 // ------------------------- Player
-void APlayerController_Base::LoadPlayerProfile()
+void APlayerController_Base::LoadPlayerProfile_Implementation()
 {
-	//Cast<AStarmark_GameInstance>()
-	USaveGame* SaveGameObject = UGameplayStatics::LoadGameFromSlot("PlayerProfile", 0);
 
-	if (SaveGameObject->IsValidLowLevel()) {
-		UPlayer_SaveData* PlayerProfile = Cast<UPlayer_SaveData>(SaveGameObject);
+}
 
-		if (PlayerProfile->IsValidLowLevel()) {
-			Cast<AStarmark_PlayerState>(PlayerState)->UpdatePlayerData(PlayerProfile);
-		}
+void APlayerController_Base::LoadPlayerProfileInBattle_Implementation()
+{
 
-		PlayerProfileReference = PlayerProfile;
-	}
 }
 
 
 // ------------------------- Avatar
 void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
 {
-	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
+	//AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
+
+	// Widget initialization
+	//CreateBattleWidget();
+	//CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
+
+	//if (BattleWidgetReference) {
+	//	SetBattleWidgetVariables();
+	//}
+
+	// Avatar initialization
+	//CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
 
 	// (Default) Player party initialization
-	if (PlayerStateReference) {
-		PlayerStateReference->PlayerState_BeginBattle();
-
-		// Widget initialization
-		CreateBattleWidget();
-		CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];	
-
-		if (BattleWidgetReference) {
-			SetBattleWidgetVariables();
-		}
-
-		// Avatar initialization
-		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
-	}
-	else {
-		GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.5f, false);
-	}
+	//if (PlayerStateReference) {
+	//	PlayerStateReference->PlayerState_BeginBattle();
+	//}
+	//else
+	//	GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.5f, false);
 }
 
 
@@ -168,7 +152,6 @@ void APlayerController_Base::UpdateAvatarsDecalsAndWidgets_Implementation(AChara
 			FoundActor->ActorSelected->SetVisibility(true);
 
 			if (FoundActor->ActorSelected_DynamicMaterial->IsValidLowLevel()) {
-				//GEngine->AddOnScreenDebugMessage(-1, 0.2f, FColor::Red, FString::Printf(TEXT("Actor's PlayerUniqueID: %s  /  Player's UniqueID"), *FString::FromInt(FoundActor->PlayerControllerUniqueID), *FString::FromInt(UniquePlayerID)));
 
 				if (FoundActor->PlayerControllerUniqueID == UniquePlayerID)
 					FoundActor->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
@@ -187,10 +170,6 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
 	if (ClickedActor) {
 		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
-			// Select Avatar To Control
-			//if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
-			//	Cast<ACharacter_Pathfinder>(ClickedActor)->OnAvatarClicked();
-			//}
 			// Select Avatar to Begin Attack
 			if (CurrentSelectedAvatar != ClickedActor) {
 				// If we're attacking, and we clicked on a valid target in-range, launch an attack
@@ -219,5 +198,6 @@ void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector Move
 
 void APlayerController_Base::SendEndOfTurnCommandToServer_Implementation()
 {
-	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn_Implementation();
+	if (IsCurrentlyActingPlayer)
+		Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn_Implementation();
 }

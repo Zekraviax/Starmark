@@ -16,6 +16,13 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 		// Must assign a local controller
 		LobbyWidget_Reference = CreateWidget<UWidget_ServerHost>(this, LobbyWidget_Class);
 
+		// Load profile (?)
+		//if (Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->IsValidLowLevel()) {
+		//	if (Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerProfileReference->IsValidLowLevel()) {
+		//		Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->ReplicatedPlayerName = Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerProfileReference->Name;
+		//	}
+		//}
+
 		if (GetWorld()->IsServer()) {
 			LobbyWidget_Reference->ReadyButtonText->SetText(FText::FromString("Begin Game"));
 			LobbyWidget_Reference->ReadyButton->SetIsEnabled(true);
@@ -26,14 +33,8 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 		LobbyWidget_Reference->AddToViewport();
 	}
 
-	if (LobbyWidget_Reference->IsValidLowLevel()) {
+	if (LobbyWidget_Reference->IsValidLowLevel())
 		LobbyWidget_Reference->GetAllPlayerProfiles();
-
-		// GameStateReference is not valid on non-host machines
-		// Replace with a function that runs on player controllers
-		//if (GameStateReference->IsValidLowLevel())
-		//	GameStateReference->UpdateAllPlayersInLobby_Implementation();
-	}
 
 	SetInputMode(FInputModeGameAndUI());
 	bShowMouseCursor = true;
