@@ -59,8 +59,9 @@ public:
 	UWidget_HUD_Battle* BattleWidgetReference;
 
 // ------------------------- Avatar
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "PlayerController_Base - Avatar")
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_CurrentSelectedAvatar, Category = "PlayerController_Base - Avatar")
+	//
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_CurrentSelectedAvatar, Category = "PlayerController_Base - Avatar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "PlayerController_Base - Avatar")
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -100,11 +101,11 @@ public:
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void LoadPlayerProfile();
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void LoadPlayerProfileInBattle();
 
 // ------------------------- Avatar
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void OnRepNotify_CurrentSelectedAvatar();
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)

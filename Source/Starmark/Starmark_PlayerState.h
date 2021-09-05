@@ -55,10 +55,6 @@ public:
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void UpdatePlayerData();
 
-// ------------------------- Lobby
-	//UFUNCTION(BlueprintCallable)
-	//void ChangePlayerReadyStatus();
-
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)
 	void PlayerState_BeginBattle();

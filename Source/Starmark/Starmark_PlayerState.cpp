@@ -39,7 +39,6 @@ void AStarmark_PlayerState::LoadPlayerProfileInPlayerState(FString ProfileName)
 				SetPlayerName(FoundPlayerProfile->Name);
 				PlayerProfileReference = FoundPlayerProfile;
 
-
 				UpdatePlayerData();
 				Cast<UStarmark_GameInstance>(GetGameInstance())->PlayerProfileReference = PlayerProfileReference;
 			}
@@ -65,9 +64,9 @@ void AStarmark_PlayerState::PlayerState_BeginBattle()
 
 	if (GameInstanceReference->PlayerProfileReference->IsValidLowLevel()) {
 		ReplicatedPlayerName = GameInstanceReference->PlayerProfileReference->Name;
-
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("ReplicatedPlayerName: %s"), *ReplicatedPlayerName));
 	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("ReplicatedPlayerName: %s"), *ReplicatedPlayerName));
 }
 
 

@@ -13,6 +13,7 @@
 #include "Starmark_PlayerState.h"
 #include "Starmark_GameInstance.h"
 #include "PlayerPawn_Static.h"
+#include "SaveData_PlayerProfilesList.h"
 #include "Player_SaveData.h"
 
 
@@ -99,40 +100,51 @@ void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* 
 			BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(NewAvatarData);
 }
 
+
 // ------------------------- Player
 void APlayerController_Base::LoadPlayerProfile_Implementation()
 {
 
 }
 
+
 void APlayerController_Base::LoadPlayerProfileInBattle_Implementation()
 {
+	//AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState());
 
+	//if (PlayerStateReference->IsValidLowLevel()) {
+	//	PlayerStateReference->PlayerProfileReference = Cast<UStarmark_GameInstance>(GetGameInstance())->PlayerProfileReference;
+	//	PlayerStateReference->ReplicatedPlayerName = Cast<UStarmark_GameInstance>(GetGameInstance())->PlayerProfileReference->Name;
+
+	//	PlayerStateReference->PlayerState_BeginBattle();
+	//}
 }
 
 
 // ------------------------- Avatar
-void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar()
+void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 {
-	//AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
-
-	// Widget initialization
-	//CreateBattleWidget();
-	//CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
-
-	//if (BattleWidgetReference) {
-	//	SetBattleWidgetVariables();
-	//}
-
-	// Avatar initialization
-	//CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
+	AStarmark_PlayerState* PlayerStateReference = nullptr;
 
 	// (Default) Player party initialization
-	//if (PlayerStateReference) {
-	//	PlayerStateReference->PlayerState_BeginBattle();
-	//}
-	//else
-	//	GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.5f, false);
+	if (GetPawn()->IsValidLowLevel()) {
+		PlayerStateReference = Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState());
+
+		// Widget initialization
+		CreateBattleWidget();
+
+		PlayerStateReference->PlayerState_BeginBattle();
+
+		// Call PlayerState_BeginBattle before this function
+		if (PlayerStateReference->PlayerState_PlayerParty.Num() > 0) {
+			CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
+
+			// Avatar initialization
+			CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
+		} else
+			GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.5f, false);
+	} else
+		GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.5f, false);
 }
 
 

@@ -33,8 +33,6 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 	UniquePlayerIDCounter++;
 	NewPlayerController->UniquePlayerID = UniquePlayerIDCounter;
 
-	Cast<AStarmark_PlayerState>(NewPlayerController->GetPawn()->GetPlayerState())->PlayerState_BeginBattle();
-
 	if (PlayerControllerReferences.Num() >= 2)
 		Server_BeginMultiplayerBattle();
 }
@@ -44,11 +42,6 @@ void AStarmark_GameMode::Multicast_SendUpdateToAllPlayers_Implementation()
 {
 	TArray<ACharacter_Pathfinder*> FoundActors = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarTurnOrder;
 	FString AssembledTurnOrderText;
-
-	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		Server_SpawnAvatar_Implementation(PlayerControllerReferences[i]);
-		PlayerControllerReferences[i]->OnRepNotify_CurrentSelectedAvatar();
-	}
 
 	for (int i = 0; i < FoundActors.Num(); i++) {
 		if (Cast<AStarmark_PlayerState>(FoundActors[i]->PlayerControllerReference->GetPawn()->GetPlayerState())->IsValidLowLevel())
@@ -69,17 +62,13 @@ void AStarmark_GameMode::Multicast_SendUpdateToAllPlayers_Implementation()
 void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 {
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+		//Cast<AStarmark_PlayerState>(PlayerControllerReferences[i]->GetPawn()->GetPlayerState())->PlayerState_BeginBattle();
 		Server_SpawnAvatar_Implementation(PlayerControllerReferences[i]);
-
-
-
-		//if (HasAuthority())
-		//	PlayerControllerReferences[i]->OnRepNotify_CurrentSelectedAvatar();
 	}
 
 	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->SetTurnOrder_Implementation(PlayerControllerReferences);
 
-	GetWorld()->GetTimerManager().SetTimer(FirstUpdateTimerHandle, this, &AStarmark_GameMode::Multicast_SendUpdateToAllPlayers_Implementation, 3.f, false);
+	GetWorld()->GetTimerManager().SetTimer(FirstUpdateTimerHandle, this, &AStarmark_GameMode::Multicast_SendUpdateToAllPlayers_Implementation, 1.f, false);
 }
 
 
@@ -92,14 +81,15 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	FVector Location = FoundGridTiletActors[FMath::RandRange(0, FoundGridTiletActors.Num() - 1)]->GetActorLocation();	
 	Location.Z = 95;
 
-
 	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
+
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 	NewAvatarActor->PlayerControllerUniqueID = PlayerController->UniquePlayerID;
+
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 
 	//if (HasAuthority())
-	//	PlayerController->OnRepNotify_CurrentSelectedAvatar();
+	PlayerController->OnRepNotify_CurrentSelectedAvatar();
 }
 
 
