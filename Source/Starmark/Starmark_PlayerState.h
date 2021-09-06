@@ -66,7 +66,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_UpdateReplicatedPlayerName(const FString& UpdatedReplicatedPlayerName);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void PlayerState_BeginBattle();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)

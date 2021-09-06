@@ -153,7 +153,8 @@ void APlayerController_Base::UpdateAvatarsDecalsAndWidgets_Implementation(AChara
 
 void APlayerController_Base::Server_SetReadyToStartMultiplayerBattle_Implementation()
 {
-	//Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance())
+	//AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
+	//CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
 	IsReadyToStartMultiplayerBattle = true;
 }
 
