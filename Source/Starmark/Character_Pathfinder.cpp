@@ -42,7 +42,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	// Actor Selected Decal
 	ActorSelected = CreateDefaultSubobject<UDecalComponent>("ActorSelected");
 	ActorSelected->SetupAttachment(RootComponent);
-	ActorSelected->SetVisibility(false);
+	ActorSelected->SetVisibility(true);
 	ActorSelected->SetHiddenInGame(false);
 	ActorSelected->DecalSize = FVector(32.0f, 64.0f, 64.0f);
 	ActorSelected->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());

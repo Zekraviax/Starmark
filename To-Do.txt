@@ -24,6 +24,7 @@ Multiplayer:
 * Allow hosts to designate other players as the host when in a multiplayer lobby.
 * Add some information and buttons to the ServerSearch widget.
 * Add a chat window to the server lobby.
+* Prevent players from readying if they don’t have a profile loaded.
 
 Other:
 * Fix TEnumAsByte compiler warning

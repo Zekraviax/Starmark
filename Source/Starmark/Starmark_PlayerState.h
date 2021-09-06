@@ -50,10 +50,14 @@ public:
 
 // ------------------------- Player
 	UFUNCTION(BlueprintCallable)
-	void LoadPlayerProfileInPlayerState(FString ProfileName);
-
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void UpdatePlayerData();
+
+// ------------------------- Lobby
+	UFUNCTION(BlueprintCallable)
+	void ChangePlayerReadyStatus();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SendUpdateToMultiplayerLobby();
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)

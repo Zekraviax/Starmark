@@ -16,13 +16,6 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 		// Must assign a local controller
 		LobbyWidget_Reference = CreateWidget<UWidget_ServerHost>(this, LobbyWidget_Class);
 
-		// Load profile (?)
-		//if (Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->IsValidLowLevel()) {
-		//	if (Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerProfileReference->IsValidLowLevel()) {
-		//		Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->ReplicatedPlayerName = Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerProfileReference->Name;
-		//	}
-		//}
-
 		if (GetWorld()->IsServer()) {
 			LobbyWidget_Reference->ReadyButtonText->SetText(FText::FromString("Begin Game"));
 			LobbyWidget_Reference->ReadyButton->SetIsEnabled(true);

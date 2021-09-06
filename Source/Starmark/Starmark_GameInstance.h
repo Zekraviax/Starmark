@@ -4,11 +4,9 @@
 #include "Engine/GameInstance.h"
 
 #include "Starmark_Variables.h"
+#include "Player_SaveData.h"
 
 #include "Starmark_GameInstance.generated.h"
-
-// Forward Declarations
-class UPlayer_SaveData;
 
 
 UCLASS()
@@ -24,7 +22,19 @@ public:
 	UPROPERTY()
 	FPlayer_Data PlayerData;
 
-// ------------------------- PlayerState Data
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UPlayer_SaveData* PlayerProfileReference;
+	UPROPERTY()
+	FString PlayerName;
+
+	UPROPERTY()
+	FString CurrentProfileName;
+
+	UPROPERTY()
+	UPlayer_SaveData* CurrentProfileReference;
+
+// Functions
+// --------------------------------------------------
+
+// ------------------------- Player
+	UFUNCTION(BlueprintCallable)
+	void LoadProfile(FString ProfileName);
 };

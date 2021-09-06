@@ -22,6 +22,8 @@ void UWidget_PlayerProfileCreator::OnWidgetOpened()
 
 	// Populate the scroll box with the players' profiles.
 	if (ProfilesList->IsValidLowLevel() && PlayerProfilesScrollBox->IsValidLowLevel()) {
+		PlayerProfilesScrollBox->ClearChildren();
+
 		for (int i = 0; i < ProfilesList->PlayerProfileNames.Num(); i++) {
 			PlayerProfileWidgetComponent_Reference = CreateWidget<UWidgetComponent_PlayerProfile>(this, PlayerProfileWidgetComponent_Class);
 
@@ -41,7 +43,9 @@ void UWidget_PlayerProfileCreator::OnSaveGameButtonPressed()
 	if (!PlayerProfileData)
 		PlayerProfileData = Cast<UPlayer_SaveData>(UGameplayStatics::CreateSaveGameObject(UPlayer_SaveData::StaticClass()));
 
+	// Profile variables
 	PlayerProfileData->Name = NameEntryField->GetText().ToString();
+
 	UGameplayStatics::SaveGameToSlot(PlayerProfileData, NameEntryField->GetText().ToString(), 0);
 
 	// Add this profile to the ProfilesList if it isn't already there

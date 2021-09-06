@@ -32,16 +32,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ACharacter_Pathfinder> AvatarBlueprintClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int UniquePlayerIDCounter;
-
-	// How many players are expected to join before a multiplayer match can begin
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int MultiplayerExpectedPlayerCount;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FTimerHandle FirstUpdateTimerHandle;
-
 // Functions
 // --------------------------------------------------
 
@@ -51,9 +41,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_BeginMultiplayerBattle();
-
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void Multicast_SendUpdateToAllPlayers();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_SpawnAvatar(APlayerController_Base* PlayerController);

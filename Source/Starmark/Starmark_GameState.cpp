@@ -26,11 +26,40 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 }
 
 
+// ------------------------- Lobby
+void AStarmark_GameState::UpdateAllPlayersInLobby_Implementation()
+{
+	TArray<FString> PlayerNames, PlayerReadyStatuses;
+
+	//for (int i = 0; i < PlayerArray.Num(); i++) {
+	//	APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
+	//	
+	//	if (PlayerController->IsValidLowLevel()) {
+	//		PlayerReadyStatuses.Add(PlayerController->ReadyStatus);
+	//		//if (PlayerController->ReadyStatus)
+	//		//	PlayerReadyStatuses.Add("Ready");
+	//		//else
+	//		//	PlayerReadyStatuses.Add("Not Ready");
+	//	}
+	//}
+
+	//for (int i = 0; i < PlayerArray.Num(); i++) {
+	//	APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
+
+	//	if (PlayerController->IsValidLowLevel())
+	//		PlayerController->UpdatePlayersInLobby(PlayerNames, PlayerReadyStatuses, true);
+	//}
+}
+
+
 // ------------------------- Battle
 void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerController_Base*>& PlayerControllers)
 {
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundActors);
+
+	// Assemble turn order text
+	FString AssembledTurnOrderText;
 
 	// Use Nested Loops to compare Avatars' Speeds.
 	for (int i = 0; i < FoundActors.Num(); i++) {
@@ -49,9 +78,22 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 					AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
 			}
 		}
+
+		if (AvatarTurnOrder[i]->PlayerControllerReference->PlayerProfileReference->IsValidLowLevel())
+			AssembledTurnOrderText.Append(AvatarTurnOrder[i]->AvatarData.AvatarName + " / " + AvatarTurnOrder[i]->PlayerControllerReference->PlayerProfileReference->Name + "\n");
+		else
+			AssembledTurnOrderText.Append(AvatarTurnOrder[i]->AvatarData.AvatarName + "\n");
 	}
 
-	AvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
+	CurrentTurnOrderText = AssembledTurnOrderText;
+	
+	// Set CurrentActingPlayer states
+	for (int j = 0; j < PlayerArray.Num(); j++) {
+		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
+
+		PlayerController->SetBattleWidgetVariables();
+		PlayerController->UpdateAvatarsDecalsAndWidgets(AvatarTurnOrder[0]);
+	}
 }
 
 
@@ -61,11 +103,13 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 	TArray<ACharacter_Pathfinder*> AvatarArray;
 	TArray<bool> IsPlayerActingArray;
+	APlayerController_Base* CurrentlyActingPlayer = nullptr;
 	ACharacter_Pathfinder* CurrentlyActingAvatar = nullptr;
 
 	// Reset Round
-	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num())
+	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num()) {
 		CurrentAvatarTurnIndex = 0;
+	}
 
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
@@ -73,7 +117,8 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 		if (PlayerController) {
 			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
 				PlayerController->IsCurrentlyActingPlayer = true;
-				CurrentlyActingAvatar = PlayerController->CurrentSelectedAvatar;
+				CurrentlyActingPlayer = PlayerController;
+				CurrentlyActingAvatar = CurrentlyActingPlayer->CurrentSelectedAvatar;
 			} else {
 				PlayerController->IsCurrentlyActingPlayer = false;
 			}

@@ -7,7 +7,6 @@
 #include "Player_SaveData.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_GameState.h"
-#include "SaveData_PlayerProfilesList.h"
 
 
 AStarmark_PlayerState::AStarmark_PlayerState()
@@ -25,48 +24,42 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 }
 
 
-void AStarmark_PlayerState::LoadPlayerProfileInPlayerState(FString ProfileName)
+// ------------------------- Player
+void AStarmark_PlayerState::UpdatePlayerData()
 {
-	USaveData_PlayerProfilesList* PlayerProfilesSaveGameObject = Cast<USaveData_PlayerProfilesList>(UGameplayStatics::LoadGameFromSlot("PlayerProfilesList", 0));
-	UPlayer_SaveData* FoundPlayerProfile = nullptr;
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	ReplicatedPlayerName = GameInstanceReference->PlayerName;
 
-	// Check if the selected profile exists and is valid
-	for (int i = 0; i < PlayerProfilesSaveGameObject->PlayerProfileNames.Num(); i++) {
-		if (PlayerProfilesSaveGameObject->PlayerProfileNames[i] == ProfileName) {
-			FoundPlayerProfile = Cast<UPlayer_SaveData>(UGameplayStatics::LoadGameFromSlot(ProfileName, 0));
+	GEngine->AddOnScreenDebugMessage(-1, 0.2f, FColor::Red, FString::Printf(TEXT("ReplicatedPlayerName: %s"), *ReplicatedPlayerName));
 
-			if (FoundPlayerProfile->IsValidLowLevel()) {
-				SetPlayerName(FoundPlayerProfile->Name);
-				PlayerProfileReference = FoundPlayerProfile;
-
-				UpdatePlayerData();
-				Cast<UStarmark_GameInstance>(GetGameInstance())->PlayerProfileReference = PlayerProfileReference;
-			}
-		}
-	}
+	SendUpdateToMultiplayerLobby();
 }
 
 
-// ------------------------- Player
-void AStarmark_PlayerState::UpdatePlayerData_Implementation()
+// ------------------------- Lobby
+void AStarmark_PlayerState::ChangePlayerReadyStatus()
 {
-	if (PlayerProfileReference->IsValidLowLevel())
-		ReplicatedPlayerName = PlayerProfileReference->Name;
+	if (PlayerReadyStatus == "Not Ready")
+		PlayerReadyStatus = "Ready";
+	else if (PlayerReadyStatus == "Ready") 
+		PlayerReadyStatus = "Not Ready";
+	else 
+		PlayerReadyStatus = "Not Ready";
+}
+
+
+// Implemented in Blueprints
+void AStarmark_PlayerState::SendUpdateToMultiplayerLobby_Implementation()
+{
+
 }
 
 
 // ------------------------- Battle
 void AStarmark_PlayerState::PlayerState_BeginBattle()
 {
-	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(GetGameInstance());
 	FAvatar_Struct* DefaultAvatar = AvatarDataTable->FindRow<FAvatar_Struct>(TEXT("BalanceBoy"), "");
 	PlayerState_PlayerParty.Add(*DefaultAvatar);
-
-	if (GameInstanceReference->PlayerProfileReference->IsValidLowLevel()) {
-		ReplicatedPlayerName = GameInstanceReference->PlayerProfileReference->Name;
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("ReplicatedPlayerName: %s"), *ReplicatedPlayerName));
 }
 
 

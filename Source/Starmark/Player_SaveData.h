@@ -16,7 +16,5 @@ public:
 
 // ------------------------- Base
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString Name = "Default";
-
-	// Multiplayer Team
+	FString Name;
 };

@@ -15,13 +15,13 @@ void APlayerState_Base::BeginPlay()
 
 
 // ------------------------- Player
-void APlayerState_Base::UpdatePlayerData(UPlayer_SaveData* PlayerProfile)
-{
-	if (PlayerProfile->IsValidLowLevel()) {
-		PlayerProfileReference = PlayerProfile;
-	}
-
-	if (PlayerProfileReference->IsValidLowLevel()) {
-		SetPlayerName(PlayerProfileReference->Name);
-	}
-}
+//void APlayerState_Base::UpdatePlayerData(UPlayer_SaveData* PlayerProfile)
+//{
+//	if (PlayerProfile->IsValidLowLevel()) {
+//		PlayerProfileReference = PlayerProfile;
+//	}
+//
+//	if (PlayerProfileReference->IsValidLowLevel()) {
+//		SetPlayerName(PlayerProfileReference->Name);
+//	}
+//}

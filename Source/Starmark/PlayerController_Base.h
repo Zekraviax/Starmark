@@ -48,40 +48,35 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Controller
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "PLayerController_Base")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Controller")
 	E_PlayerCharacter_ClickModes PlayerClickMode;
 
 // ------------------------- Widgets
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerController_Base - Widgets")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
 	TSubclassOf<UWidget_HUD_Battle> BattleWidgetChildClass;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "PlayerController_Base - Widgets")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Widgets")
 	UWidget_HUD_Battle* BattleWidgetReference;
 
 // ------------------------- Avatar
-	//
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_CurrentSelectedAvatar, Category = "PlayerController_Base - Avatar")
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "PlayerController_Base - Avatar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_CurrentSelectedAvatar, Category = "Avatar")
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FTimerHandle PlayerStateTimerHandle;
 
 // ------------------------- Player
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "PlayerController_Base - Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	TArray<FAvatar_Struct> PlayerParty;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "PlayerController_Base - Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	bool IsCurrentlyActingPlayer;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "PlayerController_Base - Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	UPlayer_SaveData* PlayerProfileReference;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "PlayerController_Base - Player")
-	int UniquePlayerID;
-
 // ------------------------- Grid
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerController_Base - Grid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	FVector CursorLocationSnappedToGrid;
 
 // Functions
@@ -98,14 +93,11 @@ public:
 	void SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData);
 
 // ------------------------- Player
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void LoadPlayerProfile();
-
-	UFUNCTION(BlueprintCallable, Client, Reliable)
-	void LoadPlayerProfileInBattle();
+	//UFUNCTION(BlueprintCallable)
+	//void LoadPlayerProfile();
 
 // ------------------------- Avatar
-	UFUNCTION(BlueprintCallable, Client, Reliable)
+	UFUNCTION(BlueprintCallable)
 	void OnRepNotify_CurrentSelectedAvatar();
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
