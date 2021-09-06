@@ -29,8 +29,7 @@ void AStarmark_PlayerState::UpdatePlayerData()
 {
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	ReplicatedPlayerName = GameInstanceReference->PlayerName;
-
-	GEngine->AddOnScreenDebugMessage(-1, 0.2f, FColor::Red, FString::Printf(TEXT("ReplicatedPlayerName: %s"), *ReplicatedPlayerName));
+	SetPlayerName(GameInstanceReference->PlayerName);
 
 	SendUpdateToMultiplayerLobby();
 }
@@ -39,12 +38,12 @@ void AStarmark_PlayerState::UpdatePlayerData()
 // ------------------------- Lobby
 void AStarmark_PlayerState::ChangePlayerReadyStatus()
 {
-	if (PlayerReadyStatus == "Not Ready")
-		PlayerReadyStatus = "Ready";
-	else if (PlayerReadyStatus == "Ready") 
-		PlayerReadyStatus = "Not Ready";
-	else 
-		PlayerReadyStatus = "Not Ready";
+	//if (PlayerReadyStatus == "Not Ready")
+	//	PlayerReadyStatus = "Ready";
+	//else if (PlayerReadyStatus == "Ready") 
+	//	PlayerReadyStatus = "Not Ready";
+	//else 
+	//	PlayerReadyStatus = "Not Ready";
 }
 
 
@@ -56,10 +55,30 @@ void AStarmark_PlayerState::SendUpdateToMultiplayerLobby_Implementation()
 
 
 // ------------------------- Battle
+void AStarmark_PlayerState::Client_UpdateReplicatedPlayerName_Implementation()
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Client ReplicatedPlayerName: %s"), *ReplicatedPlayerName));
+	Server_UpdateReplicatedPlayerName(ReplicatedPlayerName);
+}
+
+
+void AStarmark_PlayerState::Server_UpdateReplicatedPlayerName_Implementation(const FString& UpdatedReplicatedPlayerName)
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Server Old ReplicatedPlayerName: %s"), *ReplicatedPlayerName));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Server New ReplicatedPlayerName: %s"), *UpdatedReplicatedPlayerName));
+	ReplicatedPlayerName = UpdatedReplicatedPlayerName;
+	//SetPlayerName(UpdatedReplicatedPlayerName);
+}
+
+
 void AStarmark_PlayerState::PlayerState_BeginBattle()
 {
 	FAvatar_Struct* DefaultAvatar = AvatarDataTable->FindRow<FAvatar_Struct>(TEXT("BalanceBoy"), "");
 	PlayerState_PlayerParty.Add(*DefaultAvatar);
+
+	// Retrieve player profile
+	UpdatePlayerData();
+	Client_UpdateReplicatedPlayerName();
 }
 
 

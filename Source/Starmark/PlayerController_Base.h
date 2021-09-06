@@ -59,13 +59,17 @@ public:
 	UWidget_HUD_Battle* BattleWidgetReference;
 
 // ------------------------- Avatar
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_CurrentSelectedAvatar, Category = "Avatar")
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_CurrentSelectedAvatar, Category = "Avatar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Avatar")
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FTimerHandle PlayerStateTimerHandle;
 
 // ------------------------- Player
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
+	bool IsReadyToStartMultiplayerBattle = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	TArray<FAvatar_Struct> PlayerParty;
 
@@ -93,17 +97,19 @@ public:
 	void SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData);
 
 // ------------------------- Player
-	//UFUNCTION(BlueprintCallable)
-	//void LoadPlayerProfile();
+
 
 // ------------------------- Avatar
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void OnRepNotify_CurrentSelectedAvatar();
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void UpdateAvatarsDecalsAndWidgets(ACharacter_Pathfinder* CurrentlyActingAvatar);
 
 // ------------------------- Battle
+	UFUNCTION(Server, Reliable)
+	void Server_SetReadyToStartMultiplayerBattle();
+
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryClick(AActor* ClickedActor);
 

@@ -60,6 +60,12 @@ public:
 	void SendUpdateToMultiplayerLobby();
 
 // ------------------------- Battle
+	UFUNCTION(Client, Reliable)
+	void Client_UpdateReplicatedPlayerName();
+
+	UFUNCTION(Server, Reliable)
+	void Server_UpdateReplicatedPlayerName(const FString& UpdatedReplicatedPlayerName);
+
 	UFUNCTION(BlueprintCallable)
 	void PlayerState_BeginBattle();
 

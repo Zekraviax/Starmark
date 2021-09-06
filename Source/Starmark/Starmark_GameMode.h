@@ -32,6 +32,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ACharacter_Pathfinder> AvatarBlueprintClass;
 
+// ------------------------- Multiplayer
+	UPROPERTY()
+	FTimerHandle PlayerReadyCheckTimerHandle;
+
+
 // Functions
 // --------------------------------------------------
 
@@ -41,6 +46,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_BeginMultiplayerBattle();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void Server_MultiplayerBattleCheckAllPlayersReady();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_SpawnAvatar(APlayerController_Base* PlayerController);

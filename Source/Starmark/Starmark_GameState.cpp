@@ -31,24 +31,6 @@ void AStarmark_GameState::UpdateAllPlayersInLobby_Implementation()
 {
 	TArray<FString> PlayerNames, PlayerReadyStatuses;
 
-	//for (int i = 0; i < PlayerArray.Num(); i++) {
-	//	APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
-	//	
-	//	if (PlayerController->IsValidLowLevel()) {
-	//		PlayerReadyStatuses.Add(PlayerController->ReadyStatus);
-	//		//if (PlayerController->ReadyStatus)
-	//		//	PlayerReadyStatuses.Add("Ready");
-	//		//else
-	//		//	PlayerReadyStatuses.Add("Not Ready");
-	//	}
-	//}
-
-	//for (int i = 0; i < PlayerArray.Num(); i++) {
-	//	APlayerController_Lobby* PlayerController = Cast<APlayerController_Lobby>(PlayerArray[i]->GetPawn()->GetController());
-
-	//	if (PlayerController->IsValidLowLevel())
-	//		PlayerController->UpdatePlayersInLobby(PlayerNames, PlayerReadyStatuses, true);
-	//}
 }
 
 
@@ -58,42 +40,36 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundActors);
 
-	// Assemble turn order text
-	FString AssembledTurnOrderText;
-
 	// Use Nested Loops to compare Avatars' Speeds.
 	for (int i = 0; i < FoundActors.Num(); i++) {
+		ACharacter_Pathfinder* AvatarReference = Cast<ACharacter_Pathfinder>(FoundActors[i]);
+
 		if (AvatarTurnOrder.Num() <= 0)
-			AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
+			AvatarTurnOrder.Add(AvatarReference);
 		else {
 			for (int j = 0; j < AvatarTurnOrder.Num(); j++) {
 				if (Cast<ACharacter_Pathfinder>(FoundActors[i])->AvatarData.BaseStats.Speed >= AvatarTurnOrder[j]->AvatarData.BaseStats.Speed && 
-					!AvatarTurnOrder.Contains(Cast<ACharacter_Pathfinder>(FoundActors[i]))) {
-					AvatarTurnOrder.Insert(Cast<ACharacter_Pathfinder>(FoundActors[i]), j);
+					!AvatarTurnOrder.Contains(AvatarReference)) {
+					AvatarTurnOrder.Insert(AvatarReference, j);
 					break;
 				}
 
 				// If we reach the end of the array and the Avatar isn't faster than any of the other Avatars, just add it at the end
 				if (j == AvatarTurnOrder.Num() - 1 && !AvatarTurnOrder.Contains(Cast<ACharacter_Pathfinder>(FoundActors[i])))
-					AvatarTurnOrder.Add(Cast<ACharacter_Pathfinder>(FoundActors[i]));
+					AvatarTurnOrder.Add(AvatarReference);
 			}
 		}
-
-		if (AvatarTurnOrder[i]->PlayerControllerReference->PlayerProfileReference->IsValidLowLevel())
-			AssembledTurnOrderText.Append(AvatarTurnOrder[i]->AvatarData.AvatarName + " / " + AvatarTurnOrder[i]->PlayerControllerReference->PlayerProfileReference->Name + "\n");
-		else
-			AssembledTurnOrderText.Append(AvatarTurnOrder[i]->AvatarData.AvatarName + "\n");
 	}
 
-	CurrentTurnOrderText = AssembledTurnOrderText;
+	//CurrentTurnOrderText = AssembledTurnOrderText;
 	
-	// Set CurrentActingPlayer states
-	for (int j = 0; j < PlayerArray.Num(); j++) {
-		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
+	//// Set CurrentActingPlayer states
+	//for (int j = 0; j < PlayerArray.Num(); j++) {
+	//	APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
-		PlayerController->SetBattleWidgetVariables();
-		PlayerController->UpdateAvatarsDecalsAndWidgets(AvatarTurnOrder[0]);
-	}
+	//	PlayerController->SetBattleWidgetVariables();
+	//	PlayerController->UpdateAvatarsDecalsAndWidgets(AvatarTurnOrder[0]);
+	//}
 }
 
 
