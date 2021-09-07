@@ -78,6 +78,7 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentKnownAttacks);
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentSelectedAttack);
 	DOREPLIFETIME(ACharacter_Pathfinder, IndexInPlayerParty);
+	DOREPLIFETIME(ACharacter_Pathfinder, PlayerControllerUniqueID);
 }
 
 
@@ -116,26 +117,23 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_S
 	}
 
 	//Add Simple Attacks First, then Other Attacks
-	if (AvatarData.SimpleAttacks.Num() > 0) {
-		for (int i = 0; i < AvatarData.SimpleAttacks.Num(); i++) {
+	if (AvatarData.SimpleAttacks.Num() > 0)
+		for (int i = 0; i < AvatarData.SimpleAttacks.Num(); i++)
 			CurrentKnownAttacks.Add(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
-		}
-	}
 
-	if (AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0) {
-		for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
-			if (CurrentKnownAttacks.Num() < 4) {
+	if (AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0)
+		for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++)
+			if (CurrentKnownAttacks.Num() < 4)
 				CurrentKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
-			}
-		}
-	}
+
 
 	// Set default selected attack
-	if (CurrentKnownAttacks.Num() > 0) {
+	if (CurrentKnownAttacks.Num() > 0)
 		CurrentSelectedAttack = CurrentKnownAttacks[0];
-	}
 
 	IndexInPlayerParty = 0;
+
+	//Client_SendAvatarUpdatesToServer();
 }
 
 
@@ -149,10 +147,10 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 		//ActorSelected->SetVisibility(true);
 
 		// Update the colour of the ActorSelected decal here
-		if (PlayerControllerReference->CurrentSelectedAvatar == this)
-			ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
-		else
-			ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Yellow);
+		//if (PlayerControllerReference->CurrentSelectedAvatar == this)
+		//	ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+		//else
+		//	ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Yellow);
 	}
 
 	// Show AvatarBattleDataWidget
@@ -412,4 +410,22 @@ void ACharacter_Pathfinder::UpdateAvatarDataInPlayerParty()
 void ACharacter_Pathfinder::AvatarBeginTurn()
 {
 
+}
+
+
+void ACharacter_Pathfinder::OnRepNotify_ActorSelectedDynamicMaterialColourChanged()
+{
+	ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", ActorSelected_DynamicMaterial_Colour);
+}
+
+
+void ACharacter_Pathfinder::Client_SendAvatarUpdatesToServer_Implementation()
+{
+	Server_SendAvatarUpdatesToServer(ActorSelected_DynamicMaterial);
+}
+
+
+void ACharacter_Pathfinder::Server_SendAvatarUpdatesToServer_Implementation(UMaterialInstanceDynamic* UpdateActorSelectedDynamicMaterial)
+{
+	ActorSelected_DynamicMaterial = UpdateActorSelectedDynamicMaterial;
 }

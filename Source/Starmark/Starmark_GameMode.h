@@ -36,6 +36,8 @@ public:
 	UPROPERTY()
 	FTimerHandle PlayerReadyCheckTimerHandle;
 
+	UPROPERTY()
+	int MultiplayerUniqueIDCounter;
 
 // Functions
 // --------------------------------------------------

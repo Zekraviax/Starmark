@@ -61,15 +61,7 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 		}
 	}
 
-	//CurrentTurnOrderText = AssembledTurnOrderText;
-	
-	//// Set CurrentActingPlayer states
-	//for (int j = 0; j < PlayerArray.Num(); j++) {
-	//	APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
-
-	//	PlayerController->SetBattleWidgetVariables();
-	//	PlayerController->UpdateAvatarsDecalsAndWidgets(AvatarTurnOrder[0]);
-	//}
+	AvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
 }
 
 

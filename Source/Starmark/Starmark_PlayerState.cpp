@@ -21,6 +21,7 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerReadyStatus);
 	DOREPLIFETIME(AStarmark_PlayerState, ReplicatedPlayerName);
+	DOREPLIFETIME(AStarmark_PlayerState, PlayerState_PlayerParty);
 }
 
 
@@ -50,15 +51,17 @@ void AStarmark_PlayerState::SendUpdateToMultiplayerLobby_Implementation()
 
 
 // ------------------------- Battle
-void AStarmark_PlayerState::Client_UpdateReplicatedPlayerName_Implementation()
+void AStarmark_PlayerState::Client_UpdateReplicatedVariables_Implementation()
 {
-	Server_UpdateReplicatedPlayerName(ReplicatedPlayerName);
+	Server_UpdateReplicatedVariables(ReplicatedPlayerName, PlayerState_PlayerParty);
 }
 
 
-void AStarmark_PlayerState::Server_UpdateReplicatedPlayerName_Implementation(const FString& UpdatedReplicatedPlayerName)
+void AStarmark_PlayerState::Server_UpdateReplicatedVariables_Implementation(const FString& UpdatedReplicatedPlayerName, const TArray<FAvatar_Struct>& UpdatedPlayerParty)
 {
 	ReplicatedPlayerName = UpdatedReplicatedPlayerName;
+	PlayerState_PlayerParty = UpdatedPlayerParty;
+
 	SetPlayerName(UpdatedReplicatedPlayerName);
 }
 
@@ -70,7 +73,7 @@ void AStarmark_PlayerState::PlayerState_BeginBattle_Implementation()
 
 	// Retrieve player profile
 	UpdatePlayerData();
-	Client_UpdateReplicatedPlayerName();
+	Client_UpdateReplicatedVariables();
 }
 
 

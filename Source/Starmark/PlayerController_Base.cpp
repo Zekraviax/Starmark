@@ -32,13 +32,14 @@ void APlayerController_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
 
-	DOREPLIFETIME(APlayerController_Base, CurrentSelectedAvatar);
+	//DOREPLIFETIME(APlayerController_Base, CurrentSelectedAvatar);
 	DOREPLIFETIME(APlayerController_Base, BattleWidgetReference);
 	DOREPLIFETIME(APlayerController_Base, IsCurrentlyActingPlayer);
 	DOREPLIFETIME(APlayerController_Base, PlayerClickMode);
 	DOREPLIFETIME(APlayerController_Base, PlayerParty);
 	DOREPLIFETIME(APlayerController_Base, PlayerProfileReference);
 	DOREPLIFETIME(APlayerController_Base, IsReadyToStartMultiplayerBattle);
+	DOREPLIFETIME(APlayerController_Base, MultiplayerUniqueID);
 }
 
 
@@ -116,14 +117,13 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 		CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];	
 
 		// Avatar initialization
-		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
+		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(CurrentSelectedAvatar->AvatarData, BattleWidgetReference);
 
-		//
+		// Player is ready to start multiplayer battle
 		Server_SetReadyToStartMultiplayerBattle();
 	}
-	else {
+	else
 		GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.5f, false);
-	}
 }
 
 
@@ -138,14 +138,20 @@ void APlayerController_Base::UpdateAvatarsDecalsAndWidgets_Implementation(AChara
 		if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel())
 			FoundActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 
-		//if (CurrentlyActingAvatar->IsValidLowLevel())
-		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Purple, FString::Printf(TEXT("%s  /  %s"), *CurrentlyActingAvatar->GetFName().ToString(), *FoundActor->GetFName().ToString()));
-		//else 
-		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("CurrentlyActingAvatar Not Valid")));
-		
-		if (FoundActor == CurrentlyActingAvatar) 
+		if (FoundActor == CurrentlyActingAvatar) {
 			FoundActor->ActorSelected->SetVisibility(true);
-		else
+
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("FoundActor PlayerUniqueID: %s  /  MultiplayerUniqueID: %s"), *FString::FromInt(FoundActor->PlayerControllerUniqueID), *FString::FromInt(MultiplayerUniqueID)));
+
+			//if (FoundActor->ActorSelected_DynamicMaterial->IsValidLowLevel()) {
+			if (FoundActor->PlayerControllerUniqueID == MultiplayerUniqueID)
+				FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Green;
+				//FoundActor->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+			else
+				FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Red;
+				//FoundActor->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+			//}
+		} else
 			FoundActor->ActorSelected->SetVisibility(false);
 	}
 }
@@ -153,8 +159,6 @@ void APlayerController_Base::UpdateAvatarsDecalsAndWidgets_Implementation(AChara
 
 void APlayerController_Base::Server_SetReadyToStartMultiplayerBattle_Implementation()
 {
-	//AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
-	//CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
 	IsReadyToStartMultiplayerBattle = true;
 }
 

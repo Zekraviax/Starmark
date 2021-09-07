@@ -79,6 +79,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	UPlayer_SaveData* PlayerProfileReference;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
+	int MultiplayerUniqueID;
+
 // ------------------------- Grid
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	FVector CursorLocationSnappedToGrid;

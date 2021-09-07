@@ -28,9 +28,8 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 
 	NewPlayerController->Possess(GetWorld()->SpawnActor<APlayerPawn_Static>(PlayerPawnBlueprintClass, Location, Rotation, SpawnInfo));
 
-	// Retrieve player profile
-	//Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->UpdatePlayerData();
-	//Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Client_UpdateReplicatedPlayerName();
+	MultiplayerUniqueIDCounter++;
+	NewPlayerController->MultiplayerUniqueID = MultiplayerUniqueIDCounter;
 
 	PlayerControllerReferences.Add(NewPlayerController);
 
@@ -47,6 +46,9 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		Server_SpawnAvatar(PlayerControllerReferences[i]);
+		
+		Cast<AStarmark_PlayerState>(PlayerControllerReferences[i]->PlayerState)->Client_UpdateReplicatedVariables();
+
 		GameStateReference->SetTurnOrder(PlayerControllerReferences);
 	}
 
@@ -65,28 +67,29 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		ReadyStatuses.Add(PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle);
 	}
 
-	if (ReadyStatuses.Contains(false)) {
-		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady, 1.f, false);
+	if (ReadyStatuses.Contains(false) || ReadyStatuses.Num() < 2) {
+		ReadyStatuses.Empty();
+		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady, 3.f, false);
 	} else {
 		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 			Cast<AStarmark_GameState>(GetWorld()->GetGameState())->SetTurnOrder(PlayerControllerReferences);
 
 			// Assemble turn order text
 			AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->PlayerState);
-			PlayerStateReference->Client_UpdateReplicatedPlayerName();
+			PlayerStateReference->Client_UpdateReplicatedVariables();
 
 			if (PlayerStateReference)
-				AssembledTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.AvatarName + " / " + PlayerStateReference->GetPlayerName() + "\n");
+				AssembledTurnOrderText.Append(PlayerStateReference->PlayerState_PlayerParty[0].AvatarName + " / " + PlayerStateReference->GetPlayerName() + "\n");
 			else
-				AssembledTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.AvatarName + "\n");
+				AssembledTurnOrderText.Append("Error.\n");
 		}
 
 		GameStateReference->CurrentTurnOrderText = AssembledTurnOrderText;
+	}
 
-		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-			PlayerControllerReferences[i]->SetBattleWidgetVariables();
-			PlayerControllerReferences[i]->UpdateAvatarsDecalsAndWidgets(Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarTurnOrder[0]);
-		}
+	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+		PlayerControllerReferences[i]->SetBattleWidgetVariables();
+		PlayerControllerReferences[i]->UpdateAvatarsDecalsAndWidgets(Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarTurnOrder[0]);
 	}
 }
 
@@ -102,9 +105,9 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 
 	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
 	NewAvatarActor->PlayerControllerReference = PlayerController;
-	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
+	NewAvatarActor->PlayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
 
-	//if (HasAuthority())
+	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 	PlayerController->OnRepNotify_CurrentSelectedAvatar();
 }
 
