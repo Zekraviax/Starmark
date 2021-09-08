@@ -106,8 +106,11 @@ public:
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void OnRepNotify_CurrentSelectedAvatar();
 
-	UFUNCTION(BlueprintCallable, Client, Reliable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void UpdateAvatarsDecalsAndWidgets(ACharacter_Pathfinder* CurrentlyActingAvatar);
+
+	UFUNCTION(BlueprintCallable)
+	void LocalUpdateAvatarsDecals(ACharacter_Pathfinder* CurrentlyActingAvatar);
 
 // ------------------------- Battle
 	UFUNCTION(Server, Reliable)

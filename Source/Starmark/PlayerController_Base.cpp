@@ -32,7 +32,7 @@ void APlayerController_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
 
-	//DOREPLIFETIME(APlayerController_Base, CurrentSelectedAvatar);
+	DOREPLIFETIME(APlayerController_Base, CurrentSelectedAvatar);
 	DOREPLIFETIME(APlayerController_Base, BattleWidgetReference);
 	DOREPLIFETIME(APlayerController_Base, IsCurrentlyActingPlayer);
 	DOREPLIFETIME(APlayerController_Base, PlayerClickMode);
@@ -117,17 +117,30 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 		CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];	
 
 		// Avatar initialization
-		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(CurrentSelectedAvatar->AvatarData, BattleWidgetReference);
+		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
 
-		// Player is ready to start multiplayer battle
+		//
 		Server_SetReadyToStartMultiplayerBattle();
 	}
-	else
+	else {
 		GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.5f, false);
+	}
 }
 
 
 void APlayerController_Base::UpdateAvatarsDecalsAndWidgets_Implementation(ACharacter_Pathfinder* CurrentlyActingAvatar)
+{
+	LocalUpdateAvatarsDecals(CurrentlyActingAvatar);
+}
+
+
+void APlayerController_Base::Server_SetReadyToStartMultiplayerBattle_Implementation()
+{
+	IsReadyToStartMultiplayerBattle = true;
+}
+
+
+void APlayerController_Base::LocalUpdateAvatarsDecals(ACharacter_Pathfinder* CurrentlyActingAvatar)
 {
 	TArray<AActor*> Avatars;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
@@ -141,25 +154,16 @@ void APlayerController_Base::UpdateAvatarsDecalsAndWidgets_Implementation(AChara
 		if (FoundActor == CurrentlyActingAvatar) {
 			FoundActor->ActorSelected->SetVisibility(true);
 
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("FoundActor PlayerUniqueID: %s  /  MultiplayerUniqueID: %s"), *FString::FromInt(FoundActor->PlayerControllerUniqueID), *FString::FromInt(MultiplayerUniqueID)));
-
-			//if (FoundActor->ActorSelected_DynamicMaterial->IsValidLowLevel()) {
-			if (FoundActor->PlayerControllerUniqueID == MultiplayerUniqueID)
+			if (FoundActor->MultiplayerControllerUniqueID == MultiplayerUniqueID)
 				FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Green;
-				//FoundActor->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
 			else
 				FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Red;
-				//FoundActor->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
-			//}
-		} else
+		}
+		else
 			FoundActor->ActorSelected->SetVisibility(false);
+
+		FoundActor->ActorSelectedDynamicMaterialColourUpdate();
 	}
-}
-
-
-void APlayerController_Base::Server_SetReadyToStartMultiplayerBattle_Implementation()
-{
-	IsReadyToStartMultiplayerBattle = true;
 }
 
 

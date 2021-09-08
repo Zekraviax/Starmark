@@ -40,7 +40,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_ActorSelectedDynamicMaterialColourChanged, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	FLinearColor ActorSelected_DynamicMaterial_Colour;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
@@ -52,7 +52,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataComponent_Reference;
 
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	//USkeletalMesh* SkeletalMeshReference;
+
 // ------------------------- Avatar
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	//FDataTableRowHandle AvatarDataTableValue;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Avatar")
 	FAvatar_Struct AvatarData;
 
@@ -78,8 +84,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
 	int IndexInPlayerParty;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
-	int PlayerControllerUniqueID;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int MultiplayerControllerUniqueID;
 
 // ------------------------- Other
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Other")
@@ -119,11 +125,5 @@ public:
 	void AvatarBeginTurn();
 
 	UFUNCTION()
-	void OnRepNotify_ActorSelectedDynamicMaterialColourChanged();
-
-	UFUNCTION(BlueprintCallable, Client, Reliable)
-	void Client_SendAvatarUpdatesToServer();
-
-	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void Server_SendAvatarUpdatesToServer(UMaterialInstanceDynamic* UpdateActorSelectedDynamicMaterial);
+	void ActorSelectedDynamicMaterialColourUpdate();
 };
