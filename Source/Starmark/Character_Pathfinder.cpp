@@ -65,6 +65,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	bReplicateMovement = true; 
 	bNetUseOwnerRelevancy = true;
 	IndexInPlayerParty = -1;
+	ActorSelected->SetIsReplicated(true);
 }
 
 
@@ -78,7 +79,7 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentKnownAttacks);
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentSelectedAttack);
 	DOREPLIFETIME(ACharacter_Pathfinder, IndexInPlayerParty);
-	//DOREPLIFETIME(ACharacter_Pathfinder, ActorSelected_DynamicMaterial_Colour);
+	DOREPLIFETIME(ACharacter_Pathfinder, ActorSelected_DynamicMaterial);
 }
 
 
@@ -89,12 +90,9 @@ void ACharacter_Pathfinder::Tick(float DeltaSeconds)
 
 
 // ------------------------- Base
-void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(FAvatar_Struct NewAvatarData, UWidget_HUD_Battle* BattleHUDReference)
+void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_HUD_Battle* BattleHUDReference)
 {
 	FString ContextString;
-
-	ActorSelected_DynamicMaterial = UMaterialInstanceDynamic::Create(ActorSelected->GetMaterial(0), this);
-	ActorSelected->SetMaterial(0, ActorSelected_DynamicMaterial);
 
 	// Snap Actor to Grid
 	// The Z Value needs to be retained or else the character will probably clip through the floor
@@ -147,13 +145,6 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 		//CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
 
 		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
-		//ActorSelected->SetVisibility(true);
-
-		// Update the colour of the ActorSelected decal here
-		if (PlayerControllerReference->CurrentSelectedAvatar == this)
-			ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
-		else
-			ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Yellow);
 	}
 
 	// Show AvatarBattleDataWidget

@@ -55,6 +55,9 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_SpawnAvatar(APlayerController_Base* PlayerController);
 
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void Server_UpdateAllAvatarDecals();
+
 	UFUNCTION(BlueprintNativeEvent)
 	void EndOfBattle();
 };

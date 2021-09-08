@@ -106,10 +106,10 @@ public:
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void OnRepNotify_CurrentSelectedAvatar();
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void UpdateAvatarsDecalsAndWidgets(ACharacter_Pathfinder* CurrentlyActingAvatar);
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void UpdateAvatarDecals(ACharacter_Pathfinder* CurrentlyActingAvatar);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void LocalUpdateAvatarsDecals(ACharacter_Pathfinder* CurrentlyActingAvatar);
 
 // ------------------------- Battle
@@ -124,4 +124,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();
+
+	UFUNCTION(Server, Reliable)
+	void Server_UpdatePlayerControllerVariables();
 };

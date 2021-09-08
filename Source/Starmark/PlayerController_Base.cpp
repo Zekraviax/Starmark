@@ -114,10 +114,11 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 		if (BattleWidgetReference == NULL)
 			CreateBattleWidget();
 		
-		CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];	
+		CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
+		//Server_UpdatePlayerControllerVariables();
 
 		// Avatar initialization
-		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(PlayerStateReference->PlayerState_PlayerParty[0], BattleWidgetReference);
+		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(BattleWidgetReference);
 
 		//
 		Server_SetReadyToStartMultiplayerBattle();
@@ -128,7 +129,7 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 }
 
 
-void APlayerController_Base::UpdateAvatarsDecalsAndWidgets_Implementation(ACharacter_Pathfinder* CurrentlyActingAvatar)
+void APlayerController_Base::UpdateAvatarDecals_Implementation(ACharacter_Pathfinder* CurrentlyActingAvatar)
 {
 	LocalUpdateAvatarsDecals(CurrentlyActingAvatar);
 }
@@ -151,16 +152,15 @@ void APlayerController_Base::LocalUpdateAvatarsDecals(ACharacter_Pathfinder* Cur
 		if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel())
 			FoundActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 
-		if (FoundActor == CurrentlyActingAvatar) {
-			FoundActor->ActorSelected->SetVisibility(true);
-
-			if (FoundActor->MultiplayerControllerUniqueID == MultiplayerUniqueID)
-				FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Green;
-			else
-				FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Red;
-		}
+		if (FoundActor->MultiplayerControllerUniqueID == MultiplayerUniqueID)
+			FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Green;
 		else
-			FoundActor->ActorSelected->SetVisibility(false);
+			FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Red;
+
+		if (FoundActor == CurrentlyActingAvatar)
+			FoundActor->ActorSelected->SetVisibility(true);
+		else
+			//FoundActor->ActorSelected->SetVisibility(false);
 
 		FoundActor->ActorSelectedDynamicMaterialColourUpdate();
 	}
@@ -205,4 +205,10 @@ void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector Move
 void APlayerController_Base::SendEndOfTurnCommandToServer_Implementation()
 {
 	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn_Implementation();
+}
+
+
+void APlayerController_Base::Server_UpdatePlayerControllerVariables_Implementation()
+{
+
 }

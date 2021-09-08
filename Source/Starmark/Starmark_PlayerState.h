@@ -27,7 +27,7 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Player
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<FAvatar_Struct> PlayerState_PlayerParty;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -66,7 +66,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_UpdateReplicatedPlayerName(const FString& UpdatedReplicatedPlayerName);
 
-	UFUNCTION(BlueprintCallable, Client, Reliable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void PlayerState_BeginBattle();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
@@ -74,4 +74,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Battle_AvatarDefeated(ACharacter_Pathfinder* Avatar);
+
+	UFUNCTION(Server, Reliable)
+	void Server_UpdatePlayerStateVariables(const TArray<FAvatar_Struct>& UpdatetPlayerParty);
 };

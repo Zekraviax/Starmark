@@ -75,17 +75,16 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 
 void AStarmark_GameState::AvatarEndTurn_Implementation()
 {
-	CurrentAvatarTurnIndex++;
-
 	TArray<ACharacter_Pathfinder*> AvatarArray;
 	TArray<bool> IsPlayerActingArray;
 	APlayerController_Base* CurrentlyActingPlayer = nullptr;
 	ACharacter_Pathfinder* CurrentlyActingAvatar = nullptr;
 
+	CurrentAvatarTurnIndex++;
+
 	// Reset Round
-	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num()) {
+	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num())
 		CurrentAvatarTurnIndex = 0;
-	}
 
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
@@ -101,10 +100,12 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 		}
 	}
 
-	for (int j = 0; j < PlayerArray.Num(); j++) {
-		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
-		PlayerController->UpdateAvatarsDecalsAndWidgets(CurrentlyActingAvatar);
-	}
+	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_UpdateAllAvatarDecals();
+
+	//for (int j = 0; j < PlayerArray.Num(); j++) {
+	//	APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
+	//	PlayerController->UpdateAvatarsDecalsAndWidgets(CurrentlyActingAvatar);
+	//}
 }
 
 

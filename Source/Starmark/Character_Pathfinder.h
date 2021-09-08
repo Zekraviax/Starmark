@@ -37,7 +37,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UDecalComponent* ActorSelected;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Components")
 	UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
@@ -52,13 +52,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataComponent_Reference;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	//USkeletalMesh* SkeletalMeshReference;
-
 // ------------------------- Avatar
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
-	//FDataTableRowHandle AvatarDataTableValue;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Avatar")
 	FAvatar_Struct AvatarData;
 
@@ -96,7 +90,7 @@ public:
 
 // ------------------------- Base
 	UFUNCTION(BlueprintCallable, Client, Reliable)
-	void BeginPlayWorkaroundFunction(FAvatar_Struct NewAvatarData, UWidget_HUD_Battle* BattleHUDReference = nullptr);
+	void BeginPlayWorkaroundFunction(UWidget_HUD_Battle* BattleHUDReference = nullptr);
 
 // ------------------------- Cursor
 	UFUNCTION(BlueprintCallable)

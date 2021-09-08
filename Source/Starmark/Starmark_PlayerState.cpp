@@ -21,6 +21,7 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerReadyStatus);
 	DOREPLIFETIME(AStarmark_PlayerState, ReplicatedPlayerName);
+	DOREPLIFETIME(AStarmark_PlayerState, PlayerState_PlayerParty);
 }
 
 
@@ -104,4 +105,10 @@ void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Path
 	}
 
 	Avatar->Destroy();
+}
+
+
+void AStarmark_PlayerState::Server_UpdatePlayerStateVariables_Implementation(const TArray<FAvatar_Struct>& UpdatetPlayerParty)
+{
+	PlayerState_PlayerParty = UpdatetPlayerParty;
 }
