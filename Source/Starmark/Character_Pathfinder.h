@@ -37,10 +37,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UDecalComponent* ActorSelected;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = ActorSelectedDynamicMaterialColourUpdate, Category = "Components")
 	FLinearColor ActorSelected_DynamicMaterial_Colour;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
@@ -118,6 +118,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AvatarBeginTurn();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent)
 	void ActorSelectedDynamicMaterialColourUpdate();
 };

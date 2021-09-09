@@ -79,7 +79,6 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentKnownAttacks);
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentSelectedAttack);
 	DOREPLIFETIME(ACharacter_Pathfinder, IndexInPlayerParty);
-	DOREPLIFETIME(ACharacter_Pathfinder, ActorSelected_DynamicMaterial);
 }
 
 
@@ -407,7 +406,7 @@ void ACharacter_Pathfinder::AvatarBeginTurn()
 }
 
 
-void ACharacter_Pathfinder::ActorSelectedDynamicMaterialColourUpdate() {
-	if (ActorSelected_DynamicMaterial != NULL)
-		ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", ActorSelected_DynamicMaterial_Colour);
+void ACharacter_Pathfinder::ActorSelectedDynamicMaterialColourUpdate_Implementation() 
+{
+	// Implemented in Blueprints
 }

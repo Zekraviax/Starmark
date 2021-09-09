@@ -101,11 +101,6 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	}
 
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_UpdateAllAvatarDecals();
-
-	//for (int j = 0; j < PlayerArray.Num(); j++) {
-	//	APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
-	//	PlayerController->UpdateAvatarsDecalsAndWidgets(CurrentlyActingAvatar);
-	//}
 }
 
 

@@ -43,10 +43,9 @@ void AStarmark_PlayerState::ChangePlayerReadyStatus()
 }
 
 
-// Implemented in Blueprints
 void AStarmark_PlayerState::SendUpdateToMultiplayerLobby_Implementation()
 {
-
+	// Implemented in Blueprints
 }
 
 

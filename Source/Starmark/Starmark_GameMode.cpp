@@ -81,12 +81,6 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 				AssembledTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.AvatarName + "\n");
 		}
 
-		// Initialize avatars on the server
-		//for (int j = 0; j < GameStateReference->AvatarTurnOrder.Num(); j++) {
-		//	Cast<AStarmark_PlayerState>(GameStateReference->AvatarTurnOrder[j]->PlayerControllerReference->PlayerState)->PlayerState_BeginBattle();
-		//	GameStateReference->AvatarTurnOrder[j]->BeginPlayWorkaroundFunction();
-		//}
-
 		GameStateReference->CurrentTurnOrderText = AssembledTurnOrderText;
 
 		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
@@ -111,13 +105,6 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	Location.Z = 95;
 
 	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
-
-	// Spawn DynamicMaterial on server
-
-	NewAvatarActor->ActorSelected_DynamicMaterial = UMaterialInstanceDynamic::Create(NewAvatarActor->ActorSelected->GetMaterial(0), this);
-	NewAvatarActor->ActorSelected->SetMaterial(0, NewAvatarActor->ActorSelected_DynamicMaterial);
-	//NewAvatarActor->ActorSelected_DynamicMaterial->SetIsReplicated(true);
-	NewAvatarActor->ActorSelected_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Blue);
 	
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 	NewAvatarActor->MultiplayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
@@ -136,28 +123,28 @@ void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 
 	for (int i = 0; i < Avatars.Num(); i++) {
 		ACharacter_Pathfinder* FoundActor = Cast<ACharacter_Pathfinder>(Avatars[i]);
+		bool IsCurrentlyActing = false;
+
+		if (CurrentlyActingAvatar == Avatars[i])
+			IsCurrentlyActing = true;
 
 		if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel())
 			FoundActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 
-		//if (FoundActor == CurrentlyActingAvatar) {
-		//	//if (FoundActor->MultiplayerControllerUniqueID == CurrentlyActingAvatar->MultiplayerControllerUniqueID)
-		//	FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Green;
-		//	//else
-		//	//	FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Red;
-		//} else
-		//	FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Red;
+		FoundActor->MultiplayerControllerUniqueID = FoundActor->PlayerControllerReference->MultiplayerUniqueID;
 
-		//FoundActor->ActorSelectedDynamicMaterialColourUpdate();
+		for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
+			PlayerControllerReferences[j]->GetAvatarUpdateFromServer(FoundActor, FoundActor->MultiplayerControllerUniqueID, IsCurrentlyActing);
+		}
 	}
 
-	for (int j = 0; j < PlayerControllerReferences.Num(); j++)
-		PlayerControllerReferences[j]->UpdateAvatarDecals(CurrentlyActingAvatar);
+	//for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
+	//	PlayerControllerReferences[j]->GetAvatarUpdateFromServer(CurrentlyActingAvatar);
+	//}
 }
 
 
-// Implemented in Blueprints
 void AStarmark_GameMode::EndOfBattle_Implementation()
 {
-	
+	// Implemented in Blueprints
 }

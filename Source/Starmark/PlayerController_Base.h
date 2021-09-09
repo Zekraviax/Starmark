@@ -127,4 +127,11 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_UpdatePlayerControllerVariables();
+
+// ------------------------- Multiplayer Battle
+	UFUNCTION(Client, Reliable)
+	void GetAvatarUpdateFromServer(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing);
+
+	UFUNCTION()
+	void LocalAvatarUpdate(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing);
 };
