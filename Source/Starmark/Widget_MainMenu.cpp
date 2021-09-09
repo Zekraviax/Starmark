@@ -2,14 +2,20 @@
 
 #include "Starmark_GameInstance.h"
 #include "Widget_ServerBrowser.h"
+#include "Widget_ServerCreator.h"
 #include "Widget_PlayerProfileCreator.h"
 
 
 // ------------------------- Widget
 void UWidget_MainMenu::OnHostGameButtonPressed()
 {
-	RemoveFromParent();
-	//Cast<AStarmark_GameInstance>(GetWorld()->GetGameInstance())->BeginHostingGame();
+	if (!ServerCreatorWidget_Reference && ServerCreatorWidget_Class)
+		ServerCreatorWidget_Reference = CreateWidget<UWidget_ServerCreator>(this, ServerCreatorWidget_Class);
+
+	if (ServerCreatorWidget_Reference) {
+		ServerCreatorWidget_Reference->AddToViewport();
+		this->RemoveFromParent();
+	}
 }
 
 

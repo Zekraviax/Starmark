@@ -59,7 +59,6 @@ public:
 	UWidget_HUD_Battle* BattleWidgetReference;
 
 // ------------------------- Avatar
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_CurrentSelectedAvatar, Category = "Avatar")
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Avatar")
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
 
@@ -98,9 +97,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData);
-
-// ------------------------- Player
-
 
 // ------------------------- Avatar
 	UFUNCTION(BlueprintCallable, Client, Reliable)

@@ -65,9 +65,8 @@ void UWidget_PlayerProfileCreator::OnSaveGameButtonPressed()
 
 void UWidget_PlayerProfileCreator::OnExitButtonPressed()
 {
-	if (!MainMenuWidget_Reference && MainMenuWidget_Class) {
+	if (!MainMenuWidget_Reference && MainMenuWidget_Class)
 		MainMenuWidget_Reference = CreateWidget<UWidget_MainMenu>(this, MainMenuWidget_Class);
-	}
 
 	if (MainMenuWidget_Reference) {
 		MainMenuWidget_Reference->AddToViewport();

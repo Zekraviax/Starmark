@@ -37,12 +37,6 @@ void AStarmark_PlayerState::UpdatePlayerData()
 
 
 // ------------------------- Lobby
-void AStarmark_PlayerState::ChangePlayerReadyStatus()
-{
-
-}
-
-
 void AStarmark_PlayerState::SendUpdateToMultiplayerLobby_Implementation()
 {
 	// Implemented in Blueprints
@@ -99,15 +93,14 @@ void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Path
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player has run out of Avatars")));
 		Cast<AStarmark_GameState>(GetWorld()->GetGameState())->EndOfBattle_Implementation();
 	}
-	else {
+	else 
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player Avatars Remaining: %d"), Avatar->PlayerControllerReference->PlayerParty.Num()));
-	}
 
 	Avatar->Destroy();
 }
 
 
-void AStarmark_PlayerState::Server_UpdatePlayerStateVariables_Implementation(const TArray<FAvatar_Struct>& UpdatetPlayerParty)
+void AStarmark_PlayerState::Server_UpdatePlayerStateVariables_Implementation(const TArray<FAvatar_Struct>& UpdatedPlayerParty)
 {
-	PlayerState_PlayerParty = UpdatetPlayerParty;
+	PlayerState_PlayerParty = UpdatedPlayerParty;
 }

@@ -12,6 +12,7 @@
 
 // Forward Declarations
 class UWidgetComponent_PlayerProfile;
+class UWidget_MainMenu;
 
 
 UCLASS()
@@ -36,7 +37,14 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UScrollBox* PlayerProfilesScrollBox;
 
-// ------------------------- Widgets
+// ------------------------- References
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TSubclassOf<UWidget_MainMenu> MainMenuWidget_Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UWidget_MainMenu* MainMenuWidget_Reference;
+
+// ------------------------- Widget
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UWidgetComponent_PlayerProfile> PlayerProfile_Class;
 
@@ -45,6 +53,10 @@ public:
 
 // Functions
 // --------------------------------------------------
+
+// ------------------------- Widget
+	UFUNCTION(BlueprintCallable)
+	void OnExitButtonPressed();
 
 // ------------------------- Player
 	UFUNCTION()

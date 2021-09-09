@@ -5,26 +5,36 @@ Refactor:
 * Rename files (?)
 * Remove redundant UFUNCTION and UPROPERTY macros.
 
+
 Blueprints-To-Code Conversions:
 * Starmark_GameMode_Blueprint
 * Starmark_GameMode_Lobby_Blueprint
 * Starmark_PlayerState_Blueprint
+* Widget_ServerHost_Blueprint
+* Widget_ServerCreator_Blueprint
+
 
 Core Gameplay:
 * Fix Avatars not setting tiles to be occupied and unoccupied.
 * Allow players to summon more than one Avatar at a time.
+* Allow players to move the camera (along a 2D plane?).
+* Avatars need max move points per turn.
+
+
+Menus:
+* Allow players to build teams in the Profile screen.
+* Add ‘Currently Loaded Profile’ to Main Menu and Profile Select Screen.
+
 
 Multiplayer:
 * Fix the broken AvatarData widgets attached to Avatars
-* Fix the ActorSelected decal functions
-* Fix the ServerHost widget not displaying players properly.
-* Players need to be able to set their own names.
 * Check if all players are ready before launching a multiplayer match.
 * Add cancel/exit buttons to the multiplayer search and lobby screens.
-* Allow hosts to designate other players as the host when in a multiplayer lobby.
-* Add some information and buttons to the ServerSearch widget.
+* Allow hosts to designate other players as the host when in a multiplayer lobby (?).
 * Add a chat window to the server lobby.
 * Prevent players from readying if they don’t have a profile loaded.
+* Allow lobby hosts to set maximum player limits.
+
 
 Other:
 * Fix TEnumAsByte compiler warning

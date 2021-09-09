@@ -32,7 +32,7 @@ public:
 	UScrollBox* PlayerProfilesScrollBox;
 
 // ------------------------- References
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TSubclassOf<UWidget_MainMenu> MainMenuWidget_Class;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -48,6 +48,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USaveData_PlayerProfilesList* ProfilesList;
 	
+
 // Functions
 // --------------------------------------------------
 

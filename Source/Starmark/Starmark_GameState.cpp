@@ -26,14 +26,6 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 }
 
 
-// ------------------------- Lobby
-void AStarmark_GameState::UpdateAllPlayersInLobby_Implementation()
-{
-	TArray<FString> PlayerNames, PlayerReadyStatuses;
-
-}
-
-
 // ------------------------- Battle
 void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerController_Base*>& PlayerControllers)
 {
@@ -60,16 +52,6 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 			}
 		}
 	}
-
-	//CurrentTurnOrderText = AssembledTurnOrderText;
-	
-	//// Set CurrentActingPlayer states
-	//for (int j = 0; j < PlayerArray.Num(); j++) {
-	//	APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
-
-	//	PlayerController->SetBattleWidgetVariables();
-	//	PlayerController->UpdateAvatarsDecalsAndWidgets(AvatarTurnOrder[0]);
-	//}
 }
 
 

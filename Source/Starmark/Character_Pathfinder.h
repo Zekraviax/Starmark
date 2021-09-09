@@ -115,9 +115,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateAvatarDataInPlayerParty();
 
-	UFUNCTION(BlueprintCallable)
-	void AvatarBeginTurn();
-
 	UFUNCTION(BlueprintNativeEvent)
 	void ActorSelectedDynamicMaterialColourUpdate();
 };

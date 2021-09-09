@@ -137,10 +137,6 @@ void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 			PlayerControllerReferences[j]->GetAvatarUpdateFromServer(FoundActor, FoundActor->MultiplayerControllerUniqueID, IsCurrentlyActing);
 		}
 	}
-
-	//for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
-	//	PlayerControllerReferences[j]->GetAvatarUpdateFromServer(CurrentlyActingAvatar);
-	//}
 }
 
 

@@ -3,6 +3,20 @@
 #include "Kismet/GameplayStatics.h"
 #include "SaveData_PlayerProfilesList.h"
 #include "WidgetComponent_PlayerProfile.h"
+#include "Widget_MainMenu.h"
+
+
+// ------------------------- Widget
+void UWidget_ServerHost::OnExitButtonPressed()
+{
+	if (!MainMenuWidget_Reference && MainMenuWidget_Class)
+		MainMenuWidget_Reference = CreateWidget<UWidget_MainMenu>(this, MainMenuWidget_Class);
+
+	if (MainMenuWidget_Reference) {
+		MainMenuWidget_Reference->AddToViewport();
+		this->RemoveFromParent();
+	}
+}
 
 
 // ------------------------- Player

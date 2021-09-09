@@ -53,9 +53,6 @@ public:
 	void UpdatePlayerData();
 
 // ------------------------- Lobby
-	UFUNCTION(BlueprintCallable)
-	void ChangePlayerReadyStatus();
-
 	UFUNCTION(BlueprintNativeEvent)
 	void SendUpdateToMultiplayerLobby();
 
@@ -76,5 +73,5 @@ public:
 	void Battle_AvatarDefeated(ACharacter_Pathfinder* Avatar);
 
 	UFUNCTION(Server, Reliable)
-	void Server_UpdatePlayerStateVariables(const TArray<FAvatar_Struct>& UpdatetPlayerParty);
+	void Server_UpdatePlayerStateVariables(const TArray<FAvatar_Struct>& UpdatedPlayerParty);
 };

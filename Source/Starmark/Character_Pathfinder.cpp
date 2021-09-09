@@ -140,11 +140,8 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 // ------------------------- Cursor
 void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 {
-	if (ActorSelected && ActorSelected_DynamicMaterial) {
-		//CursorToWorld_DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
-
+	if (ActorSelected && ActorSelected_DynamicMaterial)
 		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
-	}
 
 	// Show AvatarBattleDataWidget
 	if (AvatarBattleDataComponent_Reference) {
@@ -158,13 +155,6 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 
 void ACharacter_Pathfinder::OnAvatarCursorOverEnd()
 {
-	//if (!PlayerControllerReference)
-	//	PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-
-	// When the player hovers over an actor they aren't controlling
-	//if (PlayerControllerReference->CurrentSelectedAvatar != this)
-	//ActorSelected->SetVisibility(false);
-
 	// Hide AvatarBattleDataWidget
 	if (AvatarBattleDataComponent_Reference)
 		AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
@@ -397,12 +387,6 @@ void ACharacter_Pathfinder::UpdateAvatarDataInPlayerParty()
 	if (PlayerControllerReference)
 		if (PlayerControllerReference->PlayerParty.IsValidIndex(IndexInPlayerParty))
 			PlayerControllerReference->PlayerParty[IndexInPlayerParty] = AvatarData;
-}
-
-
-void ACharacter_Pathfinder::AvatarBeginTurn()
-{
-
 }
 
 

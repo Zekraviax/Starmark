@@ -45,10 +45,6 @@ public:
 // Functions
 // --------------------------------------------------
 
-// ------------------------- Lobby
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void UpdateAllPlayersInLobby();
-
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SetTurnOrder(const TArray<APlayerController_Base*>& PlayerControllers);
