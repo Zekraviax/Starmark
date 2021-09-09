@@ -3,7 +3,9 @@ Refactor:
 * Rename functions
 * Rename variables
 * Rename files (?)
-* Remove redundant UFUNCTION and UPROPERTY macros.
+* Remove redundant UFUNCTION and UPROPERTY macros
+* Remove redundant files
+* Update UFUNCTION and UPROPERTY categories
 
 
 Blueprints-To-Code Conversions:
@@ -16,9 +18,10 @@ Blueprints-To-Code Conversions:
 
 Core Gameplay:
 * Fix Avatars not setting tiles to be occupied and unoccupied.
-* Allow players to summon more than one Avatar at a time.
+* Implement the ability to summon more than one Avatar at a time.
 * Allow players to move the camera (along a 2D plane?).
-* Avatars need max move points per turn.
+* Avatars need maximum move points per turn.
+* Fix the broken AvatarData widgets attached to Avatars.
 
 
 Menus:
@@ -27,16 +30,21 @@ Menus:
 
 
 Multiplayer:
-* Fix the broken AvatarData widgets attached to Avatars
 * Check if all players are ready before launching a multiplayer match.
 * Add cancel/exit buttons to the multiplayer search and lobby screens.
 * Allow hosts to designate other players as the host when in a multiplayer lobby (?).
-* Add a chat window to the server lobby.
+* Add a chat box to the server lobby.
 * Prevent players from readying if they don’t have a profile loaded.
 * Allow lobby hosts to set maximum player limits.
 
 
+Demo:
+* Create a few pre-set Avatars.
+* Create a few different maps with different environments, obstacles and hazards.
+* Allow players to change the colour of Avatars.
+
+
 Other:
-* Fix TEnumAsByte compiler warning
+* Fix TEnumAsByte compiler warning.
 * Remove pathfinding draws.
 * Re-add type calculator and mark calculator as options on the main menu.
