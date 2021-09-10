@@ -1,16 +1,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
-#include "Widget_ServerCreator.generated.h"
+#include "Subsystems/GameInstanceSubsystem.h"
+#include "Starmark_GameInstanceSubsystem.generated.h"
 
 
 UCLASS()
-class STARMARK_API UWidget_ServerCreator : public UUserWidget
+class STARMARK_API UStarmark_GameInstanceSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
-	
+
 public:
+
+	UStarmark_GameInstanceSubsystem();
+
 // Variables
 // --------------------------------------------------
 

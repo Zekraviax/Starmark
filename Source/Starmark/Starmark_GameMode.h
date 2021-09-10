@@ -11,6 +11,7 @@
 // Forward Declarations
 class ACharacter_Pathfinder;
 class APlayerPawn_Static;
+class APlayerPawn_Flying;
 
 
 UCLASS()
@@ -27,7 +28,7 @@ public:
 	TArray<APlayerController_Base*> PlayerControllerReferences;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<APlayerPawn_Static> PlayerPawnBlueprintClass;
+	TSubclassOf<APlayerPawn_Flying> PlayerPawnBlueprintClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ACharacter_Pathfinder> AvatarBlueprintClass;

@@ -3,6 +3,7 @@
 #include "Character_Pathfinder.h"
 #include "PlayerController_Base.h"
 #include "PlayerPawn_Static.h"
+#include "PlayerPawn_Flying.h"
 #include "Actor_GridTile.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
@@ -27,7 +28,7 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 		}
 	}
 
-	NewPlayerController->Possess(GetWorld()->SpawnActor<APlayerPawn_Static>(PlayerPawnBlueprintClass, Location, Rotation, SpawnInfo));
+	NewPlayerController->Possess(GetWorld()->SpawnActor<APlayerPawn_Flying>(PlayerPawnBlueprintClass, Location, Rotation, SpawnInfo));
 
 	MultiplayerUniqueIDCounter++;
 	NewPlayerController->MultiplayerUniqueID = MultiplayerUniqueIDCounter;
