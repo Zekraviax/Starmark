@@ -1,7 +1,9 @@
 #include "Widget_ServerHost.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "PlayerController_Base.h"
 #include "SaveData_PlayerProfilesList.h"
+#include "Starmark_PlayerState.h"
 #include "WidgetComponent_PlayerProfile.h"
 #include "Widget_MainMenu.h"
 

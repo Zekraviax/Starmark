@@ -1,10 +1,12 @@
 #include "PlayerController_Lobby.h"
 
-#include "Widget_ServerHost.h"
-#include "WidgetComponent_LobbyPlayerVals.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player_SaveData.h"
+#include "PlayerController_Base.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
-#include "Player_SaveData.h"
+#include "Widget_ServerHost.h"
+#include "WidgetComponent_LobbyPlayerVals.h"
 
 
 // ------------------------- Widgets
@@ -31,6 +33,10 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 
 	SetInputMode(FInputModeGameAndUI());
 	bShowMouseCursor = true;
+
+	// Get current player profile
+	//if (PlayerControllerReference)
+	Cast<AStarmark_PlayerState>(this->PlayerState)->UpdatePlayerData();
 }
 
 

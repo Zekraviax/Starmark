@@ -12,6 +12,7 @@ Blueprints-To-Code Conversions:
 * Starmark_GameMode_Blueprint
 * Starmark_GameMode_Lobby_Blueprint
 * Starmark_PlayerState_Blueprint
+* Widget_MainMenu_Child
 * Widget_ServerHost_Blueprint
 * Widget_ServerCreator_Blueprint
 
@@ -19,7 +20,6 @@ Blueprints-To-Code Conversions:
 Core Gameplay:
 * Fix Avatars not setting tiles to be occupied and unoccupied.
 * Implement the ability to summon more than one Avatar at a time.
-* Allow players to move the camera (along a 2D plane?).
 * Avatars need maximum move points per turn.
 * Fix the broken AvatarData widgets attached to Avatars.
 
@@ -27,6 +27,7 @@ Core Gameplay:
 Menus:
 * Allow players to build teams in the Profile screen.
 * Add ‘Currently Loaded Profile’ to Main Menu and Profile Select Screen.
+* Fix player profiles not loading when selected in the Profile Selected Screen.
 
 
 Multiplayer:
