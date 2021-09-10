@@ -27,7 +27,7 @@ Core Gameplay:
 Menus:
 * Allow players to build teams in the Profile screen.
 * Add ‘Currently Loaded Profile’ to Main Menu and Profile Select Screen.
-* Fix player profiles not loading when selected in the Profile Selected Screen.
+* Create Options menus.
 
 
 Multiplayer:
