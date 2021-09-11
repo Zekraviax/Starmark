@@ -32,11 +32,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidgetComponent_LobbyPlayerVals* LobbyPlayerVals_Reference;
 
-// ------------------------- Lobby
-
-
 // Functions
 // --------------------------------------------------
+
+// ------------------------- Lobby
+	virtual void OnRep_PlayerState() override;
 
 // ------------------------- Widgets
 	UFUNCTION(BlueprintCallable, Client, Reliable)
