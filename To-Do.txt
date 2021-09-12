@@ -49,3 +49,4 @@ Other:
 * Fix TEnumAsByte compiler warning.
 * Remove pathfinding draws.
 * Re-add type calculator and mark calculator as options on the main menu.
+* Blacklist the name ‘Default’ from profiles.

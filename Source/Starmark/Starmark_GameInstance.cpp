@@ -6,6 +6,7 @@
 #include "OnlineSessionSettings.h"
 #include "SaveData_PlayerProfilesList.h"
 #include "WidgetBlueprintLibrary.h"
+#include "WidgetComponent_FoundServer.h"
 #include "Widget_ServerBrowser.h"
 
 
@@ -42,7 +43,7 @@ void UStarmark_GameInstance::LoadProfile(FString ProfileName)
 }
 
 
-bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers)
+bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers, FString CustomLobbyName)
 {
 	// Get the Online Subsystem to work with
 	IOnlineSubsystem* const OnlineSub = IOnlineSubsystem::Get();
@@ -74,14 +75,16 @@ bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, 
 
 			SessionSettings->Set(SETTING_MAPNAME, FString("NewMap"), EOnlineDataAdvertisementType::ViaOnlineService);
 
+			// Add custom SessionDisplayName setting
+			FString Name = CustomLobbyName;
+			SessionSettings->Set(TEXT("CustomLobbyDisplayName"), Name, EOnlineDataAdvertisementType::ViaOnlineService);
+			//FOnlineSessionSetting CustomSessionDisplayName;
+			//CustomSessionDisplayName.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
+			//CustomSessionDisplayName.Data = "Custom Session Display Name";
+			//SessionSettings->Settings.Add(FName("SESSION_NAME"), CustomSessionDisplayName);
+
 			// Set the delegate to the Handle of the SessionInterface
 			OnCreateSessionCompleteDelegateHandle = Sessions->AddOnCreateSessionCompleteDelegate_Handle(OnCreateSessionCompleteDelegate);
-
-			// Add custom SessionDisplayName setting
-			FOnlineSessionSetting CustomSessionDisplayName;
-			CustomSessionDisplayName.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
-			CustomSessionDisplayName.Data = "Custom Session Display Name";
-			SessionSettings->Settings.Add(FName("SESSION_NAME"), CustomSessionDisplayName);
 
 			// Our delegate should get called when this is complete (doesn't need to be successful!)
 			return Sessions->CreateSession(*UserId, SessionName, *SessionSettings);
@@ -98,7 +101,7 @@ bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, 
 
 void UStarmark_GameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnCreateSessionComplete %s, %d"), *SessionName.ToString(), bWasSuccessful));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnCreateSessionComplete %s, %d"), *SessionName.ToString(), bWasSuccessful));
 
 	// Get the OnlineSubsystem so we can get the Session Interface
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
@@ -127,7 +130,7 @@ void UStarmark_GameInstance::OnCreateSessionComplete(FName SessionName, bool bWa
 
 void UStarmark_GameInstance::OnStartOnlineGameComplete(FName SessionName, bool bWasSuccessful)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnStartSessionComplete %s, %d"), *SessionName.ToString(), bWasSuccessful));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnStartSessionComplete %s, %d"), *SessionName.ToString(), bWasSuccessful));
 
 	// Get the Online Subsystem so we can get the Session Interface
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
@@ -196,7 +199,7 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 
 void UStarmark_GameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OFindSessionsComplete bSuccess: %d"), bWasSuccessful));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OFindSessionsComplete bSuccess: %d"), bWasSuccessful));
 
 	// Get OnlineSubsystem we want to work with
 	IOnlineSubsystem* const OnlineSub = IOnlineSubsystem::Get();
@@ -210,21 +213,22 @@ void UStarmark_GameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 			Sessions->ClearOnFindSessionsCompleteDelegate_Handle(OnFindSessionsCompleteDelegateHandle);
 
 			// Just debugging the Number of Search results. Can be displayed in UMG or something later on
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Num Search Results: %d"), SessionSearch->SearchResults.Num()));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Num Search Results: %d"), SessionSearch->SearchResults.Num()));
 
 			// If we have found at least 1 session, we just going to debug them. You could add them to a list of UMG Widgets, like it is done in the BP version!
 			if (SessionSearch->SearchResults.Num() > 0)
 			{
+				FString ServerName;
+
 				// "SessionSearch->SearchResults" is an Array that contains all the information. You can access the Session in this and get a lot of information.
 				// This can be customized later on with your own classes to add more information that can be set and displayed
 				for (int32 SearchIdx = 0; SearchIdx < SessionSearch->SearchResults.Num(); SearchIdx++)
 				{
 					// OwningUserName is just the SessionName for now. I guess you can create your own Host Settings class and GameSession Class and add a proper GameServer Name here.
 					// This is something you can't do in Blueprint for example!
-					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Session Number: %d | Session Name: %s "), SearchIdx + 1, *(SessionSearch->SearchResults[SearchIdx].Session.OwningUserName)));
+					//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Session Number: %d | Session Name: %s "), SearchIdx + 1, *(SessionSearch->SearchResults[SearchIdx].Session.OwningUserName)));
 
-					FString ServerName;
-					SessionSearch->SearchResults[SearchIdx].Session.SessionSettings.Get("SESSION_NAME", ServerName);
+					SessionSearch->SearchResults[SearchIdx].Session.SessionSettings.Get("CustomLobbyDisplayName", ServerName);
 				}
 
 				// If there are any ServerBrowser widgets, call the FinishedFindingSessions function
@@ -232,6 +236,10 @@ void UStarmark_GameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 				UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundServerBrowserWidgets, UWidget_ServerBrowser::StaticClass(), true);
 				for (int i = 0; i < FoundServerBrowserWidgets.Num(); i++) {
 					Cast<UWidget_ServerBrowser>(FoundServerBrowserWidgets[i])->FinishedFindingSessions();
+
+					for (int j = 0; j < SessionSearch->SearchResults.Num(); j++) {
+						Cast<UWidget_ServerBrowser>(FoundServerBrowserWidgets[i])->PopulateServerBrowserList();
+					}
 				}
 			}
 		}
@@ -329,13 +337,13 @@ void UStarmark_GameInstance::OnDestroySessionComplete(FName SessionName, bool bW
 }
 
 
-void UStarmark_GameInstance::StartOnlineGame()
+void UStarmark_GameInstance::StartOnlineGame(FString CustomLobbyName)
 {
 	// Creating a local player where we can get the UserID from
 	ULocalPlayer* const Player = GetFirstGamePlayer();
 
 	// Call our custom HostSession function. GameSessionName is a GameInstance variable
-	HostSession(Player->GetPreferredUniqueNetId().GetUniqueNetId(), GameSessionName, true, true, 4);
+	HostSession(Player->GetPreferredUniqueNetId().GetUniqueNetId(), GameSessionName, true, true, 4, CustomLobbyName);
 }
 
 

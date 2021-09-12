@@ -67,7 +67,7 @@ public:
 	*   @Param		bIsPresence		"Is the Session to create a presence Session"
 	*	@Param		MaxNumPlayers	        Number of Maximum allowed players on this "Session" (Server)
 	*/
-	bool HostSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers);
+	bool HostSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers, FString CustomLobbyName);
 
 	/*
 	*	Function fired when a session create request has completed
@@ -149,7 +149,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Network|Test")
-	void StartOnlineGame();
+	void StartOnlineGame(FString CustomLobbyName);
 
 	UFUNCTION(BlueprintCallable, Category = "Network|Test")
 	void FindOnlineGames();

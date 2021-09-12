@@ -28,14 +28,22 @@ void UWidget_ServerBrowser::PopulateServerBrowserList()
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Sessions: %d"), GameInstanceReference->SessionSearch->SearchResults.Num()));
 
 	if (GameInstanceReference->SessionSearch->SearchResults.Num() > 0) {
+		FString ServerName;
+
 		for (int i = 0; i < GameInstanceReference->SessionSearch->SearchResults.Num(); i++) {
-			FoundServerWidgetComponent_Reference = CreateWidget<UWidgetComponent_FoundServer>(this, FoundServerWidgetComponent_Class);
+			FoundServerWidgetComponent_Reference = CreateWidget<UWidgetComponent_FoundServer>(GetWorld(), FoundServerWidgetComponent_Class);
 
 			FoundServerWidgetComponent_Reference->Session = GameInstanceReference->SessionSearch->SearchResults[i];
 			FoundServerWidgetComponent_Reference->UserId = GameInstanceReference->SessionSearch->SearchResults[i].Session.OwningUserId;
 			FoundServerWidgetComponent_Reference->SessionName = FName(*GameInstanceReference->SessionSearch->SearchResults[i].Session.OwningUserName);
 
+			GameInstanceReference->SessionSearch->SearchResults[i].Session.SessionSettings.Get("CustomLobbyDisplayName", ServerName);
+
+			FoundServerWidgetComponent_Reference->CustomLobbyName = ServerName;
+			FoundServerWidgetComponent_Reference->ServerNameText->SetText(FText::FromString(ServerName));
+
 			FoundServersScrollBox->AddChild(FoundServerWidgetComponent_Reference);
+			FoundServerWidgetComponent_Reference->SetLobbyName();
 		}
 	}
 }
