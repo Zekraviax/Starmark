@@ -1,48 +1,29 @@
-#include "Starmark_GameInstance.h"
+#include "Starmark_NetworkGameInstance.h"
 
 #include "Engine/LocalPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
-#include "SaveData_PlayerProfilesList.h"
-#include "WidgetBlueprintLibrary.h"
-#include "Widget_ServerBrowser.h"
 
 
-UStarmark_GameInstance::UStarmark_GameInstance(const FObjectInitializer& ObjectInitializer)
+UStarmark_NetworkGameInstance::UStarmark_NetworkGameInstance(const FObjectInitializer& ObjectInitializer)
 {
 	/** Bind function for CREATING a Session */
-	OnCreateSessionCompleteDelegate = FOnCreateSessionCompleteDelegate::CreateUObject(this, &UStarmark_GameInstance::OnCreateSessionComplete);
-	OnStartSessionCompleteDelegate = FOnStartSessionCompleteDelegate::CreateUObject(this, &UStarmark_GameInstance::OnStartOnlineGameComplete);
+	OnCreateSessionCompleteDelegate = FOnCreateSessionCompleteDelegate::CreateUObject(this, &UStarmark_NetworkGameInstance::OnCreateSessionComplete);
+	OnStartSessionCompleteDelegate = FOnStartSessionCompleteDelegate::CreateUObject(this, &UStarmark_NetworkGameInstance::OnStartOnlineGameComplete);
 
 	/** Bind function for FINDING a Session */
-	OnFindSessionsCompleteDelegate = FOnFindSessionsCompleteDelegate::CreateUObject(this, &UStarmark_GameInstance::OnFindSessionsComplete);
+	OnFindSessionsCompleteDelegate = FOnFindSessionsCompleteDelegate::CreateUObject(this, &UStarmark_NetworkGameInstance::OnFindSessionsComplete);
 
 	/** Bind function for JOINING a Session */
-	OnJoinSessionCompleteDelegate = FOnJoinSessionCompleteDelegate::CreateUObject(this, &UStarmark_GameInstance::OnJoinSessionComplete);
+	OnJoinSessionCompleteDelegate = FOnJoinSessionCompleteDelegate::CreateUObject(this, &UStarmark_NetworkGameInstance::OnJoinSessionComplete);
 
 	/** Bind function for DESTROYING a Session */
-	OnDestroySessionCompleteDelegate = FOnDestroySessionCompleteDelegate::CreateUObject(this, &UStarmark_GameInstance::OnDestroySessionComplete);
+	OnDestroySessionCompleteDelegate = FOnDestroySessionCompleteDelegate::CreateUObject(this, &UStarmark_NetworkGameInstance::OnDestroySessionComplete);
 }
 
 
-// ------------------------- Player
-void UStarmark_GameInstance::LoadProfile(FString ProfileName)
-{
-	USaveData_PlayerProfilesList* SaveGameObject = Cast<USaveData_PlayerProfilesList>(UGameplayStatics::LoadGameFromSlot("PlayerProfilesList", 0));
-
-	for (int i = 0; i < SaveGameObject->PlayerProfileNames.Num(); i++) {
-		if (SaveGameObject->PlayerProfileNames[i] == ProfileName) {
-			PlayerName = ProfileName;
-			CurrentProfileName = ProfileName;
-
-			CurrentProfileReference = Cast<UPlayer_SaveData>(UGameplayStatics::LoadGameFromSlot(ProfileName, 0));
-		}
-	}
-}
-
-
-bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers)
+bool UStarmark_NetworkGameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers)
 {
 	// Get the Online Subsystem to work with
 	IOnlineSubsystem* const OnlineSub = IOnlineSubsystem::Get();
@@ -54,9 +35,9 @@ bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, 
 
 		if (Sessions.IsValid() && UserId.IsValid())
 		{
-			/*
+			/* 
 			Fill in all the Session Settings that we want to use.
-
+				
 			There are more with SessionSettings.Set(...);
 			For example the Map or the GameMode/Type.
 			*/
@@ -77,12 +58,6 @@ bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, 
 			// Set the delegate to the Handle of the SessionInterface
 			OnCreateSessionCompleteDelegateHandle = Sessions->AddOnCreateSessionCompleteDelegate_Handle(OnCreateSessionCompleteDelegate);
 
-			// Add custom SessionDisplayName setting
-			FOnlineSessionSetting CustomSessionDisplayName;
-			CustomSessionDisplayName.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
-			CustomSessionDisplayName.Data = "Custom Session Display Name";
-			SessionSettings->Settings.Add(FName("SESSION_NAME"), CustomSessionDisplayName);
-
 			// Our delegate should get called when this is complete (doesn't need to be successful!)
 			return Sessions->CreateSession(*UserId, SessionName, *SessionSettings);
 		}
@@ -96,7 +71,7 @@ bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, 
 }
 
 
-void UStarmark_GameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
+void UStarmark_NetworkGameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnCreateSessionComplete %s, %d"), *SessionName.ToString(), bWasSuccessful));
 
@@ -125,7 +100,7 @@ void UStarmark_GameInstance::OnCreateSessionComplete(FName SessionName, bool bWa
 }
 
 
-void UStarmark_GameInstance::OnStartOnlineGameComplete(FName SessionName, bool bWasSuccessful)
+void UStarmark_NetworkGameInstance::OnStartOnlineGameComplete(FName SessionName, bool bWasSuccessful)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnStartSessionComplete %s, %d"), *SessionName.ToString(), bWasSuccessful));
 
@@ -145,12 +120,12 @@ void UStarmark_GameInstance::OnStartOnlineGameComplete(FName SessionName, bool b
 	// If the start was successful, we can open a NewMap if we want. Make sure to use "listen" as a parameter!
 	if (bWasSuccessful)
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), "MultiplayerLobby", true, "listen");
+		UGameplayStatics::OpenLevel(GetWorld(), "NewMap", true, "listen");
 	}
 }
 
 
-void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId, bool bIsLAN, bool bIsPresence)
+void UStarmark_NetworkGameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId, bool bIsLAN, bool bIsPresence)
 {
 	// Get the OnlineSubsystem we want to work with
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
@@ -163,7 +138,7 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 		if (Sessions.IsValid() && UserId.IsValid())
 		{
 			/*
-			Fill in all the SearchSettings, like if we are searching for a LAN game and how many results we want to have!
+				Fill in all the SearchSettings, like if we are searching for a LAN game and how many results we want to have!
 			*/
 			SessionSearch = MakeShareable(new FOnlineSessionSearch());
 
@@ -194,7 +169,7 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 }
 
 
-void UStarmark_GameInstance::OnFindSessionsComplete(bool bWasSuccessful)
+void UStarmark_NetworkGameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OFindSessionsComplete bSuccess: %d"), bWasSuccessful));
 
@@ -221,17 +196,7 @@ void UStarmark_GameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 				{
 					// OwningUserName is just the SessionName for now. I guess you can create your own Host Settings class and GameSession Class and add a proper GameServer Name here.
 					// This is something you can't do in Blueprint for example!
-					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Session Number: %d | Session Name: %s "), SearchIdx + 1, *(SessionSearch->SearchResults[SearchIdx].Session.OwningUserName)));
-
-					FString ServerName;
-					SessionSearch->SearchResults[SearchIdx].Session.SessionSettings.Get("SESSION_NAME", ServerName);
-				}
-
-				// If there are any ServerBrowser widgets, call the FinishedFindingSessions function
-				TArray<UUserWidget*> FoundServerBrowserWidgets;
-				UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundServerBrowserWidgets, UWidget_ServerBrowser::StaticClass(), true);
-				for (int i = 0; i < FoundServerBrowserWidgets.Num(); i++) {
-					Cast<UWidget_ServerBrowser>(FoundServerBrowserWidgets[i])->FinishedFindingSessions();
+					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Session Number: %d | Sessionname: %s "), SearchIdx + 1, *(SessionSearch->SearchResults[SearchIdx].Session.OwningUserName)));
 				}
 			}
 		}
@@ -239,7 +204,7 @@ void UStarmark_GameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 }
 
 
-bool UStarmark_GameInstance::JoinSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, const FOnlineSessionSearchResult & SearchResult)
+bool UStarmark_NetworkGameInstance::JoinSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, const FOnlineSessionSearchResult & SearchResult)
 {
 	// Return bool
 	bool bSuccessful = false;
@@ -267,7 +232,7 @@ bool UStarmark_GameInstance::JoinSession(TSharedPtr<const FUniqueNetId> UserId, 
 }
 
 
-void UStarmark_GameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
+void UStarmark_NetworkGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnJoinSessionComplete %s, %d"), *SessionName.ToString(), static_cast<int32>(Result)));
 
@@ -303,7 +268,7 @@ void UStarmark_GameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSes
 }
 
 
-void UStarmark_GameInstance::OnDestroySessionComplete(FName SessionName, bool bWasSuccessful)
+void UStarmark_NetworkGameInstance::OnDestroySessionComplete(FName SessionName, bool bWasSuccessful)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnDestroySessionComplete %s, %d"), *SessionName.ToString(), bWasSuccessful));
 
@@ -329,17 +294,7 @@ void UStarmark_GameInstance::OnDestroySessionComplete(FName SessionName, bool bW
 }
 
 
-void UStarmark_GameInstance::StartOnlineGame()
-{
-	// Creating a local player where we can get the UserID from
-	ULocalPlayer* const Player = GetFirstGamePlayer();
-
-	// Call our custom HostSession function. GameSessionName is a GameInstance variable
-	HostSession(Player->GetPreferredUniqueNetId().GetUniqueNetId(), GameSessionName, true, true, 4);
-}
-
-
-void UStarmark_GameInstance::FindOnlineGames()
+void UStarmark_NetworkGameInstance::StartOnlineGame()
 {
 	ULocalPlayer* const Player = GetFirstGamePlayer();
 
@@ -347,7 +302,15 @@ void UStarmark_GameInstance::FindOnlineGames()
 }
 
 
-void UStarmark_GameInstance::JoinOnlineGame()
+void UStarmark_NetworkGameInstance::FindOnlineGames()
+{
+	ULocalPlayer* const Player = GetFirstGamePlayer();
+
+	FindSessions(Player->GetPreferredUniqueNetId().GetUniqueNetId(), true, true);
+}
+
+
+void UStarmark_NetworkGameInstance::JoinOnlineGame()
 {
 	ULocalPlayer* const Player = GetFirstGamePlayer();
 
@@ -375,7 +338,7 @@ void UStarmark_GameInstance::JoinOnlineGame()
 }
 
 
-void UStarmark_GameInstance::DestroySessionAndLeaveGame()
+void UStarmark_NetworkGameInstance::DestroySessionAndLeaveGame()
 {
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
 	if (OnlineSub)

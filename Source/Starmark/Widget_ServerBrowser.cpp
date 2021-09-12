@@ -1,5 +1,10 @@
 #include "Widget_ServerBrowser.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "OnlineSubsystem.h"
+#include "OnlineSessionSettings.h"
+#include "Starmark_GameInstance.h"
+#include "WidgetComponent_FoundServer.h"
 #include "Widget_MainMenu.h"
 
 
@@ -13,4 +18,30 @@ void UWidget_ServerBrowser::OnExitButtonPressed()
 		MainMenuWidget_Reference->AddToViewport();
 		this->RemoveFromParent();
 	}
+}
+
+
+void UWidget_ServerBrowser::PopulateServerBrowserList()
+{
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Sessions: %d"), GameInstanceReference->SessionSearch->SearchResults.Num()));
+
+	if (GameInstanceReference->SessionSearch->SearchResults.Num() > 0) {
+		for (int i = 0; i < GameInstanceReference->SessionSearch->SearchResults.Num(); i++) {
+			FoundServerWidgetComponent_Reference = CreateWidget<UWidgetComponent_FoundServer>(this, FoundServerWidgetComponent_Class);
+
+			FoundServerWidgetComponent_Reference->Session = GameInstanceReference->SessionSearch->SearchResults[i];
+			FoundServerWidgetComponent_Reference->UserId = GameInstanceReference->SessionSearch->SearchResults[i].Session.OwningUserId;
+			FoundServerWidgetComponent_Reference->SessionName = FName(*GameInstanceReference->SessionSearch->SearchResults[i].Session.OwningUserName);
+
+			FoundServersScrollBox->AddChild(FoundServerWidgetComponent_Reference);
+		}
+	}
+}
+
+
+void UWidget_ServerBrowser::FinishedFindingSessions_Implementation()
+{
+	// Implemented in blueprints
 }
