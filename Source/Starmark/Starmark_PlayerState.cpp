@@ -1,12 +1,12 @@
 #include "Starmark_PlayerState.h"
 
 
-#include "Widget_HUD_Battle.h"
 #include "Character_Pathfinder.h"
 #include "PlayerController_Base.h"
 #include "Player_SaveData.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_GameState.h"
+#include "Widget_HUD_Battle.h"
 
 
 AStarmark_PlayerState::AStarmark_PlayerState()
@@ -31,6 +31,11 @@ void AStarmark_PlayerState::UpdatePlayerData()
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	ReplicatedPlayerName = GameInstanceReference->PlayerName;
 	SetPlayerName(GameInstanceReference->PlayerName);
+
+	TeamSlotOne = GameInstanceReference->TeamSlotOne;
+	TeamSlotTwo = GameInstanceReference->TeamSlotTwo;
+	TeamSlotThree = GameInstanceReference->TeamSlotThree;
+	TeamSlotOne = GameInstanceReference->TeamSlotFour;
 
 	SendUpdateToMultiplayerLobby();
 }
@@ -59,8 +64,8 @@ void AStarmark_PlayerState::Server_UpdateReplicatedPlayerName_Implementation(con
 
 void AStarmark_PlayerState::PlayerState_BeginBattle_Implementation()
 {
-	FAvatar_Struct* DefaultAvatar = AvatarDataTable->FindRow<FAvatar_Struct>(TEXT("BalanceBoy"), "");
-	PlayerState_PlayerParty.Add(*DefaultAvatar);
+	FAvatar_Struct DefaultAvatar = TeamSlotOne;
+	PlayerState_PlayerParty.Add(DefaultAvatar);
 
 	// Retrieve player profile
 	UpdatePlayerData();
