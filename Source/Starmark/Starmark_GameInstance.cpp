@@ -282,7 +282,7 @@ bool UStarmark_GameInstance::JoinSession(TSharedPtr<const FUniqueNetId> UserId, 
 
 void UStarmark_GameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnJoinSessionComplete %s, %d"), *SessionName.ToString(), static_cast<int32>(Result)));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnJoinSessionComplete %s, %d"), *SessionName.ToString(), static_cast<int32>(Result)));
 
 	// Get the OnlineSubsystem we want to work with
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
