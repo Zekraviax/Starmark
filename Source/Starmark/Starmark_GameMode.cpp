@@ -35,9 +35,9 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 
 	PlayerControllerReferences.Add(NewPlayerController);
 
-// When all players have joined, begin running the functions needed to start the battle
-if (PlayerControllerReferences.Num() >= 2)
-Server_BeginMultiplayerBattle_Implementation();
+	// When all players have joined, begin running the functions needed to start the battle
+	if (PlayerControllerReferences.Num() >= 2)
+		Server_BeginMultiplayerBattle_Implementation();
 }
 
 
@@ -68,8 +68,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 	if (ReadyStatuses.Contains(false)) {
 		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady, 1.f, false);
-	}
-	else {
+	} else {
 		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 			Cast<AStarmark_GameState>(GetWorld()->GetGameState())->SetTurnOrder(PlayerControllerReferences);
 
@@ -103,11 +102,11 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	TArray<AActor*> FoundGridTiletActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTiletActors);
 
-	FVector Location = FoundGridTiletActors[FMath::RandRange(0, FoundGridTiletActors.Num() - 1)]->GetActorLocation();
+	FVector Location = FoundGridTiletActors[FMath::RandRange(0, FoundGridTiletActors.Num() - 1)]->GetActorLocation();	
 	Location.Z = 95;
 
 	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
-
+	
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 	NewAvatarActor->MultiplayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
 
@@ -130,11 +129,8 @@ void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 		if (CurrentlyActingAvatar == Avatars[i])
 			IsCurrentlyActing = true;
 
-		if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel()) {
-			FoundActor->AvatarBattleDataComponent_Reference->UpdateAvatarData(FoundActor->AvatarData);
+		if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel())
 			FoundActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
-		}
-
 
 		FoundActor->MultiplayerControllerUniqueID = FoundActor->PlayerControllerReference->MultiplayerUniqueID;
 

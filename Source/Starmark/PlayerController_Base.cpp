@@ -101,12 +101,6 @@ void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* 
 }
 
 
-void APlayerController_Base::UpdateAvatarBattleWidgetComponent_Implementation(ACharacter_Pathfinder* AvatarReference, FAvatar_Struct AvatarData)
-{
-	
-}
-
-
 // ------------------------- Avatar
 void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 {
@@ -137,7 +131,7 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 
 void APlayerController_Base::UpdateAvatarDecals_Implementation(ACharacter_Pathfinder* CurrentlyActingAvatar)
 {
-
+	//LocalUpdateAvatarsDecals(CurrentlyActingAvatar);
 }
 
 
@@ -149,7 +143,27 @@ void APlayerController_Base::Server_SetReadyToStartMultiplayerBattle_Implementat
 
 void APlayerController_Base::LocalUpdateAvatarsDecals(ACharacter_Pathfinder* CurrentlyActingAvatar)
 {
+	//TArray<AActor*> Avatars;
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
 
+	//for (int i = 0; i < Avatars.Num(); i++) {
+	//	ACharacter_Pathfinder* FoundActor = Cast<ACharacter_Pathfinder>(Avatars[i]);
+
+	//	if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel())
+	//		FoundActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
+
+	//	if (FoundActor->MultiplayerControllerUniqueID == MultiplayerUniqueID)
+	//		FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Green;
+	//	else
+	//		FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Red;
+
+	//	if (FoundActor == CurrentlyActingAvatar)
+	//		FoundActor->ActorSelected->SetVisibility(true);
+	//	else
+	//		FoundActor->ActorSelected->SetVisibility(false);
+
+	//	FoundActor->ActorSelectedDynamicMaterialColourUpdate();
+	//}
 }
 
 
@@ -207,7 +221,30 @@ void APlayerController_Base::GetAvatarUpdateFromServer_Implementation(ACharacter
 
 void APlayerController_Base::LocalAvatarUpdate(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing)
 {
+	TArray<AActor*> Avatars;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
 	ACharacter_Pathfinder* FoundActor = AvatarReference;
+
+	//for (int i = 0; i < Avatars.Num(); i++) {
+	//	FoundActor = Cast<ACharacter_Pathfinder>(Avatars[i]);
+
+	//	if (FoundActor != AvatarReference) 
+	//		FoundActor->ActorSelected->SetVisibility(false);
+	//	else 
+	//		FoundActor->ActorSelected->SetVisibility(true);
+
+	//	if (FoundActor->MultiplayerControllerUniqueID == MultiplayerUniqueID)
+	//		FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Green;
+	//	else
+	//		FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Red;
+
+	//	if (FoundActor == AvatarReference)
+	//		FoundActor->ActorSelected->SetVisibility(true);
+	//	else
+	//		FoundActor->ActorSelected->SetVisibility(false);
+
+	//	FoundActor->ActorSelectedDynamicMaterialColourUpdate();
+	//}
 
 	if (AvatarUniqueID == MultiplayerUniqueID)
 		FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Green;
@@ -215,7 +252,6 @@ void APlayerController_Base::LocalAvatarUpdate(ACharacter_Pathfinder* AvatarRefe
 		FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Red;
 
 	FoundActor->ActorSelected->SetVisibility(IsCurrentlyActing);
-	FoundActor->AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarReference->AvatarData);
 
 	FoundActor->ActorSelectedDynamicMaterialColourUpdate();
 }
