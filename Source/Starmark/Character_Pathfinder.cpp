@@ -51,6 +51,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	// AvatarBattleData WidgetComponent
 	AvatarBattleData_Component = CreateDefaultSubobject<UWidgetComponent>("AvatarBattleData_Component");
 	AvatarBattleData_Component->SetupAttachment(RootComponent);
+	//AvatarBattleData_Component->SetVisibility(false);
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -79,6 +80,7 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentKnownAttacks);
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentSelectedAttack);
 	DOREPLIFETIME(ACharacter_Pathfinder, IndexInPlayerParty);
+	DOREPLIFETIME(ACharacter_Pathfinder, AvatarBattleDataComponent_Reference);
 }
 
 
@@ -104,14 +106,14 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 	AvatarData.CurrentTileMoves = AvatarData.MaximumTileMoves;
 
 	// Create Avatar Battle Data WidgetComponent
-	if (AvatarBattleDataComponent_Class) {
-		AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
+	//if (AvatarBattleDataComponent_Class && !AvatarBattleDataComponent_Reference) {
+	//	AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
 
-		if (AvatarBattleDataComponent_Reference->IsValidLowLevel()) {
-			AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
-			AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
-		}
-	}
+	//	if (AvatarBattleDataComponent_Reference->IsValidLowLevel()) {
+	//		AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
+	//		AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
+	//	}
+	//}
 
 	//Add Simple Attacks First, then Other Attacks
 	if (AvatarData.SimpleAttacks.Num() > 0) {
@@ -122,9 +124,8 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 
 	if (AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0) {
 		for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
-			if (CurrentKnownAttacks.Num() < 4) {
+			if (CurrentKnownAttacks.Num() < 4)
 				CurrentKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
-			}
 		}
 	}
 
@@ -134,6 +135,7 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 	}
 
 	IndexInPlayerParty = 0;
+	//AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
 }
 
 
@@ -148,7 +150,7 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 		AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 		// Update widget only when the Avatar is hovered
-		AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
+		//AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
 	}
 }
 

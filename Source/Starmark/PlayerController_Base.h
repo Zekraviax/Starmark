@@ -98,15 +98,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData);
 
+	UFUNCTION(BlueprintCallable)
+	void UpdateAvatarBattleWidgetComponent();
+
 // ------------------------- Avatar
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void OnRepNotify_CurrentSelectedAvatar();
 
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void UpdateAvatarDecals(ACharacter_Pathfinder* CurrentlyActingAvatar);
-
-	UFUNCTION()
-	void LocalUpdateAvatarsDecals(ACharacter_Pathfinder* CurrentlyActingAvatar);
 
 // ------------------------- Battle
 	UFUNCTION(Server, Reliable)

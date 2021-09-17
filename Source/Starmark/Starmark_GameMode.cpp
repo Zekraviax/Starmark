@@ -107,8 +107,19 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 
 	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
 	
+	// MultiplayerUniqueID
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 	NewAvatarActor->MultiplayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
+
+	// AvatarBattleWidget Component
+	if (NewAvatarActor->AvatarBattleDataComponent_Class) {
+		NewAvatarActor->AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(NewAvatarActor->AvatarBattleData_Component->GetUserWidgetObject());
+
+		if (NewAvatarActor->AvatarBattleDataComponent_Reference->IsValidLowLevel()) {
+			NewAvatarActor->AvatarBattleDataComponent_Reference->UpdateAvatarData(NewAvatarActor->AvatarData);
+			NewAvatarActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
 
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 	PlayerController->OnRepNotify_CurrentSelectedAvatar();

@@ -25,7 +25,6 @@ void UWidgetComponent_AvatarBattleData::NativeTick(const FGeometry & MyGeometry,
 // ------------------------- Avatar
 void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinkedAvatar)
 {
-	LinkedAvatar = NewLinkedAvatar;
 
 	if (LinkedAvatar.Nickname != "" && LinkedAvatar.Nickname != LinkedAvatar.AvatarName)
 		NicknameText->SetText(FText::FromString(LinkedAvatar.Nickname));

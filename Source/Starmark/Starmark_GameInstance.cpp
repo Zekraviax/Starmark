@@ -83,10 +83,6 @@ bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, 
 			// Add custom SessionDisplayName setting
 			FString Name = CustomLobbyName;
 			SessionSettings->Set(TEXT("CustomLobbyDisplayName"), Name, EOnlineDataAdvertisementType::ViaOnlineService);
-			//FOnlineSessionSetting CustomSessionDisplayName;
-			//CustomSessionDisplayName.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
-			//CustomSessionDisplayName.Data = "Custom Session Display Name";
-			//SessionSettings->Settings.Add(FName("SESSION_NAME"), CustomSessionDisplayName);
 
 			// Set the delegate to the Handle of the SessionInterface
 			OnCreateSessionCompleteDelegateHandle = Sessions->AddOnCreateSessionCompleteDelegate_Handle(OnCreateSessionCompleteDelegate);
@@ -176,14 +172,12 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 			SessionSearch = MakeShareable(new FOnlineSessionSearch());
 
 			SessionSearch->bIsLanQuery = bIsLAN;
-			SessionSearch->MaxSearchResults = 20;
+			SessionSearch->MaxSearchResults = 10;
 			SessionSearch->PingBucketSize = 50;
 
 			// We only want to set this Query Setting if "bIsPresence" is true
 			if (bIsPresence)
-			{
 				SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, bIsPresence, EOnlineComparisonOp::Equals);
-			}
 
 			TSharedRef<FOnlineSessionSearch> SearchSettingsRef = SessionSearch.ToSharedRef();
 
@@ -282,7 +276,7 @@ bool UStarmark_GameInstance::JoinSession(TSharedPtr<const FUniqueNetId> UserId, 
 
 void UStarmark_GameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnJoinSessionComplete %s, %d"), *SessionName.ToString(), static_cast<int32>(Result)));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnJoinSessionComplete %s, %d"), *SessionName.ToString(), static_cast<int32>(Result)));
 
 	// Get the OnlineSubsystem we want to work with
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();

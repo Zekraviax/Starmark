@@ -209,17 +209,17 @@ struct STARMARK_API FAvatar_UltimateTypeChart : public FTableRowBase
 {
 	GENERATED_BODY()
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		EAvatar_Types Type;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAvatar_Types Type;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<EAvatar_Types> CombinationTypes;
+	TArray<EAvatar_Types> CombinationTypes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<EAvatar_Types> DoesMoreDamageToTypes;
+	TArray<EAvatar_Types> DoesMoreDamageToTypes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<EAvatar_Types> DoesLessDamageToTypes;
+	TArray<EAvatar_Types> DoesLessDamageToTypes;
 
 	FAvatar_UltimateTypeChart()
 	{
@@ -235,14 +235,14 @@ struct STARMARK_API FAvatar_CombinationTypes : public FTableRowBase
 {
 	GENERATED_BODY()
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		EAvatar_Types PrimaryType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAvatar_Types PrimaryType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		EAvatar_Types SecondaryType;
+	EAvatar_Types SecondaryType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		EAvatar_Types CombinationType;
+	EAvatar_Types CombinationType;
 
 	FAvatar_CombinationTypes()
 	{
@@ -276,26 +276,32 @@ struct STARMARK_API FAvatar_BaseStats
 {
 	GENERATED_BODY()
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int HealthPoints;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int HealthPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int ManaPoints;
+	int ManaPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int Attack;
+	int Attack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int Defence;
+	int Defence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int Speed;
+	int SpecialAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int Evade;
+	int SpecialDefence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int Power;
+	int Speed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Evade;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Power;
 
 	FAvatar_BaseStats()
 	{
@@ -303,6 +309,8 @@ struct STARMARK_API FAvatar_BaseStats
 		ManaPoints = 10;
 		Attack = 1;
 		Defence = 1;
+		SpecialAttack = 1;
+		SpecialDefence = 1;
 		Speed = 1;
 		Evade = 1;
 		Power = 1;

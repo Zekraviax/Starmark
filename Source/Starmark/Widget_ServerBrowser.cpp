@@ -25,7 +25,7 @@ void UWidget_ServerBrowser::PopulateServerBrowserList()
 {
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Sessions: %d"), GameInstanceReference->SessionSearch->SearchResults.Num()));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Sessions: %d"), GameInstanceReference->SessionSearch->SearchResults.Num()));
 
 	if (GameInstanceReference->SessionSearch->SearchResults.Num() > 0) {
 		FString ServerName;
