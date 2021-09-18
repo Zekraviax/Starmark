@@ -98,6 +98,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Base* PlayerController)
 {
+	FString ContextString;
 	FActorSpawnParameters SpawnInfo;
 	TArray<AActor*> FoundGridTiletActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTiletActors);
@@ -106,6 +107,12 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	Location.Z = 95;
 
 	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
+	NewAvatarActor->AvatarData = *AvatarDataTable->FindRow<FAvatar_Struct>(FName("ArcaneRoa"), ContextString);
+
+	// Avatar Stats
+	NewAvatarActor->AvatarData.CurrentHealthPoints = NewAvatarActor->AvatarData.BaseStats.HealthPoints;
+	NewAvatarActor->AvatarData.CurrentManaPoints = NewAvatarActor->AvatarData.BaseStats.ManaPoints;
+	NewAvatarActor->AvatarData.CurrentTileMoves = NewAvatarActor->AvatarData.MaximumTileMoves;
 	
 	// MultiplayerUniqueID
 	NewAvatarActor->PlayerControllerReference = PlayerController;
@@ -116,6 +123,7 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 		NewAvatarActor->AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(NewAvatarActor->AvatarBattleData_Component->GetUserWidgetObject());
 
 		if (NewAvatarActor->AvatarBattleDataComponent_Reference->IsValidLowLevel()) {
+			NewAvatarActor->AvatarBattleDataComponent_Reference->LinkedAvatar = NewAvatarActor->AvatarData;
 			NewAvatarActor->AvatarBattleDataComponent_Reference->UpdateAvatarData(NewAvatarActor->AvatarData);
 			NewAvatarActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 		}
