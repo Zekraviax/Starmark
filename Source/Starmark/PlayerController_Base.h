@@ -95,8 +95,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetVariables();
 
-	UFUNCTION(BlueprintCallable)
-	void SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData);
+	//UFUNCTION(BlueprintCallable)
+	//void SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData);
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateAvatarBattleWidgetComponent();

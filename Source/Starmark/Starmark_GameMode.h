@@ -23,6 +23,16 @@ public:
 // Variables
 // --------------------------------------------------
 
+// ------------------------- Avatar
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* AvatarDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* AvatarSimpleAttacksDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* AvatarComplexAttacksDataTable;
+
 // ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<APlayerController_Base*> PlayerControllerReferences;

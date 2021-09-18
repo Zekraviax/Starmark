@@ -84,10 +84,6 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 		GameStateReference->CurrentTurnOrderText = AssembledTurnOrderText;
 
-		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-			PlayerControllerReferences[i]->SetBattleWidgetVariables();
-		}
-
 		Server_UpdateAllAvatarDecals();
 
 		// Set first player to act
@@ -98,6 +94,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Base* PlayerController)
 {
+	FString ContextString;
 	FActorSpawnParameters SpawnInfo;
 	TArray<AActor*> FoundGridTiletActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTiletActors);
@@ -106,16 +103,39 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	Location.Z = 95;
 
 	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
+
+	// Avatar Data
+	NewAvatarActor->AvatarData = *AvatarDataTable->FindRow<FAvatar_Struct>(FName("ArcaneRoa"), ContextString);
+
+	// Avatar Stats
+	NewAvatarActor->AvatarData.CurrentHealthPoints = NewAvatarActor->AvatarData.BaseStats.HealthPoints;
+	NewAvatarActor->AvatarData.CurrentManaPoints = NewAvatarActor->AvatarData.BaseStats.ManaPoints;
+	NewAvatarActor->AvatarData.CurrentTileMoves = NewAvatarActor->AvatarData.MaximumTileMoves;
 	
 	// MultiplayerUniqueID
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 	NewAvatarActor->MultiplayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
+
+	// Avatar Attacks
+	if (NewAvatarActor->AvatarData.SimpleAttacks.Num() > 0) {
+		for (int i = 0; i < NewAvatarActor->AvatarData.SimpleAttacks.Num(); i++) {
+			NewAvatarActor->CurrentKnownAttacks.Add(*AvatarSimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(NewAvatarActor->AvatarData.SimpleAttacks[i].RowName, ContextString));
+		}
+	}
+
+	if (NewAvatarActor->AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0) {
+		for (int i = 0; i < NewAvatarActor->AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
+			if (NewAvatarActor->CurrentKnownAttacks.Num() < 4) 
+				NewAvatarActor->CurrentKnownAttacks.Add(*AvatarComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(NewAvatarActor->AvatarData.AttacksLearnedByBuyingWithEssence[i].RowName, ContextString));
+		}
+	}
 
 	// AvatarBattleWidget Component
 	if (NewAvatarActor->AvatarBattleDataComponent_Class) {
 		NewAvatarActor->AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(NewAvatarActor->AvatarBattleData_Component->GetUserWidgetObject());
 
 		if (NewAvatarActor->AvatarBattleDataComponent_Reference->IsValidLowLevel()) {
+			NewAvatarActor->AvatarBattleDataComponent_Reference->LinkedAvatar = NewAvatarActor->AvatarData;
 			NewAvatarActor->AvatarBattleDataComponent_Reference->UpdateAvatarData(NewAvatarActor->AvatarData);
 			NewAvatarActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 		}

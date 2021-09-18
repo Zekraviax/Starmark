@@ -54,8 +54,8 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	if (CurrentSelectedAvatar)
-		SetBattleWidgetAndLinkedAvatar(BattleWidgetReference, CurrentSelectedAvatar->AvatarData);
+	//if (CurrentSelectedAvatar)
+	//	SetBattleWidgetAndLinkedAvatar(BattleWidgetReference, CurrentSelectedAvatar->AvatarData);
 }
 
 
@@ -78,8 +78,12 @@ void APlayerController_Base::SetBattleWidgetVariables()
 	if (BattleWidgetReference->IsValidLowLevel()) {
 		BattleWidgetReference->PlayerControllerReference = this;
 
-		if (CurrentSelectedAvatar)
-			BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
+		if (CurrentSelectedAvatar) {
+			if (BattleWidgetReference->AvatarBattleDataWidget->IsValidLowLevel())
+				BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
+
+				BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
+		}
 
 		if (GameStateReference)
 			BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
@@ -87,18 +91,17 @@ void APlayerController_Base::SetBattleWidgetVariables()
 }
 
 
-void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData)
-{
-	if (NewBattleWidgetReference->IsValidLowLevel()) {
-		BattleWidgetReference = NewBattleWidgetReference;
-
-		SetBattleWidgetVariables();
-	}
-
-	if (BattleWidgetReference->IsValidLowLevel() && CurrentSelectedAvatar)
-		if (BattleWidgetReference->AvatarBattleDataWidget->IsValidLowLevel())
-			BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(NewAvatarData);
-}
+//void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData)
+//{
+//	if (NewBattleWidgetReference->IsValidLowLevel()) {
+//		BattleWidgetReference = NewBattleWidgetReference;
+//
+//	}
+//
+//	if (BattleWidgetReference->IsValidLowLevel() && CurrentSelectedAvatar)
+//		if (BattleWidgetReference->AvatarBattleDataWidget->IsValidLowLevel())
+//			BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(NewAvatarData);
+//}
 
 
 void APlayerController_Base::UpdateAvatarBattleWidgetComponent()
@@ -123,11 +126,12 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 		PlayerStateReference->PlayerState_BeginBattle();
 
 		// Widget initialization
-		if (BattleWidgetReference == NULL)
+		if (BattleWidgetReference == NULL) {
 			CreateBattleWidget();
+			SetBattleWidgetVariables();
+		}
 		
 		CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
-		//Server_UpdatePlayerControllerVariables();
 
 		// Avatar initialization
 		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(BattleWidgetReference);
