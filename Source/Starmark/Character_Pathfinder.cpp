@@ -80,7 +80,7 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentKnownAttacks);
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentSelectedAttack);
 	DOREPLIFETIME(ACharacter_Pathfinder, IndexInPlayerParty);
-	//DOREPLIFETIME(ACharacter_Pathfinder, AvatarBattleDataComponent_Reference);
+	DOREPLIFETIME(ACharacter_Pathfinder, AvatarBattleDataComponent_Reference);
 }
 
 
@@ -101,9 +101,9 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 	ActorLocationSnappedToGrid.Z = GetActorLocation().Z;
 	SetActorLocation(ActorLocationSnappedToGrid);
 
-	//AvatarData.CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
-	//AvatarData.CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
-	//AvatarData.CurrentTileMoves = AvatarData.MaximumTileMoves;
+	AvatarData.CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
+	AvatarData.CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
+	AvatarData.CurrentTileMoves = AvatarData.MaximumTileMoves;
 
 	// Create Avatar Battle Data WidgetComponent
 	//if (AvatarBattleDataComponent_Class && !AvatarBattleDataComponent_Reference) {
