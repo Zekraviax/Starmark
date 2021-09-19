@@ -49,7 +49,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	TSubclassOf<UWidgetComponent_AvatarBattleData> AvatarBattleDataComponent_Class;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataComponent_Reference;
 
 // ------------------------- Avatar
@@ -117,4 +117,11 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void ActorSelectedDynamicMaterialColourUpdate();
+
+// ------------------------- Multiplayer
+	//UFUNCTION(Client, Unreliable)
+	//void Client_GetAvatarBattleDataWidgetComponentReference(UWidgetComponent_AvatarBattleData* NewAvatarBattleDataComponent_Reference);
+
+	//UFUNCTION()
+	//void Local_GetAvatarBattleDataWidgetComponentReference(UWidgetComponent_AvatarBattleData* NewAvatarBattleDataComponent_Reference);
 };

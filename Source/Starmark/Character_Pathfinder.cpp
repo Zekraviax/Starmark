@@ -51,7 +51,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	// AvatarBattleData WidgetComponent
 	AvatarBattleData_Component = CreateDefaultSubobject<UWidgetComponent>("AvatarBattleData_Component");
 	AvatarBattleData_Component->SetupAttachment(RootComponent);
-	//AvatarBattleData_Component->SetVisibility(false);
+	AvatarBattleData_Component->SetVisibility(false);
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -80,7 +80,7 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentKnownAttacks);
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentSelectedAttack);
 	DOREPLIFETIME(ACharacter_Pathfinder, IndexInPlayerParty);
-	DOREPLIFETIME(ACharacter_Pathfinder, AvatarBattleDataComponent_Reference);
+	//DOREPLIFETIME(ACharacter_Pathfinder, AvatarBattleDataComponent_Reference);
 }
 
 
@@ -135,7 +135,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 	}
 
 	IndexInPlayerParty = 0;
-	//AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
 }
 
 
@@ -145,21 +144,20 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 	if (ActorSelected && ActorSelected_DynamicMaterial)
 		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
 
-	// Show AvatarBattleDataWidget
-	if (AvatarBattleDataComponent_Reference) {
-		AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (!AvatarBattleDataComponent_Reference)
+		AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
 
-		// Update widget only when the Avatar is hovered
-		//AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
-	}
+	//if (AvatarBattleDataComponent_Reference)
+	AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
+	AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
+
+	AvatarBattleData_Component->SetVisibility(true);
 }
 
 
 void ACharacter_Pathfinder::OnAvatarCursorOverEnd()
 {
-	// Hide AvatarBattleDataWidget
-	if (AvatarBattleDataComponent_Reference)
-		AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
+	AvatarBattleData_Component->SetVisibility(false);
 }
 
 
@@ -396,3 +394,25 @@ void ACharacter_Pathfinder::ActorSelectedDynamicMaterialColourUpdate_Implementat
 {
 	// Implemented in Blueprints
 }
+
+
+// ------------------------- Multiplayer
+//void ACharacter_Pathfinder::Client_GetAvatarBattleDataWidgetComponentReference_Implementation(UWidgetComponent_AvatarBattleData* NewAvatarBattleDataComponent_Reference)
+//{
+//	//AvatarBattleDataComponent_Reference = NewAvatarBattleDataComponent_Reference;
+//	//Local_GetAvatarBattleDataWidgetComponentReference(NewAvatarBattleDataComponent_Reference);
+//
+//	AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
+//
+//	AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
+//	AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
+//}
+//
+//void ACharacter_Pathfinder::Local_GetAvatarBattleDataWidgetComponentReference(UWidgetComponent_AvatarBattleData* NewAvatarBattleDataComponent_Reference)
+//{
+//	//AvatarBattleDataComponent_Reference = NewAvatarBattleDataComponent_Reference;
+//	AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
+//
+//	AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
+//	AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
+//}

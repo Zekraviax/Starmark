@@ -112,14 +112,11 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	NewAvatarActor->MultiplayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
 
 	// AvatarBattleWidget Component
-	if (NewAvatarActor->AvatarBattleDataComponent_Class) {
-		NewAvatarActor->AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(NewAvatarActor->AvatarBattleData_Component->GetUserWidgetObject());
+	//if (NewAvatarActor->AvatarBattleDataComponent_Class) {
+	//	UWidgetComponent_AvatarBattleData* NewAvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(NewAvatarActor->AvatarBattleData_Component->GetUserWidgetObject());
 
-		if (NewAvatarActor->AvatarBattleDataComponent_Reference->IsValidLowLevel()) {
-			NewAvatarActor->AvatarBattleDataComponent_Reference->UpdateAvatarData(NewAvatarActor->AvatarData);
-			NewAvatarActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
-		}
-	}
+	//	NewAvatarActor->Local_GetAvatarBattleDataWidgetComponentReference(NewAvatarBattleDataComponent_Reference);
+	//}
 
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 	PlayerController->OnRepNotify_CurrentSelectedAvatar();
@@ -140,8 +137,8 @@ void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 		if (CurrentlyActingAvatar == Avatars[i])
 			IsCurrentlyActing = true;
 
-		if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel())
-			FoundActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
+		//if (FoundActor->AvatarBattleDataComponent_Reference->IsValidLowLevel())
+		//	FoundActor->AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
 
 		FoundActor->MultiplayerControllerUniqueID = FoundActor->PlayerControllerReference->MultiplayerUniqueID;
 

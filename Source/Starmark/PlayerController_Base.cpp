@@ -216,6 +216,4 @@ void APlayerController_Base::LocalAvatarUpdate(ACharacter_Pathfinder* AvatarRefe
 
 	FoundActor->ActorSelected->SetVisibility(IsCurrentlyActing);
 	FoundActor->ActorSelectedDynamicMaterialColourUpdate();
-
-	//UpdateAvatarBattleWidgetComponent();
 }
