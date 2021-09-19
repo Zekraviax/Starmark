@@ -27,6 +27,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarDataTable;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* AvatarSimpleAttacksDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* AvatarComplexAttacksDataTable;
+
 // ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<APlayerController_Base*> PlayerControllerReferences;
@@ -36,6 +42,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ACharacter_Pathfinder> AvatarBlueprintClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* UltimateTypeChartDataTable;
 
 // ------------------------- Multiplayer
 	UPROPERTY()
@@ -60,8 +69,11 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_SpawnAvatar(APlayerController_Base* PlayerController);
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable)
 	void Server_UpdateAllAvatarDecals();
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void Server_LaunchAttack(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Target);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void EndOfBattle();

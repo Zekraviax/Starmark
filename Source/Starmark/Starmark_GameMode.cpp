@@ -1,10 +1,11 @@
 #include "Starmark_GameMode.h"
 
+#include "Actor_GridTile.h"
+#include "AttackEffects_FunctionLibrary.h"
 #include "Character_Pathfinder.h"
 #include "PlayerController_Base.h"
 #include "PlayerPawn_Static.h"
 #include "PlayerPawn_Flying.h"
-#include "Actor_GridTile.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
 #include "Widget_HUD_Battle.h"
@@ -119,6 +120,23 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 	NewAvatarActor->MultiplayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
 
+	//Add Simple Attacks First, then Complex Attacks
+	if (NewAvatarActor->AvatarData.SimpleAttacks.Num() > 0) {
+		for (int i = 0; i < NewAvatarActor->AvatarData.SimpleAttacks.Num(); i++) {
+			NewAvatarActor->CurrentKnownAttacks.Add(*AvatarSimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(NewAvatarActor->AvatarData.SimpleAttacks[i].RowName, ContextString));
+		}
+	}
+
+	if (NewAvatarActor->AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0) {
+		for (int i = 0; i < NewAvatarActor->AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
+			if (NewAvatarActor->CurrentKnownAttacks.Num() < 4)
+				NewAvatarActor->CurrentKnownAttacks.Add(*AvatarComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(NewAvatarActor->AvatarData.AttacksLearnedByBuyingWithEssence[i].RowName, ContextString));
+		}
+	}
+
+	// Sent data to Clients
+	NewAvatarActor->Client_GetAvatarData(NewAvatarActor->AvatarData);
+
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 	PlayerController->OnRepNotify_CurrentSelectedAvatar();
 }
@@ -141,10 +159,57 @@ void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 		FoundActor->MultiplayerControllerUniqueID = FoundActor->PlayerControllerReference->MultiplayerUniqueID;
 
 		for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
-			PlayerControllerReferences[j]->GetAvatarUpdateFromServer(FoundActor, FoundActor->MultiplayerControllerUniqueID, IsCurrentlyActing);
-			//PlayerControllerReferences[j]->Client_GetTurnOrderText(GameStateReference->CurrentTurnOrderText);
+			PlayerControllerReferences[j]->GetAvatarUpdateFromServer(FoundActor, FoundActor->MultiplayerControllerUniqueID, IsCurrentlyActing, true);
 		}
 	}
+}
+
+
+void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Target)
+{
+	FAvatar_UltimateTypeChart* MoveTypeChartRow;
+	FAvatar_UltimateTypeChart* TargetTypeChartRow;
+	FString ContextString, MoveTypeAsString, TargetTypeAsString;
+	int CurrentDamage = 1;
+
+	MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Attacker->CurrentSelectedAttack.Type).ToString();
+	TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
+
+	// Check for type advantage or disadvantage
+	MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
+	TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
+
+	// Attack Damage Formula
+	CurrentDamage = FMath::CeilToInt(Attacker->AvatarData.BaseStats.Attack * Attacker->CurrentSelectedAttack.BasePower);
+	CurrentDamage = FMath::CeilToInt(CurrentDamage / Target->AvatarData.BaseStats.Defence);
+	CurrentDamage = FMath::CeilToInt((Attacker->AvatarData.BaseStats.Power / 2) * CurrentDamage);
+	//CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
+
+	// Compare each Move type against the Target type
+	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
+		// 2x Damage
+		if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
+			CurrentDamage = CurrentDamage * 2;
+
+		// 0.5x Damage
+		else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
+			CurrentDamage = CurrentDamage / 2;
+	}
+
+	if (CurrentDamage < 1)
+		CurrentDamage = 1;
+
+	// Subtract Health
+	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(Attacker->PlayerControllerReference->PlayerState);
+	PlayerStateReference->Server_SubtractHealth_Implementation(Target, CurrentDamage);
+
+	// Apply move effects after the damage has been dealt
+	for (int i = 0; i < Attacker->CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
+		UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(Attacker->CurrentSelectedAttack.AttackEffectsOnTarget[i], Attacker, Target);
+	}
+
+	// Tell the server to update everyone
+	Server_UpdateAllAvatarDecals();
 }
 
 

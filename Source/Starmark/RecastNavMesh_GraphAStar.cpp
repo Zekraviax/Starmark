@@ -248,9 +248,9 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 
 					for (int k = Result.Path->GetPathPoints().Num() - 1; k >= 0; k--) {
 
-						if (Result.Path->GetPathPoints().IsValidIndex(k) && k == 0) {
-							DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 50), FColor::Blue, false, 2.5f);
-						}
+						//if (Result.Path->GetPathPoints().IsValidIndex(k) && k == 0) {
+						//	DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 50), FColor::Blue, false, 2.5f);
+						//}
 						//else if (Result.Path->GetPathPoints().IsValidIndex(k) && k < AvatarMovesRemaining) {
 						//	DrawDebugBox(Query.NavData->GetWorld(), Result.Path->GetPathPointLocation(k).Position, FVector(50.f, 50.f, 175.f), FColor::Green, false, 2.5f);
 						//	// Subtract One TileMove from the Avatar

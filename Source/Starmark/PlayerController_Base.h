@@ -129,8 +129,11 @@ public:
 
 // ------------------------- Multiplayer Battle
 	UFUNCTION(Client, Reliable)
-	void GetAvatarUpdateFromServer(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing);
+	void GetAvatarUpdateFromServer(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar);
 
 	UFUNCTION()
-	void LocalAvatarUpdate(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing);
+	void LocalAvatarUpdate(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar);
+
+	UFUNCTION(Server, Reliable)
+	void Client_SendLaunchAttackToServer(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Target);
 };

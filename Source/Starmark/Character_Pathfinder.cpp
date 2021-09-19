@@ -105,18 +105,18 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 	AvatarData.CurrentTileMoves = AvatarData.MaximumTileMoves;
 
 	//Add Simple Attacks First, then Other Attacks
-	if (AvatarData.SimpleAttacks.Num() > 0) {
-		for (int i = 0; i < AvatarData.SimpleAttacks.Num(); i++) {
-			CurrentKnownAttacks.Add(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
-		}
-	}
+	//if (AvatarData.SimpleAttacks.Num() > 0) {
+	//	for (int i = 0; i < AvatarData.SimpleAttacks.Num(); i++) {
+	//		CurrentKnownAttacks.Add(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
+	//	}
+	//}
 
-	if (AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0) {
-		for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
-			if (CurrentKnownAttacks.Num() < 4)
-				CurrentKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
-		}
-	}
+	//if (AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0) {
+	//	for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
+	//		if (CurrentKnownAttacks.Num() < 4)
+	//			CurrentKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
+	//	}
+	//}
 
 	// Set default selected attack
 	if (CurrentKnownAttacks.Num() > 0) {
@@ -305,43 +305,46 @@ void ACharacter_Pathfinder::ShowAttackRange()
 
 void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* Target)
 {
-	FAvatar_UltimateTypeChart* MoveTypeChartRow;
-	FAvatar_UltimateTypeChart* TargetTypeChartRow;
-	FString ContextString, MoveTypeAsString, TargetTypeAsString;
-	int CurrentDamage = 1;
+	//FAvatar_UltimateTypeChart* MoveTypeChartRow;
+	//FAvatar_UltimateTypeChart* TargetTypeChartRow;
+	//FString ContextString, MoveTypeAsString, TargetTypeAsString;
+	//int CurrentDamage = 1;
 
-	MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CurrentSelectedAttack.Type).ToString();
-	TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
+	//MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CurrentSelectedAttack.Type).ToString();
+	//TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
 
-	// Check for type advantage or disadvantage
-	MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
-	TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
+	//// Check for type advantage or disadvantage
+	//MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
+	//TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
 
-	// Attack Damage Formula
-	CurrentDamage = FMath::CeilToInt(AvatarData.BaseStats.Attack * CurrentSelectedAttack.BasePower);
-	CurrentDamage = FMath::CeilToInt(CurrentDamage / Target->AvatarData.BaseStats.Defence);
-	CurrentDamage = FMath::CeilToInt((AvatarData.BaseStats.Power / 2) * CurrentDamage);
-	CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
+	//// Attack Damage Formula
+	//CurrentDamage = FMath::CeilToInt(AvatarData.BaseStats.Attack * CurrentSelectedAttack.BasePower);
+	//CurrentDamage = FMath::CeilToInt(CurrentDamage / Target->AvatarData.BaseStats.Defence);
+	//CurrentDamage = FMath::CeilToInt((AvatarData.BaseStats.Power / 2) * CurrentDamage);
+	//CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
 
-	// Compare each Move type against the Target type
-	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
-		// 2x Damage
-		if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
-			CurrentDamage = CurrentDamage * 2;
+	//// Compare each Move type against the Target type
+	//for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
+	//	// 2x Damage
+	//	if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
+	//		CurrentDamage = CurrentDamage * 2;
 
-		// 0.5x Damage
-		else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
-			CurrentDamage = CurrentDamage / 2;
-	}
+	//	// 0.5x Damage
+	//	else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
+	//		CurrentDamage = CurrentDamage / 2;
+	//}
 
-	// Subtract Health
-	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerControllerReference->PlayerState);
-	PlayerStateReference->Server_SubtractHealth_Implementation(Target, CurrentDamage);
+	//// Subtract Health
+	//AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerControllerReference->PlayerState);
+	//PlayerStateReference->Server_SubtractHealth_Implementation(Target, CurrentDamage);
 
-	// Apply move effects after the damage has been dealt
-	for (int i = 0; i < CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
-		UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(CurrentSelectedAttack.AttackEffectsOnTarget[i], this, Target);
-	}
+	//// Apply move effects after the damage has been dealt
+	//for (int i = 0; i < CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
+	//	UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(CurrentSelectedAttack.AttackEffectsOnTarget[i], this, Target);
+	//}
+
+	// Tell the client to update the server
+	PlayerControllerReference->Client_SendLaunchAttackToServer(this, Target);
 }
 
 
@@ -385,22 +388,12 @@ void ACharacter_Pathfinder::ActorSelectedDynamicMaterialColourUpdate_Implementat
 
 
 // ------------------------- Multiplayer
-//void ACharacter_Pathfinder::Client_GetAvatarBattleDataWidgetComponentReference_Implementation(UWidgetComponent_AvatarBattleData* NewAvatarBattleDataComponent_Reference)
-//{
-//	//AvatarBattleDataComponent_Reference = NewAvatarBattleDataComponent_Reference;
-//	//Local_GetAvatarBattleDataWidgetComponentReference(NewAvatarBattleDataComponent_Reference);
-//
-//	AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
-//
-//	AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
-//	AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
-//}
-//
-//void ACharacter_Pathfinder::Local_GetAvatarBattleDataWidgetComponentReference(UWidgetComponent_AvatarBattleData* NewAvatarBattleDataComponent_Reference)
-//{
-//	//AvatarBattleDataComponent_Reference = NewAvatarBattleDataComponent_Reference;
-//	AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
-//
-//	AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
-//	AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
-//}
+void ACharacter_Pathfinder::Client_GetAvatarData_Implementation(FAvatar_Struct NewAvatarData)
+{
+	Local_GetAvatarData(NewAvatarData);
+}
+
+void ACharacter_Pathfinder::Local_GetAvatarData(FAvatar_Struct NewAvatarData)
+{
+	AvatarData = NewAvatarData;
+}

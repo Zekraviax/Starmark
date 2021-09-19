@@ -9,6 +9,7 @@
 #include "Engine/World.h"
 #include "Widget_HUD_Battle.h"
 #include "WidgetComponent_AvatarBattleData.h"
+#include "Starmark_GameMode.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
@@ -73,7 +74,9 @@ void APlayerController_Base::SetBattleWidgetVariables()
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
 	if (BattleWidgetReference->IsValidLowLevel()) {
-		BattleWidgetReference->PlayerControllerReference = this;
+
+		if (BattleWidgetReference->PlayerControllerReference != this)
+			BattleWidgetReference->PlayerControllerReference = this;
 
 		//if (CurrentSelectedAvatar) {
 		BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
@@ -81,19 +84,6 @@ void APlayerController_Base::SetBattleWidgetVariables()
 		//}
 	}
 }
-
-
-//void APlayerController_Base::UpdateAvatarBattleWidgetComponent()
-//{
-//	TArray<AActor*> Avatars;
-//	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
-//
-//	for (int i = 0; i < Avatars.Num(); i++) {
-//		ACharacter_Pathfinder* Avatar = Cast<ACharacter_Pathfinder>(Avatars[i]);
-//
-//		SetBattleWidgetVariables();
-//	}
-//}
 
 
 void APlayerController_Base::Client_GetTurnOrderText_Implementation(const FString& NewTurnOrderText)
@@ -116,16 +106,17 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 	// (Default) Player party initialization
 	if (PlayerStateReference) {
 		PlayerStateReference->PlayerState_BeginBattle();
-
-		// Widget initialization
-		if (BattleWidgetReference == NULL)
-			CreateBattleWidget();
 		
-		CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
-		//Server_UpdatePlayerControllerVariables();
+		//CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
 
 		// Avatar initialization
 		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(BattleWidgetReference);
+
+		// Widget initialization
+		if (BattleWidgetReference == NULL) {
+			CreateBattleWidget();
+			SetBattleWidgetVariables();
+		}
 
 		//
 		Server_SetReadyToStartMultiplayerBattle();
@@ -195,12 +186,13 @@ void APlayerController_Base::Server_UpdatePlayerControllerVariables_Implementati
 }
 
 
-void APlayerController_Base::GetAvatarUpdateFromServer_Implementation(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing)
+void APlayerController_Base::GetAvatarUpdateFromServer_Implementation(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar)
 {
-	LocalAvatarUpdate(AvatarReference, AvatarUniqueID, IsCurrentlyActing);
+	LocalAvatarUpdate(AvatarReference, AvatarUniqueID, IsCurrentlyActing, IsCurrentlSelectedAvatar);
 }
 
-void APlayerController_Base::LocalAvatarUpdate(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing)
+
+void APlayerController_Base::LocalAvatarUpdate(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar)
 {
 	ACharacter_Pathfinder* FoundActor = AvatarReference;
 
@@ -211,4 +203,12 @@ void APlayerController_Base::LocalAvatarUpdate(ACharacter_Pathfinder* AvatarRefe
 
 	FoundActor->ActorSelected->SetVisibility(IsCurrentlyActing);
 	FoundActor->ActorSelectedDynamicMaterialColourUpdate();
+
+	SetBattleWidgetVariables();
+}
+
+
+void APlayerController_Base::Client_SendLaunchAttackToServer_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Target)
+{
+	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_LaunchAttack(Attacker, Target);
 }

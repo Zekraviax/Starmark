@@ -106,7 +106,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ShowAttackRange();
 
-	UFUNCTION(BlueprintCallable, Server, Reliable)
+	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void LaunchAttack(ACharacter_Pathfinder* Target);
 
 	UFUNCTION(BlueprintCallable)
@@ -119,9 +119,9 @@ public:
 	void ActorSelectedDynamicMaterialColourUpdate();
 
 // ------------------------- Multiplayer
-	//UFUNCTION(Client, Unreliable)
-	//void Client_GetAvatarBattleDataWidgetComponentReference(UWidgetComponent_AvatarBattleData* NewAvatarBattleDataComponent_Reference);
+	UFUNCTION(Client, Unreliable)
+	void Client_GetAvatarData(FAvatar_Struct NewAvatarData);
 
-	//UFUNCTION()
-	//void Local_GetAvatarBattleDataWidgetComponentReference(UWidgetComponent_AvatarBattleData* NewAvatarBattleDataComponent_Reference);
+	UFUNCTION()
+	void Local_GetAvatarData(FAvatar_Struct NewAvatarData);
 };
