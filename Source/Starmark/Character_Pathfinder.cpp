@@ -80,7 +80,6 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentKnownAttacks);
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentSelectedAttack);
 	DOREPLIFETIME(ACharacter_Pathfinder, IndexInPlayerParty);
-	//DOREPLIFETIME(ACharacter_Pathfinder, AvatarBattleDataComponent_Reference);
 }
 
 
@@ -104,16 +103,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 	AvatarData.CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
 	AvatarData.CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
 	AvatarData.CurrentTileMoves = AvatarData.MaximumTileMoves;
-
-	// Create Avatar Battle Data WidgetComponent
-	//if (AvatarBattleDataComponent_Class && !AvatarBattleDataComponent_Reference) {
-	//	AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
-
-	//	if (AvatarBattleDataComponent_Reference->IsValidLowLevel()) {
-	//		AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
-	//		AvatarBattleDataComponent_Reference->SetVisibility(ESlateVisibility::Collapsed);
-	//	}
-	//}
 
 	//Add Simple Attacks First, then Other Attacks
 	if (AvatarData.SimpleAttacks.Num() > 0) {
@@ -147,7 +136,6 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 	if (!AvatarBattleDataComponent_Reference)
 		AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
 
-	//if (AvatarBattleDataComponent_Reference)
 	AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
 	AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
 

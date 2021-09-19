@@ -95,11 +95,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetVariables();
 
-	UFUNCTION(BlueprintCallable)
-	void SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData);
+	//UFUNCTION(BlueprintCallable)
+	//void UpdateAvatarBattleWidgetComponent();
 
-	UFUNCTION(BlueprintCallable)
-	void UpdateAvatarBattleWidgetComponent();
+	UFUNCTION(Client, Unreliable)
+	void Client_GetTurnOrderText(const FString& NewTurnOrderText);
+
+	UFUNCTION()
+	void Local_GetTurnOrderText(const FString& NewTurnOrderText);
 
 // ------------------------- Avatar
 	UFUNCTION(BlueprintCallable, Client, Reliable)

@@ -53,9 +53,6 @@ void APlayerController_Base::SetupInputComponent()
 void APlayerController_Base::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-
-	if (CurrentSelectedAvatar)
-		SetBattleWidgetAndLinkedAvatar(BattleWidgetReference, CurrentSelectedAvatar->AvatarData);
 }
 
 
@@ -78,38 +75,36 @@ void APlayerController_Base::SetBattleWidgetVariables()
 	if (BattleWidgetReference->IsValidLowLevel()) {
 		BattleWidgetReference->PlayerControllerReference = this;
 
-		if (CurrentSelectedAvatar)
-			BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
-
-		if (GameStateReference)
-			BattleWidgetReference->UpdateTurnOrderText(GameStateReference->CurrentTurnOrderText);
+		//if (CurrentSelectedAvatar) {
+		BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
+		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
+		//}
 	}
 }
 
 
-void APlayerController_Base::SetBattleWidgetAndLinkedAvatar(UWidget_HUD_Battle* NewBattleWidgetReference, FAvatar_Struct NewAvatarData)
+//void APlayerController_Base::UpdateAvatarBattleWidgetComponent()
+//{
+//	TArray<AActor*> Avatars;
+//	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
+//
+//	for (int i = 0; i < Avatars.Num(); i++) {
+//		ACharacter_Pathfinder* Avatar = Cast<ACharacter_Pathfinder>(Avatars[i]);
+//
+//		SetBattleWidgetVariables();
+//	}
+//}
+
+
+void APlayerController_Base::Client_GetTurnOrderText_Implementation(const FString& NewTurnOrderText)
 {
-	if (NewBattleWidgetReference->IsValidLowLevel()) {
-		BattleWidgetReference = NewBattleWidgetReference;
-
-		SetBattleWidgetVariables();
-	}
-
-	if (BattleWidgetReference->IsValidLowLevel() && CurrentSelectedAvatar)
-		if (BattleWidgetReference->AvatarBattleDataWidget->IsValidLowLevel())
-			BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(NewAvatarData);
+	Local_GetTurnOrderText(NewTurnOrderText);
 }
 
 
-void APlayerController_Base::UpdateAvatarBattleWidgetComponent()
+void APlayerController_Base::Local_GetTurnOrderText(const FString & NewTurnOrderText)
 {
-	TArray<AActor*> Avatars;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
-
-	for (int i = 0; i < Avatars.Num(); i++) {
-		ACharacter_Pathfinder* Avatar = Cast<ACharacter_Pathfinder>(Avatars[i]);
-		Avatar->AvatarBattleDataComponent_Reference->UpdateAvatarData(Avatar->AvatarData);
-	}
+	BattleWidgetReference->UpdateTurnOrderText(NewTurnOrderText);
 }
 
 

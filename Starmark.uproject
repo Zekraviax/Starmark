@@ -16,6 +16,12 @@
 			]
 		}
 	],
+	"Plugins": [
+		{
+			"Name": "OnlineFramework",
+			"Enabled": true
+		}
+	],
 	"TargetPlatforms": [
 		"WindowsNoEditor"
 	]
