@@ -305,44 +305,6 @@ void ACharacter_Pathfinder::ShowAttackRange()
 
 void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* Target)
 {
-	//FAvatar_UltimateTypeChart* MoveTypeChartRow;
-	//FAvatar_UltimateTypeChart* TargetTypeChartRow;
-	//FString ContextString, MoveTypeAsString, TargetTypeAsString;
-	//int CurrentDamage = 1;
-
-	//MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(CurrentSelectedAttack.Type).ToString();
-	//TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
-
-	//// Check for type advantage or disadvantage
-	//MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
-	//TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
-
-	//// Attack Damage Formula
-	//CurrentDamage = FMath::CeilToInt(AvatarData.BaseStats.Attack * CurrentSelectedAttack.BasePower);
-	//CurrentDamage = FMath::CeilToInt(CurrentDamage / Target->AvatarData.BaseStats.Defence);
-	//CurrentDamage = FMath::CeilToInt((AvatarData.BaseStats.Power / 2) * CurrentDamage);
-	//CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
-
-	//// Compare each Move type against the Target type
-	//for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
-	//	// 2x Damage
-	//	if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
-	//		CurrentDamage = CurrentDamage * 2;
-
-	//	// 0.5x Damage
-	//	else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
-	//		CurrentDamage = CurrentDamage / 2;
-	//}
-
-	//// Subtract Health
-	//AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerControllerReference->PlayerState);
-	//PlayerStateReference->Server_SubtractHealth_Implementation(Target, CurrentDamage);
-
-	//// Apply move effects after the damage has been dealt
-	//for (int i = 0; i < CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
-	//	UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(CurrentSelectedAttack.AttackEffectsOnTarget[i], this, Target);
-	//}
-
 	// Tell the client to update the server
 	PlayerControllerReference->Client_SendLaunchAttackToServer(this, Target);
 }
@@ -364,10 +326,10 @@ void ACharacter_Pathfinder::SetTilesOccupiedBySize()
 		SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, Start, End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
 
 		if (SuccessfulLineTrace) {
-			Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.AddUnique(E_GridTile_TraversalProperties::E_Occupied);
+			Cast<AActor_GridTile>(LineTraceResult.Actor)->Properties.AddUnique(E_GridTile_Properties::E_Occupied);
 
-			if (Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_None))
-				Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Remove(E_GridTile_TraversalProperties::E_None);
+			if (Cast<AActor_GridTile>(LineTraceResult.Actor)->Properties.Contains(E_GridTile_Properties::E_None))
+				Cast<AActor_GridTile>(LineTraceResult.Actor)->Properties.Remove(E_GridTile_Properties::E_None);
 		}
 	}
 }

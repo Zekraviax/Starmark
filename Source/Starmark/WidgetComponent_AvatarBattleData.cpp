@@ -25,14 +25,12 @@ void UWidgetComponent_AvatarBattleData::NativeTick(const FGeometry & MyGeometry,
 // ------------------------- Avatar
 void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinkedAvatar)
 {
-
 	if (LinkedAvatar.Nickname != "" && LinkedAvatar.Nickname != LinkedAvatar.AvatarName)
-		NicknameText->SetText(FText::FromString(LinkedAvatar.Nickname));
+		AvatarText->SetText(FText::FromString(LinkedAvatar.Nickname));
 	else
-		NicknameText->SetText(FText::FromString(""));
+		AvatarText->SetText(FText::FromString(LinkedAvatar.AvatarName));
 
-	TierText->SetText(FText::FromString(FString::FromInt(1)));
-	AvatarText->SetText(FText::FromString(LinkedAvatar.AvatarName));
+	//TierText->SetText(FText::FromString(FString::FromInt(1)));
 	TypesText->SetText(FText::FromString(UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar.PrimaryType).ToString()));
 
 	float Division = float(LinkedAvatar.CurrentHealthPoints) / float(LinkedAvatar.BaseStats.HealthPoints);

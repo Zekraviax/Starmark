@@ -8,6 +8,7 @@
 #include "PlayerPawn_Flying.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
+#include "Starmark_Variables.h"
 #include "Widget_HUD_Battle.h"
 #include "WidgetComponent_AvatarBattleData.h"
 
@@ -48,7 +49,11 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 	GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		Server_SpawnAvatar(PlayerControllerReferences[i]);
+		Server_SpawnAvatar(PlayerControllerReferences[i], 1);
+	}
+
+	// Only set the turn order once all Avatars are spawned
+	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		GameStateReference->SetTurnOrder(PlayerControllerReferences);
 	}
 
@@ -98,18 +103,33 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 }
 
 
-void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Base* PlayerController)
+void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Base* PlayerController, int IndexInPlayerParty)
 {
 	FString ContextString;
 	FActorSpawnParameters SpawnInfo;
-	TArray<AActor*> FoundGridTiletActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTiletActors);
+	TArray<AActor*> FoundGridTileActors, ValidMultiplayerSpawnTiles;
+	TArray<FName> AvatarRowNames;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTileActors);
 
-	FVector Location = FoundGridTiletActors[FMath::RandRange(0, FoundGridTiletActors.Num() - 1)]->GetActorLocation();	
+
+	// Find all tiles that can spawn avatars in multiplayer battles
+	for (int i = 0; i < FoundGridTileActors.Num(); i++) {
+		AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(FoundGridTileActors[i]);
+
+		if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_PlayerAvatarSpawn) &&
+			GridTileReference->AssignedMultiplayerUniqueID == PlayerController->MultiplayerUniqueID &&
+			GridTileReference->AvatarSlotNumber == IndexInPlayerParty) {
+			ValidMultiplayerSpawnTiles.Add(FoundGridTileActors[i]);
+		}
+	}
+
+	FVector Location = ValidMultiplayerSpawnTiles[0]->GetActorLocation();
 	Location.Z = 95;
 
 	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
-	NewAvatarActor->AvatarData = *AvatarDataTable->FindRow<FAvatar_Struct>(FName("ArcaneRoa"), ContextString);
+
+	AvatarRowNames = AvatarDataTable->GetRowNames();
+	NewAvatarActor->AvatarData = *AvatarDataTable->FindRow<FAvatar_Struct>(AvatarRowNames[FMath::RandRange(0, AvatarRowNames.Num() - 1)], ContextString);
 
 	// Avatar Stats
 	NewAvatarActor->AvatarData.CurrentHealthPoints = NewAvatarActor->AvatarData.BaseStats.HealthPoints;

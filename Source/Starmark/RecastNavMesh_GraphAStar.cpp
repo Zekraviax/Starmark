@@ -322,8 +322,8 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 					bool SuccessfulLineTrace = RecastNavMesh->GetWorld()->LineTraceSingleByObjectType(LineTraceResult, TileLocation, End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
 
 					if (SuccessfulLineTrace) {
-						if (Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Occupied) ||
-							Cast<AActor_GridTile>(LineTraceResult.Actor)->TraversalProperties.Contains(E_GridTile_TraversalProperties::E_Wall)) {
+						if (Cast<AActor_GridTile>(LineTraceResult.Actor)->Properties.Contains(E_GridTile_Properties::E_Occupied) ||
+							Cast<AActor_GridTile>(LineTraceResult.Actor)->Properties.Contains(E_GridTile_Properties::E_Wall)) {
 							Reachable = true;
 						}
 					}

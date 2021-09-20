@@ -35,8 +35,8 @@ void AActor_GridTile::Tick(float DeltaTime)
 // ------------------------- Battle
 void AActor_GridTile::UpdateGridTileState()
 {
-	// Clear TraversalProperties that aren't permanent (e.g. Occupied)
-	TraversalProperties.Remove(E_GridTile_TraversalProperties::E_Occupied);
+	// Clear TraversalProperties that aren't permanent (e.g. Occupied by an Avatar)
+	Properties.Remove(E_GridTile_Properties::E_Occupied);
 
 	// Line Trace for an Avatar occupying this tile
 	FHitResult LineTraceResult;
@@ -53,8 +53,8 @@ void AActor_GridTile::UpdateGridTileState()
 		Cast<ACharacter_Pathfinder>(LineTraceResult.Actor)->SetTilesOccupiedBySize();
 
 	// If the TraversalProperties array is empty, add the default Property
-	if (TraversalProperties.Num() <= 0)
-		TraversalProperties.AddUnique(E_GridTile_TraversalProperties::E_None);
+	if (Properties.Num() <= 0)
+		Properties.AddUnique(E_GridTile_Properties::E_None);
 }
 
 

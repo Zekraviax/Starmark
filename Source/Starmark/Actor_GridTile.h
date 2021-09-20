@@ -4,18 +4,10 @@
 #include "GameFramework/Actor.h"
 
 #include "Components/StaticMeshComponent.h"
+#include "Starmark_Variables.h"
 
 #include "Actor_GridTile.generated.h"
 
-
-// Unique Enums
-UENUM(BlueprintType)
-enum class E_GridTile_TraversalProperties : uint8
-{
-	E_None,
-	E_Wall,
-	E_Occupied,
-};
 
 
 UCLASS()
@@ -26,6 +18,7 @@ class STARMARK_API AActor_GridTile : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AActor_GridTile();
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -39,19 +32,26 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Floor;
 
 // ------------------------- Tile
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile")
-	TArray<E_GridTile_TraversalProperties> TraversalProperties;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<E_GridTile_Properties> Properties;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Tile")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UMaterialInstanceDynamic* DynamicMaterial;
 
 	// Occupying Actor
 	UPROPERTY()
 	AActor* OccupyingActor;
+
+// ------------------------- Multiplayer
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AssignedMultiplayerUniqueID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AvatarSlotNumber;
 
 // Functions
 // --------------------------------------------------

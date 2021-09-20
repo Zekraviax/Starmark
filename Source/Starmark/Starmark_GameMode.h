@@ -67,7 +67,7 @@ public:
 	void Server_MultiplayerBattleCheckAllPlayersReady();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void Server_SpawnAvatar(APlayerController_Base* PlayerController);
+	void Server_SpawnAvatar(APlayerController_Base* PlayerController, int IndexInPlayerParty);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable)
 	void Server_UpdateAllAvatarDecals();

@@ -115,6 +115,17 @@ enum class EHTileOrientationFlag : uint8
 };
 
 
+UENUM(BlueprintType)
+enum class E_GridTile_Properties : uint8
+{
+	E_None,
+	E_Wall,
+	E_Occupied,
+	E_PlayerAvatarSpawn,
+};
+
+
+
 //------------------------- Battle
 UENUM(BlueprintType)
 enum class EBattle_AttackPatterns : uint8
