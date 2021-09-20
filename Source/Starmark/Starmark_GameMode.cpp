@@ -49,7 +49,9 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 	GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		Server_SpawnAvatar(PlayerControllerReferences[i], 1);
+		for (int j = 1; j <= 4; j++) {
+			Server_SpawnAvatar(PlayerControllerReferences[i], j);
+		}
 	}
 
 	// Only set the turn order once all Avatars are spawned
@@ -85,7 +87,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 			if (PlayerStateReference)
 				AssembledTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.AvatarName + " / " + PlayerStateReference->GetPlayerName() + "\n");
 			else
-				AssembledTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.AvatarName + "\n");
+				AssembledTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.AvatarName + " / ?\n");
 		}
 
 		GameStateReference->CurrentTurnOrderText = AssembledTurnOrderText;

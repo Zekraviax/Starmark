@@ -42,6 +42,9 @@ public:
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void PlayerJoinedMultiplayerLobby();
 
+	UFUNCTION(BlueprintCallable, Client, Unreliable)
+	void Client_UpdatePlayersInLobby(const TArray<FString>& PlayerNames, const TArray<FString>& PlayerReadyStatuses, bool ClearCurrentPlayers);
+
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayersInLobby(TArray<FString> PlayerNames, TArray<FString> PlayerReadyStatuses, bool ClearCurrentPlayers);
 };

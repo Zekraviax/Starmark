@@ -33,7 +33,4 @@ public:
 // Functions
 // --------------------------------------------------
 
-// ------------------------- Player
-	//UFUNCTION(BlueprintCallable)
-	//void UpdatePlayerData(UPlayer_SaveData* PlayerProfile);
 };
