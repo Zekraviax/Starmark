@@ -78,10 +78,8 @@ void APlayerController_Base::SetBattleWidgetVariables()
 		if (BattleWidgetReference->PlayerControllerReference != this)
 			BattleWidgetReference->PlayerControllerReference = this;
 
-		//if (CurrentSelectedAvatar) {
 		BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
 		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
-		//}
 	}
 }
 
@@ -106,8 +104,6 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 	// (Default) Player party initialization
 	if (PlayerStateReference) {
 		PlayerStateReference->PlayerState_BeginBattle();
-		
-		//CurrentSelectedAvatar->AvatarData = PlayerStateReference->PlayerState_PlayerParty[0];
 
 		// Avatar initialization
 		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(BattleWidgetReference);
@@ -118,7 +114,6 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 			SetBattleWidgetVariables();
 		}
 
-		//
 		Server_SetReadyToStartMultiplayerBattle();
 	}
 	else {
@@ -201,7 +196,7 @@ void APlayerController_Base::LocalAvatarUpdate(ACharacter_Pathfinder* AvatarRefe
 	else
 		FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Red;
 
-	FoundActor->ActorSelected->SetVisibility(IsCurrentlyActing);
+	FoundActor->ActorSelectedPlane->SetVisibility(IsCurrentlyActing);
 	FoundActor->ActorSelectedDynamicMaterialColourUpdate();
 
 	SetBattleWidgetVariables();

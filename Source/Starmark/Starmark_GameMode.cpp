@@ -74,19 +74,21 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		ReadyStatuses.Add(PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle);
 	}
 
+	// Assemble turn order text
 	if (ReadyStatuses.Contains(false)) {
 		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady, 1.f, false);
 	} else {
-		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-			Cast<AStarmark_GameState>(GetWorld()->GetGameState())->SetTurnOrder(PlayerControllerReferences);
-
-			// Assemble turn order text
+		for (int i = 0; i < GameStateReference->AvatarTurnOrder.Num(); i++) {
 			AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->PlayerState);
-			PlayerStateReference->Client_UpdateReplicatedPlayerName();
 
-			if (PlayerStateReference)
-				AssembledTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.AvatarName + " / " + PlayerStateReference->GetPlayerName() + "\n");
-			else
+			if (PlayerStateReference) {
+				PlayerStateReference->Client_UpdateReplicatedPlayerName();
+
+				if (PlayerStateReference->ReplicatedPlayerName == "" || PlayerStateReference->ReplicatedPlayerName.Len() <= 0)
+					PlayerStateReference->ReplicatedPlayerName = ("Player " + FString::FromInt(GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->MultiplayerUniqueID));
+
+				AssembledTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.AvatarName + " / " + PlayerStateReference->ReplicatedPlayerName + "\n");
+			} else
 				AssembledTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.AvatarName + " / ?\n");
 		}
 

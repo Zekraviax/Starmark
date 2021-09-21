@@ -34,21 +34,23 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 
 	// Use Nested Loops to compare Avatars' Speeds.
 	for (int i = 0; i < FoundActors.Num(); i++) {
-		ACharacter_Pathfinder* AvatarReference = Cast<ACharacter_Pathfinder>(FoundActors[i]);
+		ACharacter_Pathfinder* CurrentAvatar = Cast<ACharacter_Pathfinder>(FoundActors[i]);
 
 		if (AvatarTurnOrder.Num() <= 0)
-			AvatarTurnOrder.Add(AvatarReference);
+			AvatarTurnOrder.Add(CurrentAvatar);
 		else {
 			for (int j = 0; j < AvatarTurnOrder.Num(); j++) {
-				if (Cast<ACharacter_Pathfinder>(FoundActors[i])->AvatarData.BaseStats.Speed >= AvatarTurnOrder[j]->AvatarData.BaseStats.Speed && 
-					!AvatarTurnOrder.Contains(AvatarReference)) {
-					AvatarTurnOrder.Insert(AvatarReference, j);
+				ACharacter_Pathfinder* AvatarInTurnOrder = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[j]);
+
+				if (CurrentAvatar->AvatarData.BaseStats.Speed >= AvatarInTurnOrder->AvatarData.BaseStats.Speed &&
+					!AvatarTurnOrder.Contains(CurrentAvatar)) {
+					AvatarTurnOrder.Insert(CurrentAvatar, j);
 					break;
 				}
 
 				// If we reach the end of the array and the Avatar isn't faster than any of the other Avatars, just add it at the end
-				if (j == AvatarTurnOrder.Num() - 1 && !AvatarTurnOrder.Contains(Cast<ACharacter_Pathfinder>(FoundActors[i])))
-					AvatarTurnOrder.Add(AvatarReference);
+				if (j == AvatarTurnOrder.Num() - 1 && !AvatarTurnOrder.Contains(CurrentAvatar))
+					AvatarTurnOrder.Add(CurrentAvatar);
 			}
 		}
 	}
@@ -59,12 +61,10 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 {
 	TArray<ACharacter_Pathfinder*> AvatarArray;
 	TArray<bool> IsPlayerActingArray;
-	APlayerController_Base* CurrentlyActingPlayer = nullptr;
-	ACharacter_Pathfinder* CurrentlyActingAvatar = nullptr;
 
 	CurrentAvatarTurnIndex++;
 
-	// Reset Round
+	// Reset Round if all Avatars have acted
 	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num())
 		CurrentAvatarTurnIndex = 0;
 
@@ -74,8 +74,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 		if (PlayerController) {
 			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
 				PlayerController->IsCurrentlyActingPlayer = true;
-				CurrentlyActingPlayer = PlayerController;
-				CurrentlyActingAvatar = CurrentlyActingPlayer->CurrentSelectedAvatar;
+				PlayerController->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
 			} else {
 				PlayerController->IsCurrentlyActingPlayer = false;
 			}

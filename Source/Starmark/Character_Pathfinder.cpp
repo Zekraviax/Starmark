@@ -48,6 +48,12 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	ActorSelected->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 	ActorSelected->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
 
+	// Actor Selected Plane
+	ActorSelectedPlane = CreateDefaultSubobject<UStaticMeshComponent>("ActorSelectedPlane");
+	ActorSelectedPlane->SetupAttachment(RootComponent);
+	ActorSelectedPlane->SetVisibility(true);
+	ActorSelectedPlane->SetHiddenInGame(false);
+
 	// AvatarBattleData WidgetComponent
 	AvatarBattleData_Component = CreateDefaultSubobject<UWidgetComponent>("AvatarBattleData_Component");
 	AvatarBattleData_Component->SetupAttachment(RootComponent);
@@ -67,6 +73,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	bNetUseOwnerRelevancy = true;
 	IndexInPlayerParty = -1;
 	ActorSelected->SetIsReplicated(true);
+	ActorSelectedPlane->SetIsReplicated(true);
 }
 
 
@@ -104,20 +111,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 	AvatarData.CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
 	AvatarData.CurrentTileMoves = AvatarData.MaximumTileMoves;
 
-	//Add Simple Attacks First, then Other Attacks
-	//if (AvatarData.SimpleAttacks.Num() > 0) {
-	//	for (int i = 0; i < AvatarData.SimpleAttacks.Num(); i++) {
-	//		CurrentKnownAttacks.Add(*AvatarData.SimpleAttacks[i].GetRow<FAvatar_AttackStruct>(ContextString));
-	//	}
-	//}
-
-	//if (AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0) {
-	//	for (int i = 0; i < AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
-	//		if (CurrentKnownAttacks.Num() < 4)
-	//			CurrentKnownAttacks.Add(*AvatarData.AttacksLearnedByBuyingWithEssence[i].GetRow<FAvatar_AttackStruct>(ContextString));
-	//	}
-	//}
-
 	// Set default selected attack
 	if (CurrentKnownAttacks.Num() > 0) {
 		CurrentSelectedAttack = CurrentKnownAttacks[0];
@@ -130,8 +123,8 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 // ------------------------- Cursor
 void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 {
-	if (ActorSelected && ActorSelected_DynamicMaterial)
-		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
+	if (ActorSelectedPlane)
+		ActorSelectedPlane->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
 
 	if (!AvatarBattleDataComponent_Reference)
 		AvatarBattleDataComponent_Reference = Cast<UWidgetComponent_AvatarBattleData>(AvatarBattleData_Component->GetUserWidgetObject());
@@ -154,16 +147,29 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 	if (!PlayerControllerReference)
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
-	if (ActorSelected) {
-		ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
+	//if (ActorSelected) {
+	//	ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
 
-		PlayerControllerReference->CurrentSelectedAvatar = this;
+	//	PlayerControllerReference->CurrentSelectedAvatar = this;
+
+	//	for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
+	//		ACharacter_Pathfinder* FoundActor = *Itr;
+
+	//		if (PlayerControllerReference->CurrentSelectedAvatar != FoundActor)
+	//			FoundActor->ActorSelected->SetVisibility(false);
+	//	}
+	//}
+
+	PlayerControllerReference->CurrentSelectedAvatar = this;
+
+	if (ActorSelectedPlane) {
+		ActorSelectedPlane->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
 
 		for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
 			ACharacter_Pathfinder* FoundActor = *Itr;
 
 			if (PlayerControllerReference->CurrentSelectedAvatar != FoundActor)
-				FoundActor->ActorSelected->SetVisibility(false);
+				FoundActor->ActorSelectedPlane->SetVisibility(false);
 		}
 	}
 }

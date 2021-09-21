@@ -11,8 +11,6 @@
 void APlayerController_Lobby::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-
-	//Cast<AStarmark_PlayerState>(this->PlayerState)->UpdatePlayerData();
 }
 
 
@@ -41,16 +39,11 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 	if (LobbyWidget_Reference->IsValidLowLevel())
 		LobbyWidget_Reference->GetAllPlayerProfiles();
 
-	//Cast<AStarmark_PlayerState>(this->PlayerState)->SendUpdateToMultiplayerLobby();
 }
 
 
 void APlayerController_Lobby::Client_UpdatePlayersInLobby_Implementation(const TArray<FString>& PlayerNames, const TArray<FString>& PlayerReadyStatuses, bool ClearCurrentPlayers)
 {
-	//for (int i = 0; i < PlayerNames.Num(); i++) {
-	//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player Name: %s"), *PlayerNames[i]));
-	//}
-
 	UpdatePlayersInLobby(PlayerNames, PlayerReadyStatuses, ClearCurrentPlayers);
 }
 

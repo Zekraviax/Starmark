@@ -37,6 +37,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UDecalComponent* ActorSelected;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* ActorSelectedPlane;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
 

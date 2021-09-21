@@ -19,9 +19,7 @@ Blueprints-To-Code Conversions:
 
 Core Gameplay:
 * Fix Avatars not setting tiles to be occupied and unoccupied.
-* Implement the ability to summon more than one Avatar at a time.
 * Avatars need maximum move points per turn.
-* Fix the broken AvatarData widgets attached to Avatars.
 
 
 Menus:
@@ -49,4 +47,4 @@ Other:
 * Fix TEnumAsByte compiler warning.
 * Remove pathfinding draws.
 * Re-add type calculator and mark calculator as options on the main menu.
-* Blacklist the name ‘Default’ from profiles.
+* Blacklist the name ‘Default’ from profiles (?)
