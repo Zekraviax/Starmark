@@ -7,11 +7,13 @@
 
 #include "WidgetComponent_PlayerProfile.generated.h"
 
+
 // Forward Declarations
 class UPlayer_SaveData;
 
+
 // Delegates
-//DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(UPlayer_SaveData*, );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerProfileLoaded);
 
 
 UCLASS()
@@ -19,12 +21,9 @@ class STARMARK_API UWidgetComponent_PlayerProfile : public UUserWidget
 {
 	GENERATED_BODY()
 
-// ------------------------- Delegate Parameters
-	UPROPERTY()
-	UPlayer_SaveData* PlayerProfileDelegate;
-
 
 public:
+
 // Variables
 // --------------------------------------------------
 
@@ -36,10 +35,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ProfileName;
 
+// ------------------------- Delegates
+	UPROPERTY()
+	FPlayerProfileLoaded OnPlayerProfileLoadedDelegate;
+
+
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Components
 	UFUNCTION(BlueprintCallable)
-	UPlayer_SaveData* OnSelectProfileButtonPressed();
+	void OnSelectProfileButtonPressed();
 };

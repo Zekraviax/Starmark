@@ -15,11 +15,14 @@ Blueprints-To-Code Conversions:
 * Widget_MainMenu_Child
 * Widget_ServerHost_Blueprint
 * Widget_ServerCreator_Blueprint
+* WidgetComponent_PlayerProfile
 
 
 Core Gameplay:
 * Fix Avatars not setting tiles to be occupied and unoccupied.
 * Avatars need maximum move points per turn.
+* Add the ability to summon and switch out Reserve Avatars.
+* Add a coin-flip/dice-roll when two Avatars are speed-tied.
 
 
 Menus:
@@ -33,8 +36,8 @@ Multiplayer:
 * Add cancel/exit buttons to the multiplayer search and lobby screens.
 * Allow hosts to designate other players as the host when in a multiplayer lobby (?).
 * Add a chat box to the server lobby.
-* Prevent players from readying if they don’t have a profile loaded.
-* Allow lobby hosts to set maximum player limits.
+* Prevent players from readying if they don’t have a profile/team loaded.
+* Allow lobby hosts to set a maximum player limit.
 
 
 Demo:
@@ -45,6 +48,7 @@ Demo:
 
 Other:
 * Fix TEnumAsByte compiler warning.
+* Fix GameInstance complier warnings.
 * Remove pathfinding draws.
 * Re-add type calculator and mark calculator as options on the main menu.
 * Blacklist the name ‘Default’ from profiles (?)

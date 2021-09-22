@@ -147,19 +147,6 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 	if (!PlayerControllerReference)
 		PlayerControllerReference = Cast<APlayerController_Base>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
-	//if (ActorSelected) {
-	//	ActorSelected->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
-
-	//	PlayerControllerReference->CurrentSelectedAvatar = this;
-
-	//	for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
-	//		ACharacter_Pathfinder* FoundActor = *Itr;
-
-	//		if (PlayerControllerReference->CurrentSelectedAvatar != FoundActor)
-	//			FoundActor->ActorSelected->SetVisibility(false);
-	//	}
-	//}
-
 	PlayerControllerReference->CurrentSelectedAvatar = this;
 
 	if (ActorSelectedPlane) {

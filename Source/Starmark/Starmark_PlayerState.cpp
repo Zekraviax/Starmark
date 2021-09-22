@@ -29,14 +29,11 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 void AStarmark_PlayerState::UpdatePlayerData()
 {
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
 	ReplicatedPlayerName = GameInstanceReference->PlayerName;
+	PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+
 	SetPlayerName(GameInstanceReference->PlayerName);
-
-	TeamSlotOne = GameInstanceReference->TeamSlotOne;
-	TeamSlotTwo = GameInstanceReference->TeamSlotTwo;
-	TeamSlotThree = GameInstanceReference->TeamSlotThree;
-	TeamSlotOne = GameInstanceReference->TeamSlotFour;
-
 	SendUpdateToMultiplayerLobby();
 }
 
@@ -64,8 +61,8 @@ void AStarmark_PlayerState::Server_UpdateReplicatedPlayerName_Implementation(con
 
 void AStarmark_PlayerState::PlayerState_BeginBattle_Implementation()
 {
-	FAvatar_Struct DefaultAvatar = TeamSlotOne;
-	PlayerState_PlayerParty.Add(DefaultAvatar);
+	//FAvatar_Struct DefaultAvatar = TeamSlotOne;
+	//PlayerState_PlayerParty.Add(DefaultAvatar);
 
 	// Retrieve player profile
 	UpdatePlayerData();

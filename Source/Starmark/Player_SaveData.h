@@ -18,18 +18,25 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Base
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	FString Name;
 
 	UPROPERTY()
-	FAvatar_Struct TeamSlotOne;
+	FString ProfileName;
 
-	UPROPERTY()
-	FAvatar_Struct TeamSlotTwo;
+	//UPROPERTY()
+	//FAvatar_Struct TeamSlotOne;
 
-	UPROPERTY()
-	FAvatar_Struct TeamSlotThree;
+	//UPROPERTY()
+	//FAvatar_Struct TeamSlotTwo;
 
+	//UPROPERTY()
+	//FAvatar_Struct TeamSlotThree;
+
+	//UPROPERTY()
+	//FAvatar_Struct TeamSlotFour;
+
+// ------------------------- Avatars
 	UPROPERTY()
-	FAvatar_Struct TeamSlotFour;
+	TArray<FAvatar_Struct> AvatarLibrary;
 };

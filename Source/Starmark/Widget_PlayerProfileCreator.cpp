@@ -6,7 +6,9 @@
 #include "Player_SaveData.h"
 #include "SaveData_PlayerProfilesList.h"
 #include "Starmark_GameInstance.h"
+#include "Starmark_PlayerState.h"
 #include "Starmark_Variables.h"
+#include "Widget_AvatarLibrary.h"
 #include "Widget_MainMenu.h"
 #include "WidgetComponent_PlayerProfile.h"
 
@@ -14,9 +16,10 @@
 // ------------------------- Widget
 void UWidget_PlayerProfileCreator::OnWidgetOpened()
 {
-	// Get the list of Player Profiles
+	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
 	ProfilesList = Cast<USaveData_PlayerProfilesList>(UGameplayStatics::LoadGameFromSlot("PlayerProfilesList", 0));
 
+	// Get the list of Player Profiles
 	if (!ProfilesList->IsValidLowLevel()) {
 		ProfilesList = Cast<USaveData_PlayerProfilesList>(UGameplayStatics::CreateSaveGameObject(USaveData_PlayerProfilesList::StaticClass()));
 		UGameplayStatics::SaveGameToSlot(ProfilesList, "PlayerProfilesList", 0);
@@ -32,9 +35,15 @@ void UWidget_PlayerProfileCreator::OnWidgetOpened()
 			PlayerProfileWidgetComponent_Reference->ProfileName = ProfilesList->PlayerProfileNames[i];
 			PlayerProfileWidgetComponent_Reference->ProfileNameText->SetText(FText::FromString(ProfilesList->PlayerProfileNames[i]));
 
+			// Bind delegate
+			PlayerProfileWidgetComponent_Reference->OnPlayerProfileLoadedDelegate.AddDynamic(this, &UWidget_PlayerProfileCreator::OnPlayerProfileLoadedDelegateBroadcast);
+
 			PlayerProfilesScrollBox->AddChild(PlayerProfileWidgetComponent_Reference);
 		}
 	}
+
+	// Only enable the Avatar Library if the player has a profile that the library can be saved to
+	AvatarLibraryButton->SetIsEnabled(PlayerStateReference->PlayerProfileReference->IsValidLowLevel());
 }
 
 
@@ -46,32 +55,10 @@ void UWidget_PlayerProfileCreator::OnSaveGameButtonPressed()
 		PlayerProfileData = Cast<UPlayer_SaveData>(UGameplayStatics::CreateSaveGameObject(UPlayer_SaveData::StaticClass()));
 
 	// Profile variables
+	// Profile
+	PlayerProfileData->ProfileName = NewProfileNameEntryField->GetText().ToString();
 	// Player
-	PlayerProfileData->Name = NewProfileNameEntryField->GetText().ToString();
-
-	// Avatars
-	if (AvatarDataTable) {
-		TArray<FAvatar_Struct> AvatarsArray;
-		FString ContextString;
-		TArray<FName> RowNames;
-		RowNames = AvatarDataTable->GetRowNames();
-
-		for (auto& Name : RowNames) {
-			FAvatar_Struct* Avatar = AvatarDataTable->FindRow<FAvatar_Struct>(Name, ContextString);
-
-			if (Avatar->AvatarName == TeamSlotOneComboBox->GetSelectedOption())
-				PlayerProfileData->TeamSlotOne = *Avatar;
-			
-			if (Avatar->AvatarName == TeamSlotTwoComboBox->GetSelectedOption())
-				PlayerProfileData->TeamSlotTwo = *Avatar;
-
-			if (Avatar->AvatarName == TeamSlotThreeComboBox->GetSelectedOption())
-				PlayerProfileData->TeamSlotThree = *Avatar;
-
-			if (Avatar->AvatarName == TeamSlotFourComboBox->GetSelectedOption())
-				PlayerProfileData->TeamSlotFour = *Avatar;
-		}
-	}
+	PlayerProfileData->Name = NewPlayerNameEntryField->GetText().ToString();
 
 	UGameplayStatics::SaveGameToSlot(PlayerProfileData, NewProfileNameEntryField->GetText().ToString(), 0);
 
@@ -118,23 +105,23 @@ void UWidget_PlayerProfileCreator::PopulateTeamCreatorDropdowns()
 					AvatarsArray.Add(*Avatar);
 			}
 		}
-
-		for (auto& Avatar : AvatarsArray) {
-			TeamSlotOneComboBox->AddOption(Avatar.AvatarName);
-			if (TeamSlotOneComboBox->GetOptionCount() <= 2)
-				TeamSlotOneComboBox->SetSelectedOption(Avatar.AvatarName);
-
-			TeamSlotTwoComboBox->AddOption(Avatar.AvatarName);
-			if (TeamSlotTwoComboBox->GetOptionCount() <= 2)
-				TeamSlotTwoComboBox->SetSelectedOption(Avatar.AvatarName);
-
-			TeamSlotThreeComboBox->AddOption(Avatar.AvatarName);
-			if (TeamSlotThreeComboBox->GetOptionCount() <= 2)
-				TeamSlotThreeComboBox->SetSelectedOption(Avatar.AvatarName);
-
-			TeamSlotFourComboBox->AddOption(Avatar.AvatarName);
-			if (TeamSlotFourComboBox->GetOptionCount() <= 2)
-				TeamSlotFourComboBox->SetSelectedOption(Avatar.AvatarName);
-		}
 	}
+}
+
+
+void UWidget_PlayerProfileCreator::OnAvatarLibraryButtonPressed()
+{
+	if (AvatarLibrary_Class->IsValidLowLevel()) {
+		AvatarLibrary_Reference = CreateWidget<UWidget_AvatarLibrary>(this, AvatarLibrary_Class);
+		AvatarLibrary_Reference->OnWidgetOpened();
+		AvatarLibrary_Reference->AddToViewport();
+	}
+}
+
+
+// ------------------------- Delegates
+void UWidget_PlayerProfileCreator::OnPlayerProfileLoadedDelegateBroadcast()
+{
+	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
+	AvatarLibraryButton->SetIsEnabled(PlayerStateReference->PlayerProfileReference->IsValidLowLevel());
 }

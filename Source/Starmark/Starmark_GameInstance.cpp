@@ -36,13 +36,9 @@ void UStarmark_GameInstance::LoadProfile(FString ProfileName)
 		if (SaveGameObject->PlayerProfileNames[i] == ProfileName) {
 			CurrentProfileReference = Cast<UPlayer_SaveData>(UGameplayStatics::LoadGameFromSlot(ProfileName, 0));
 
-			PlayerName = ProfileName;
+			PlayerName = CurrentProfileReference->Name;
 			CurrentProfileName = ProfileName;
-
-			TeamSlotOne = CurrentProfileReference->TeamSlotOne;
-			TeamSlotTwo = CurrentProfileReference->TeamSlotTwo;
-			TeamSlotThree = CurrentProfileReference->TeamSlotThree;
-			TeamSlotFour = CurrentProfileReference->TeamSlotFour;
+			break;
 		}
 	}
 }

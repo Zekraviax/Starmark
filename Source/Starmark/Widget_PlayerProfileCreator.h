@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
+#include "Components/Button.h"
 #include "Components/ComboBoxString.h"
 #include "Components/EditableText.h"
 #include "Components/ScrollBox.h"
@@ -10,11 +11,13 @@
 
 #include "Widget_PlayerProfileCreator.generated.h"
 
+
 // Forward Declarations
-class UWidget_MainMenu;
-class USaveGame;
 class USaveData_PlayerProfilesList;
+class USaveGame;
 class UWidgetComponent_PlayerProfile;
+class UWidget_MainMenu;
+class UWidget_AvatarLibrary;
 
 
 UCLASS()
@@ -37,17 +40,7 @@ public:
 	UScrollBox* PlayerProfilesScrollBox;
 
 	UPROPERTY(meta = (BindWidget))
-	UComboBoxString* TeamSlotOneComboBox;
-
-	UPROPERTY(meta = (BindWidget))
-	UComboBoxString* TeamSlotTwoComboBox;
-
-	UPROPERTY(meta = (BindWidget))
-	UComboBoxString* TeamSlotThreeComboBox;
-
-	UPROPERTY(meta = (BindWidget))
-	UComboBoxString* TeamSlotFourComboBox;
-
+	UButton* AvatarLibraryButton;
 
 // ------------------------- References
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -62,8 +55,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidgetComponent_PlayerProfile* PlayerProfileWidgetComponent_Reference;
 
-// ------------------------- Save Data
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWidget_AvatarLibrary> AvatarLibrary_Class;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UWidget_AvatarLibrary* AvatarLibrary_Reference;
+
+// ------------------------- Save Data
+	UPROPERTY()
 	USaveData_PlayerProfilesList* ProfilesList;
 
 // ------------------------- Avatar Data
@@ -86,4 +85,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PopulateTeamCreatorDropdowns();
+
+	UFUNCTION(BlueprintCallable)
+	void OnAvatarLibraryButtonPressed();
+
+// ------------------------- Delegates
+	UFUNCTION()
+	void OnPlayerProfileLoadedDelegateBroadcast();
 };

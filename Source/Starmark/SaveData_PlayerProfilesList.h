@@ -18,4 +18,7 @@ public:
 // ------------------------- Save Data
 	UPROPERTY()
 	TArray<FString> PlayerProfileNames;
+
+	UPROPERTY()
+	TArray<FString> LastLoadedProfileName;
 };

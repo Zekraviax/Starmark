@@ -44,17 +44,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarDataTable;
 
-	UPROPERTY()
-	FAvatar_Struct TeamSlotOne;
+	//UPROPERTY()
+	//FAvatar_Struct TeamSlotOne;
 
-	UPROPERTY()
-	FAvatar_Struct TeamSlotTwo;
+	//UPROPERTY()
+	//FAvatar_Struct TeamSlotTwo;
 
-	UPROPERTY()
-	FAvatar_Struct TeamSlotThree;
+	//UPROPERTY()
+	//FAvatar_Struct TeamSlotThree;
 
-	UPROPERTY()
-	FAvatar_Struct TeamSlotFour;
+	//UPROPERTY()
+	//FAvatar_Struct TeamSlotFour;
 
 
 // Functions
