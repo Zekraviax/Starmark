@@ -24,18 +24,6 @@ public:
 	UPROPERTY()
 	FString ProfileName;
 
-	//UPROPERTY()
-	//FAvatar_Struct TeamSlotOne;
-
-	//UPROPERTY()
-	//FAvatar_Struct TeamSlotTwo;
-
-	//UPROPERTY()
-	//FAvatar_Struct TeamSlotThree;
-
-	//UPROPERTY()
-	//FAvatar_Struct TeamSlotFour;
-
 // ------------------------- Avatars
 	UPROPERTY()
 	TArray<FAvatar_Struct> AvatarLibrary;

@@ -1,8 +1,8 @@
 #pragma once
 
-
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "Materials/Material.h"
 
 #include "Starmark_Variables.generated.h"
 
@@ -334,11 +334,11 @@ struct STARMARK_API FAvatar_Size
 {
 	GENERATED_BODY()
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int SizeX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int SizeX;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int SizeY;
+	int SizeY;
 
 	FAvatar_Size()
 	{
@@ -359,26 +359,26 @@ struct STARMARK_API FAvatar_ElementalEssences
 {
 	GENERATED_BODY()
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int FireEssence;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int FireEssence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int WaterEssence;
+	int WaterEssence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int AirEssence;
+	int AirEssence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int EarthEssence;
+	int EarthEssence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int LightEssence;
+	int LightEssence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int DarkEssence;
+	int DarkEssence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int ArcaneEssence;
+	int ArcaneEssence;
 
 	FAvatar_ElementalEssences()
 	{
@@ -398,14 +398,14 @@ struct STARMARK_API FAvatar_StatusEffect : public FTableRowBase
 {
 	GENERATED_BODY()
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FString Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UTexture2D* Image;
+	UTexture2D* Image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int TurnsRemaining;
+	int TurnsRemaining;
 
 	FAvatar_StatusEffect()
 	{
@@ -428,30 +428,30 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 {
 	GENERATED_BODY()
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FString Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		EAvatar_Types Type;
+	EAvatar_Types Type;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int BasePower;
+	int BasePower;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int BaseRange;
+	int BaseRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int ManaCost;
+	int ManaCost;
 
 	// Attack Pattern
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		EBattle_AttackPatterns AttackPattern;
+	EBattle_AttackPatterns AttackPattern;
 
 	// Effect: On attack launch
 	// Effect: On Self
 	// Effect: On Target(s)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<EBattle_AttackEffects> AttackEffectsOnTarget;
+	TArray<EBattle_AttackEffects> AttackEffectsOnTarget;
 
 	FAvatar_AttackStruct()
 	{
@@ -470,59 +470,64 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 {
 	GENERATED_BODY()
 
-		// ------------------------- Base Data
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
-		FString AvatarName;
+	// ------------------------- Base Data
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
+	FString AvatarName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
-		FString Nickname;
+	FString Nickname;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
-		EAvatar_Types PrimaryType;
+	EAvatar_Types PrimaryType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
-		EAvatar_Types SecondaryType;
+	EAvatar_Types SecondaryType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
-		EAvatar_Marks Mark;
+	EAvatar_Marks Mark;
 
 	// ------------------------- Battle
-		// Instinct Abilities
+	// Instinct Abilities
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-		FAvatar_BaseStats BaseStats;
+	FAvatar_BaseStats BaseStats;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-		int CurrentHealthPoints;
+	int CurrentHealthPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-		int CurrentManaPoints;
+	int CurrentManaPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-		int MaximumTileMoves;
+	int MaximumTileMoves;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-		int CurrentTileMoves;
+	int CurrentTileMoves;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-		int MaximumMovePoints;
+	int MaximumMovePoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-		int CurrentMovePoints;
+	int CurrentMovePoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-		int MaximumActionPoints;
+	int MaximumActionPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-		int CurrentActionPoints;
+	int CurrentActionPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-		float SameTypeAttackBonusMultiplier;
+	float SameTypeAttackBonusMultiplier;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	TArray<FAvatar_AttackStruct> CurrentAttacks;
 
 	// ------------------------- Appearance
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
-		FAvatar_Size Size;
+	UMaterial* DefaultImage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
+	FAvatar_Size Size;
 
 	// 3D Model
 	// Material
@@ -532,33 +537,33 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 
 // ------------------------- Other Data Tables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other DataTables")
-		TArray<FDataTableRowHandle> SimpleAttacks;
+	TArray<FDataTableRowHandle> SimpleAttacks;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other DataTables")
-		TArray<FDataTableRowHandle> AttacksLearnedByBuyingWithEssence;
+	TArray<FDataTableRowHandle> AttacksLearnedByBuyingWithEssence;
 
 	// ------------------------- Encyclopedia
-		// Number
+	// Number
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Encyclopedia")
-		int EncyclopediaNumber;
+	int EncyclopediaNumber;
 
 	// Height Range
 	// Weight Range
 
 	// Lore
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Encyclopedia")
-		FString Lore;
+	FString Lore;
 
 
 	// ------------------------- Other Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
-		TArray<FIntPoint> OccupiedTiles;
+	TArray<FIntPoint> OccupiedTiles;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
-		int Tier;
+	int Tier;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
-		int TokensRequired;
+	int TokensRequired;
 
 
 	FAvatar_Struct()

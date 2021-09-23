@@ -28,13 +28,31 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 // ------------------------- Player
 void AStarmark_PlayerState::UpdatePlayerData()
 {
-	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (!GameInstanceReference)
+		GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
 	ReplicatedPlayerName = GameInstanceReference->PlayerName;
 	PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
 
 	SetPlayerName(GameInstanceReference->PlayerName);
 	SendUpdateToMultiplayerLobby();
+}
+
+
+void AStarmark_PlayerState::SaveToCurrentProfile()
+{
+	if (!GameInstanceReference)
+		GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+	if (!PlayerProfileReference)
+		PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+
+	if (PlayerProfileReference) {
+		PlayerProfileReference->Name = GameInstanceReference->PlayerName;
+		//PlayerProfileReference->ProfileName = GameInstanceReference->CurrentProfileName;
+		//PlayerProfileReference->AvatarLibrary = 
+		UGameplayStatics::SaveGameToSlot(PlayerProfileReference, GameInstanceReference->CurrentProfileName, 0);
+	}
 }
 
 
@@ -61,9 +79,6 @@ void AStarmark_PlayerState::Server_UpdateReplicatedPlayerName_Implementation(con
 
 void AStarmark_PlayerState::PlayerState_BeginBattle_Implementation()
 {
-	//FAvatar_Struct DefaultAvatar = TeamSlotOne;
-	//PlayerState_PlayerParty.Add(DefaultAvatar);
-
 	// Retrieve player profile
 	UpdatePlayerData();
 	Client_UpdateReplicatedPlayerName();

@@ -1,5 +1,8 @@
 #include "WidgetComponent_Avatar.h"
 
+#include "Widget_AvatarCreation.h"
+#include "Widget_AvatarLibrary.h"
+
 
 // ------------------------- Widget
 void UWidgetComponent_Avatar::OnInteractButtonPressed()
@@ -7,6 +10,15 @@ void UWidgetComponent_Avatar::OnInteractButtonPressed()
 	switch (CurrentFunction)
 	{
 		case (E_AvatarWidgetComponent_Function::E_CreateNewAvatarInLibrary):
+			if (AvatarCreationWidget_Class) {
+				AvatarCreationWidget_Reference = CreateWidget<UWidget_AvatarCreation>(this, AvatarCreationWidget_Class);
+				AvatarCreationWidget_Reference->PopulateDropDowns();
+				AvatarCreationWidget_Reference->AddToViewport();
+
+				// Bind delegate in the AvatarLibrary
+				if (Cast<UWidget_AvatarLibrary>(PairedWidget))
+					Cast<UWidget_AvatarLibrary>(PairedWidget)->BindAvatarCreatedDelegate(this);
+			}
 			break;
 		case (E_AvatarWidgetComponent_Function::E_Nothing):
 			break;

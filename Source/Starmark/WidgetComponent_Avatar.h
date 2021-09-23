@@ -3,9 +3,14 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
+#include "Materials/Material.h"
 #include "Starmark_Variables.h"
 
 #include "WidgetComponent_Avatar.generated.h"
+
+
+// Forward Declarations
+class UWidget_AvatarCreation;
 
 
 // Delegates
@@ -35,9 +40,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FAvatar_Struct AvatarData;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterial* AvatarMaterial;
+
 // ------------------------- References
 	UPROPERTY()
 	UUserWidget* PairedWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWidget_AvatarCreation> AvatarCreationWidget_Class;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UWidget_AvatarCreation* AvatarCreationWidget_Reference;
 
 // ------------------------- Widget
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

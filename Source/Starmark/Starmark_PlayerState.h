@@ -10,9 +10,10 @@
 
 
 // Forward Declarations
-class UWidget_HUD_Battle;
 class ACharacter_Pathfinder;
 class UPlayer_SaveData;
+class UStarmark_GameInstance;
+class UWidget_HUD_Battle;
 
 
 UCLASS()
@@ -25,6 +26,10 @@ public:
 
 // Variables
 // --------------------------------------------------
+
+// ------------------------- References
+	UPROPERTY()
+	UStarmark_GameInstance* GameInstanceReference;
 
 // ------------------------- Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
@@ -44,18 +49,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarDataTable;
 
-	//UPROPERTY()
-	//FAvatar_Struct TeamSlotOne;
-
-	//UPROPERTY()
-	//FAvatar_Struct TeamSlotTwo;
-
-	//UPROPERTY()
-	//FAvatar_Struct TeamSlotThree;
-
-	//UPROPERTY()
-	//FAvatar_Struct TeamSlotFour;
-
 
 // Functions
 // --------------------------------------------------
@@ -63,6 +56,9 @@ public:
 // ------------------------- Player
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayerData();
+
+	UFUNCTION(BlueprintCallable)
+	void SaveToCurrentProfile();
 
 // ------------------------- Lobby
 	UFUNCTION(BlueprintNativeEvent)

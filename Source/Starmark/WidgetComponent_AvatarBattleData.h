@@ -39,12 +39,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* AvatarText;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	//UTextBlock* NicknameText;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	//UTextBlock* TierText;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* TypesText;
 

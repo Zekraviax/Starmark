@@ -1,9 +1,12 @@
 #include "Widget_AvatarLibrary.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Materials/Material.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_PlayerState.h"
 #include "WidgetComponent_Avatar.h"
+#include "Widget_AvatarCreation.h"
 
 
 // ------------------------- Widget
@@ -16,10 +19,18 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 		int Column = -1;
 		int Row = 0;
 
+		// Clear old widgets
+		AvatarLibraryUniformGridPanel->ClearChildren();
+
 		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num(); i++) {
 			AvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
 			AvatarWidgetComponent_Reference->AvatarData = PlayerStateReference->PlayerProfileReference->AvatarLibrary[i];
 			AvatarWidgetComponent_Reference->PairedWidget = this;
+
+			if (AvatarWidgetComponent_Reference->AvatarData.DefaultImage) {
+				AvatarWidgetComponent_Reference->AvatarMaterial = AvatarWidgetComponent_Reference->AvatarData.DefaultImage;
+				AvatarWidgetComponent_Reference->UpdateWidgetMaterials();
+			}
 
 			Column++;
 			if (Column > 4) {
@@ -28,7 +39,7 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 			}
 
 			AvatarWidgetComponent_Reference->UpdateWidgetMaterials();
-			AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Column, Row);
+			AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Row, Column);
 		}
 
 		// Create one move Avatar WidgetComponent that's used to add new Avatars to the Library
@@ -43,6 +54,18 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 		}
 
 		AvatarWidgetComponent_Reference->UpdateWidgetMaterials();
-		AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Column, Row);
+		AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Row, Column);
 	}
+}
+
+
+// ------------------------- Delegates
+void UWidget_AvatarLibrary::BindAvatarCreatedDelegate(UWidgetComponent_Avatar* AvatarWidgetComponentReference)
+{
+	AvatarWidgetComponentReference->AvatarCreationWidget_Reference->OnAvatarCreatedDelegate.AddDynamic(this, &UWidget_AvatarLibrary::OnAvatarCreatedDelegateBroadcast);
+}
+
+void UWidget_AvatarLibrary::OnAvatarCreatedDelegateBroadcast()
+{
+	OnWidgetOpened();
 }

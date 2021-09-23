@@ -43,4 +43,11 @@ public:
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
 	void OnWidgetOpened();
+
+// ------------------------- Delegates
+	UFUNCTION()
+	void BindAvatarCreatedDelegate(UWidgetComponent_Avatar* AvatarWidgetComponentReference);
+
+	UFUNCTION()
+	void OnAvatarCreatedDelegateBroadcast();
 };

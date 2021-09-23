@@ -35,17 +35,17 @@ public:
 	UPROPERTY()
 	UPlayer_SaveData* CurrentProfileReference;
 
-	UPROPERTY()
-	FAvatar_Struct TeamSlotOne;
+	//UPROPERTY()
+	//FAvatar_Struct TeamSlotOne;
 
-	UPROPERTY()
-	FAvatar_Struct TeamSlotTwo;
+	//UPROPERTY()
+	//FAvatar_Struct TeamSlotTwo;
 
-	UPROPERTY()
-	FAvatar_Struct TeamSlotThree;
+	//UPROPERTY()
+	//FAvatar_Struct TeamSlotThree;
 
-	UPROPERTY()
-	FAvatar_Struct TeamSlotFour;
+	//UPROPERTY()
+	//FAvatar_Struct TeamSlotFour;
 
 
 // Functions
