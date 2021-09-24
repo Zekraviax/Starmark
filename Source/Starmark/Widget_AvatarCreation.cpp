@@ -99,7 +99,7 @@ void UWidget_AvatarCreation::OnAccessoryDropDownChanged(FString Option)
 void UWidget_AvatarCreation::OnMoveOneDropDownChanged(FString Option)
 {
 	if (Option.Len() == 0 || Option == "")
-		MoveOneNameText->SetText(FText::FromString("Move One: None"));
+		MoveOneNameText->SetText(FText::FromString("None"));
 	else {
 		FString ContextString;
 
@@ -125,7 +125,7 @@ void UWidget_AvatarCreation::OnMoveOneDropDownChanged(FString Option)
 void UWidget_AvatarCreation::OnMoveTwoDropDownChanged(FString Option)
 {
 	if (Option.Len() == 0 || Option == "")
-		MoveTwoNameText->SetText(FText::FromString("Move Two: None"));
+		MoveTwoNameText->SetText(FText::FromString("None"));
 	else {
 		FString ContextString;
 
@@ -151,7 +151,7 @@ void UWidget_AvatarCreation::OnMoveTwoDropDownChanged(FString Option)
 void UWidget_AvatarCreation::OnMoveThreeDropDownChanged(FString Option)
 {
 	if (Option.Len() == 0 || Option == "")
-		MoveThreeNameText->SetText(FText::FromString("Move Three: None"));
+		MoveThreeNameText->SetText(FText::FromString("None"));
 	else {
 		FString ContextString;
 
@@ -177,7 +177,7 @@ void UWidget_AvatarCreation::OnMoveThreeDropDownChanged(FString Option)
 void UWidget_AvatarCreation::OnMoveFourDropDownChanged(FString Option)
 {
 	if (Option.Len() == 0 || Option == "")
-		MoveFourNameText->SetText(FText::FromString("Move Four: None"));
+		MoveFourNameText->SetText(FText::FromString("None"));
 	else {
 		FString ContextString;
 

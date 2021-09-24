@@ -62,6 +62,9 @@ public:
 
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
+	void OnWidgetOpened();
+
+	UFUNCTION(BlueprintCallable)
 	void OnExitButtonPressed();
 
 // ------------------------- Player

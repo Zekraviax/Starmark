@@ -1,5 +1,6 @@
 #include "WidgetComponent_Avatar.h"
 
+#include "PlayerController_Lobby.h"
 #include "Widget_AvatarCreation.h"
 #include "Widget_AvatarLibrary.h"
 
@@ -22,6 +23,7 @@ void UWidgetComponent_Avatar::OnInteractButtonPressed()
 			}
 			break;
 		case (E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot):
+			Cast<APlayerController_Lobby>(GetWorld()->GetFirstPlayerController())->OnAvatarWidgetComponentClicked(this);
 			break;
 		case (E_AvatarWidgetComponent_Function::E_ChooseSlotToAddAvatar):
 			break;

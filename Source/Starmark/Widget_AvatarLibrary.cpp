@@ -38,6 +38,8 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 
 			AvatarWidgetComponent_Reference->UpdateWidgetMaterials();
 			AvatarWidgetComponent_Reference->AvatarName->SetText(FText::FromString(AvatarWidgetComponent_Reference->AvatarData.AvatarName));
+			AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
+
 			AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Row, Column);
 			
 		}

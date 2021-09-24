@@ -7,6 +7,7 @@
 
 // Forward Declarations
 class UWidget_ServerHost;
+class UWidgetComponent_Avatar;
 class UWidgetComponent_LobbyPlayerVals;
 
 
@@ -19,7 +20,7 @@ public:
 // Variables
 // --------------------------------------------------
 
-// ------------------------- Widgets
+// ------------------------- References
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UWidget_ServerHost> LobbyWidget_Class;
 
@@ -31,6 +32,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidgetComponent_LobbyPlayerVals* LobbyPlayerVals_Reference;
+
+// ------------------------- Widgets
+	UPROPERTY()
+	UWidgetComponent_Avatar* CurrentSelectedAvatarWidgetComponent;
 
 // Functions
 // --------------------------------------------------
@@ -47,4 +52,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayersInLobby(TArray<FString> PlayerNames, TArray<FString> PlayerReadyStatuses, bool ClearCurrentPlayers);
+
+	UFUNCTION()
+	void OnAvatarWidgetComponentClicked(UWidgetComponent_Avatar* SecondClickedAvatarWidgetComponent);
 };

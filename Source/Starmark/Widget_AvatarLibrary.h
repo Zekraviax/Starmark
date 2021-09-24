@@ -3,13 +3,14 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
-#include "Components/GridPanel.h"
 #include "Components/UniformGridPanel.h"
 
 #include "Widget_AvatarLibrary.generated.h"
 
+
 // Forward Declarations
 class UWidgetComponent_Avatar;
+
 
 UCLASS()
 class STARMARK_API UWidget_AvatarLibrary : public UUserWidget

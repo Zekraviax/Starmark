@@ -3,12 +3,19 @@
 #include "Kismet/GameplayStatics.h"
 #include "PlayerController_Base.h"
 #include "SaveData_PlayerProfilesList.h"
+#include "Starmark_GameInstance.h"
 #include "Starmark_PlayerState.h"
 #include "WidgetComponent_PlayerProfile.h"
 #include "Widget_MainMenu.h"
 
 
 // ------------------------- Widget
+void UWidget_ServerHost::OnWidgetOpened()
+{
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	//GameInstanceReference->LoadProfile(GameInstanceReference);
+}	
+
 void UWidget_ServerHost::OnExitButtonPressed()
 {
 	if (!MainMenuWidget_Reference && MainMenuWidget_Class)

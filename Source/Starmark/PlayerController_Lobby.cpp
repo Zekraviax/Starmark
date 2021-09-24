@@ -1,10 +1,11 @@
 #include "PlayerController_Lobby.h"
 
-#include "Widget_ServerHost.h"
-#include "WidgetComponent_LobbyPlayerVals.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
 #include "Player_SaveData.h"
+#include "WidgetComponent_LobbyPlayerVals.h"
+#include "WidgetComponent_Avatar.h"
+#include "Widget_ServerHost.h"
 
 
 // ------------------------- Lobby
@@ -22,6 +23,7 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 	if (!LobbyWidget_Reference->IsValidLowLevel() && LobbyWidget_Class->IsValidLowLevel() && IsLocalPlayerController()) {
 		// Must assign a local controller
 		LobbyWidget_Reference = CreateWidget<UWidget_ServerHost>(this, LobbyWidget_Class);
+		LobbyWidget_Reference->OnWidgetOpened();
 
 		if (GetWorld()->IsServer()) {
 			LobbyWidget_Reference->ReadyButtonText->SetText(FText::FromString("Begin Game"));
@@ -65,5 +67,34 @@ void APlayerController_Lobby::UpdatePlayersInLobby(TArray<FString> PlayerNames, 
 
 			LobbyWidget_Reference->PlayerListVerticalBox->AddChild(LobbyPlayerVals_Reference);
 		}
+	}
+}
+
+
+void APlayerController_Lobby::OnAvatarWidgetComponentClicked(UWidgetComponent_Avatar* SecondClickedAvatarWidgetComponent)
+{
+	if (CurrentSelectedAvatarWidgetComponent->IsValidLowLevel()) {
+		// Data that was stored on the first clicked AvatarWidgetComponent
+		FAvatar_Struct TemporaryAvatarData = CurrentSelectedAvatarWidgetComponent->AvatarData;
+		UMaterial* TemporaryAvatarMaterial = CurrentSelectedAvatarWidgetComponent->AvatarMaterial;
+		FText TemporaryAvatarName = CurrentSelectedAvatarWidgetComponent->AvatarName->GetText();
+
+		// First swap: From the Second WidgetComponent to the First
+		CurrentSelectedAvatarWidgetComponent->AvatarData = SecondClickedAvatarWidgetComponent->AvatarData;
+		CurrentSelectedAvatarWidgetComponent->AvatarMaterial = SecondClickedAvatarWidgetComponent->AvatarMaterial;
+		CurrentSelectedAvatarWidgetComponent->AvatarName->SetText(SecondClickedAvatarWidgetComponent->AvatarName->GetText());
+
+		// Second swap: From the First (temporary variables) to the Second
+		SecondClickedAvatarWidgetComponent->AvatarData = TemporaryAvatarData;
+		SecondClickedAvatarWidgetComponent->AvatarMaterial = TemporaryAvatarMaterial;
+		SecondClickedAvatarWidgetComponent->AvatarName->SetText(TemporaryAvatarName);
+
+		// Update widget materials
+		CurrentSelectedAvatarWidgetComponent->UpdateWidgetMaterials();
+		SecondClickedAvatarWidgetComponent->UpdateWidgetMaterials();
+
+		CurrentSelectedAvatarWidgetComponent = NULL;
+	} else {
+		CurrentSelectedAvatarWidgetComponent = SecondClickedAvatarWidgetComponent;
 	}
 }
