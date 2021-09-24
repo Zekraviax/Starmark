@@ -9,6 +9,7 @@ void UWidgetComponent_Avatar::OnInteractButtonPressed()
 {
 	switch (CurrentFunction)
 	{
+		// Open AvatarCreator
 		case (E_AvatarWidgetComponent_Function::E_CreateNewAvatarInLibrary):
 			if (AvatarCreationWidget_Class) {
 				AvatarCreationWidget_Reference = CreateWidget<UWidget_AvatarCreation>(this, AvatarCreationWidget_Class);
@@ -19,6 +20,10 @@ void UWidgetComponent_Avatar::OnInteractButtonPressed()
 				if (Cast<UWidget_AvatarLibrary>(PairedWidget))
 					Cast<UWidget_AvatarLibrary>(PairedWidget)->BindAvatarCreatedDelegate(this);
 			}
+			break;
+		case (E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot):
+			break;
+		case (E_AvatarWidgetComponent_Function::E_ChooseSlotToAddAvatar):
 			break;
 		case (E_AvatarWidgetComponent_Function::E_Nothing):
 			break;

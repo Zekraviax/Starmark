@@ -49,8 +49,7 @@ void AStarmark_PlayerState::SaveToCurrentProfile()
 
 	if (PlayerProfileReference) {
 		PlayerProfileReference->Name = GameInstanceReference->PlayerName;
-		//PlayerProfileReference->ProfileName = GameInstanceReference->CurrentProfileName;
-		//PlayerProfileReference->AvatarLibrary = 
+
 		UGameplayStatics::SaveGameToSlot(PlayerProfileReference, GameInstanceReference->CurrentProfileName, 0);
 	}
 }

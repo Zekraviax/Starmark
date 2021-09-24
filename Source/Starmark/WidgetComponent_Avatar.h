@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
+#include "Components/TextBlock.h"
 #include "Materials/Material.h"
 #include "Starmark_Variables.h"
 
@@ -22,7 +23,9 @@ UENUM(BlueprintType)
 enum class E_AvatarWidgetComponent_Function : uint8
 {
 	E_Nothing,
-	E_CreateNewAvatarInLibrary
+	E_CreateNewAvatarInLibrary,
+	E_AddAvatarToChosenSlot,
+	E_ChooseSlotToAddAvatar
 };
 
 
@@ -35,6 +38,10 @@ public:
 
 // Variables
 // --------------------------------------------------
+
+// ------------------------- Components
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* AvatarName;
 
 // ------------------------- Avatars
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -12,6 +12,7 @@
 
 // Forward Declarations
 class UWidgetComponent_PlayerProfile;
+class UWidget_AvatarSelection;
 class UWidget_MainMenu;
 
 
@@ -38,18 +39,23 @@ public:
 	UScrollBox* PlayerProfilesScrollBox;
 
 // ------------------------- References
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UWidget_MainMenu> MainMenuWidget_Class;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidget_MainMenu* MainMenuWidget_Reference;
 
-// ------------------------- Widget
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UWidgetComponent_PlayerProfile> PlayerProfile_Class;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidgetComponent_PlayerProfile* PlayerProfile_Reference;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWidget_AvatarSelection> AvatarSelection_Class;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UWidget_AvatarSelection* AvatarSelection_Reference;
 
 // Functions
 // --------------------------------------------------
