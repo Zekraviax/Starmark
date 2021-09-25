@@ -2,7 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+
 #include "AIController_Avatar.generated.h"
+
+
+// Forward Declarations
+class ACharacter_Pathfinder;
 
 
 UCLASS()
@@ -16,5 +21,5 @@ public:
 
 // ------------------------- AI
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void GetMoveCommandFromPlayer(FVector MoveLocation);
+	void GetMoveCommandFromPlayer(FVector MoveLocation, int TilesPerTurnCost, ACharacter_Pathfinder* AvatarReference);
 };

@@ -25,8 +25,6 @@ void UWidgetComponent_Avatar::OnInteractButtonPressed()
 		case (E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot):
 			Cast<APlayerController_Lobby>(GetWorld()->GetFirstPlayerController())->OnAvatarWidgetComponentClicked(this);
 			break;
-		case (E_AvatarWidgetComponent_Function::E_ChooseSlotToAddAvatar):
-			break;
 		case (E_AvatarWidgetComponent_Function::E_Nothing):
 			break;
 		default:

@@ -57,6 +57,12 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 }
 
 
+void AStarmark_GameState::AvatarBeginTurn_Implementation()
+{
+	AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves;
+}
+
+
 void AStarmark_GameState::AvatarEndTurn_Implementation()
 {
 	TArray<ACharacter_Pathfinder*> AvatarArray;
@@ -81,6 +87,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 		}
 	}
 
+	AvatarBeginTurn();
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_UpdateAllAvatarDecals();
 }
 

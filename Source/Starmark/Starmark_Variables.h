@@ -504,11 +504,11 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int CurrentTileMoves;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	int MaximumMovePoints;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	//int MaximumMovePoints;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	int CurrentMovePoints;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	//int CurrentMovePoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int MaximumActionPoints;
@@ -577,8 +577,8 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		CurrentManaPoints = 1;
 		MaximumTileMoves = 2;
 		CurrentTileMoves = 2;
-		MaximumMovePoints = 1;
-		CurrentMovePoints = 1;
+		//MaximumMovePoints = 1;
+		//CurrentMovePoints = 1;
 		MaximumActionPoints = 1;
 		CurrentActionPoints = 1;
 		SameTypeAttackBonusMultiplier = 150;

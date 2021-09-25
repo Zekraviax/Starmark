@@ -25,7 +25,6 @@ enum class E_AvatarWidgetComponent_Function : uint8
 	E_Nothing,
 	E_CreateNewAvatarInLibrary,
 	E_AddAvatarToChosenSlot,
-	E_ChooseSlotToAddAvatar
 };
 
 

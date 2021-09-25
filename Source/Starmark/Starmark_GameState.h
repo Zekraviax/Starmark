@@ -50,6 +50,9 @@ public:
 	void SetTurnOrder(const TArray<APlayerController_Base*>& PlayerControllers);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void AvatarBeginTurn();
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void AvatarEndTurn();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
