@@ -249,6 +249,9 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 
 	// Tell the server to update everyone
 	Server_UpdateAllAvatarDecals();
+
+	// End the turn
+	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn_Implementation();
 }
 
 

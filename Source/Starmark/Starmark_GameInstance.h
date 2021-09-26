@@ -151,7 +151,7 @@ public:
 	void StartOnlineGame(FString CustomLobbyName);
 
 	UFUNCTION(BlueprintCallable, Category = "Network|Test")
-	void FindOnlineGames();
+	void FindOnlineGames(bool UseLAN);
 
 	UFUNCTION(BlueprintCallable, Category = "Network|Test")
 	void JoinOnlineGame();

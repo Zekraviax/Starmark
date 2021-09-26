@@ -15,11 +15,11 @@ public class Starmark : ModuleRules
             "InputCore",
             "AIModule",
             "OnlineSubsystem",
-            "OnlineSubsystemUtils" });
+            "OnlineSubsystemSteam" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
-        DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
+        //DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
 
         // Uncomment if you are using Slate UI
         // PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

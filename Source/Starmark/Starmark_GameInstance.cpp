@@ -64,10 +64,10 @@ bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, 
 			*/
 			SessionSettings = MakeShareable(new FOnlineSessionSettings());
 
-			SessionSettings->bIsLANMatch = false;
+			SessionSettings->bIsLANMatch = bIsLAN;
 			SessionSettings->bUsesPresence = bIsPresence;
-			SessionSettings->NumPublicConnections = 100000;
-			SessionSettings->NumPrivateConnections = 100000;
+			SessionSettings->NumPublicConnections = 5;
+			SessionSettings->NumPrivateConnections = 0;
 			SessionSettings->bAllowInvites = true;
 			SessionSettings->bAllowJoinInProgress = true;
 			SessionSettings->bShouldAdvertise = true;
@@ -146,6 +146,8 @@ void UStarmark_GameInstance::OnStartOnlineGameComplete(FName SessionName, bool b
 	if (bWasSuccessful)
 	{
 		UGameplayStatics::OpenLevel(GetWorld(), "MultiplayerLobby", true, "listen");
+		//GetWorld()->ServerTravel("/Game/Levels/MultiplayerLobby.MultiplayerLobby?listen");
+		//World'/Game/Levels/MultiplayerLobby.MultiplayerLobby'
 	}
 }
 
@@ -155,10 +157,15 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 	// Get the OnlineSubsystem we want to work with
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
 
+	UE_LOG(LogTemp, Warning, TEXT("FindSessions / if (OnlineSub) returns: %s"), OnlineSub ? TEXT("true") : TEXT("false"));
+
 	if (OnlineSub)
 	{
 		// Get the SessionInterface from our OnlineSubsystem
 		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
+
+		UE_LOG(LogTemp, Warning, TEXT("FindSessions / Sessions.IsValid returns: %s"), Sessions.IsValid() ? TEXT("true") : TEXT("false"));
+		UE_LOG(LogTemp, Warning, TEXT("FindSessions / UserId.IsValid returns: %s"), UserId.IsValid() ? TEXT("true") : TEXT("false"));
 
 		if (Sessions.IsValid() && UserId.IsValid())
 		{
@@ -167,9 +174,17 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 			*/
 			SessionSearch = MakeShareable(new FOnlineSessionSearch());
 
+			// Steam setting?
+			bIsPresence = true;
+
+			UE_LOG(LogTemp, Warning, TEXT("FindSessions / bIsLAN is: %s"), bIsLAN ? TEXT("true") : TEXT("false"));
+
 			SessionSearch->bIsLanQuery = bIsLAN;
-			SessionSearch->MaxSearchResults = 10;
-			SessionSearch->PingBucketSize = 5000000;
+			SessionSearch->MaxSearchResults = 100;
+			SessionSearch->PingBucketSize = 50;
+			//SessionSearch->TimeoutInSeconds = 30.f;
+
+			UE_LOG(LogTemp, Warning, TEXT("FindSessions / bIsPresence is: %s"), bIsPresence ? TEXT("true") : TEXT("false"));
 
 			// We only want to set this Query Setting if "bIsPresence" is true
 			if (bIsPresence)
@@ -195,13 +210,17 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 void UStarmark_GameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OFindSessionsComplete bSuccess: %d"), bWasSuccessful));
+	UE_LOG(LogTemp, Warning, TEXT("OnFindSessionsComplete / bWasSuccessfull is: %s"), bWasSuccessful ? TEXT("true") : TEXT("false"));
 
 	// Get OnlineSubsystem we want to work with
 	IOnlineSubsystem* const OnlineSub = IOnlineSubsystem::Get();
+	UE_LOG(LogTemp, Warning, TEXT("OnFindSessionsComplete / if (OnlineSub) returns: %s"), OnlineSub ? TEXT("true") : TEXT("false"));
+
 	if (OnlineSub)
 	{
 		// Get SessionInterface of the OnlineSubsystem
 		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
+		UE_LOG(LogTemp, Warning, TEXT("OnFindSessionsComplete / Sessions.IsValid returns: %s"), Sessions.IsValid() ? TEXT("true") : TEXT("false"));
 		if (Sessions.IsValid())
 		{
 			// Clear the Delegate handle, since we finished this call
@@ -211,6 +230,7 @@ void UStarmark_GameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Num Search Results: %d"), SessionSearch->SearchResults.Num()));
 
 			// If we have found at least 1 session, we just going to debug them. You could add them to a list of UMG Widgets, like it is done in the BP version!
+			UE_LOG(LogTemp, Warning, TEXT("OnFindSessionsComplete / Sessions found: %d"), SessionSearch->SearchResults.Num());
 			if (SessionSearch->SearchResults.Num() > 0)
 			{
 				FString ServerName;
@@ -338,15 +358,15 @@ void UStarmark_GameInstance::StartOnlineGame(FString CustomLobbyName)
 	ULocalPlayer* const Player = GetFirstGamePlayer();
 
 	// Call our custom HostSession function. GameSessionName is a GameInstance variable
-	HostSession(Player->GetPreferredUniqueNetId().GetUniqueNetId(), GameSessionName, true, true, 4, CustomLobbyName);
+	HostSession(Player->GetPreferredUniqueNetId().GetUniqueNetId(), GameSessionName, false, true, 4, CustomLobbyName);
 }
 
 
-void UStarmark_GameInstance::FindOnlineGames()
+void UStarmark_GameInstance::FindOnlineGames(bool UseLAN)
 {
 	ULocalPlayer* const Player = GetFirstGamePlayer();
 
-	FindSessions(Player->GetPreferredUniqueNetId().GetUniqueNetId(), false, true);
+	FindSessions(Player->GetPreferredUniqueNetId().GetUniqueNetId(), UseLAN, true);
 }
 
 
