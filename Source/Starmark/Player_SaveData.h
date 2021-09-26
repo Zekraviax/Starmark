@@ -27,4 +27,7 @@ public:
 // ------------------------- Avatars
 	UPROPERTY()
 	TArray<FAvatar_Struct> AvatarLibrary;
+
+	UPROPERTY()
+	TArray<FAvatar_Struct> CurrentAvatarTeam;
 };

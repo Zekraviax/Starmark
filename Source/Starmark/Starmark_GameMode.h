@@ -4,6 +4,7 @@
 #include "GameFramework/GameMode.h"
 
 #include "Engine/DataTable.h"
+#include "Starmark_Variables.h"
 
 #include "Starmark_GameMode.generated.h"
 
@@ -67,7 +68,7 @@ public:
 	void Server_MultiplayerBattleCheckAllPlayersReady();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void Server_SpawnAvatar(APlayerController_Base* PlayerController, int IndexInPlayerParty);
+	void Server_SpawnAvatar(APlayerController_Base* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable)
 	void Server_UpdateAllAvatarDecals();

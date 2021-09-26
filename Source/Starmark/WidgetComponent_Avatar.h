@@ -49,6 +49,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterial* AvatarMaterial;
 
+	// 0 - 3 for Active Avatars, 4 - 5 for Reserve Avatars
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int IndexInPlayerTeam = -1;
+
 // ------------------------- References
 	UPROPERTY()
 	UUserWidget* PairedWidget;
@@ -77,4 +81,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateWidgetMaterials();
+
+	UFUNCTION()
+	void ApplyNewAvatarData(FAvatar_Struct NewAvatarData);
 };

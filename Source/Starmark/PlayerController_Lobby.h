@@ -11,6 +11,10 @@ class UWidgetComponent_Avatar;
 class UWidgetComponent_LobbyPlayerVals;
 
 
+// Delegates
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAvatarChangedSlot);
+
+
 UCLASS()
 class STARMARK_API APlayerController_Lobby : public APlayerController
 {
@@ -36,6 +40,10 @@ public:
 // ------------------------- Widgets
 	UPROPERTY()
 	UWidgetComponent_Avatar* CurrentSelectedAvatarWidgetComponent;
+
+// ------------------------- Delegates
+	UPROPERTY()
+	FAvatarChangedSlot OnAvatarChangedSlotDelegate;
 
 // Functions
 // --------------------------------------------------

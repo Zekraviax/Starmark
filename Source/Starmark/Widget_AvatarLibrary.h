@@ -51,4 +51,7 @@ public:
 
 	UFUNCTION()
 	void OnAvatarCreatedDelegateBroadcast();
+
+	UFUNCTION()
+	void OnAvatarChangedSlotDelegateBroadcast();
 };

@@ -14,6 +14,6 @@ void AAIController_Avatar::GetMoveCommandFromPlayer_Implementation(FVector MoveL
 
 		AvatarReference->AvatarData.CurrentTileMoves -= TilesPerTurnCost;
 
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Tiles Per Turn Cost: %d"), TilesPerTurnCost));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Tiles Per Turn Cost: %d"), TilesPerTurnCost));
 	}
 }

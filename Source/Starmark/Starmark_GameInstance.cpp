@@ -64,10 +64,10 @@ bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, 
 			*/
 			SessionSettings = MakeShareable(new FOnlineSessionSettings());
 
-			SessionSettings->bIsLANMatch = bIsLAN;
+			SessionSettings->bIsLANMatch = false;
 			SessionSettings->bUsesPresence = bIsPresence;
-			SessionSettings->NumPublicConnections = MaxNumPlayers;
-			SessionSettings->NumPrivateConnections = 0;
+			SessionSettings->NumPublicConnections = 100000;
+			SessionSettings->NumPrivateConnections = 100000;
 			SessionSettings->bAllowInvites = true;
 			SessionSettings->bAllowJoinInProgress = true;
 			SessionSettings->bShouldAdvertise = true;
@@ -169,7 +169,7 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 
 			SessionSearch->bIsLanQuery = bIsLAN;
 			SessionSearch->MaxSearchResults = 10;
-			SessionSearch->PingBucketSize = 50;
+			SessionSearch->PingBucketSize = 5000000;
 
 			// We only want to set this Query Setting if "bIsPresence" is true
 			if (bIsPresence)
@@ -346,7 +346,7 @@ void UStarmark_GameInstance::FindOnlineGames()
 {
 	ULocalPlayer* const Player = GetFirstGamePlayer();
 
-	FindSessions(Player->GetPreferredUniqueNetId().GetUniqueNetId(), true, true);
+	FindSessions(Player->GetPreferredUniqueNetId().GetUniqueNetId(), false, true);
 }
 
 

@@ -588,6 +588,12 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		Tier = 1;
 		TokensRequired = 1;
 	}
+
+	bool operator==(const FAvatar_Struct& OtherAvatar)
+	{
+		return (AvatarName == OtherAvatar.AvatarName &&
+			Nickname == OtherAvatar.Nickname);
+	}
 };
 
 

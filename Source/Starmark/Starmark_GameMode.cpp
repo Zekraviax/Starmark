@@ -6,6 +6,8 @@
 #include "PlayerController_Base.h"
 #include "PlayerPawn_Static.h"
 #include "PlayerPawn_Flying.h"
+#include "Player_SaveData.h"
+#include "Starmark_GameInstance.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
 #include "Starmark_Variables.h"
@@ -35,6 +37,9 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 	MultiplayerUniqueIDCounter++;
 	NewPlayerController->MultiplayerUniqueID = MultiplayerUniqueIDCounter;
 
+	// Load player data
+	Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->LoadProfile(Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->CurrentProfileName);
+
 	PlayerControllerReferences.Add(NewPlayerController);
 
 	// When all players have joined, begin running the functions needed to start the battle
@@ -49,14 +54,12 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 	GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		for (int j = 1; j <= 4; j++) {
-			Server_SpawnAvatar(PlayerControllerReferences[i], j);
-		}
-	}
+		TArray<FAvatar_Struct> CurrentPlayerTeam = Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam;
 
-	// Only set the turn order once all Avatars are spawned
-	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		GameStateReference->SetTurnOrder(PlayerControllerReferences);
+		for (int j = 0; j < CurrentPlayerTeam.Num(); j++) {
+			if (j < 4 && CurrentPlayerTeam[j].AvatarName != "Default")
+				Server_SpawnAvatar(PlayerControllerReferences[i], j + 1, Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam[j]);
+		}
 	}
 
 	Server_MultiplayerBattleCheckAllPlayersReady();
@@ -79,6 +82,11 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 	if (ReadyStatuses.Contains(false)) {
 		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady, 1.f, false);
 	} else {
+		// Only set the turn order once all Avatars are spawned
+		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+			GameStateReference->SetTurnOrder(PlayerControllerReferences);
+		}
+
 		for (int i = 0; i < GameStateReference->AvatarTurnOrder.Num(); i++) {
 			AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->PlayerState);
 
@@ -114,7 +122,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 }
 
 
-void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Base* PlayerController, int IndexInPlayerParty)
+void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Base* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData)
 {
 	FString ContextString;
 	FActorSpawnParameters SpawnInfo;

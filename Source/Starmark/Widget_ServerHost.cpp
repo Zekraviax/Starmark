@@ -13,7 +13,7 @@
 void UWidget_ServerHost::OnWidgetOpened()
 {
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	//GameInstanceReference->LoadProfile(GameInstanceReference);
+	GameInstanceReference->LoadProfile(GameInstanceReference->CurrentProfileName);
 }	
 
 void UWidget_ServerHost::OnExitButtonPressed()
