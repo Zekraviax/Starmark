@@ -36,15 +36,20 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 
 	MultiplayerUniqueIDCounter++;
 	NewPlayerController->MultiplayerUniqueID = MultiplayerUniqueIDCounter;
+	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / MultiplayerUniqueIDCounter is: %d"), MultiplayerUniqueIDCounter);
 
 	// Load player data
 	Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->LoadProfile(Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->CurrentProfileName);
 
 	PlayerControllerReferences.Add(NewPlayerController);
 
+	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / PlayerControllerReferences found: %d"), PlayerControllerReferences.Num());
+
 	// When all players have joined, begin running the functions needed to start the battle
-	if (PlayerControllerReferences.Num() >= 2)
-		Server_BeginMultiplayerBattle_Implementation();
+	if (PlayerControllerReferences.Num() >= 2) {
+		UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / Call Server_BeginMultiplayerBattle()"));
+		Server_BeginMultiplayerBattle();
+	}
 }
 
 

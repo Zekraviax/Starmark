@@ -106,18 +106,22 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 		PlayerStateReference->PlayerState_BeginBattle();
 
 		// Avatar initialization
-		CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(BattleWidgetReference);
+		if (CurrentSelectedAvatar) {
+			CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(BattleWidgetReference);
 
-		// Widget initialization
-		if (BattleWidgetReference == NULL) {
-			CreateBattleWidget();
-			SetBattleWidgetVariables();
+			// Widget initialization
+			if (BattleWidgetReference == NULL) {
+				CreateBattleWidget();
+				SetBattleWidgetVariables();
+			}
+
+			Server_SetReadyToStartMultiplayerBattle();
+		} else {
+			GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.2f, false);
 		}
-
-		Server_SetReadyToStartMultiplayerBattle();
 	}
 	else {
-		GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.5f, false);
+		GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.2f, false);
 	}
 }
 
@@ -137,6 +141,8 @@ void APlayerController_Base::Server_SetReadyToStartMultiplayerBattle_Implementat
 // ------------------------- Battle
 void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
+	UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / ClickedActor is: %s"), *ClickedActor->GetFullName());
+
 	if (ClickedActor) {
 		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
 			// Select Avatar To Control
