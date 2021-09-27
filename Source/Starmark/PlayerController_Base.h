@@ -95,9 +95,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetVariables();
 
-	//UFUNCTION(BlueprintCallable)
-	//void UpdateAvatarBattleWidgetComponent();
-
 	UFUNCTION(Client, Unreliable)
 	void Client_GetTurnOrderText(const FString& NewTurnOrderText);
 
@@ -107,9 +104,6 @@ public:
 // ------------------------- Avatar
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void OnRepNotify_CurrentSelectedAvatar();
-
-	UFUNCTION(BlueprintCallable, Client, Reliable)
-	void UpdateAvatarDecals(ACharacter_Pathfinder* CurrentlyActingAvatar);
 
 // ------------------------- Battle
 	UFUNCTION(Server, Reliable)
@@ -123,9 +117,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();
-
-	UFUNCTION(Server, Reliable)
-	void Server_UpdatePlayerControllerVariables();
 
 // ------------------------- Multiplayer Battle
 	UFUNCTION(Client, Reliable)

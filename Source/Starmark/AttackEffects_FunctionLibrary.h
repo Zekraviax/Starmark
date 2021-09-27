@@ -27,4 +27,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void Attack_AddParalyze(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 
+	UFUNCTION(BlueprintCallable)
+	static void Attack_AddBurn(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 };

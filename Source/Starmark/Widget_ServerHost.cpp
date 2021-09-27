@@ -14,6 +14,7 @@ void UWidget_ServerHost::OnWidgetOpened()
 {
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	GameInstanceReference->LoadProfile(GameInstanceReference->CurrentProfileName);
+	Cast<AStarmark_PlayerState>(GetOwningPlayerState())->UpdatePlayerData();
 }	
 
 void UWidget_ServerHost::OnExitButtonPressed()

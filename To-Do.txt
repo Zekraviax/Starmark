@@ -21,16 +21,20 @@ Blueprints-To-Code Conversions:
 
 Core Gameplay:
 * Fix Avatars not setting tiles to be occupied and unoccupied.
-* Avatars need maximum move points per turn.
 * Add the ability to summon and switch out Reserve Avatars.
 * Add a coin-flip/dice-roll when two Avatars are speed-tied.
 * Prevent players from launching attacks when their Avatar is not in range of the target.
+* Draw estimated move path for Avatars when hovering over a tile.
+* Avatar data needs to be updated in the Player’s party when swapping Reserve Avatars is implemented.
+* Add loading screens.
+* Allow already created Avatars to be edited.
 
 
 Menus:
-* Allow players to build teams in the Profile screen.
 * Add ‘Currently Loaded Profile’ to Main Menu and Profile Select Screen.
 * Create Options menus.
+* Get more backgrounds for the menus. (Black and white stars image)
+* Prevent players from giving multiple profiles the same name.
 
 
 Multiplayer:
@@ -43,14 +47,13 @@ Multiplayer:
 
 
 Demo:
-* Create a few pre-set Avatars.
 * Create a few different maps with different environments, obstacles and hazards.
 * Allow players to change the colour of Avatars.
+* Allow players to improve Avatars’ stats by distributing a set amount of points.
+* Replace the current default Avatar images with transparent versions.
 
 
 Other:
 * Fix TEnumAsByte compiler warning.
 * Fix GameInstance complier warnings.
-* Remove pathfinding draws.
 * Re-add type calculator and mark calculator as options on the main menu.
-* Blacklist the name ‘Default’ from profiles (?)

@@ -35,7 +35,7 @@ public:
 	UDataTable* AvatarComplexAttacksDataTable;
 
 // ------------------------- Battle
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	TArray<APlayerController_Base*> PlayerControllerReferences;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -46,6 +46,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* UltimateTypeChartDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int ExpectedPlayers = 2;
 
 // ------------------------- Multiplayer
 	UPROPERTY()
@@ -63,6 +66,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_BeginMultiplayerBattle();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void Server_SinglePlayerBeginMultiplayerBattle(APlayerController_Base* PlayerControllerReference);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_MultiplayerBattleCheckAllPlayersReady();

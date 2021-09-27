@@ -192,6 +192,19 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			}
 		}
 	}
+	// Cone Trace
+	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Cone) {
+		TraceStartLocation = FVector(GetActorLocation().X + 200, GetActorLocation().Y, GetActorLocation().Z);
+		TraceEndLocation = FVector(TraceStartLocation.X + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y, TraceStartLocation.Z);
+
+		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
+		DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 166.667f), FColor::Red, false, TraceDrawTime);
+
+		if (Hit)
+			if (TraceHitResult.Actor->IsValidLowLevel())
+				if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
+					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
+	}
 	// Four-Way Cross Trace
 	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
 		// North

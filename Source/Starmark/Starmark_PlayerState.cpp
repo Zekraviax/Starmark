@@ -28,8 +28,8 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 // ------------------------- Player
 void AStarmark_PlayerState::UpdatePlayerData()
 {
-	if (!GameInstanceReference)
-		GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	//if (!GameInstanceReference)
+	GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
 	ReplicatedPlayerName = GameInstanceReference->PlayerName;
 	PlayerProfileReference = GameInstanceReference->CurrentProfileReference;

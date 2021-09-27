@@ -46,14 +46,35 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / PlayerControllerReferences found: %d"), PlayerControllerReferences.Num());
 
 	// When all players have joined, begin running the functions needed to start the battle
-	if (PlayerControllerReferences.Num() >= 2) {
-		UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / Call Server_BeginMultiplayerBattle()"));
-		Server_BeginMultiplayerBattle();
-	}
+	//if (PlayerControllerReferences.Num() >= ExpectedPlayers) {
+	//	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / Call Server_BeginMultiplayerBattle()"));
+	//	Server_BeginMultiplayerBattle();
+	//}
+
+	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / Call Server_SinglePlayerBeginMultiplayerBattle()"));
+	Server_SinglePlayerBeginMultiplayerBattle(NewPlayerController);
 }
 
 
 void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
+{
+	AStarmark_GameState* GameStateReference = nullptr;
+	GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+
+	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+		TArray<FAvatar_Struct> CurrentPlayerTeam = Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam;
+
+		for (int j = 0; j < CurrentPlayerTeam.Num(); j++) {
+			if (j < 4 && CurrentPlayerTeam[j].AvatarName != "Default")
+				Server_SpawnAvatar(PlayerControllerReferences[i], j + 1, Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam[j]);
+		}
+	}
+
+	Server_MultiplayerBattleCheckAllPlayersReady();
+}
+
+
+void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementation(APlayerController_Base* PlayerControllerReference)
 {
 	AStarmark_GameState* GameStateReference = nullptr;
 	GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
@@ -84,8 +105,8 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 	}
 
 	// Assemble turn order text
-	if (ReadyStatuses.Contains(false)) {
-		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady, 1.f, false);
+	if (ReadyStatuses.Contains(false) || ReadyStatuses.Num() < ExpectedPlayers) {
+		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady, 0.5f, false);
 	} else {
 		// Only set the turn order once all Avatars are spawned
 		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
@@ -151,9 +172,11 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	Location.Z = 95;
 
 	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
+	NewAvatarActor->AvatarData = AvatarData;
 
-	AvatarRowNames = AvatarDataTable->GetRowNames();
-	NewAvatarActor->AvatarData = *AvatarDataTable->FindRow<FAvatar_Struct>(AvatarRowNames[FMath::RandRange(0, AvatarRowNames.Num() - 1)], ContextString);
+	// Random Avatars
+	//AvatarRowNames = AvatarDataTable->GetRowNames();
+	//NewAvatarActor->AvatarData = *AvatarDataTable->FindRow<FAvatar_Struct>(AvatarRowNames[FMath::RandRange(0, AvatarRowNames.Num() - 1)], ContextString);
 
 	// Avatar Stats
 	NewAvatarActor->AvatarData.CurrentHealthPoints = NewAvatarActor->AvatarData.BaseStats.HealthPoints;
@@ -230,15 +253,15 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	//CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
 
 	// Compare each Move type against the Target type
-	//for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
-	//	// 2x Damage
-	//	if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
-	//		CurrentDamage = CurrentDamage * 2;
+	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
+		// 2x Damage
+		if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
+			CurrentDamage = CurrentDamage * 2;
 
-	//	// 0.5x Damage
-	//	else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
-	//		CurrentDamage = CurrentDamage / 2;
-	//}
+		// 0.5x Damage
+		else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
+			CurrentDamage = CurrentDamage / 2;
+	}
 
 	if (CurrentDamage < 1)
 		CurrentDamage = 1;
@@ -256,7 +279,7 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	Server_UpdateAllAvatarDecals();
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-
+		PlayerControllerReferences[i]->SetBattleWidgetVariables();
 	}
 
 	// End the turn

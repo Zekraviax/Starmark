@@ -131,6 +131,7 @@ UENUM(BlueprintType)
 enum class EBattle_AttackPatterns : uint8
 {
 	Circle,
+	Cone,
 	FourWayCross,
 	EightWayCross,
 };
@@ -141,6 +142,7 @@ enum class EBattle_AttackEffects : uint8
 {
 	// Status Effects
 	AddParalyzeStatus,
+	AddBurnStatus,
 };
 
 

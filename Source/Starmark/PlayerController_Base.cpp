@@ -126,12 +126,6 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 }
 
 
-void APlayerController_Base::UpdateAvatarDecals_Implementation(ACharacter_Pathfinder* CurrentlyActingAvatar)
-{
-
-}
-
-
 void APlayerController_Base::Server_SetReadyToStartMultiplayerBattle_Implementation()
 {
 	IsReadyToStartMultiplayerBattle = true;
@@ -145,7 +139,8 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 
 	if (ClickedActor) {
 		// If we're attacking, and we clicked on a valid target in-range, launch an attack
-		if (CurrentSelectedAvatar != ClickedActor)
+		if (CurrentSelectedAvatar != ClickedActor &&
+			CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(ClickedActor))
 			CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(ClickedActor));
 
 		// Update HUD only if the player clicked on an actor
@@ -164,12 +159,6 @@ void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector Move
 void APlayerController_Base::SendEndOfTurnCommandToServer_Implementation()
 {
 	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn_Implementation();
-}
-
-
-void APlayerController_Base::Server_UpdatePlayerControllerVariables_Implementation()
-{
-
 }
 
 
