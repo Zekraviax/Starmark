@@ -230,15 +230,15 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	//CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
 
 	// Compare each Move type against the Target type
-	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
-		// 2x Damage
-		if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
-			CurrentDamage = CurrentDamage * 2;
+	//for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
+	//	// 2x Damage
+	//	if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
+	//		CurrentDamage = CurrentDamage * 2;
 
-		// 0.5x Damage
-		else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
-			CurrentDamage = CurrentDamage / 2;
-	}
+	//	// 0.5x Damage
+	//	else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
+	//		CurrentDamage = CurrentDamage / 2;
+	//}
 
 	if (CurrentDamage < 1)
 		CurrentDamage = 1;
@@ -254,6 +254,10 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 
 	// Tell the server to update everyone
 	Server_UpdateAllAvatarDecals();
+
+	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+
+	}
 
 	// End the turn
 	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn_Implementation();

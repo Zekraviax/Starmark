@@ -9,6 +9,7 @@ Refactor:
 
 
 Blueprints-To-Code Conversions:
+* PlayerController_Base_Blueprint
 * Starmark_GameMode_Blueprint
 * Starmark_GameMode_Lobby_Blueprint
 * Starmark_PlayerState_Blueprint
@@ -23,6 +24,7 @@ Core Gameplay:
 * Avatars need maximum move points per turn.
 * Add the ability to summon and switch out Reserve Avatars.
 * Add a coin-flip/dice-roll when two Avatars are speed-tied.
+* Prevent players from launching attacks when their Avatar is not in range of the target.
 
 
 Menus:

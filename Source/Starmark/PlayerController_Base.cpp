@@ -144,23 +144,9 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 	UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / ClickedActor is: %s"), *ClickedActor->GetFullName());
 
 	if (ClickedActor) {
-		if (ClickedActor->GetClass()->GetName().Contains("Character")) {
-			// Select Avatar To Control
-			//if (CurrentSelectedAvatar != ClickedActor && PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
-			//	Cast<ACharacter_Pathfinder>(ClickedActor)->OnAvatarClicked();
-			//}
-			// Select Avatar to Begin Attack
-			if (CurrentSelectedAvatar != ClickedActor) {
-				// If we're attacking, and we clicked on a valid target in-range, launch an attack
-				CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(ClickedActor));
-			}
-		}
-		// If all else fails, assume we clicked on a plane that we can move our controlled Avatar to
-		else if (ClickedActor->GetClass()->GetName().Contains("StaticMesh") || ClickedActor->GetClass()->GetName().Contains("GridTile")) {
-			if (CurrentSelectedAvatar->IsValidLowLevel()) {
-				SendMoveCommandToServer_Implementation(ClickedActor->GetActorLocation());
-			}
-		}
+		// If we're attacking, and we clicked on a valid target in-range, launch an attack
+		if (CurrentSelectedAvatar != ClickedActor)
+			CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(ClickedActor));
 
 		// Update HUD only if the player clicked on an actor
 		if (BattleWidgetReference)
