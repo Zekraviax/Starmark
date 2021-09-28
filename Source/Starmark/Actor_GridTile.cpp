@@ -68,5 +68,5 @@ void AActor_GridTile::OnMouseBeginHover()
 void AActor_GridTile::OnMouseEndHover()
 {
 	if (DynamicMaterial->IsValidLowLevel())
-		DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Black);
+		DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::White);
 }

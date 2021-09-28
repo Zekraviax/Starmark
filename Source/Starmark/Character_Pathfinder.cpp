@@ -1,6 +1,11 @@
 #include "Character_Pathfinder.h"
 
-#include "UObject/ConstructorHelpers.h"
+#include "Actor_GridTile.h"
+#include "AIController_Avatar.h"
+#include "AttackEffects_FunctionLibrary.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "CollisionQueryParams.h"
+#include "CollisionShape.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -11,16 +16,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "DrawDebugHelpers.h"
-#include "Actor_GridTile.h"
 #include "PlayerController_Base.h"
-#include "AIController_Avatar.h"
 #include "Widget_HUD_Battle.h"
 #include "WidgetComponent_AvatarBattleData.h"
-#include "AttackEffects_FunctionLibrary.h"
 #include "Starmark_GameState.h"
 #include "Starmark_GameMode.h"
 #include "Starmark_PlayerState.h"
-#include "BehaviorTree/BlackboardComponent.h"
+#include "UObject/ConstructorHelpers.h"
 
 
 ACharacter_Pathfinder::ACharacter_Pathfinder()
@@ -58,6 +60,11 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	AvatarBattleData_Component = CreateDefaultSubobject<UWidgetComponent>("AvatarBattleData_Component");
 	AvatarBattleData_Component->SetupAttachment(RootComponent);
 	AvatarBattleData_Component->SetVisibility(false);
+
+	// Cone Trace Actor Component
+	ConeTraceActor = CreateDefaultSubobject<UStaticMeshComponent>("ConeTraceActor");
+	ConeTraceActor->SetupAttachment(RootComponent);
+	//ConeTraceActor->SetVisibility(false);
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -175,6 +182,8 @@ void ACharacter_Pathfinder::ShowAttackRange()
 	FLinearColor TraceColour = FLinearColor::Red, TraceHitColour = FLinearColor::Green;
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceTypeQuery;
 	TraceTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+	FCollisionShape CapsuleCollisionShape = FCollisionShape::MakeCapsule(50, 100);
+	FCollisionQueryParams QueryParams;
 
 	
 	// Circle Trace
@@ -197,13 +206,22 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		TraceStartLocation = FVector(GetActorLocation().X + 200, GetActorLocation().Y, GetActorLocation().Z);
 		TraceEndLocation = FVector(TraceStartLocation.X + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y, TraceStartLocation.Z);
 
-		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
-		DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 166.667f), FColor::Red, false, TraceDrawTime);
+		//Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
+		//DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 166.667f), FColor::Red, false, TraceDrawTime);
 
-		if (Hit)
-			if (TraceHitResult.Actor->IsValidLowLevel())
-				if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
-					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
+		// Set the relative location and scale through maths
+		int DefaultRelativeLocationX = 100; // Add 95 for every tile range the cone should reach
+
+		Hit = GetWorld()->SweepMultiByChannel(TraceHitResultArray, TraceStartLocation, TraceEndLocation, FQuat::Identity, ECollisionChannel::ECC_WorldDynamic, CapsuleCollisionShape, QueryParams);
+
+		if (Hit) {
+			for (int i = 0; i < TraceHitResultArray.Num(); i++) {
+				if (TraceHitResultArray[i].Actor->IsValidLowLevel())
+					if (Cast<ACharacter_Pathfinder>(TraceHitResultArray[i].Actor))
+						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(Cast<ACharacter_Pathfinder>(TraceHitResultArray[i].Actor)));
+				
+			}
+		}
 	}
 	// Four-Way Cross Trace
 	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {

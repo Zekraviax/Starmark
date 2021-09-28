@@ -88,6 +88,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Other")
 	APlayerController_Base* PlayerControllerReference;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* ConeTraceActor;
+
 // Functions
 // --------------------------------------------------
 
