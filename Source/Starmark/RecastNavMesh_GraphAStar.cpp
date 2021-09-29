@@ -198,22 +198,7 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 				// quit searching when the goal state is reached
 				if (x == EndTile.X && y == EndTile.Y)
 				{
-					//if (AvatarReference->AvatarData.CurrentTileMoves > 0) {
 					Result.Path->GetPathPoints().Add(FNavPathPoint(PathLocation));
-					//	AvatarReference->AvatarData.CurrentTileMoves--;
-					//} else {
-					//	// garbage collection
-					//	delete n0;
-					//	// empty the leftover nodes
-					//	while (!(pq[pqi].Num() == 0)) pq[pqi].HeapPopDiscard(nodePredicate(), true);
-					//	Algo::Reverse(Result.Path->GetPathPoints());
-
-					//	Result.Path->MarkReady();
-					//	Result.Result = ENavigationQueryResult::Success;
-
-					//	return Result;
-					//}
-
 
 					// generate the path from finish to start
 					// by following the directions
@@ -236,21 +221,7 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 							break;
 						}
 
-						//if (AvatarReference->AvatarData.CurrentTileMoves > 0) {
 						Result.Path->GetPathPoints().Add(FNavPathPoint(PathLocation));
-						//	AvatarReference->AvatarData.CurrentTileMoves--;
-						//} else {
-						//	// garbage collection
-						//	delete n0;
-						//	// empty the leftover nodes
-						//	while (!(pq[pqi].Num() == 0)) pq[pqi].HeapPopDiscard(nodePredicate(), true);
-						//	Algo::Reverse(Result.Path->GetPathPoints());
-
-						//	Result.Path->MarkReady();
-						//	Result.Result = ENavigationQueryResult::Success;
-
-						//	return Result;
-						//}
 
 						x += dx[j];
 						y += dy[j];
@@ -265,12 +236,6 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 						pq[pqi].HeapPopDiscard(nodePredicate(), true);
 
 					Algo::Reverse(Result.Path->GetPathPoints());
-
-					//while (Result.Path->GetPathPoints().Num() > AvatarReference->AvatarData.CurrentTileMoves) {
-					//	Result.Path->GetPathPoints().RemoveAt(Result.Path->GetPathPoints().Num() - 1);
-					//}
-
-					//AvatarReference->AvatarData.CurrentTileMoves -= Result.Path->GetPathPoints().Num();
 
 					Result.Path->MarkReady();
 					Result.Result = ENavigationQueryResult::Success;

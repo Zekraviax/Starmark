@@ -53,6 +53,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int AvatarSlotNumber;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool ChangeColourOnMouseHover = true;
+
 // Functions
 // --------------------------------------------------
 

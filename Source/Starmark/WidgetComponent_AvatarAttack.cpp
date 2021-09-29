@@ -17,5 +17,9 @@ void UWidgetComponent_AvatarAttack::OnButtonPressed()
 
 		// Get new valid targets
 		PlayerControllerReference->CurrentSelectedAvatar->ShowAttackRange();
+
+		// Enable rotation towards mouse cursor
+		PlayerControllerReference->CurrentSelectedAvatar->RotateAvatarTowardsMouse = true;
+		PlayerControllerReference->TileHighlightMode = E_PlayerCharacter_HighlightModes::E_AttackPattern;
 	}
 }

@@ -31,14 +31,16 @@ void UWidget_HUD_Battle::UpdateTurnOrderText(FString NewText)
 {
 	if (TurnOrderTextBlock->IsValidLowLevel())
 		TurnOrderTextBlock->SetText(FText::FromString("Turn Order:\n" + NewText));
+
+	UpdateAvatarAttacksComponents();
 }
 
 
 void UWidget_HUD_Battle::OnPlayerClick()
 {
 	// Hide Avatar Attacks Box if an AttackButton wasn't clicked
-	if (AvatarAttacksBox)
-		AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
+	//if (AvatarAttacksBox)
+	//	AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
 }
 
 
@@ -65,8 +67,8 @@ void UWidget_HUD_Battle::MoveCommand()
 	PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_MoveCharacter;
 
 	// Hide Avatar Attacks Box
-	if (AvatarAttacksBox)
-		AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
+	//if (AvatarAttacksBox)
+	//	AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
 }
 
 
@@ -76,7 +78,7 @@ void UWidget_HUD_Battle::AttackCommand()
 	if (AvatarAttacksBox) {
 		UpdateAvatarAttacksComponents();
 
-		AvatarAttacksBox->SetVisibility(ESlateVisibility::Visible);
+		//AvatarAttacksBox->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 

@@ -34,14 +34,14 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UDecalComponent* ActorSelected;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	//UDecalComponent* ActorSelected;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ActorSelectedPlane;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	//UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = ActorSelectedDynamicMaterialColourUpdate, Category = "Components")
 	FLinearColor ActorSelected_DynamicMaterial_Colour;
@@ -61,6 +61,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	FAvatar_ElementalEssences ElementalEssences;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	bool RotateAvatarTowardsMouse = false;
 
 // ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
@@ -89,7 +92,7 @@ public:
 	APlayerController_Base* PlayerControllerReference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent* ConeTraceActor;
+	UStaticMeshComponent* AttackTraceActor;
 
 // Functions
 // --------------------------------------------------

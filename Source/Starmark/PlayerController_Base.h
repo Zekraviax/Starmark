@@ -28,6 +28,15 @@ enum class E_PlayerCharacter_ClickModes : uint8
 };
 
 
+UENUM(BlueprintType)
+enum class E_PlayerCharacter_HighlightModes : uint8
+{
+	E_None,
+	E_MovePath,
+	E_AttackPattern
+};
+
+
 UCLASS()
 class STARMARK_API APlayerController_Base : public APlayerController
 {
@@ -50,6 +59,9 @@ public:
 // ------------------------- Controller
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Controller")
 	E_PlayerCharacter_ClickModes PlayerClickMode;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller")
+	E_PlayerCharacter_HighlightModes TileHighlightMode = E_PlayerCharacter_HighlightModes::E_MovePath;
 
 // ------------------------- Widgets
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")

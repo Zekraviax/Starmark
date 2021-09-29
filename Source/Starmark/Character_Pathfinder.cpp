@@ -37,34 +37,34 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to face direction they move
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 1000.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
 	// Actor Selected Decal
-	ActorSelected = CreateDefaultSubobject<UDecalComponent>("ActorSelected");
-	ActorSelected->SetupAttachment(RootComponent);
-	ActorSelected->SetVisibility(true);
-	ActorSelected->SetHiddenInGame(false);
-	ActorSelected->DecalSize = FVector(32.0f, 64.0f, 64.0f);
-	ActorSelected->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
-	ActorSelected->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
+	//ActorSelected = CreateDefaultSubobject<UDecalComponent>("ActorSelected");
+	//ActorSelected->SetupAttachment(RootComponent);
+	//ActorSelected->SetVisibility(true);
+	//ActorSelected->SetHiddenInGame(false);
+	//ActorSelected->DecalSize = FVector(32.0f, 64.0f, 64.0f);
+	//ActorSelected->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
+	//ActorSelected->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
 
 	// Actor Selected Plane
 	ActorSelectedPlane = CreateDefaultSubobject<UStaticMeshComponent>("ActorSelectedPlane");
 	ActorSelectedPlane->SetupAttachment(RootComponent);
 	ActorSelectedPlane->SetVisibility(true);
-	ActorSelectedPlane->SetHiddenInGame(false);
+	ActorSelectedPlane->SetHiddenInGame(true);
 
 	// AvatarBattleData WidgetComponent
 	AvatarBattleData_Component = CreateDefaultSubobject<UWidgetComponent>("AvatarBattleData_Component");
 	AvatarBattleData_Component->SetupAttachment(RootComponent);
 	AvatarBattleData_Component->SetVisibility(false);
 
-	// Cone Trace Actor Component
-	ConeTraceActor = CreateDefaultSubobject<UStaticMeshComponent>("ConeTraceActor");
-	ConeTraceActor->SetupAttachment(RootComponent);
-	//ConeTraceActor->SetVisibility(false);
+	// Attack Trace Actor Component
+	AttackTraceActor = CreateDefaultSubobject<UStaticMeshComponent>("AttackTraceActor");
+	AttackTraceActor->SetupAttachment(RootComponent);
+	AttackTraceActor->SetHiddenInGame(true);
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -79,7 +79,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	bReplicateMovement = true; 
 	bNetUseOwnerRelevancy = true;
 	IndexInPlayerParty = -1;
-	ActorSelected->SetIsReplicated(true);
+	//ActorSelected->SetIsReplicated(true);
 	ActorSelectedPlane->SetIsReplicated(true);
 }
 
@@ -176,6 +176,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 	int TraceSphereRadius = (100 * (CurrentSelectedAttack.BaseRange * 2)), CapsuleHalfHeight = 300, TraceSphereSegments = 35;
 	float TraceDrawTime = 12.5f;
 	const TArray<AActor*> TraceActorsToIgnore;
+	TArray<AActor*> ConeTraceOverlappingActors;
 	TArray<FHitResult> TraceHitResultArray;
 	FHitResult TraceHitResult;
 	bool TraceComplex = false, TraceIgnoreSelf = true, Hit;
@@ -203,23 +204,32 @@ void ACharacter_Pathfinder::ShowAttackRange()
 	}
 	// Cone Trace
 	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Cone) {
-		TraceStartLocation = FVector(GetActorLocation().X + 200, GetActorLocation().Y, GetActorLocation().Z);
-		TraceEndLocation = FVector(TraceStartLocation.X + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y, TraceStartLocation.Z);
-
-		//Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
-		//DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 166.667f), FColor::Red, false, TraceDrawTime);
-
 		// Set the relative location and scale through maths
-		int DefaultRelativeLocationX = 100; // Add 95 for every tile range the cone should reach
+		int DefaultConeLocationX = 300; // Add 190 for every tile range the cone should reach
+		int DefaultConeScaleX = 1;		// Add 1 for every tile range
+		int DefaultConeScaleY = 0;		// Add 2 for every tile range
+		int DefaultConeScaleZ = 0;		// Add 1 for every tile range
 
-		Hit = GetWorld()->SweepMultiByChannel(TraceHitResultArray, TraceStartLocation, TraceEndLocation, FQuat::Identity, ECollisionChannel::ECC_WorldDynamic, CapsuleCollisionShape, QueryParams);
+		FVector ConeLocation = FVector(DefaultConeLocationX + (CurrentSelectedAttack.BaseRange * 190), 0, -100);
+		FRotator ConeRotation = FRotator(180, 90, 180);
+		FVector ConeScale = FVector(DefaultConeScaleX + CurrentSelectedAttack.BaseRange, DefaultConeScaleY + CurrentSelectedAttack.BaseRange * 2, DefaultConeScaleZ + CurrentSelectedAttack.BaseRange);
+		
+		AttackTraceActor->SetRelativeLocation(ConeLocation);
+		AttackTraceActor->SetRelativeScale3D(ConeScale);
 
-		if (Hit) {
-			for (int i = 0; i < TraceHitResultArray.Num(); i++) {
-				if (TraceHitResultArray[i].Actor->IsValidLowLevel())
-					if (Cast<ACharacter_Pathfinder>(TraceHitResultArray[i].Actor))
-						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(Cast<ACharacter_Pathfinder>(TraceHitResultArray[i].Actor)));
-				
+		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		AttackTraceActor->GetOverlappingActors(ConeTraceOverlappingActors);
+
+		if (ConeTraceOverlappingActors.Num() > 0) {
+			for (int i = 0; i < ConeTraceOverlappingActors.Num(); i++) {
+				if (Cast<AActor_GridTile>(ConeTraceOverlappingActors[i])) {
+					AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(ConeTraceOverlappingActors[i]);
+
+					if (GridTileReference->DynamicMaterial->IsValidLowLevel()) {
+						//GridTileReference->DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+						GridTileReference->ChangeColourOnMouseHover = false;
+					}
+				}
 			}
 		}
 	}

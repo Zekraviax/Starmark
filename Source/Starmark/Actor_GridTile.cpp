@@ -60,13 +60,13 @@ void AActor_GridTile::UpdateGridTileState()
 
 void AActor_GridTile::OnMouseBeginHover()
 {
-	if (DynamicMaterial->IsValidLowLevel())
+	if (DynamicMaterial->IsValidLowLevel() && ChangeColourOnMouseHover)
 		DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
 }
 
 
 void AActor_GridTile::OnMouseEndHover()
 {
-	if (DynamicMaterial->IsValidLowLevel())
+	if (DynamicMaterial->IsValidLowLevel() && ChangeColourOnMouseHover)
 		DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::White);
 }
