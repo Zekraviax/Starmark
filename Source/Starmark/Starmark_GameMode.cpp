@@ -187,18 +187,9 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 	NewAvatarActor->MultiplayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
 
-	//Add Simple Attacks First, then Complex Attacks
-	if (NewAvatarActor->AvatarData.SimpleAttacks.Num() > 0) {
-		for (int i = 0; i < NewAvatarActor->AvatarData.SimpleAttacks.Num(); i++) {
-			NewAvatarActor->CurrentKnownAttacks.Add(*AvatarSimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(NewAvatarActor->AvatarData.SimpleAttacks[i].RowName, ContextString));
-		}
-	}
-
-	if (NewAvatarActor->AvatarData.AttacksLearnedByBuyingWithEssence.Num() > 0) {
-		for (int i = 0; i < NewAvatarActor->AvatarData.AttacksLearnedByBuyingWithEssence.Num(); i++) {
-			if (NewAvatarActor->CurrentKnownAttacks.Num() < 4)
-				NewAvatarActor->CurrentKnownAttacks.Add(*AvatarComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(NewAvatarActor->AvatarData.AttacksLearnedByBuyingWithEssence[i].RowName, ContextString));
-		}
+	// Get attacks
+	for (int i = 0; i < AvatarData.CurrentAttacks.Num(); i++) {
+		NewAvatarActor->CurrentKnownAttacks.Add(AvatarData.CurrentAttacks[i]);
 	}
 
 	// Sent data to Clients

@@ -28,14 +28,21 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 // ------------------------- Player
 void AStarmark_PlayerState::UpdatePlayerData()
 {
-	//if (!GameInstanceReference)
-	GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	UE_LOG(LogTemp, Warning, TEXT("UpdatePlayerData / IsValid(GetWorld()) returns: %s"), IsValid(GetWorld()) ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("UpdatePlayerData / IsValid(GetGameInstance) returns: %s"), IsValid(UGameplayStatics::GetGameInstance(GetWorld())) ? TEXT("true") : TEXT("false"));
 
-	ReplicatedPlayerName = GameInstanceReference->PlayerName;
-	PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+	if (!GameInstanceReference)
+	if (GetWorld()) {
+		if (UGameplayStatics::GetGameInstance(GetWorld())) {
+			GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	SetPlayerName(GameInstanceReference->PlayerName);
-	SendUpdateToMultiplayerLobby();
+			ReplicatedPlayerName = GameInstanceReference->PlayerName;
+			PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+
+			SetPlayerName(GameInstanceReference->PlayerName);
+			SendUpdateToMultiplayerLobby();
+		}
+	}
 }
 
 

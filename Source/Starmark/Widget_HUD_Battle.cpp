@@ -47,17 +47,17 @@ void UWidget_HUD_Battle::OnPlayerClick()
 void UWidget_HUD_Battle::OnPlayerCurrentlyActingStateChanged()
 {
 	// Set buttons to be unclickable if it isn't the player's turn
-	if (PlayerControllerReference->IsValidLowLevel()) {
-		if (PlayerControllerReference->IsCurrentlyActingPlayer) {
-			MoveCommandButton->SetIsEnabled(true);
-			AttackCommandButton->SetIsEnabled(true);
-			EndTurnCommandButton->SetIsEnabled(true);
-		} else {
-			MoveCommandButton->SetIsEnabled(false);
-			AttackCommandButton->SetIsEnabled(false);
-			EndTurnCommandButton->SetIsEnabled(false);
-		}
-	}
+	//if (PlayerControllerReference->IsValidLowLevel()) {
+	//	if (PlayerControllerReference->IsCurrentlyActingPlayer) {
+	//		MoveCommandButton->SetIsEnabled(true);
+	//		AttackCommandButton->SetIsEnabled(true);
+	//		EndTurnCommandButton->SetIsEnabled(true);
+	//	} else {
+	//		MoveCommandButton->SetIsEnabled(false);
+	//		AttackCommandButton->SetIsEnabled(false);
+	//		EndTurnCommandButton->SetIsEnabled(false);
+	//	}
+	//}
 }
 
 
@@ -74,21 +74,21 @@ void UWidget_HUD_Battle::MoveCommand()
 
 void UWidget_HUD_Battle::AttackCommand()
 {
-	// Show Avatar Attacks Box
-	if (AvatarAttacksBox) {
-		UpdateAvatarAttacksComponents();
+	//// Show Avatar Attacks Box
+	//if (AvatarAttacksBox) {
+	//	UpdateAvatarAttacksComponents();
 
-		//AvatarAttacksBox->SetVisibility(ESlateVisibility::Visible);
-	}
+	//	//AvatarAttacksBox->SetVisibility(ESlateVisibility::Visible);
+	//}
 }
 
 
 void UWidget_HUD_Battle::SwitchCommand()
 {
-	PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToControl;
+	//PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToControl;
 
-	if (AvatarAttacksBox)
-		AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
+	//if (AvatarAttacksBox)
+	//	AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
 }
 
 

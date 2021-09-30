@@ -41,15 +41,6 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
-	// Actor Selected Decal
-	//ActorSelected = CreateDefaultSubobject<UDecalComponent>("ActorSelected");
-	//ActorSelected->SetupAttachment(RootComponent);
-	//ActorSelected->SetVisibility(true);
-	//ActorSelected->SetHiddenInGame(false);
-	//ActorSelected->DecalSize = FVector(32.0f, 64.0f, 64.0f);
-	//ActorSelected->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
-	//ActorSelected->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
-
 	// Actor Selected Plane
 	ActorSelectedPlane = CreateDefaultSubobject<UStaticMeshComponent>("ActorSelectedPlane");
 	ActorSelectedPlane->SetupAttachment(RootComponent);
@@ -172,38 +163,46 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 // ------------------------- Battle
 void ACharacter_Pathfinder::ShowAttackRange()
 {
-	FVector TraceStartLocation, TraceEndLocation;
-	int TraceSphereRadius = (100 * (CurrentSelectedAttack.BaseRange * 2)), CapsuleHalfHeight = 300, TraceSphereSegments = 35;
-	float TraceDrawTime = 12.5f;
-	const TArray<AActor*> TraceActorsToIgnore;
-	TArray<AActor*> ConeTraceOverlappingActors;
-	TArray<FHitResult> TraceHitResultArray;
-	FHitResult TraceHitResult;
-	bool TraceComplex = false, TraceIgnoreSelf = true, Hit;
-	FLinearColor TraceColour = FLinearColor::Red, TraceHitColour = FLinearColor::Green;
-	TArray<TEnumAsByte<EObjectTypeQuery>> TraceTypeQuery;
-	TraceTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
-	FCollisionShape CapsuleCollisionShape = FCollisionShape::MakeCapsule(50, 100);
-	FCollisionQueryParams QueryParams;
-
-	
 	// Circle Trace
 	if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Circle) {
-		TraceStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y, 55);
-		TraceEndLocation = FVector(TraceStartLocation.X, TraceStartLocation.Y, 56);
-
-		Hit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), TraceStartLocation, TraceEndLocation, TraceSphereRadius, UEngineTypes::ConvertToTraceType(ECC_Pawn), TraceComplex,
-			TraceActorsToIgnore, EDrawDebugTrace::ForDuration, TraceHitResultArray, true, TraceColour, TraceHitColour, TraceDrawTime);
-
-		if (Hit) {
-			for (int i = 0; i < TraceHitResultArray.Num(); i++) {
-				if (TraceHitResultArray[i].Actor->GetClass() == this->GetClass() && TraceHitResultArray[i].Actor != this)
-					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResultArray[i].Actor));
+		// Set the StaticMesh
+		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
+			if (AttackTraceStaticMeshes[i]->GetName().Contains("Sphere")) {
+				AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
+				break;
 			}
 		}
+
+		if (AttackRotationSnapToDegrees != 90)
+			AttackRotationSnapToDegrees = 90;
+
+		int DefaultSphereLocationX = 100;									// Add 100 for every tile range
+		int DefaultSphereScale = 2 * CurrentSelectedAttack.BaseRange;		// Add 2 for every tile range
+
+		FVector SphereLocation = FVector(200 * CurrentSelectedAttack.BaseRange, 0, -100);
+		FRotator SphereRotation = FRotator(0, 0, 0);
+		FVector SphereScale = FVector(DefaultSphereScale, DefaultSphereScale, DefaultSphereScale);
+
+		AttackTraceActor->SetRelativeLocation(SphereLocation);
+		AttackTraceActor->SetRelativeScale3D(SphereScale);
+
+		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+		//AttackTraceActor->GetOverlappingActors();
 	}
 	// Cone Trace
 	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Cone) {
+		// Set the StaticMesh
+		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
+			if (AttackTraceStaticMeshes[i]->GetName().Contains("Cone")) {
+				AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
+				break;
+			}
+		}
+
+		if (AttackRotationSnapToDegrees != 90)
+			AttackRotationSnapToDegrees = 90;
+
 		// Set the relative location and scale through maths
 		int DefaultConeLocationX = 300; // Add 190 for every tile range the cone should reach
 		int DefaultConeScaleX = 1;		// Add 1 for every tile range
@@ -218,120 +217,43 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		AttackTraceActor->SetRelativeScale3D(ConeScale);
 
 		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		AttackTraceActor->GetOverlappingActors(ConeTraceOverlappingActors);
-
-		if (ConeTraceOverlappingActors.Num() > 0) {
-			for (int i = 0; i < ConeTraceOverlappingActors.Num(); i++) {
-				if (Cast<AActor_GridTile>(ConeTraceOverlappingActors[i])) {
-					AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(ConeTraceOverlappingActors[i]);
-
-					if (GridTileReference->DynamicMaterial->IsValidLowLevel()) {
-						//GridTileReference->DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
-						GridTileReference->ChangeColourOnMouseHover = false;
-					}
-				}
+	}
+	// Four-Way and Eight-Way Line Traces
+	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
+		// Set the StaticMesh
+		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
+			if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
+				AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
+				break;
 			}
 		}
+
+		// Adjust the Rotation Snap degree
+		if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross)
+			AttackRotationSnapToDegrees = 45;
+		else
+			AttackRotationSnapToDegrees = 90;
+
+		int DefaultRectangleLocationX = 150;									// Add 100 for every tile range
+		int DefaultRectangleScale = 2 * CurrentSelectedAttack.BaseRange;		// Add 2 for every tile range
+
+		FVector RectangleLocation = FVector(150 + (400 * CurrentSelectedAttack.BaseRange), 0, -100);
+		FRotator RectangleRotation = FRotator(0, 0, 0);
+		FVector RectangleScale = FVector(1, 0.5, DefaultRectangleScale);
+
+		AttackTraceActor->SetRelativeLocation(RectangleLocation);
+		AttackTraceActor->SetRelativeScale3D(RectangleScale);
+
+		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
-	// Four-Way Cross Trace
-	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
-		// North
-		TraceStartLocation = FVector(GetActorLocation().X + 200, GetActorLocation().Y, GetActorLocation().Z);
-		TraceEndLocation = FVector(TraceStartLocation.X + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y, TraceStartLocation.Z);
 
-		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
-		DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
-
-		if (Hit)
-			if (TraceHitResult.Actor->IsValidLowLevel())
-				if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
-					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-
-		// South
-		TraceStartLocation = FVector(GetActorLocation().X - 200, GetActorLocation().Y, GetActorLocation().Z);
-		TraceEndLocation = FVector(GetActorLocation().X - (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y, TraceStartLocation.Z);
-
-		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
-		DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
-
-		if (Hit)
-			if (TraceHitResult.Actor->IsValidLowLevel())
-				if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
-					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-
-		// East
-		TraceStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y - 200, GetActorLocation().Z);
-		TraceEndLocation = FVector(TraceStartLocation.X, TraceStartLocation.Y - (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Z);
-
-		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
-		DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
-
-		if (Hit)
-			if (TraceHitResult.Actor->IsValidLowLevel())
-				if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
-					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-
-		// West
-		TraceStartLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 200, GetActorLocation().Z);
-		TraceEndLocation = FVector(TraceStartLocation.X, TraceStartLocation.Y + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Z);
-
-		Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
-		DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
-
-		if (Hit)
-			if (TraceHitResult.Actor->IsValidLowLevel())
-				if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
-					ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-
-		// Eight-Way Cross
-		if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
-			// North-West
-			TraceStartLocation = FVector(GetActorLocation().X + 200, GetActorLocation().Y + 200, GetActorLocation().Z);
-			TraceEndLocation = FVector(TraceStartLocation.X + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Z);
-
-			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
-			DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
-
-			if (Hit)
-				if (TraceHitResult.Actor->IsValidLowLevel())
-					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
-						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-
-			// South-West
-			TraceStartLocation = FVector(GetActorLocation().X - 200, GetActorLocation().Y + 200, GetActorLocation().Z);
-			TraceEndLocation = FVector(TraceStartLocation.X - (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Z);
-
-			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
-			DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
-
-			if (Hit)
-				if (TraceHitResult.Actor->IsValidLowLevel())
-					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
-						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-
-			// South-East
-			TraceStartLocation = FVector(GetActorLocation().X - 200, GetActorLocation().Y - 200, GetActorLocation().Z);
-			TraceEndLocation = FVector(TraceStartLocation.X - (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y - (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Z);
-
-			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
-			DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
-
-			if (Hit)
-				if (TraceHitResult.Actor->IsValidLowLevel())
-					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
-						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
-
-			// North-East
-			TraceStartLocation = FVector(GetActorLocation().X + 200, GetActorLocation().Y - 200, GetActorLocation().Z);
-			TraceEndLocation = FVector(TraceStartLocation.X + (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Y - (200 * CurrentSelectedAttack.BaseRange), TraceStartLocation.Z);
-
-			Hit = GetWorld()->LineTraceSingleByObjectType(TraceHitResult, TraceStartLocation, TraceEndLocation, FCollisionObjectQueryParams(TraceTypeQuery));
-			DrawDebugBox(GetWorld(), TraceHitResult.Location, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, TraceDrawTime);
-
-			if (Hit)
-				if (TraceHitResult.Actor->IsValidLowLevel())
-					if (Cast<ACharacter_Pathfinder>(TraceHitResult.Actor)->IsValidLowLevel())
-						ValidAttackTargetsArray.AddUnique(Cast<ACharacter_Pathfinder>(TraceHitResult.Actor));
+	// Get all hit actors
+	TArray<AActor*> OverlappingActors;
+	AttackTraceActor->GetOverlappingActors(OverlappingActors);
+	for (int i = 0; i < OverlappingActors.Num(); i++) {
+		if (Cast<AActor_GridTile>(OverlappingActors[i])) {
+			AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(OverlappingActors[i]);
+			GridTileReference->DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.2f, 0.f, 1.f));
 		}
 	}
 }
@@ -378,6 +300,12 @@ void ACharacter_Pathfinder::UpdateAvatarDataInPlayerParty()
 
 
 void ACharacter_Pathfinder::ActorSelectedDynamicMaterialColourUpdate_Implementation() 
+{
+	// Implemented in Blueprints
+}
+
+
+void ACharacter_Pathfinder::AvatarBeginTileOverlap_Implementation()
 {
 	// Implemented in Blueprints
 }

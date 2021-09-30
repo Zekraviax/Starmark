@@ -34,14 +34,8 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	//UDecalComponent* ActorSelected;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ActorSelectedPlane;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	//UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = ActorSelectedDynamicMaterialColourUpdate, Category = "Components")
 	FLinearColor ActorSelected_DynamicMaterial_Colour;
@@ -94,6 +88,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* AttackTraceActor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UStaticMesh*> AttackTraceStaticMeshes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AttackRotationSnapToDegrees = 90;
+
 // Functions
 // --------------------------------------------------
 
@@ -126,6 +126,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void ActorSelectedDynamicMaterialColourUpdate();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void AvatarBeginTileOverlap();
 
 // ------------------------- Multiplayer
 	UFUNCTION(Client, Unreliable)

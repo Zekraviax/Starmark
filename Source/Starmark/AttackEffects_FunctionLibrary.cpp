@@ -29,5 +29,5 @@ void UAttackEffects_FunctionLibrary::Attack_AddParalyze(ACharacter_Pathfinder* A
 
 void UAttackEffects_FunctionLibrary::Attack_AddBurn(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
 {
-	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect("Paralyzed", nullptr, 3));
+	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect("Burned", nullptr, 3));
 }

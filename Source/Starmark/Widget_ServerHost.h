@@ -57,12 +57,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidget_AvatarSelection* AvatarSelection_Reference;
 
+// ------------------------- Widget
+	UPROPERTY()
+	FTimerHandle GetPlayerDataTimerHandle;
+
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
 	void OnWidgetOpened();
+
+	UFUNCTION()
+	void DelayedGetPlayerData();
 
 	UFUNCTION(BlueprintCallable)
 	void OnExitButtonPressed();

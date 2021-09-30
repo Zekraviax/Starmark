@@ -95,7 +95,8 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 	}
 
 	// Bind AvatarSlotChangedDelegate
-	Cast<APlayerController_Lobby>(GetWorld()->GetFirstPlayerController())->OnAvatarChangedSlotDelegate.AddDynamic(this, &UWidget_AvatarLibrary::OnAvatarChangedSlotDelegateBroadcast);
+	if (!Cast<APlayerController_Lobby>(GetWorld()->GetFirstPlayerController())->OnAvatarChangedSlotDelegate.Contains(this, FName("OnAvatarChangedSlotDelegateBroadcast")))
+		Cast<APlayerController_Lobby>(GetWorld()->GetFirstPlayerController())->OnAvatarChangedSlotDelegate.AddDynamic(this, &UWidget_AvatarLibrary::OnAvatarChangedSlotDelegateBroadcast);
 }
 
 

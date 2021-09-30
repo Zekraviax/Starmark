@@ -14,8 +14,26 @@ void UWidget_ServerHost::OnWidgetOpened()
 {
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	GameInstanceReference->LoadProfile(GameInstanceReference->CurrentProfileName);
-	Cast<AStarmark_PlayerState>(GetOwningPlayerState())->UpdatePlayerData();
-}	
+
+	UE_LOG(LogTemp, Warning, TEXT("OnWidgetOpened / GetOwningPlayerState returns: %s"), GetOwningPlayerState()->IsValidLowLevel() ? TEXT("true") : TEXT("false"));
+
+	if (GetOwningPlayerState()->IsValidLowLevel())
+		Cast<AStarmark_PlayerState>(GetOwningPlayerState())->UpdatePlayerData();
+	else
+		GetWorld()->GetTimerManager().SetTimer(GetPlayerDataTimerHandle, this, &UWidget_ServerHost::DelayedGetPlayerData, 0.2f, false);
+}
+
+
+void UWidget_ServerHost::DelayedGetPlayerData()
+{
+	UE_LOG(LogTemp, Warning, TEXT("DelayedGetPlayerData / GetOwningPlayerState returns: %s"), GetOwningPlayerState()->IsValidLowLevel() ? TEXT("true") : TEXT("false"));
+
+	if (GetOwningPlayerState()->IsValidLowLevel())
+		Cast<AStarmark_PlayerState>(GetOwningPlayerState())->UpdatePlayerData();
+	else
+		GetWorld()->GetTimerManager().SetTimer(GetPlayerDataTimerHandle, this, &UWidget_ServerHost::DelayedGetPlayerData, 0.2f, false);
+}
+
 
 void UWidget_ServerHost::OnExitButtonPressed()
 {
