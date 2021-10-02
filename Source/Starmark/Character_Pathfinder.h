@@ -35,9 +35,15 @@ public:
 
 // ------------------------- Components
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UDecalComponent* ActorSelected;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ActorSelectedPlane;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = ActorSelectedDynamicMaterialColourUpdate, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Components")
 	FLinearColor ActorSelected_DynamicMaterial_Colour;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")

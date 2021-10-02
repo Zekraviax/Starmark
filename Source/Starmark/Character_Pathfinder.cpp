@@ -41,20 +41,31 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
+	// Actor Selected Decal
+	ActorSelected = CreateDefaultSubobject<UDecalComponent>("ActorSelected");
+	ActorSelected->SetupAttachment(RootComponent);
+	ActorSelected->SetVisibility(true);
+	ActorSelected->SetHiddenInGame(false);
+	ActorSelected->DecalSize = FVector(32.0f, 64.0f, 64.0f);
+	ActorSelected->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
+	ActorSelected->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
+
 	// Actor Selected Plane
 	ActorSelectedPlane = CreateDefaultSubobject<UStaticMeshComponent>("ActorSelectedPlane");
 	ActorSelectedPlane->SetupAttachment(RootComponent);
 	ActorSelectedPlane->SetVisibility(true);
-	ActorSelectedPlane->SetHiddenInGame(true);
+	ActorSelectedPlane->SetHiddenInGame(false);
 
 	// AvatarBattleData WidgetComponent
 	AvatarBattleData_Component = CreateDefaultSubobject<UWidgetComponent>("AvatarBattleData_Component");
 	AvatarBattleData_Component->SetupAttachment(RootComponent);
-	AvatarBattleData_Component->SetVisibility(false);
+	AvatarBattleData_Component->SetVisibility(true);
+	AvatarBattleData_Component->SetHiddenInGame(false);
 
 	// Attack Trace Actor Component
 	AttackTraceActor = CreateDefaultSubobject<UStaticMeshComponent>("AttackTraceActor");
 	AttackTraceActor->SetupAttachment(RootComponent);
+	AttackTraceActor->SetVisibility(true);
 	AttackTraceActor->SetHiddenInGame(true);
 
 	// Activate ticking in order to update the cursor every frame.
@@ -130,13 +141,13 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 	AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
 	AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
 
-	AvatarBattleData_Component->SetVisibility(true);
+	AvatarBattleData_Component->SetHiddenInGame(true);
 }
 
 
 void ACharacter_Pathfinder::OnAvatarCursorOverEnd()
 {
-	AvatarBattleData_Component->SetVisibility(false);
+	AvatarBattleData_Component->SetHiddenInGame(false);
 }
 
 
@@ -154,7 +165,7 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 			ACharacter_Pathfinder* FoundActor = *Itr;
 
 			if (PlayerControllerReference->CurrentSelectedAvatar != FoundActor)
-				FoundActor->ActorSelectedPlane->SetVisibility(false);
+				FoundActor->ActorSelectedPlane->SetHiddenInGame(false);
 		}
 	}
 }
@@ -254,6 +265,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		if (Cast<AActor_GridTile>(OverlappingActors[i])) {
 			AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(OverlappingActors[i]);
 			GridTileReference->DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.2f, 0.f, 1.f));
+			GridTileReference->ChangeColourOnMouseHover = false;
 		}
 	}
 }

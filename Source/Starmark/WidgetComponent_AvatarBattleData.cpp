@@ -25,12 +25,13 @@ void UWidgetComponent_AvatarBattleData::NativeTick(const FGeometry & MyGeometry,
 // ------------------------- Avatar
 void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinkedAvatar)
 {
+	LinkedAvatar = NewLinkedAvatar;
+
 	if (LinkedAvatar.Nickname != "" && LinkedAvatar.Nickname != LinkedAvatar.AvatarName)
 		AvatarText->SetText(FText::FromString(LinkedAvatar.Nickname));
 	else
 		AvatarText->SetText(FText::FromString(LinkedAvatar.AvatarName));
 
-	//TierText->SetText(FText::FromString(FString::FromInt(1)));
 	TypesText->SetText(FText::FromString(UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar.PrimaryType).ToString()));
 
 	float Division = float(LinkedAvatar.CurrentHealthPoints) / float(LinkedAvatar.BaseStats.HealthPoints);
@@ -41,4 +42,6 @@ void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinke
 
 	if (ManaDisplayText->IsValidLowLevel())
 		ManaDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.CurrentManaPoints) + " / " + FString::FromInt(LinkedAvatar.BaseStats.ManaPoints)));
+
+	// Attacks
 }

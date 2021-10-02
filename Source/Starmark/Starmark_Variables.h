@@ -138,6 +138,13 @@ enum class EBattle_AttackPatterns : uint8
 
 
 UENUM(BlueprintType)
+enum class EBattle_AttackTargetsInRange : uint8
+{
+	E_AttackAllTargets,
+	E_AttackClickedAvatar,
+};
+
+UENUM(BlueprintType)
 enum class EBattle_AttackEffects : uint8
 {
 	// Status Effects
@@ -448,6 +455,9 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 	// Attack Pattern
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EBattle_AttackPatterns AttackPattern;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EBattle_AttackTargetsInRange AttackTargetsInRange;
 
 	// Effect: On attack launch
 	// Effect: On Self

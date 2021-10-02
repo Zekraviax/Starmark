@@ -6,7 +6,7 @@
 // ------------------------- Widget
 void UWidgetComponent_AvatarAttack::OnButtonPressed()
 {
-	if (AvatarAttackIndex > -1 && PlayerControllerReference) {
+	if (AvatarAttackIndex > -1 && PlayerControllerReference && PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.IsValidIndex(AvatarAttackIndex)) {
 		PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack;
 
 		// Set selected Attack

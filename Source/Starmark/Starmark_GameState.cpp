@@ -61,7 +61,8 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 
 void AStarmark_GameState::AvatarBeginTurn_Implementation()
 {
-	AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves;
+	if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex))
+		AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves;
 }
 
 
@@ -87,10 +88,13 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 				PlayerController->IsCurrentlyActingPlayer = false;
 			}
 		}
+
+		PlayerController->SetBattleWidgetVariables();
 	}
 
-	AvatarBeginTurn();
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_UpdateAllAvatarDecals();
+
+	AvatarBeginTurn();
 }
 
 

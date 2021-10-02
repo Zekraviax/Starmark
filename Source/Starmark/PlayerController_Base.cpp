@@ -41,6 +41,7 @@ void APlayerController_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(APlayerController_Base, PlayerProfileReference);
 	DOREPLIFETIME(APlayerController_Base, IsReadyToStartMultiplayerBattle);
 	DOREPLIFETIME(APlayerController_Base, MultiplayerUniqueID);
+	DOREPLIFETIME(APlayerController_Base, PlayerName);
 }
 
 
@@ -60,7 +61,7 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 // ------------------------- Widgets
 void APlayerController_Base::CreateBattleWidget()
 {
-	if (BattleWidgetChildClass && IsLocalPlayerController()) {
+	if (BattleWidgetChildClass && IsLocalPlayerController() && !BattleWidgetReference) {
 		BattleWidgetReference = CreateWidget<UWidget_HUD_Battle>(this, BattleWidgetChildClass);
 
 		if (BattleWidgetReference)
@@ -78,8 +79,9 @@ void APlayerController_Base::SetBattleWidgetVariables()
 		if (BattleWidgetReference->PlayerControllerReference != this)
 			BattleWidgetReference->PlayerControllerReference = this;
 
-		BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
+		//BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
 		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
+		BattleWidgetReference->UpdateAvatarAttacksComponents();
 	}
 }
 
@@ -110,12 +112,14 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 			CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(BattleWidgetReference);
 
 			// Widget initialization
-			if (BattleWidgetReference == NULL) {
+			if (!IsValid(BattleWidgetReference))
 				CreateBattleWidget();
-				SetBattleWidgetVariables();
-			}
 
-			Server_SetReadyToStartMultiplayerBattle();
+			if (IsValid(BattleWidgetReference))
+				SetBattleWidgetVariables();
+
+			if (!IsReadyToStartMultiplayerBattle)
+				Server_SetReadyToStartMultiplayerBattle();
 		} else {
 			GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.2f, false);
 		}
@@ -133,20 +137,45 @@ void APlayerController_Base::Server_SetReadyToStartMultiplayerBattle_Implementat
 
 
 // ------------------------- Battle
+void APlayerController_Base::Server_GetDataFromProfile_Implementation()
+{
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+	PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+	PlayerName = GameInstanceReference->PlayerName;
+	PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
+
+	UE_LOG(LogTemp, Warning, TEXT("Server_GetDataFromProfile / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("Server_GetDataFromProfile / PlayerName is: %s"), *PlayerName);
+}
+
+
 void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / ClickedActor is: %s"), *ClickedActor->GetFullName());
 
-	if (ClickedActor) {
+	if (ClickedActor && CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::E_AttackClickedAvatar) {
 		// If we're attacking, and we clicked on a valid target in-range, launch an attack
-		if (CurrentSelectedAvatar != ClickedActor &&
-			CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(ClickedActor))
-			CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(ClickedActor));
+		UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Launch attack against ClickedActor"));
 
-		// Update HUD only if the player clicked on an actor
-		if (BattleWidgetReference)
-			BattleWidgetReference->OnPlayerClick();
+		if (CurrentSelectedAvatar != ClickedActor &&
+			CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(ClickedActor)) {
+				CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(ClickedActor));
+				Client_SendEndOfTurnCommandToServer();
+		}
+	} else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::E_AttackAllTargets) {
+		UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Launch attack against all valid targets in range."));
+
+		for (int i = 0; i < CurrentSelectedAvatar->ValidAttackTargetsArray.Num(); i++) {
+			CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(CurrentSelectedAvatar->ValidAttackTargetsArray[i]));
+		}
+
+		Client_SendEndOfTurnCommandToServer();
 	}
+
+	// Update HUD only if the player clicked on an actor
+	if (BattleWidgetReference)
+		BattleWidgetReference->OnPlayerClick();
 }
 
 
@@ -156,15 +185,25 @@ void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector Move
 }
 
 
+void APlayerController_Base::Client_SendEndOfTurnCommandToServer_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Client_SendEndOfTurnCommandToServer / Call SendEndOfTurnCommandToServer()"));
+	SendEndOfTurnCommandToServer();
+}
+
+
 void APlayerController_Base::SendEndOfTurnCommandToServer_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("SendEndOfTurnCommandToServer / Call AvatarEndTurn_Implementation()"));
 	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn_Implementation();
 }
 
 
 void APlayerController_Base::GetAvatarUpdateFromServer_Implementation(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar)
 {
-	LocalAvatarUpdate(AvatarReference, AvatarUniqueID, IsCurrentlyActing, IsCurrentlSelectedAvatar);
+	if (IsValid(AvatarReference)) {
+		LocalAvatarUpdate(AvatarReference, AvatarUniqueID, IsCurrentlyActing, IsCurrentlSelectedAvatar);
+	}
 }
 
 
@@ -177,7 +216,7 @@ void APlayerController_Base::LocalAvatarUpdate(ACharacter_Pathfinder* AvatarRefe
 	else
 		FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Red;
 
-	FoundActor->ActorSelectedPlane->SetVisibility(IsCurrentlyActing);
+	FoundActor->ActorSelectedPlane->SetHiddenInGame(!IsCurrentlyActing);
 	FoundActor->ActorSelectedDynamicMaterialColourUpdate();
 
 	SetBattleWidgetVariables();

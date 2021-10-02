@@ -91,6 +91,9 @@ public:
 	UPlayer_SaveData* PlayerProfileReference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
+	FString PlayerName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	int MultiplayerUniqueID;
 
 // ------------------------- Grid
@@ -119,6 +122,9 @@ public:
 
 // ------------------------- Battle
 	UFUNCTION(Server, Reliable)
+	void Server_GetDataFromProfile();
+
+	UFUNCTION(Server, Reliable)
 	void Server_SetReadyToStartMultiplayerBattle();
 
 	UFUNCTION(BlueprintCallable)
@@ -126,6 +132,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void SendMoveCommandToServer(FVector MoveLocation);
+
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void Client_SendEndOfTurnCommandToServer();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();

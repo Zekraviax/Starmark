@@ -22,6 +22,7 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerReadyStatus);
 	DOREPLIFETIME(AStarmark_PlayerState, ReplicatedPlayerName);
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerState_PlayerParty);
+	DOREPLIFETIME(AStarmark_PlayerState, PlayerProfileReference);
 }
 
 
@@ -31,13 +32,50 @@ void AStarmark_PlayerState::UpdatePlayerData()
 	UE_LOG(LogTemp, Warning, TEXT("UpdatePlayerData / IsValid(GetWorld()) returns: %s"), IsValid(GetWorld()) ? TEXT("true") : TEXT("false"));
 	UE_LOG(LogTemp, Warning, TEXT("UpdatePlayerData / IsValid(GetGameInstance) returns: %s"), IsValid(UGameplayStatics::GetGameInstance(GetWorld())) ? TEXT("true") : TEXT("false"));
 
-	if (!GameInstanceReference)
+	//if (!GameInstanceReference)
 	if (GetWorld()) {
 		if (UGameplayStatics::GetGameInstance(GetWorld())) {
 			GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
 			ReplicatedPlayerName = GameInstanceReference->PlayerName;
 			PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+
+			UE_LOG(LogTemp, Warning, TEXT("UpdatePlayerData / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
+
+			SetPlayerName(GameInstanceReference->PlayerName);
+			SendUpdateToMultiplayerLobby();
+		}
+	}
+}
+
+
+void AStarmark_PlayerState::Server_UpdatePlayerData_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / IsValid(GetWorld()) returns: %s"), IsValid(GetWorld()) ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / IsValid(GetGameInstance) returns: %s"), IsValid(UGameplayStatics::GetGameInstance(GetWorld())) ? TEXT("true") : TEXT("false"));
+
+	//if (!GameInstanceReference)
+	if (GetWorld()) {
+		if (UGameplayStatics::GetGameInstance(GetWorld())) {
+			if (!GameInstanceReference)
+				GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+			ReplicatedPlayerName = GameInstanceReference->PlayerName;
+			PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+			PlayerState_PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
+
+			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *ReplicatedPlayerName);
+			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
+
+			for (int i = 0; i < PlayerState_PlayerParty.Num(); i++) {
+				if (PlayerState_PlayerParty[i].AvatarName != "Default") {
+					UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / PlayerState_PlayerParty member number %d is: %s"), i, *PlayerState_PlayerParty[i].AvatarName);
+				}
+			}
+
+			// Update player controller
+			Cast<APlayerController_Base>(GetPawn()->GetController())->PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
+			Cast<APlayerController_Base>(GetPawn()->GetController())->PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
 
 			SetPlayerName(GameInstanceReference->PlayerName);
 			SendUpdateToMultiplayerLobby();

@@ -10,18 +10,20 @@
 // ------------------------- Widget
 void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 {
-	if (AvatarAttacksBox) {
-		for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
-			if (PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.IsValidIndex(i)) {
-				Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AttackNameText->SetText(FText::FromString(PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[i].Name));
+	if (IsValid(this)) {
+		if (AvatarAttacksBox) {
+			for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
+				if (PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.IsValidIndex(i)) {
+					Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AttackNameText->SetText(FText::FromString(PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[i].Name));
 
-				Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->PlayerControllerReference = PlayerControllerReference;
-				Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AvatarAttackIndex = i;
+					Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->PlayerControllerReference = PlayerControllerReference;
+					Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AvatarAttackIndex = i;
 
-				AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Visible);
+					AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Visible);
+				}
+				else
+					AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Hidden);
 			}
-			else
-				AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
@@ -29,10 +31,12 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 
 void UWidget_HUD_Battle::UpdateTurnOrderText(FString NewText)
 {
-	if (TurnOrderTextBlock->IsValidLowLevel())
-		TurnOrderTextBlock->SetText(FText::FromString("Turn Order:\n" + NewText));
+	if (IsValid(this)) {
+		if (TurnOrderTextBlock->IsValidLowLevel())
+			TurnOrderTextBlock->SetText(FText::FromString("Turn Order:\n" + NewText));
 
-	UpdateAvatarAttacksComponents();
+		UpdateAvatarAttacksComponents();
+	}
 }
 
 
@@ -94,8 +98,8 @@ void UWidget_HUD_Battle::SwitchCommand()
 
 void UWidget_HUD_Battle::EndCommand()
 {
-	if (AvatarAttacksBox)
-		AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
+	//if (AvatarAttacksBox)
+	//	AvatarAttacksBox->SetVisibility(ESlateVisibility::Hidden);
 
 	PlayerControllerReference->SendEndOfTurnCommandToServer_Implementation();
 }

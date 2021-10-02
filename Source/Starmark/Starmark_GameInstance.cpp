@@ -38,6 +38,9 @@ void UStarmark_GameInstance::LoadProfile(FString ProfileName)
 
 			PlayerName = CurrentProfileReference->Name;
 			CurrentProfileName = ProfileName;
+
+			// Set data in the players' controller
+			//GetPlayer
 			break;
 		}
 	}

@@ -35,7 +35,7 @@ public:
 	UDataTable* AvatarComplexAttacksDataTable;
 
 // ------------------------- Battle
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<APlayerController_Base*> PlayerControllerReferences;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

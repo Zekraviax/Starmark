@@ -35,7 +35,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<FAvatar_Struct> PlayerState_PlayerParty;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	UPlayer_SaveData* PlayerProfileReference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
@@ -56,6 +56,9 @@ public:
 // ------------------------- Player
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayerData();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void Server_UpdatePlayerData();
 
 	UFUNCTION(BlueprintCallable)
 	void SaveToCurrentProfile();

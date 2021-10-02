@@ -39,20 +39,19 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / MultiplayerUniqueIDCounter is: %d"), MultiplayerUniqueIDCounter);
 
 	// Load player data
-	Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->LoadProfile(Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->CurrentProfileName);
+	//Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->LoadProfile(Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->CurrentProfileName);
 
 	PlayerControllerReferences.Add(NewPlayerController);
-
 	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / PlayerControllerReferences found: %d"), PlayerControllerReferences.Num());
 
 	// When all players have joined, begin running the functions needed to start the battle
-	//if (PlayerControllerReferences.Num() >= ExpectedPlayers) {
-	//	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / Call Server_BeginMultiplayerBattle()"));
-	//	Server_BeginMultiplayerBattle();
-	//}
-
-	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / Call Server_SinglePlayerBeginMultiplayerBattle()"));
-	Server_SinglePlayerBeginMultiplayerBattle(NewPlayerController);
+	if (ExpectedPlayers >= 2 && PlayerControllerReferences.Num() >= ExpectedPlayers) {
+		UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / Call Server_BeginMultiplayerBattle()"));
+		Server_BeginMultiplayerBattle();
+	} else if (ExpectedPlayers == 1) {
+		UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / Call Server_SinglePlayerBeginMultiplayerBattle()"));
+		Server_SinglePlayerBeginMultiplayerBattle(NewPlayerController);
+	}
 }
 
 
@@ -62,12 +61,17 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 	GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		TArray<FAvatar_Struct> CurrentPlayerTeam = Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam;
+		PlayerControllerReferences[i]->Server_GetDataFromProfile();
+		TArray<FAvatar_Struct> CurrentPlayerTeam = PlayerControllerReferences[i]->PlayerParty;
 
 		for (int j = 0; j < CurrentPlayerTeam.Num(); j++) {
-			if (j < 4 && CurrentPlayerTeam[j].AvatarName != "Default")
-				Server_SpawnAvatar(PlayerControllerReferences[i], j + 1, Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam[j]);
+			if (j < 4 && CurrentPlayerTeam[j].AvatarName != "Default") {
+				Server_SpawnAvatar(PlayerControllerReferences[i], j + 1, CurrentPlayerTeam[j]);
+				UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / Spawn Avatar %s for Player %s"), *CurrentPlayerTeam[j].AvatarName, *PlayerControllerReferences[i]->PlayerName);
+			}
 		}
+
+		//PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle = true;
 	}
 
 	Server_MultiplayerBattleCheckAllPlayersReady();
@@ -97,8 +101,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 	FString AssembledTurnOrderText;
 	TArray<bool> ReadyStatuses;
 	TArray<AActor*> GridTilesArray;
-	AStarmark_GameState* GameStateReference = nullptr;
-	GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		ReadyStatuses.Add(PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle);
@@ -130,6 +133,17 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		GameStateReference->CurrentTurnOrderText = AssembledTurnOrderText;
 
 		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+			for (int j = 0; j < GameStateReference->AvatarTurnOrder.Num(); j++) {
+				if (PlayerControllerReferences[i]->MultiplayerUniqueID == GameStateReference->AvatarTurnOrder[j]->MultiplayerControllerUniqueID) {
+					PlayerControllerReferences[i]->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[j];
+
+					PlayerControllerReferences[i]->SetBattleWidgetVariables();
+					//PlayerControllerReferences[i]->GetAvatarUpdateFromServer(GameStateReference->AvatarTurnOrder[j]);
+					//PlayerControllerReferences[i]->OnRepNotify_CurrentSelectedAvatar();
+					break;
+				}
+			}
+
 			PlayerControllerReferences[i]->SetBattleWidgetVariables();
 			PlayerControllerReferences[i]->Client_GetTurnOrderText(GameStateReference->CurrentTurnOrderText);
 		}
@@ -195,8 +209,10 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	// Sent data to Clients
 	NewAvatarActor->Client_GetAvatarData(NewAvatarActor->AvatarData);
 
+	//if (PlayerController->MultiplayerUniqueID == NewAvatarActor) {
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 	PlayerController->OnRepNotify_CurrentSelectedAvatar();
+	//}
 }
 
 
@@ -240,7 +256,7 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	// Attack Damage Formula
 	CurrentDamage = FMath::CeilToInt(Attacker->AvatarData.BaseStats.Attack * Attacker->CurrentSelectedAttack.BasePower);
 	CurrentDamage = FMath::CeilToInt(CurrentDamage / Target->AvatarData.BaseStats.Defence);
-	CurrentDamage = FMath::CeilToInt((Attacker->AvatarData.BaseStats.Power / 2) * CurrentDamage);
+	CurrentDamage = FMath::CeilToInt((Attacker->AvatarData.BaseStats.Power) * CurrentDamage);
 	//CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
 
 	// Compare each Move type against the Target type
@@ -274,7 +290,7 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	}
 
 	// End the turn
-	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn_Implementation();
+	//Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn_Implementation();
 }
 
 
