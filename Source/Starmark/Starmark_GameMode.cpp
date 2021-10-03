@@ -40,6 +40,8 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 
 	// Load player data
 	//Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->LoadProfile(Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->CurrentProfileName);
+	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Server_UpdatePlayerData();
+	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Client_UpdateReplicatedPlayerName();
 
 	PlayerControllerReferences.Add(NewPlayerController);
 	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / PlayerControllerReferences found: %d"), PlayerControllerReferences.Num());
@@ -86,9 +88,11 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		TArray<FAvatar_Struct> CurrentPlayerTeam = Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam;
 
-		for (int j = 0; j < CurrentPlayerTeam.Num(); j++) {
+		for (int j = CurrentPlayerTeam.Num() - 1; j >= 0; j++) {
 			if (j < 4 && CurrentPlayerTeam[j].AvatarName != "Default")
 				Server_SpawnAvatar(PlayerControllerReferences[i], j + 1, Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam[j]);
+			else
+				Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam.RemoveAt(j);
 		}
 	}
 
@@ -120,7 +124,13 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 			AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->PlayerState);
 
 			if (PlayerStateReference) {
-				PlayerStateReference->Client_UpdateReplicatedPlayerName();
+				//for (int j = 0; j < PlayerStateReference->PlayerState_PlayerParty.Num(); i++) {
+				//	if (PlayerStateReference->PlayerState_PlayerParty.IsValidIndex(j) && GameStateReference->AvatarTurnOrder.IsValidIndex(i)) {
+				//		if (PlayerStateReference->PlayerState_PlayerParty[j].AvatarName != "Default") {
+				//			UE_LOG(LogTemp, Warning, TEXT("Server_MultiplayerBattleCheckAllPlayersReady / Found Avatar %s from Player %s's PlayerState"), *PlayerStateReference->PlayerState_PlayerParty[j].AvatarName, *GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->PlayerName);
+				//		}
+				//	}
+				//}
 
 				if (PlayerStateReference->ReplicatedPlayerName == "" || PlayerStateReference->ReplicatedPlayerName.Len() <= 0)
 					PlayerStateReference->ReplicatedPlayerName = ("Player " + FString::FromInt(GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->MultiplayerUniqueID));
@@ -239,14 +249,24 @@ void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 }
 
 
-void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Target)
+void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Target, const FString& AttackName)
 {
 	FAvatar_UltimateTypeChart* MoveTypeChartRow;
 	FAvatar_UltimateTypeChart* TargetTypeChartRow;
+	FAvatar_AttackStruct AttackData;
+	TArray<FName> ComplexAttackRowNames = AvatarComplexAttacksDataTable->GetRowNames();
 	FString ContextString, MoveTypeAsString, TargetTypeAsString;
 	int CurrentDamage = 1;
 
-	MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Attacker->CurrentSelectedAttack.Type).ToString();
+	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Attack chosen: %s"), *AttackName);
+	for (int i = 0; i < ComplexAttackRowNames.Num(); i++) {
+		if (AvatarComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(ComplexAttackRowNames[i], ContextString)->Name == AttackName) {
+			AttackData = *AvatarComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(ComplexAttackRowNames[i], ContextString);
+			break;
+		}
+	}
+
+	MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(AttackData.Type).ToString();
 	TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
 
 	// Check for type advantage or disadvantage
@@ -254,10 +274,13 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
 
 	// Attack Damage Formula
-	CurrentDamage = FMath::CeilToInt(Attacker->AvatarData.BaseStats.Attack * Attacker->CurrentSelectedAttack.BasePower);
+	CurrentDamage = FMath::CeilToInt(Attacker->AvatarData.BaseStats.Attack * AttackData.BasePower);
+	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Attacker's Attack * Attack's Base Power is: %d"), CurrentDamage);
 	CurrentDamage = FMath::CeilToInt(CurrentDamage / Target->AvatarData.BaseStats.Defence);
-	CurrentDamage = FMath::CeilToInt((Attacker->AvatarData.BaseStats.Power) * CurrentDamage);
-	//CurrentDamage = FMath::CeilToInt(CurrentDamage / 8);
+	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Current Damage / Defender's Defence is: %d"), CurrentDamage);
+	//CurrentDamage = FMath::CeilToInt((Attacker->AvatarData.BaseStats.Power) * CurrentDamage);
+	CurrentDamage = FMath::CeilToInt(CurrentDamage / 6);
+	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Current Damage / 6 is: %d"), CurrentDamage);
 
 	// Compare each Move type against the Target type
 	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
@@ -273,13 +296,15 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	if (CurrentDamage < 1)
 		CurrentDamage = 1;
 
+	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Calculated damage is: %d"), CurrentDamage);
+
 	// Subtract Health
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(Attacker->PlayerControllerReference->PlayerState);
 	PlayerStateReference->Server_SubtractHealth_Implementation(Target, CurrentDamage);
 
 	// Apply move effects after the damage has been dealt
-	for (int i = 0; i < Attacker->CurrentSelectedAttack.AttackEffectsOnTarget.Num(); i++) {
-		UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(Attacker->CurrentSelectedAttack.AttackEffectsOnTarget[i], Attacker, Target);
+	for (int i = 0; i < AttackData.AttackEffectsOnTarget.Num(); i++) {
+		UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(AttackData.AttackEffectsOnTarget[i], Attacker, Target);
 	}
 
 	// Tell the server to update everyone

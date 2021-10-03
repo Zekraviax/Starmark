@@ -147,5 +147,5 @@ public:
 	void LocalAvatarUpdate(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar);
 
 	UFUNCTION(Server, Reliable)
-	void Client_SendLaunchAttackToServer(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Target);
+	void Client_SendLaunchAttackToServer(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Target, const FString& AttackName);
 };

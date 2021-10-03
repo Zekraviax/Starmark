@@ -61,8 +61,10 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 
 void AStarmark_GameState::AvatarBeginTurn_Implementation()
 {
-	if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex))
+	if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex)) {
 		AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves;
+		AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference->SetBattleWidgetVariables();
+	}
 }
 
 
@@ -77,15 +79,20 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num())
 		CurrentAvatarTurnIndex = 0;
 
+	UE_LOG(LogTemp, Warning, TEXT("AvatarEndTurn / CurrentAvatarTurnIndex is: %d"), CurrentAvatarTurnIndex);
+
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 
 		if (PlayerController) {
-			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
-				PlayerController->IsCurrentlyActingPlayer = true;
-				PlayerController->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
-			} else {
-				PlayerController->IsCurrentlyActingPlayer = false;
+			if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex)) {
+				if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
+					PlayerController->IsCurrentlyActingPlayer = true;
+					PlayerController->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
+				}
+				else {
+					PlayerController->IsCurrentlyActingPlayer = false;
+				}
 			}
 		}
 
@@ -100,6 +107,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 void AStarmark_GameState::EndOfBattle_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("EndOfBattle / Return each player to the Main Menu"));
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("End Of Battle. Returning to Main Menu...")));
 
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->EndOfBattle();

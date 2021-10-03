@@ -64,12 +64,15 @@ void AStarmark_PlayerState::Server_UpdatePlayerData_Implementation()
 			PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
 			PlayerState_PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
 
-			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *ReplicatedPlayerName);
 			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
+			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *ReplicatedPlayerName);
 
-			for (int i = 0; i < PlayerState_PlayerParty.Num(); i++) {
+			for (int i = PlayerState_PlayerParty.Num() - 1; i >= 0; i--) {
 				if (PlayerState_PlayerParty[i].AvatarName != "Default") {
 					UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / PlayerState_PlayerParty member number %d is: %s"), i, *PlayerState_PlayerParty[i].AvatarName);
+				} else {
+					PlayerState_PlayerParty.RemoveAt(i);
+					UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / Remove invalid member %d from PlayerState_PlayerParty"), i);
 				}
 			}
 
@@ -110,7 +113,9 @@ void AStarmark_PlayerState::SendUpdateToMultiplayerLobby_Implementation()
 // ------------------------- Battle
 void AStarmark_PlayerState::Client_UpdateReplicatedPlayerName_Implementation()
 {
+
 	Server_UpdateReplicatedPlayerName(ReplicatedPlayerName);
+	Server_UpdatePlayerStateVariables(PlayerState_PlayerParty);
 }
 
 
@@ -124,14 +129,17 @@ void AStarmark_PlayerState::Server_UpdateReplicatedPlayerName_Implementation(con
 void AStarmark_PlayerState::PlayerState_BeginBattle_Implementation()
 {
 	// Retrieve player profile
-	UpdatePlayerData();
-	Client_UpdateReplicatedPlayerName();
+	Server_UpdatePlayerData();
+
+	//Client_UpdateReplicatedPlayerName();
 }
 
 
 void AStarmark_PlayerState::Server_SubtractHealth_Implementation(ACharacter_Pathfinder* Defender, int DamageDealt)
 {
-	if (Defender) {
+	UE_LOG(LogTemp, Warning, TEXT("Server_SubtractHealth / IsValid(Defender) returns: %s"), IsValid(Defender) ? TEXT("true") : TEXT("false"));
+
+	if (IsValid(Defender)) {
 		Defender->AvatarData.CurrentHealthPoints -= DamageDealt;
 		Defender->UpdateAvatarDataInPlayerParty();
 
@@ -164,4 +172,10 @@ void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Path
 void AStarmark_PlayerState::Server_UpdatePlayerStateVariables_Implementation(const TArray<FAvatar_Struct>& UpdatedPlayerParty)
 {
 	PlayerState_PlayerParty = UpdatedPlayerParty;
+
+	for (int i = 0; i < UpdatedPlayerParty.Num(); i++) {
+		if (UpdatedPlayerParty[i].AvatarName != "Default") {
+			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerStateVariables / Found Avatar %s in Player %s's PlayerState"), *UpdatedPlayerParty[i].AvatarName, *PlayerName);
+		}
+	}
 }

@@ -80,7 +80,7 @@ public:
 	void Server_UpdateAllAvatarDecals();
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void Server_LaunchAttack(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Target);
+	void Server_LaunchAttack(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Target, const FString& AttackName);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void EndOfBattle();

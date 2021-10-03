@@ -41,7 +41,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
-	// Actor Selected Decal
+	// Actor Selected Decal (Don't delete this)
 	ActorSelected = CreateDefaultSubobject<UDecalComponent>("ActorSelected");
 	ActorSelected->SetupAttachment(RootComponent);
 	ActorSelected->SetVisibility(true);
@@ -60,7 +60,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	AvatarBattleData_Component = CreateDefaultSubobject<UWidgetComponent>("AvatarBattleData_Component");
 	AvatarBattleData_Component->SetupAttachment(RootComponent);
 	AvatarBattleData_Component->SetVisibility(true);
-	AvatarBattleData_Component->SetHiddenInGame(false);
+	AvatarBattleData_Component->SetHiddenInGame(true);
 
 	// Attack Trace Actor Component
 	AttackTraceActor = CreateDefaultSubobject<UStaticMeshComponent>("AttackTraceActor");
@@ -132,6 +132,8 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 // ------------------------- Cursor
 void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 {
+	UE_LOG(LogTemp, Warning, TEXT("OnAvatarCursorOverBegin / Cursor over begin on actor: %s"), *GetName());
+
 	if (ActorSelectedPlane)
 		ActorSelectedPlane->SetWorldLocation(FVector(this->GetActorLocation().X, this->GetActorLocation().Y, 1));
 
@@ -141,13 +143,13 @@ void ACharacter_Pathfinder::OnAvatarCursorOverBegin()
 	AvatarBattleDataComponent_Reference->LinkedAvatar = AvatarData;
 	AvatarBattleDataComponent_Reference->UpdateAvatarData(AvatarData);
 
-	AvatarBattleData_Component->SetHiddenInGame(true);
+	AvatarBattleData_Component->SetHiddenInGame(false);
 }
 
 
 void ACharacter_Pathfinder::OnAvatarCursorOverEnd()
 {
-	AvatarBattleData_Component->SetHiddenInGame(false);
+	AvatarBattleData_Component->SetHiddenInGame(true);
 }
 
 
@@ -274,7 +276,8 @@ void ACharacter_Pathfinder::ShowAttackRange()
 void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* Target)
 {
 	// Tell the client to update the server
-	PlayerControllerReference->Client_SendLaunchAttackToServer(this, Target);
+	UE_LOG(LogTemp, Warning, TEXT("LaunchAttack / Attack chosen: %s"), *CurrentSelectedAttack.Name);
+	PlayerControllerReference->Client_SendLaunchAttackToServer(this, Target, CurrentSelectedAttack.Name);
 }
 
 
@@ -332,4 +335,7 @@ void ACharacter_Pathfinder::Client_GetAvatarData_Implementation(FAvatar_Struct N
 void ACharacter_Pathfinder::Local_GetAvatarData(FAvatar_Struct NewAvatarData)
 {
 	AvatarData = NewAvatarData;
+
+	//if (AvatarBattleData_Component) 
+	//	AvatarBattleDataComponent_Reference->UpdateAvatarData(NewAvatarData);
 }
