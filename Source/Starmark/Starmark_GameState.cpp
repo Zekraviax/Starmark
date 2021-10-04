@@ -22,6 +22,7 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStarmark_GameState, AvatarTurnOrder);
+	DOREPLIFETIME(AStarmark_GameState, DynamicAvatarTurnOrder);
 	DOREPLIFETIME(AStarmark_GameState, CurrentTurnOrderText);
 }
 
@@ -56,6 +57,8 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 			}
 		}
 	}
+
+	DynamicAvatarTurnOrder = AvatarTurnOrder;
 }
 
 
@@ -63,8 +66,13 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 {
 	if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex)) {
 		AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves;
-		AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference->SetBattleWidgetVariables();
+		//AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference->SetBattleWidgetVariables();
 	}
+
+	//for (int j = 0; j < PlayerArray.Num(); j++) {
+	//	APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
+	//	PlayerController->Player_OnAvatarTurnChanged();
+	//}
 }
 
 
@@ -95,8 +103,18 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 				}
 			}
 		}
+	}
 
-		PlayerController->SetBattleWidgetVariables();
+	// Update the dynamic turn order
+	ACharacter_Pathfinder* FirstAvatarInDynamicTurnOrder = DynamicAvatarTurnOrder[0];
+	DynamicAvatarTurnOrder.RemoveAt(0);
+	DynamicAvatarTurnOrder.Insert(FirstAvatarInDynamicTurnOrder, DynamicAvatarTurnOrder.Num());
+	//MoveTemp()
+
+	// Assign currently controlled avatars based on the dynamic turn order
+	for (int i = DynamicAvatarTurnOrder.Num() - 1; i >= 0; i--) {
+		if (IsValid(DynamicAvatarTurnOrder[i]))
+			DynamicAvatarTurnOrder[i]->PlayerControllerReference->CurrentSelectedAvatar = DynamicAvatarTurnOrder[i];
 	}
 
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_UpdateAllAvatarDecals();

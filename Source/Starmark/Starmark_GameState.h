@@ -35,6 +35,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
 	TArray<ACharacter_Pathfinder*> AvatarTurnOrder;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
+	TArray<ACharacter_Pathfinder*> DynamicAvatarTurnOrder;
+
 	// The Index of the Avatar whose turn it is, in the AvatarTurnOrder Array.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int CurrentAvatarTurnIndex;

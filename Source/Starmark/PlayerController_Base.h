@@ -139,6 +139,9 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();
 
+	UFUNCTION(Server, Unreliable)
+	void Player_OnAvatarTurnChanged();
+
 // ------------------------- Multiplayer Battle
 	UFUNCTION(Client, Reliable)
 	void GetAvatarUpdateFromServer(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar);

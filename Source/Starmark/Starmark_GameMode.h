@@ -73,6 +73,9 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_MultiplayerBattleCheckAllPlayersReady();
 
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Server_AssembleTurnOrderText();
+
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_SpawnAvatar(APlayerController_Base* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData);
 

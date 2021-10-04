@@ -6,6 +6,7 @@ Refactor:
 * Remove redundant UFUNCTION and UPROPERTY macros
 * Remove redundant files
 * Update UFUNCTION and UPROPERTY Categories
+* Replace all instances of Variable?IsValidLowLevel() with IsValid(Variable)
 
 
 Blueprints-To-Code Conversions:

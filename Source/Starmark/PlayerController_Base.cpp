@@ -55,6 +55,8 @@ void APlayerController_Base::SetupInputComponent()
 void APlayerController_Base::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+
+	SetBattleWidgetVariables();
 }
 
 
@@ -64,7 +66,7 @@ void APlayerController_Base::CreateBattleWidget()
 	if (BattleWidgetChildClass && IsLocalPlayerController() && !BattleWidgetReference) {
 		BattleWidgetReference = CreateWidget<UWidget_HUD_Battle>(this, BattleWidgetChildClass);
 
-		if (BattleWidgetReference)
+		if (IsValid(BattleWidgetReference))
 			BattleWidgetReference->AddToViewport();
 	}
 }
@@ -72,14 +74,15 @@ void APlayerController_Base::CreateBattleWidget()
 
 void APlayerController_Base::SetBattleWidgetVariables()
 {
-	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+	//AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
-	if (BattleWidgetReference->IsValidLowLevel()) {
+	//if (!IsValid(BattleWidgetReference))
+	//	CreateBattleWidget();
 
+	if (IsValid(BattleWidgetReference) && IsValid(CurrentSelectedAvatar)) {
 		if (BattleWidgetReference->PlayerControllerReference != this)
 			BattleWidgetReference->PlayerControllerReference = this;
 
-		//BattleWidgetReference->AvatarBattleDataWidget->LinkedAvatar = CurrentSelectedAvatar->AvatarData;
 		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
 		BattleWidgetReference->UpdateAvatarAttacksComponents();
 	}
@@ -199,6 +202,22 @@ void APlayerController_Base::SendEndOfTurnCommandToServer_Implementation()
 }
 
 
+void APlayerController_Base::Player_OnAvatarTurnChanged_Implementation()
+{
+	if (IsValid(BattleWidgetReference)) {
+		BattleWidgetReference->EndTurnCommandButton->SetIsEnabled(IsCurrentlyActingPlayer);
+
+		//if (IsCurrentlyActingPlayer) {
+		//	BattleWidgetReference->AvatarAttacksBox->SetVisibility(ESlateVisibility::Visible);
+		//}
+		//else {
+		//	BattleWidgetReference->AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
+		//}
+	}
+}
+
+
+// ------------------------- Multiplayer Battle
 void APlayerController_Base::GetAvatarUpdateFromServer_Implementation(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar)
 {
 	if (IsValid(AvatarReference)) {

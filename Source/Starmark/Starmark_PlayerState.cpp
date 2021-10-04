@@ -4,6 +4,7 @@
 #include "Character_Pathfinder.h"
 #include "PlayerController_Base.h"
 #include "Player_SaveData.h"
+#include "Starmark_GameMode.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_GameState.h"
 #include "Widget_HUD_Battle.h"
@@ -67,14 +68,14 @@ void AStarmark_PlayerState::Server_UpdatePlayerData_Implementation()
 			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
 			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *ReplicatedPlayerName);
 
-			for (int i = PlayerState_PlayerParty.Num() - 1; i >= 0; i--) {
-				if (PlayerState_PlayerParty[i].AvatarName != "Default") {
-					UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / PlayerState_PlayerParty member number %d is: %s"), i, *PlayerState_PlayerParty[i].AvatarName);
-				} else {
-					PlayerState_PlayerParty.RemoveAt(i);
-					UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / Remove invalid member %d from PlayerState_PlayerParty"), i);
-				}
-			}
+			//for (int i = PlayerState_PlayerParty.Num() - 1; i >= 0; i--) {
+			//	if (PlayerState_PlayerParty[i].AvatarName != "Default") {
+			//		UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / PlayerState_PlayerParty member number %d is: %s"), i, *PlayerState_PlayerParty[i].AvatarName);
+			//	} else {
+			//		PlayerState_PlayerParty.RemoveAt(i);
+			//		UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / Remove invalid member %d from PlayerState_PlayerParty"), i);
+			//	}
+			//}
 
 			// Update player controller
 			Cast<APlayerController_Base>(GetPawn()->GetController())->PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
@@ -154,13 +155,22 @@ void AStarmark_PlayerState::Server_SubtractHealth_Implementation(ACharacter_Path
 
 void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Pathfinder* Avatar)
 {
+	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+
 	if (Avatar->PlayerControllerReference->PlayerParty.IsValidIndex(Avatar->IndexInPlayerParty)) {
 		Avatar->PlayerControllerReference->PlayerParty.RemoveAt(Avatar->IndexInPlayerParty);
+
+		// Remove from turn order
+		UE_LOG(LogTemp, Warning, TEXT("Battle_AvatarDefeated / Remove Avatar %s from Turn Order"), *Avatar->AvatarData.AvatarName);
+		GameStateReference->AvatarTurnOrder.Remove(Avatar);
+		GameStateReference->DynamicAvatarTurnOrder.Remove(Avatar);
+
+		Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_AssembleTurnOrderText();
 	}
 
 	if (Avatar->PlayerControllerReference->PlayerParty.Num() <= 0) {
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player has run out of Avatars")));
-		Cast<AStarmark_GameState>(GetWorld()->GetGameState())->EndOfBattle_Implementation();
+		GameStateReference->EndOfBattle_Implementation();
 	}
 	else 
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player Avatars Remaining: %d"), Avatar->PlayerControllerReference->PlayerParty.Num()));
