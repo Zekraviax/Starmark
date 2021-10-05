@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
+#include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Starmark_Variables.h"
 
@@ -32,14 +33,17 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Floor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UBoxComponent* GridTileHitbox;
 
 // ------------------------- Tile
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<E_GridTile_Properties> Properties;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterialInstanceDynamic* DynamicMaterial;
 
 	// Occupying Actor

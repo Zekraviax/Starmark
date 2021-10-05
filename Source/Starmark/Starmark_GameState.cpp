@@ -109,7 +109,6 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	ACharacter_Pathfinder* FirstAvatarInDynamicTurnOrder = DynamicAvatarTurnOrder[0];
 	DynamicAvatarTurnOrder.RemoveAt(0);
 	DynamicAvatarTurnOrder.Insert(FirstAvatarInDynamicTurnOrder, DynamicAvatarTurnOrder.Num());
-	//MoveTemp()
 
 	// Assign currently controlled avatars based on the dynamic turn order
 	for (int i = DynamicAvatarTurnOrder.Num() - 1; i >= 0; i--) {

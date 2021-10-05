@@ -91,23 +91,23 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 	AStarmark_GameState* GameStateReference = nullptr;
 	GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
-	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		TArray<FAvatar_Struct> CurrentPlayerTeam = Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam;
+	//for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+	TArray<FAvatar_Struct> CurrentPlayerTeam = Cast<UStarmark_GameInstance>(PlayerControllerReferences[0]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam;
 
-		int SpawnedAvatarCount = 0;
+	int SpawnedAvatarCount = 0;
 
-		//for (int j = CurrentPlayerTeam.Num() - 1; j >= 0; j++) {
-		//	if (CurrentPlayerTeam[j].AvatarName != "Default") {
-		//		if (SpawnedAvatarCount < 4) {
-		//			Server_SpawnAvatar(PlayerControllerReferences[i], j + 1, Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam[j]);
-		//			SpawnedAvatarCount++;
-		//		}
-		//	} else {
-		//		Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam.RemoveAt(j);
-		//		UE_LOG(LogTemp, Warning, TEXT("Server_SinglePlayerBeginMultiplayerBattle / Remove invalid member %d from PlayerState_PlayerParty"), j);
-		//	}
-		//}
+	for (int j = CurrentPlayerTeam.Num() - 1; j >= 0; j--) {
+		if (CurrentPlayerTeam[j].AvatarName != "Default") {
+			if (SpawnedAvatarCount < 4) {
+				Server_SpawnAvatar(PlayerControllerReferences[0], j + 1, Cast<UStarmark_GameInstance>(PlayerControllerReferences[0]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam[j]);
+				SpawnedAvatarCount++;
+			}
+		} else {
+			Cast<UStarmark_GameInstance>(PlayerControllerReferences[0]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam.RemoveAt(j);
+			UE_LOG(LogTemp, Warning, TEXT("Server_SinglePlayerBeginMultiplayerBattle / Remove invalid member %d from PlayerState_PlayerParty"), j);
+		}
 	}
+	//}
 
 	Server_MultiplayerBattleCheckAllPlayersReady();
 }
