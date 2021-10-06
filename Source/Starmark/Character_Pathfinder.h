@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 
+#include "Components/BoxComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMesh.h"
@@ -42,6 +43,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ActorSelectedPlane;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UBoxComponent* BoxComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Components")
 	FLinearColor ActorSelected_DynamicMaterial_Colour;

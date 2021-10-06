@@ -150,8 +150,6 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 			static int open_nodes_map[n][m];	// map of open (not-yet-tried) nodes
 			static int dir_map[n][m];			// map of directions
 
-			//int CurrentPathLength = 0;
-
 			// A-star algorithm.
 			FVector PathLocation = Query.EndLocation.GridSnap(200);
 			FVector EndTile = (Query.EndLocation.GridSnap(200) - Query.StartLocation.GridSnap(200)) / 200 + FVector(16.f, 16.f, 0.f);
@@ -278,6 +276,30 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 						}
 					}
 
+					if (IsValid(LineTraceResult.GetActor()))
+						UE_LOG(LogTemp, Warning, TEXT("FindPath / Trace Hit Actor Name: %s"), *LineTraceResult.GetActor()->GetName());
+
+					// Debugging: view tiles traversed (Warning: Lags terribly when trying to path to unreachable location)
+					if (Reachable)
+					{
+						if (SuccessfulLineTrace) {
+							if (Cast<AActor_GridTile>(LineTraceResult.Actor)->Properties.Contains(E_GridTile_Properties::E_Occupied) ||
+								Cast<AActor_GridTile>(LineTraceResult.Actor)->Properties.Contains(E_GridTile_Properties::E_Wall)) {
+								DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f), FColor::Yellow, false, 2.5f);
+							}
+						}
+						else {
+							DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f) / 1.5f, FColor::Red, false, 2.5f);
+						}
+					}
+					else
+					{
+						DrawDebugBox(Query.NavData->GetWorld(), TileLocation, FVector(50.f, 50.f, 250.f) / 2.f, FColor::Green, false, 2.5f);
+					}
+
+
+
+
 					if (!(xdx<0 || xdx>n - 1 || ydy<0 || ydy>m - 1 || map[xdx][ydy] == 1
 						|| closed_nodes_map[xdx][ydy] == 1 || Reachable))
 					{
@@ -325,8 +347,6 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 							}
 							pqi = 1 - pqi;
 							pq[pqi].HeapPush(*m0, nodePredicate()); // add the better node instead
-
-							//CurrentPathLength++;
 						}
 						else delete m0; // garbage collection
 					}

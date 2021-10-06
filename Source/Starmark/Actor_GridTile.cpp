@@ -14,6 +14,13 @@ AActor_GridTile::AActor_GridTile()
 	Floor = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Floor"));
 	Floor->SetupAttachment(RootComponent);
 	Floor->SetRelativeTransform(FTransform(FRotator::ZeroRotator, FVector::ZeroVector, FVector(2.f, 2.f, 1.f)));
+
+	// Hitbox
+	GridTileHitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("GridTileHitbox"));
+	GridTileHitbox->SetupAttachment(RootComponent);
+	GridTileHitbox->SetRelativeScale3D(FVector(2.5f, 2.5f, 1.f));
+	// Set 'Simulation Generates Hit Events'
+	GridTileHitbox->SetNotifyRigidBodyCollision(true);
 }
 
 // Called when the game starts or when spawned
@@ -35,24 +42,19 @@ void AActor_GridTile::Tick(float DeltaTime)
 // ------------------------- Battle
 void AActor_GridTile::UpdateGridTileState()
 {
-	// Clear TraversalProperties that aren't permanent (e.g. Occupied by an Avatar)
-	Properties.Remove(E_GridTile_Properties::E_Occupied);
+	//// Clear TraversalProperties that aren't permanent (e.g. Occupied by an Avatar)
+	//Properties.Remove(E_GridTile_Properties::E_Occupied);
 
-	// Line Trace for an Avatar occupying this tile
-	FHitResult LineTraceResult;
-	TEnumAsByte<EObjectTypeQuery> ObjectToTrace = EObjectTypeQuery::ObjectTypeQuery3;
-	FVector End = FVector(GetActorLocation().X, GetActorLocation().Y, (GetActorLocation().Z + 100.f));
+	//TArray<AActor*> OverlappingActors;
+	//GridTileHitbox->GetOverlappingActors(OverlappingActors, ACharacter_Pathfinder::StaticClass());
 
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectsToTraceAsByte;
-	ObjectsToTraceAsByte.Add(ObjectToTrace);
+	//if (this) {
+	//	if (OverlappingActors.Num() > 0) {
+	//		Cast<ACharacter_Pathfinder>(OverlappingActors[0])->SetTilesOccupiedBySize();
+	//	}
+	//}
 
-	bool SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, GetActorLocation(), End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
-
-	// Tell the Avatar to update Tiles based on its Size
-	if (SuccessfulLineTrace)
-		Cast<ACharacter_Pathfinder>(LineTraceResult.Actor)->SetTilesOccupiedBySize();
-
-	// If the TraversalProperties array is empty, add the default Property
+	//// If the TraversalProperties array is empty, add the default Property
 	if (Properties.Num() <= 0)
 		Properties.AddUnique(E_GridTile_Properties::E_None);
 }

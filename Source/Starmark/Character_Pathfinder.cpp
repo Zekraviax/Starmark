@@ -72,6 +72,15 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
+	//Hitbox Component
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComponent");
+	BoxComponent->SetupAttachment(RootComponent);
+	BoxComponent->SetVisibility(true);
+	BoxComponent->SetHiddenInGame(false);
+	BoxComponent->SetRelativeScale3D(FVector(1.5f, 1.5f, 3.f));
+	// Set 'Simulation Generates Hit Events'
+	BoxComponent->SetNotifyRigidBodyCollision(true);
+
 	// AI
 	//AIControllerClass = AAIController_Avatar::StaticClass();
 	//AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -283,26 +292,23 @@ void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* T
 
 void ACharacter_Pathfinder::SetTilesOccupiedBySize()
 {
-	FHitResult LineTraceResult;
-	TEnumAsByte<EObjectTypeQuery> ObjectToTrace = EObjectTypeQuery::ObjectTypeQuery1;
-	TArray<TEnumAsByte<EObjectTypeQuery>>ObjectsToTraceAsByte;
-	ObjectsToTraceAsByte.Add(ObjectToTrace);
-	FVector End = FVector(GetActorLocation().X, GetActorLocation().Y, 0.f);
+	TArray<AActor*> OverlappingActors;
 	FVector Start = GetActorLocation();
-	bool SuccessfulLineTrace;
 
 	for (int i = 0; i < AvatarData.OccupiedTiles.Num(); i++) {
-
-		End = FVector(Start.X + (200 * AvatarData.OccupiedTiles[i].X), Start.Y + (200 * AvatarData.OccupiedTiles[i].Y), 0.f);
-		SuccessfulLineTrace = GetWorld()->LineTraceSingleByObjectType(LineTraceResult, Start, End, FCollisionObjectQueryParams(ObjectsToTraceAsByte));
-
-		if (SuccessfulLineTrace) {
-			Cast<AActor_GridTile>(LineTraceResult.Actor)->Properties.AddUnique(E_GridTile_Properties::E_Occupied);
-
-			if (Cast<AActor_GridTile>(LineTraceResult.Actor)->Properties.Contains(E_GridTile_Properties::E_None))
-				Cast<AActor_GridTile>(LineTraceResult.Actor)->Properties.Remove(E_GridTile_Properties::E_None);
-		}
+		BoxComponent->SetWorldLocation(FVector(Start.X + (200 * AvatarData.OccupiedTiles[i].X), Start.Y + (200 * AvatarData.OccupiedTiles[i].Y), 0.f));
+		BoxComponent->GetOverlappingActors(OverlappingActors, AActor_GridTile::StaticClass());
 	}
+
+	for (int j = 0; j < OverlappingActors.Num(); j++) {
+		Cast<AActor_GridTile>(OverlappingActors[j])->Properties.AddUnique(E_GridTile_Properties::E_Occupied);
+		UE_LOG(LogTemp, Warning, TEXT("SetTilesOccupiedBySize / Set Tile to be occupied."));
+
+		if (Cast<AActor_GridTile>(OverlappingActors[j])->Properties.Contains(E_GridTile_Properties::E_None))
+			Cast<AActor_GridTile>(OverlappingActors[j])->Properties.Remove(E_GridTile_Properties::E_None);
+	}
+
+	BoxComponent->SetWorldLocation(Start);
 }
 
 
