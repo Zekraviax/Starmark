@@ -234,6 +234,8 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 	PlayerController->OnRepNotify_CurrentSelectedAvatar();
+
+	NewAvatarActor->SetTilesOccupiedBySize();
 }
 
 
