@@ -185,7 +185,7 @@ void AStarmark_PlayerState::Server_UpdatePlayerStateVariables_Implementation(con
 
 	for (int i = 0; i < UpdatedPlayerParty.Num(); i++) {
 		if (UpdatedPlayerParty[i].AvatarName != "Default") {
-			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerStateVariables / Found Avatar %s in Player %s's PlayerState"), *UpdatedPlayerParty[i].AvatarName, *PlayerName);
+			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerStateVariables / Found Avatar %s in Player %s's PlayerState"), *UpdatedPlayerParty[i].AvatarName, *GetPlayerName());
 		}
 	}
 }
