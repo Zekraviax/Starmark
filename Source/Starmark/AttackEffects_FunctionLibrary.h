@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 
+#include "Engine/DataTable.h"
 #include "Starmark_Variables.h"
 
 #include "AttackEffects_FunctionLibrary.generated.h"
@@ -17,7 +18,22 @@ class STARMARK_API UAttackEffects_FunctionLibrary : public UBlueprintFunctionLib
 {
 	GENERATED_BODY()
 
+	UAttackEffects_FunctionLibrary();
+
 public:
+// Variables
+// --------------------------------------------------
+
+// ------------------------- Data Tables
+	UPROPERTY()
+	UDataTable* StatusEffectsDataTable;
+
+	UPROPERTY()
+	TArray<FAvatar_StatusEffect> StatusEffectDataTableRows;
+
+	//UPROPERTY()
+	//UAttackEffects_FunctionLibrary* LibraryReference;
+
 // Functions
 // --------------------------------------------------
 	UFUNCTION(BlueprintCallable)

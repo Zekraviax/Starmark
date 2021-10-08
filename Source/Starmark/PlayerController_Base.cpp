@@ -74,17 +74,13 @@ void APlayerController_Base::CreateBattleWidget()
 
 void APlayerController_Base::SetBattleWidgetVariables()
 {
-	//AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
-
-	//if (!IsValid(BattleWidgetReference))
-	//	CreateBattleWidget();
-
 	if (IsValid(BattleWidgetReference) && IsValid(CurrentSelectedAvatar)) {
 		if (BattleWidgetReference->PlayerControllerReference != this)
 			BattleWidgetReference->PlayerControllerReference = this;
 
 		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
 		BattleWidgetReference->UpdateAvatarAttacksComponents();
+		BattleWidgetReference->AvatarBattleDataWidget->GetAvatarStatusEffects(CurrentSelectedAvatar->CurrentStatusEffectsArray);
 	}
 }
 
@@ -157,7 +153,9 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / ClickedActor is: %s"), *ClickedActor->GetFullName());
 
-	if (ClickedActor && CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::E_AttackClickedAvatar) {
+	if (ClickedActor && 
+		CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::E_AttackClickedAvatar &&
+		CurrentSelectedAvatar->CurrentSelectedAttack.Name != "Default") {
 		// If we're attacking, and we clicked on a valid target in-range, launch an attack
 		UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Launch attack against ClickedActor"));
 

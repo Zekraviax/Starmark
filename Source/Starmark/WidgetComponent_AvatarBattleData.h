@@ -3,9 +3,11 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
+#include "Components/HorizontalBox.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Starmark_Variables.h"
+#include "WidgetComponent_StatusEffectIcon.h"
 
 #include "WidgetComponent_AvatarBattleData.generated.h"
 
@@ -54,6 +56,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* TileMovesDisplayText;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UHorizontalBox* StatusEffectIconsHorizontalBox;
+
+// ------------------------- References
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWidgetComponent_StatusEffectIcon> StatusEffectIcon_Class;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UWidgetComponent_StatusEffectIcon* StatusEffectIcon_Reference;
+
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FAvatar_Struct LinkedAvatar;
@@ -64,4 +76,7 @@ public:
 // ------------------------- Avatar
 	UFUNCTION(BlueprintCallable)
 	void UpdateAvatarData(FAvatar_Struct NewLinkedAvatar);
+
+	UFUNCTION(BlueprintCallable)
+	void GetAvatarStatusEffects(TArray<FAvatar_StatusEffect> StatusEffectsArray);
 };

@@ -1,0 +1,51 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+
+#include "Engine/DataTable.h"
+#include "Starmark_Variables.h"
+
+#include "Actor_AttackEffectsLibrary.generated.h"
+
+
+// Forward Declarations
+class ACharacter_Pathfinder;
+
+
+UCLASS()
+class STARMARK_API AActor_AttackEffectsLibrary : public AActor
+{
+	GENERATED_BODY()
+	
+public:	
+	// Sets default values for this actor's properties
+	AActor_AttackEffectsLibrary();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+// Variables
+// --------------------------------------------------
+
+// ------------------------- Data Tables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* StatusEffectsDataTable;
+
+// Functions
+// --------------------------------------------------
+	UFUNCTION(BlueprintCallable)
+	bool SwitchOnAttackEffect(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+
+// ------------------------- Status Effects
+	UFUNCTION(BlueprintCallable)
+	void Attack_AddParalyze(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+
+	UFUNCTION(BlueprintCallable)
+	void Attack_AddBurn(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+};

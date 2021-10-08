@@ -54,3 +54,17 @@ void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinke
 	if (TileMovesDisplayText->IsValidLowLevel())
 		TileMovesDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.CurrentTileMoves) + " / " + FString::FromInt(LinkedAvatar.MaximumTileMoves)));
 }
+
+
+void UWidgetComponent_AvatarBattleData::GetAvatarStatusEffects(TArray<FAvatar_StatusEffect> StatusEffectsArray)
+{
+	if (StatusEffectsArray.Num() > 0 && IsValid(StatusEffectIcon_Class)) {
+		StatusEffectIconsHorizontalBox->ClearChildren();
+
+		for (int i = 0; i < StatusEffectsArray.Num(); i++) {
+			StatusEffectIcon_Reference = CreateWidget<UWidgetComponent_StatusEffectIcon>(this, StatusEffectIcon_Class);
+			StatusEffectIcon_Reference->StatusEffectIcon->SetBrushFromTexture(StatusEffectsArray[i].Image);
+			StatusEffectIconsHorizontalBox->AddChild(StatusEffectIcon_Reference);
+		}
+	}
+}

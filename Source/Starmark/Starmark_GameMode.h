@@ -10,6 +10,7 @@
 
 
 // Forward Declarations
+class AActor_AttackEffectsLibrary;
 class ACharacter_Pathfinder;
 class APlayerPawn_Static;
 class APlayerPawn_Flying;
@@ -49,6 +50,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int ExpectedPlayers = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AActor_AttackEffectsLibrary> AttackEffectsLibrary_Class;
+
+	UPROPERTY()
+	AActor_AttackEffectsLibrary* AttackEffectsLibrary_Reference;
 
 // ------------------------- Multiplayer
 	UPROPERTY()

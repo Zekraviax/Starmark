@@ -1,5 +1,6 @@
 #include "Starmark_GameMode.h"
 
+#include "Actor_AttackEffectsLibrary.h"
 #include "Actor_GridTile.h"
 #include "AttackEffects_FunctionLibrary.h"
 #include "Character_Pathfinder.h"
@@ -272,6 +273,7 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	FAvatar_UltimateTypeChart* MoveTypeChartRow;
 	FAvatar_UltimateTypeChart* TargetTypeChartRow;
 	FAvatar_AttackStruct AttackData;
+	FActorSpawnParameters SpawnInfo;
 	TArray<FName> ComplexAttackRowNames = AvatarComplexAttacksDataTable->GetRowNames();
 	FString ContextString, MoveTypeAsString, TargetTypeAsString;
 	int CurrentDamage = 1;
@@ -322,7 +324,11 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 
 	// Apply move effects after the damage has been dealt
 	for (int i = 0; i < AttackData.AttackEffectsOnTarget.Num(); i++) {
-		UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(AttackData.AttackEffectsOnTarget[i], Attacker, Target);
+		//UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(AttackData.AttackEffectsOnTarget[i], Attacker, Target);
+		if (!AttackEffectsLibrary_Reference && AttackEffectsLibrary_Class)
+			AttackEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_AttackEffectsLibrary>(AttackEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
+
+		AttackEffectsLibrary_Reference->SwitchOnAttackEffect(AttackData.AttackEffectsOnTarget[i], Attacker, Target);
 	}
 
 	// Tell the server to update everyone
