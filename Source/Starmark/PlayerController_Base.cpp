@@ -1,20 +1,21 @@
 #include "PlayerController_Base.h"
 
 
-#include "NavigationSystem.h"
+#include "Actor_GridTile.h"
 #include "AIController.h"
 #include "AIController_Avatar.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
-#include "Widget_HUD_Battle.h"
-#include "WidgetComponent_AvatarBattleData.h"
+#include "NavigationSystem.h"
+#include "PlayerPawn_Static.h"
+#include "Player_SaveData.h"
 #include "Starmark_GameMode.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
-#include "PlayerPawn_Static.h"
-#include "Player_SaveData.h"
+#include "Widget_HUD_Battle.h"
+#include "WidgetComponent_AvatarBattleData.h"
 
 
 APlayerController_Base::APlayerController_Base()
@@ -153,30 +154,39 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / ClickedActor is: %s"), *ClickedActor->GetFullName());
 
-	if (ClickedActor && 
-		CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::E_AttackClickedAvatar &&
-		CurrentSelectedAvatar->CurrentSelectedAttack.Name != "Default") {
-		// If we're attacking, and we clicked on a valid target in-range, launch an attack
-		UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Launch attack against ClickedActor"));
+	if (CurrentSelectedAvatar->CurrentSelectedAttack.Name != "Default" &&
+		CurrentSelectedAvatar->ValidAttackTargetsArray.Num() > 0) {
+		if (ClickedActor &&
+			CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::E_AttackClickedAvatar) {
+			// If we're attacking, and we clicked on a valid target in-range, launch an attack
+			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Launch attack against ClickedActor"));
 
-		if (CurrentSelectedAvatar != ClickedActor &&
-			CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(ClickedActor)) {
+			if (CurrentSelectedAvatar != ClickedActor &&
+				CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(ClickedActor)) {
 				CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(ClickedActor));
 				Client_SendEndOfTurnCommandToServer();
+			}
 		}
-	} else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::E_AttackAllTargets) {
-		UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Launch attack against all valid targets in range: %d"), CurrentSelectedAvatar->ValidAttackTargetsArray.Num());
+		else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::E_AttackAllTargets) {
+			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Launch attack against all valid targets in range: %d"), CurrentSelectedAvatar->ValidAttackTargetsArray.Num());
 
-		for (int i = 0; i < CurrentSelectedAvatar->ValidAttackTargetsArray.Num(); i++) {
-			CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(CurrentSelectedAvatar->ValidAttackTargetsArray[i]));
+			for (int i = 0; i < CurrentSelectedAvatar->ValidAttackTargetsArray.Num(); i++) {
+				CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(CurrentSelectedAvatar->ValidAttackTargetsArray[i]));
+			}
+
+			Client_SendEndOfTurnCommandToServer();
 		}
 
-		Client_SendEndOfTurnCommandToServer();
+		// Update HUD only if the player clicked on an actor
+		if (BattleWidgetReference)
+			BattleWidgetReference->OnPlayerClick();
 	}
+}
 
-	// Update HUD only if the player clicked on an actor
-	if (BattleWidgetReference)
-		BattleWidgetReference->OnPlayerClick();
+
+void APlayerController_Base::DelayedEndTurn()
+{
+	GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 1.f, false);
 }
 
 
@@ -202,6 +212,8 @@ void APlayerController_Base::SendEndOfTurnCommandToServer_Implementation()
 
 void APlayerController_Base::Player_OnAvatarTurnChanged_Implementation()
 {
+	TArray<AActor*> GridTilesArray;
+
 	if (IsValid(BattleWidgetReference)) {
 		BattleWidgetReference->EndTurnCommandButton->SetIsEnabled(IsCurrentlyActingPlayer);
 
@@ -211,6 +223,16 @@ void APlayerController_Base::Player_OnAvatarTurnChanged_Implementation()
 		//else {
 		//	BattleWidgetReference->AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
 		//}
+	}
+
+	CurrentSelectedAvatar->CurrentSelectedAttack.Name = "Default";
+	CurrentSelectedAvatar->ValidAttackTargetsArray.Empty();
+
+	SetBattleWidgetVariables();
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+	for (int j = 0; j < GridTilesArray.Num(); j++) {
+		Cast<AActor_GridTile>(GridTilesArray[j])->DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::White);
 	}
 }
 

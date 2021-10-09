@@ -39,13 +39,13 @@ public:
 
 // Functions
 // --------------------------------------------------
-	UFUNCTION(BlueprintCallable)
-	bool SwitchOnAttackEffect(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void SwitchOnAttackEffect(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 
 // ------------------------- Status Effects
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_AddParalyze(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_AddBurn(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 };

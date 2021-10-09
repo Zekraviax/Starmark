@@ -42,17 +42,15 @@ void AActor_GridTile::Tick(float DeltaTime)
 // ------------------------- Battle
 void AActor_GridTile::UpdateGridTileState()
 {
-	//// Clear TraversalProperties that aren't permanent (e.g. Occupied by an Avatar)
-	//Properties.Remove(E_GridTile_Properties::E_Occupied);
+	TArray<AActor*> OverlappingActors;
+	GridTileHitbox->GetOverlappingActors(OverlappingActors, ACharacter_Pathfinder::StaticClass());
 
-	//TArray<AActor*> OverlappingActors;
-	//GridTileHitbox->GetOverlappingActors(OverlappingActors, ACharacter_Pathfinder::StaticClass());
-
-	//if (this) {
-	//	if (OverlappingActors.Num() > 0) {
-	//		Cast<ACharacter_Pathfinder>(OverlappingActors[0])->SetTilesOccupiedBySize();
-	//	}
-	//}
+	if (this) {
+		if (OverlappingActors.Num() <= 0) {
+			// Clear TraversalProperties that aren't permanent (e.g. Occupied by an Avatar)
+			Properties.Remove(E_GridTile_Properties::E_Occupied);
+		}
+	}
 
 	//// If the TraversalProperties array is empty, add the default Property
 	if (Properties.Num() <= 0)

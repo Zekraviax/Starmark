@@ -74,7 +74,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Avatar")
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	FTimerHandle PlayerStateTimerHandle;
 
 // ------------------------- Player
@@ -99,6 +99,10 @@ public:
 // ------------------------- Grid
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	FVector CursorLocationSnappedToGrid;
+
+// ------------------------- Other
+	UPROPERTY()
+	FTimerHandle DelayedEndTurnTimerHandle;
 
 // Functions
 // --------------------------------------------------
@@ -133,12 +137,16 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void SendMoveCommandToServer(FVector MoveLocation);
 
+	UFUNCTION()
+	void DelayedEndTurn();
+
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void Client_SendEndOfTurnCommandToServer();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();
 
+	// Called at the end of a turn, before the currently acting Avatar changes
 	UFUNCTION(Server, Unreliable)
 	void Player_OnAvatarTurnChanged();
 

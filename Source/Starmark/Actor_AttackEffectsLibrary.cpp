@@ -29,7 +29,7 @@ void AActor_AttackEffectsLibrary::Tick(float DeltaTime)
 
 // Functions
 // --------------------------------------------------
-bool AActor_AttackEffectsLibrary::SwitchOnAttackEffect(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
+void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
 {
 	FString ContextString;
 
@@ -47,12 +47,12 @@ bool AActor_AttackEffectsLibrary::SwitchOnAttackEffect(EBattle_AttackEffects Att
 
 	// Update all players' HUDs and Avatars
 
-	return true;
+	//return true;
 }
 
 
 // ------------------------- Status Effect Attacks
-void AActor_AttackEffectsLibrary::Attack_AddParalyze(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
+void AActor_AttackEffectsLibrary::Attack_AddParalyze_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
 {
 	FString ContextString;
 
@@ -61,7 +61,7 @@ void AActor_AttackEffectsLibrary::Attack_AddParalyze(ACharacter_Pathfinder* Atta
 }
 
 
-void AActor_AttackEffectsLibrary::Attack_AddBurn(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
+void AActor_AttackEffectsLibrary::Attack_AddBurn_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
 {
 	FString ContextString;
 

@@ -92,7 +92,6 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 	AStarmark_GameState* GameStateReference = nullptr;
 	GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
-	//for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 	TArray<FAvatar_Struct> CurrentPlayerTeam = Cast<UStarmark_GameInstance>(PlayerControllerReferences[0]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam;
 
 	int SpawnedAvatarCount = 0;
@@ -108,7 +107,6 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 			UE_LOG(LogTemp, Warning, TEXT("Server_SinglePlayerBeginMultiplayerBattle / Remove invalid member %d from PlayerState_PlayerParty"), j);
 		}
 	}
-	//}
 
 	Server_MultiplayerBattleCheckAllPlayersReady();
 }
@@ -335,7 +333,7 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	Server_UpdateAllAvatarDecals();
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		PlayerControllerReferences[i]->SetBattleWidgetVariables();
+		PlayerControllerReferences[i]->Player_OnAvatarTurnChanged();
 	}
 }
 

@@ -66,13 +66,19 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 {
 	if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex)) {
 		AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves;
-		//AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference->SetBattleWidgetVariables();
+
+		for (int i = 0; i < AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray.Num(); i++) {
+			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
+				AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves / 2;
+				break;
+			}
+		}
 	}
 
-	//for (int j = 0; j < PlayerArray.Num(); j++) {
-	//	APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
-	//	PlayerController->Player_OnAvatarTurnChanged();
-	//}
+	for (int j = 0; j < PlayerArray.Num(); j++) {
+		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
+		PlayerController->Player_OnAvatarTurnChanged();
+	}
 }
 
 
@@ -97,8 +103,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 				if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
 					PlayerController->IsCurrentlyActingPlayer = true;
 					PlayerController->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
-				}
-				else {
+				} else {
 					PlayerController->IsCurrentlyActingPlayer = false;
 				}
 			}
