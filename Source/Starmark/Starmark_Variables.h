@@ -150,6 +150,7 @@ enum class EBattle_AttackEffects : uint8
 	// Status Effects
 	AddParalyzeStatus,
 	AddBurnStatus,
+	KnockbackTarget,
 };
 
 

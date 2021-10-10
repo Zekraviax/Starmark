@@ -48,4 +48,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_AddBurn(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+
+// ------------------------- Other
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Attack_KnockbackTarget(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 };

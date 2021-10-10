@@ -2,6 +2,7 @@
 
 
 #include "Character_Pathfinder.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -41,13 +42,12 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 	case (EBattle_AttackEffects::AddBurnStatus):
 		Attack_AddBurn(Attacker, Defender);
 		break;
+	case (EBattle_AttackEffects::KnockbackTarget):
+		Attack_KnockbackTarget(Attacker, Defender);
+		break;
 	default:
 		break;
 	}
-
-	// Update all players' HUDs and Avatars
-
-	//return true;
 }
 
 
@@ -67,4 +67,19 @@ void AActor_AttackEffectsLibrary::Attack_AddBurn_Implementation(ACharacter_Pathf
 
 	FAvatar_StatusEffect* BurnStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Burned", ContextString);
 	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect("Burned", BurnStatus->Image, BurnStatus->TurnsRemaining));
+}
+
+
+void AActor_AttackEffectsLibrary::Attack_KnockbackTarget_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
+{
+	FRotator KnockbackDirection = UKismetMathLibrary::FindLookAtRotation(Attacker->GetActorLocation(), Defender->GetActorLocation());
+	FVector KnockbackVector = KnockbackDirection.Vector();
+
+
+	KnockbackVector.X = KnockbackVector.X * 200;
+	KnockbackVector.Y = KnockbackVector.Y * 200;
+
+	KnockbackVector = FVector((KnockbackVector.X + Defender->GetActorLocation().X), (KnockbackVector.Y + Defender->GetActorLocation().Y), Defender->GetActorLocation().Z);
+
+	Defender->SetActorLocation(FVector(KnockbackVector.X * 1, KnockbackVector.Y * 1, Defender->GetActorLocation().Z), true)
 }

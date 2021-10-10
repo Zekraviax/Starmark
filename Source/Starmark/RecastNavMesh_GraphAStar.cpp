@@ -272,10 +272,11 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 						//for (int k = 0; k < GridTileReference->Properties.Num(); k++) {
 						//	UE_LOG(LogTemp, Warning, TEXT("FindPath / GridTile Property: %s"), *UEnum::GetDisplayValueAsText<E_GridTile_Properties>(GridTileReference->Properties[k]).ToString());
 						//}
-
-						if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_Occupied) ||
-							GridTileReference->Properties.Contains(E_GridTile_Properties::E_Wall)) {
-							Reachable = true;
+						if (IsValid(GridTileReference)) {
+							if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_Occupied) ||
+								GridTileReference->Properties.Contains(E_GridTile_Properties::E_Wall)) {
+								Reachable = true;
+							}
 						}
 
 						if (!Reachable) {

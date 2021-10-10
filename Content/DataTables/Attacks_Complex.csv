@@ -1,0 +1,7 @@
+---,Name,Type,BasePower,BaseRange,ManaCost,AttackPattern,AttackTargetsInRange,AttackEffectsOnTarget
+MagicShock,"Magic Shock","E_Arcane","15","1","25","Circle","E_AttackClickedAvatar","(AddParalyzeStatus)"
+Flamethrower,"Flamethrower","E_Fire","60","4","30","FourWayCross","E_AttackClickedAvatar","(AddBurnStatus)"
+BigSlappy,"Big Slappy","E_Balance","80","1","75","FourWayCross","E_AttackClickedAvatar",""
+ElectroBolt,"Electro Bolt","E_Electric","75","3","60","EightWayCross","E_AttackClickedAvatar",""
+Wave,"Wave","E_Water","50","2","40","Circle","E_AttackAllTargets",""
+BreathOfFire,"Breath of Fire","E_Fire","40","4","2","Cone","E_AttackAllTargets","(AddBurnStatus)"

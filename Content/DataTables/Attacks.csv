@@ -1,4 +1,0 @@
----,Name,Type,BasePower,BaseRange,ManaCost,AttackPattern,AttackEffectsOnTarget
-MagicShock,"Magic Shock","E_Arcane","10","1","25","Circle","(AddParalyzeStatus)"
-FlameJet,"Flame Jet","E_Fire","60","5","30","EightWayCross",""
-BigSlappy,"BigSlappy","E_Balance","100","2","75","FourWayCross",""

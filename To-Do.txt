@@ -21,11 +21,8 @@ Blueprints-To-Code Conversions:
 
 
 Core Gameplay:
-* Fix Avatars not setting tiles to be occupied and unoccupied.
 * Add the ability to summon and switch out Reserve Avatars.
 * Add a coin-flip/dice-roll when two Avatars are speed-tied.
-* Prevent players from launching attacks when their Avatar is not in range of the target.
-* Draw estimated move path for Avatars when hovering over a tile.
 * Avatar data needs to be updated in the Player’s party when swapping Reserve Avatars is implemented.
 * Add loading screens.
 * Allow already created Avatars to be edited.

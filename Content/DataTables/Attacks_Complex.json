@@ -1,0 +1,68 @@
+[
+	{
+		"Name": "MagicShock",
+		"Type": "E_Arcane",
+		"BasePower": 15,
+		"BaseRange": 1,
+		"ManaCost": 25,
+		"AttackPattern": "Circle",
+		"AttackTargetsInRange": "E_AttackClickedAvatar",
+		"AttackEffectsOnTarget": [
+			"AddParalyzeStatus"
+		]
+	},
+	{
+		"Name": "Flamethrower",
+		"Type": "E_Fire",
+		"BasePower": 60,
+		"BaseRange": 4,
+		"ManaCost": 30,
+		"AttackPattern": "FourWayCross",
+		"AttackTargetsInRange": "E_AttackClickedAvatar",
+		"AttackEffectsOnTarget": [
+			"AddBurnStatus"
+		]
+	},
+	{
+		"Name": "BigSlappy",
+		"Type": "E_Balance",
+		"BasePower": 80,
+		"BaseRange": 1,
+		"ManaCost": 75,
+		"AttackPattern": "FourWayCross",
+		"AttackTargetsInRange": "E_AttackClickedAvatar",
+		"AttackEffectsOnTarget": []
+	},
+	{
+		"Name": "ElectroBolt",
+		"Type": "E_Electric",
+		"BasePower": 75,
+		"BaseRange": 3,
+		"ManaCost": 60,
+		"AttackPattern": "EightWayCross",
+		"AttackTargetsInRange": "E_AttackClickedAvatar",
+		"AttackEffectsOnTarget": []
+	},
+	{
+		"Name": "Wave",
+		"Type": "E_Water",
+		"BasePower": 50,
+		"BaseRange": 2,
+		"ManaCost": 40,
+		"AttackPattern": "Circle",
+		"AttackTargetsInRange": "E_AttackAllTargets",
+		"AttackEffectsOnTarget": []
+	},
+	{
+		"Name": "BreathOfFire",
+		"Type": "E_Fire",
+		"BasePower": 40,
+		"BaseRange": 4,
+		"ManaCost": 2,
+		"AttackPattern": "Cone",
+		"AttackTargetsInRange": "E_AttackAllTargets",
+		"AttackEffectsOnTarget": [
+			"AddBurnStatus"
+		]
+	}
+]
