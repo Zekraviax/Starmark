@@ -8,6 +8,7 @@ void UWidgetComponent_AvatarAttack::OnButtonPressed()
 {
 	if (AvatarAttackIndex > -1 && PlayerControllerReference && PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.IsValidIndex(AvatarAttackIndex)) {
 		PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack;
+		PlayerControllerReference->TileHighlightMode = E_PlayerCharacter_HighlightModes::E_AttackPattern;
 
 		// Set selected Attack
 		PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack = PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[AvatarAttackIndex];
@@ -20,6 +21,5 @@ void UWidgetComponent_AvatarAttack::OnButtonPressed()
 
 		// Enable rotation towards mouse cursor
 		PlayerControllerReference->CurrentSelectedAvatar->RotateAvatarTowardsMouse = true;
-		PlayerControllerReference->TileHighlightMode = E_PlayerCharacter_HighlightModes::E_AttackPattern;
 	}
 }

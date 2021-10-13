@@ -146,12 +146,6 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 		Server_UpdateAllAvatarDecals();
 
-		// Set all tiles to be occupied
-		//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
-		//for (int j = 0; j < GridTilesArray.Num(); j++) {
-		//	Cast<AActor_GridTile>(GridTilesArray[j])->UpdateGridTileState();
-		//}
-
 		// Set first player to act
 		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
 	}

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
+#include "Components/Button.h"
 #include "Components/ComboBoxString.h"
 #include "Components/EditableText.h"
 #include "Components/TextBlock.h"
@@ -82,6 +83,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* MoveFourNameText;
 
+	UPROPERTY(meta = (BindWidget))
+	UButton* SaveButton;
+
 // ------------------------- References
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarDataTable;
@@ -118,6 +122,9 @@ public:
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
 	void PopulateDropDowns();
+
+	UFUNCTION()
+	void PopulateDropDownsWithAvatarData(FAvatar_Struct Avatar);
 
 	UFUNCTION(BlueprintCallable)
 	void OnAvatarNicknameTextChanged(FText NewNickname);

@@ -40,7 +40,7 @@ public:
 // Functions
 // --------------------------------------------------
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
-	void SwitchOnAttackEffect(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+	void SwitchOnAttackEffect(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, AActor* Target);
 
 // ------------------------- Status Effects
 	UFUNCTION(BlueprintCallable, Server, Unreliable)

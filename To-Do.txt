@@ -49,6 +49,7 @@ Demo:
 * Allow players to change the colour of Avatars.
 * Allow players to improve Avatars’ stats by distributing a set amount of points.
 * Replace the current default Avatar images with transparent versions.
+* Open the current Main Menu Background in Photoshop and edit the colours to create a few different versions.
 
 
 Other:

@@ -79,6 +79,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnInteractButtonPressed();
 
+	UFUNCTION(BlueprintCallable)
+	void OnRightMouseButtonDown();
+
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateWidgetMaterials();
 

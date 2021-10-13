@@ -1,6 +1,7 @@
 #include "Starmark_GameState.h"
 
 
+#include "Actor_GridTile.h"
 #include "Character_Pathfinder.h"
 #include "Kismet/GameplayStatics.h"
 #include "Widget_HUD_Battle.h"
@@ -86,6 +87,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 {
 	TArray<ACharacter_Pathfinder*> AvatarArray;
 	TArray<bool> IsPlayerActingArray;
+	TArray<AActor*> GridTilesArray;
 
 	CurrentAvatarTurnIndex++;
 
@@ -109,6 +111,13 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 			}
 		}
 	}
+
+	// Set all GridTiles to default colours and colourability
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+	for (int j = 0; j < GridTilesArray.Num(); j++) {
+		Cast<AActor_GridTile>(GridTilesArray[j])->ChangeColourOnMouseHover = true;
+	}
+
 
 	// Update the dynamic turn order
 	ACharacter_Pathfinder* FirstAvatarInDynamicTurnOrder = DynamicAvatarTurnOrder[0];

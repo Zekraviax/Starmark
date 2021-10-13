@@ -30,20 +30,26 @@ void AActor_AttackEffectsLibrary::Tick(float DeltaTime)
 
 // Functions
 // --------------------------------------------------
-void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
+void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, AActor* Target)
 {
 	FString ContextString;
 
 	switch (AttackEffect)
 	{
 	case (EBattle_AttackEffects::AddParalyzeStatus):
-		Attack_AddParalyze(Attacker, Defender);
+		if (Cast<ACharacter_Pathfinder>(Target)) {
+			Attack_AddParalyze(Attacker, Cast<ACharacter_Pathfinder>(Target));
+		}
 		break;
 	case (EBattle_AttackEffects::AddBurnStatus):
-		Attack_AddBurn(Attacker, Defender);
+		if (Cast<ACharacter_Pathfinder>(Target)) {
+			Attack_AddParalyze(Attacker, Cast<ACharacter_Pathfinder>(Target));
+		}
 		break;
 	case (EBattle_AttackEffects::KnockbackTarget):
-		Attack_KnockbackTarget(Attacker, Defender);
+		if (Cast<ACharacter_Pathfinder>(Target)) {
+			Attack_AddParalyze(Attacker, Cast<ACharacter_Pathfinder>(Target));
+		}
 		break;
 	default:
 		break;
@@ -75,11 +81,10 @@ void AActor_AttackEffectsLibrary::Attack_KnockbackTarget_Implementation(ACharact
 	FRotator KnockbackDirection = UKismetMathLibrary::FindLookAtRotation(Attacker->GetActorLocation(), Defender->GetActorLocation());
 	FVector KnockbackVector = KnockbackDirection.Vector();
 
-
 	KnockbackVector.X = KnockbackVector.X * 200;
 	KnockbackVector.Y = KnockbackVector.Y * 200;
 
 	KnockbackVector = FVector((KnockbackVector.X + Defender->GetActorLocation().X), (KnockbackVector.Y + Defender->GetActorLocation().Y), Defender->GetActorLocation().Z);
 
-	Defender->SetActorLocation(FVector(KnockbackVector.X * 1, KnockbackVector.Y * 1, Defender->GetActorLocation().Z), true)
+	Defender->SetActorLocation(FVector(KnockbackVector.X * 1, KnockbackVector.Y * 1, Defender->GetActorLocation().Z), true);
 }

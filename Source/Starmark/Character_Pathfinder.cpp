@@ -185,6 +185,8 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 // ------------------------- Battle
 void ACharacter_Pathfinder::ShowAttackRange()
 {
+	AttackTraceActor->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
+
 	// Circle Trace
 	if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Circle) {
 		// Set the StaticMesh

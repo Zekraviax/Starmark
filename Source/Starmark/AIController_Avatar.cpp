@@ -9,5 +9,5 @@
 // ------------------------- AI
 void AAIController_Avatar::GetMoveCommandFromPlayer_Implementation(FVector MoveLocation, int TilesPerTurnCost, ACharacter_Pathfinder* AvatarReference)
 {
-	//AvatarReference->AvatarData.CurrentTileMoves -= TilesPerTurnCost;
+	AvatarReference->AvatarData.CurrentTileMoves -= TilesPerTurnCost;
 }

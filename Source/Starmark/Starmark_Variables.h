@@ -142,6 +142,7 @@ enum class EBattle_AttackTargetsInRange : uint8
 {
 	E_AttackAllTargets,
 	E_AttackClickedAvatar,
+	SelectAllGridTiles,
 };
 
 UENUM(BlueprintType)
@@ -517,12 +518,6 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int CurrentTileMoves;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	//int MaximumMovePoints;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	//int CurrentMovePoints;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int MaximumActionPoints;
 
@@ -578,6 +573,10 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
 	int TokensRequired;
 
+	// 0 - 3 are reserved for active avatars
+	// 4 and 5 are reserved for reserve avatars
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
+	int IndexInPlayerLibrary;
 
 	FAvatar_Struct()
 	{
@@ -590,8 +589,6 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		CurrentManaPoints = 1;
 		MaximumTileMoves = 2;
 		CurrentTileMoves = 2;
-		//MaximumMovePoints = 1;
-		//CurrentMovePoints = 1;
 		MaximumActionPoints = 1;
 		CurrentActionPoints = 1;
 		SameTypeAttackBonusMultiplier = 150;

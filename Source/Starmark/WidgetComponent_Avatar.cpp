@@ -36,6 +36,21 @@ void UWidgetComponent_Avatar::OnInteractButtonPressed()
 }
 
 
+void UWidgetComponent_Avatar::OnRightMouseButtonDown()
+{
+	if (AvatarCreationWidget_Class) {
+		AvatarCreationWidget_Reference = CreateWidget<UWidget_AvatarCreation>(this, AvatarCreationWidget_Class);
+		//AvatarCreationWidget_Reference->PopulateDropDowns();
+		AvatarCreationWidget_Reference->PopulateDropDownsWithAvatarData(AvatarData);
+		AvatarCreationWidget_Reference->AddToViewport();
+
+		// Bind delegate in the AvatarLibrary
+		if (Cast<UWidget_AvatarLibrary>(PairedWidget))
+			Cast<UWidget_AvatarLibrary>(PairedWidget)->BindAvatarCreatedDelegate(this);
+	}
+}
+
+
 void UWidgetComponent_Avatar::UpdateWidgetMaterials_Implementation()
 {
 	// Implemented in blueprints

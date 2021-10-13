@@ -248,6 +248,8 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 				FHitResult LineTraceResult;
 				FVector End;
 				FVector TileStartLocation = FVector(Query.StartLocation.X, Query.StartLocation.Y, 0.f).GridSnap(200.f) + FVector(0.f, 0.f, Query.StartLocation.Z) + FVector(n0->getxPos() - 16, n0->getyPos() - 16, 0) * 200;
+				//FCollisionQueryParams CollisionParams;
+				
 				// generate moves (child nodes) in all possible directions
 				for (i = 0; i < dir; i++)
 				{
@@ -261,33 +263,46 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 
 					// Check if the tile is occupied or is an obstacle
 					End = FVector(TileLocation.X, TileLocation.Y, (TileLocation.Z - 100.f));
-					bool SuccessfulLineTrace = RecastNavMesh->GetWorld()->LineTraceSingleByChannel(LineTraceResult, TileLocation, End, ECC_Visibility);
+					bool SuccessfulLineTrace = RecastNavMesh->GetWorld()->LineTraceSingleByChannel(LineTraceResult, TileLocation, End, ECC_GameTraceChannel1);
 
 					//UE_LOG(LogTemp, Warning, TEXT("FindPath / Trace Location: %s"), *TileLocation.ToString());
 					//UE_LOG(LogTemp, Warning, TEXT("FindPath / SuccessfulLineTrace is: %s"), SuccessfulLineTrace ? TEXT("true") : TEXT("false"));
-					
+
+					//if (Reachable)
+					//	DrawDebugLine(RecastNavMesh->GetWorld(), TileStartLocation, TileLocation, FColor::Red, false, 5.f, false, 4.f);
+					//else 
+					//	DrawDebugLine(RecastNavMesh->GetWorld(), TileStartLocation, TileLocation, FColor::Green, false, 5.f, false, 4.f);
+
 					if (SuccessfulLineTrace) {
 						AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(LineTraceResult.GetActor());
 
 						//for (int k = 0; k < GridTileReference->Properties.Num(); k++) {
 						//	UE_LOG(LogTemp, Warning, TEXT("FindPath / GridTile Property: %s"), *UEnum::GetDisplayValueAsText<E_GridTile_Properties>(GridTileReference->Properties[k]).ToString());
 						//}
+
 						if (IsValid(GridTileReference)) {
 							if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_Occupied) ||
 								GridTileReference->Properties.Contains(E_GridTile_Properties::E_Wall)) {
 								Reachable = true;
+
+								//DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Yellow, false, 2.f, false, 4.f);
 							}
+							//else {
+							//	DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Green, false, 2.f, false, 4.f);
+							//}
+							//DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Red, false, 2.f, false, 4.f);
 						}
 
-						if (!Reachable) {
-							//DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Green, false, 2.f, false, 4.f);
-						}
-						else {
-							//DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Yellow, false, 2.f, false, 4.f);
-						}
+
+						//if (!Reachable) {
+						//	DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Green, false, 2.f, false, 4.f);
+						//}
+						//else {
+						//	DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Yellow, false, 2.f, false, 4.f);
+						//}
 					}
 					else {
-						//DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Red, false, 2.f, false, 4.f);
+						DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Black, false, 2.f, false, 4.f);
 					}
 
 
