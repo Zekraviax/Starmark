@@ -112,6 +112,9 @@ public:
 	UPROPERTY()
 	FAvatar_Struct CurrentAvatar;
 
+	UPROPERTY()
+	bool IsEditingExistingAvatar = false;
+
 // ------------------------- Delegates
 	UPROPERTY()
 	FAvatarCreated OnAvatarCreatedDelegate;

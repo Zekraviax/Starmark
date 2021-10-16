@@ -40,7 +40,7 @@ void UWidgetComponent_Avatar::OnRightMouseButtonDown()
 {
 	if (AvatarCreationWidget_Class) {
 		AvatarCreationWidget_Reference = CreateWidget<UWidget_AvatarCreation>(this, AvatarCreationWidget_Class);
-		//AvatarCreationWidget_Reference->PopulateDropDowns();
+		AvatarCreationWidget_Reference->IsEditingExistingAvatar = true;
 		AvatarCreationWidget_Reference->PopulateDropDownsWithAvatarData(AvatarData);
 		AvatarCreationWidget_Reference->AddToViewport();
 

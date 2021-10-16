@@ -289,12 +289,29 @@ void UWidget_AvatarCreation::OnSaveButtonPressed()
 	if (!PlayerStateReference)
 		PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
 
-	PlayerStateReference->PlayerProfileReference->AvatarLibrary.Add(CurrentAvatar);
+	if (!IsEditingExistingAvatar) {
+		CurrentAvatar.IndexInPlayerLibrary = PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num() + 6;
+		PlayerStateReference->PlayerProfileReference->AvatarLibrary.Add(CurrentAvatar);
+	} else {
+		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
+			if (PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
+				PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i] = CurrentAvatar;
+				break;
+			}
+		}
+
+		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num(); i++) {
+			if (PlayerStateReference->PlayerProfileReference->AvatarLibrary[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
+				PlayerStateReference->PlayerProfileReference->AvatarLibrary[i] = CurrentAvatar;
+				break;
+			}
+		}
+	}
+
+	PlayerStateReference->SaveToCurrentProfile();
 
 	if (OnAvatarCreatedDelegate.IsBound())
 		OnAvatarCreatedDelegate.Broadcast();
-
-	PlayerStateReference->SaveToCurrentProfile();
 
 	this->RemoveFromParent();
 }

@@ -33,6 +33,10 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 				if (Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]) ) {
 					UWidgetComponent_Avatar* AvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
 					if (AvatarWidgetComponent_Reference->IndexInPlayerTeam == i) {
+						if (PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].IndexInPlayerLibrary != i)
+							PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].IndexInPlayerLibrary = i;
+
+						AvatarWidgetComponent_Reference->PairedWidget = this;
 						AvatarWidgetComponent_Reference->ApplyNewAvatarData(PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i]);
 						AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
 						break;
