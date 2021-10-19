@@ -246,21 +246,24 @@ void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 
 	for (int i = 0; i < Avatars.Num(); i++) {
 		ACharacter_Pathfinder* FoundActor = Cast<ACharacter_Pathfinder>(Avatars[i]);
-		bool IsCurrentlyActing = false;
 
-		if (CurrentlyActingAvatar == Avatars[i])
-			IsCurrentlyActing = true;
+		if (IsValid(FoundActor->PlayerControllerReference)) {
+			bool IsCurrentlyActing = false;
 
-		FoundActor->MultiplayerControllerUniqueID = FoundActor->PlayerControllerReference->MultiplayerUniqueID;
+			if (CurrentlyActingAvatar == Avatars[i])
+				IsCurrentlyActing = true;
 
-		for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
-			PlayerControllerReferences[j]->GetAvatarUpdateFromServer(FoundActor, FoundActor->MultiplayerControllerUniqueID, IsCurrentlyActing, true);
+			FoundActor->MultiplayerControllerUniqueID = FoundActor->PlayerControllerReference->MultiplayerUniqueID;
+
+			for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
+				PlayerControllerReferences[j]->GetAvatarUpdateFromServer(FoundActor, FoundActor->MultiplayerControllerUniqueID, IsCurrentlyActing, true);
+			}
 		}
 	}
 }
 
 
-void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Target, const FString& AttackName)
+void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinder* Attacker, AActor* Target, const FString& AttackName)
 {
 	FAvatar_UltimateTypeChart* MoveTypeChartRow;
 	FAvatar_UltimateTypeChart* TargetTypeChartRow;
@@ -269,6 +272,7 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	TArray<FName> ComplexAttackRowNames = AvatarComplexAttacksDataTable->GetRowNames();
 	FString ContextString, MoveTypeAsString, TargetTypeAsString;
 	int CurrentDamage = 1;
+	ACharacter_Pathfinder* TargetAsCharacter = Cast<ACharacter_Pathfinder>(Target);
 
 	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Attack chosen: %s"), *AttackName);
 	for (int i = 0; i < ComplexAttackRowNames.Num(); i++) {
@@ -278,41 +282,44 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 		}
 	}
 
-	MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(AttackData.Type).ToString();
-	TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(Target->AvatarData.PrimaryType).ToString();
+	if (IsValid(TargetAsCharacter) && AttackData.AttackCategory == EBattle_AttackCategories::Offensive) {
+		MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(AttackData.Type).ToString();
+		TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(TargetAsCharacter->AvatarData.PrimaryType).ToString();
 
-	// Check for type advantage or disadvantage
-	MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
-	TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
+		// Check for type advantage or disadvantage
+		MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
+		TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
 
-	// Attack Damage Formula
-	CurrentDamage = FMath::CeilToInt(Attacker->AvatarData.BaseStats.Attack * AttackData.BasePower);
-	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Attacker's Attack * Attack's Base Power is: %d"), CurrentDamage);
-	CurrentDamage = FMath::CeilToInt(CurrentDamage / Target->AvatarData.BaseStats.Defence);
-	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Current Damage / Defender's Defence is: %d"), CurrentDamage);
-	//CurrentDamage = FMath::CeilToInt((Attacker->AvatarData.BaseStats.Power) * CurrentDamage);
-	CurrentDamage = FMath::CeilToInt(CurrentDamage / 6);
-	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Current Damage / 6 is: %d"), CurrentDamage);
+		// Attack Damage Formula
+		CurrentDamage = FMath::CeilToInt(Attacker->AvatarData.BaseStats.Attack * AttackData.BasePower);
+		UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Attacker's Attack * Attack's Base Power is: %d"), CurrentDamage);
+		CurrentDamage = FMath::CeilToInt(CurrentDamage / TargetAsCharacter->AvatarData.BaseStats.Defence);
+		UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Current Damage / Defender's Defence is: %d"), CurrentDamage);
+		//CurrentDamage = FMath::CeilToInt((Attacker->AvatarData.BaseStats.Power) * CurrentDamage);
+		CurrentDamage = FMath::CeilToInt(CurrentDamage / 6);
+		UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Current Damage / 6 is: %d"), CurrentDamage);
 
-	// Compare each Move type against the Target type
-	for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
-		// 2x Damage
-		if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
-			CurrentDamage = CurrentDamage * 2;
+		// Compare each Move type against the Target type
+		for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
+			// 2x Damage
+			if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
+				CurrentDamage = CurrentDamage * 2;
 
-		// 0.5x Damage
-		else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
-			CurrentDamage = CurrentDamage / 2;
+			// 0.5x Damage
+			else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
+				CurrentDamage = CurrentDamage / 2;
+		}
+
+		if (CurrentDamage < 1)
+			CurrentDamage = 1;
+
+		UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Calculated damage is: %d"), CurrentDamage);
+
+		// Subtract Health
+		AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(Attacker->PlayerControllerReference->PlayerState);
+		PlayerStateReference->Server_SubtractHealth_Implementation(TargetAsCharacter, CurrentDamage);
 	}
 
-	if (CurrentDamage < 1)
-		CurrentDamage = 1;
-
-	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Calculated damage is: %d"), CurrentDamage);
-
-	// Subtract Health
-	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(Attacker->PlayerControllerReference->PlayerState);
-	PlayerStateReference->Server_SubtractHealth_Implementation(Target, CurrentDamage);
 
 	// Apply move effects after the damage has been dealt
 	for (int i = 0; i < AttackData.AttackEffectsOnTarget.Num(); i++) {
@@ -326,9 +333,9 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	// Tell the server to update everyone
 	Server_UpdateAllAvatarDecals();
 
-	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		PlayerControllerReferences[i]->Player_OnAvatarTurnChanged();
-	}
+	//for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+	//	PlayerControllerReferences[i]->Player_OnAvatarTurnChanged();
+	//}
 }
 
 

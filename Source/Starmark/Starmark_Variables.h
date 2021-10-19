@@ -134,6 +134,16 @@ enum class EBattle_AttackPatterns : uint8
 	Cone,
 	FourWayCross,
 	EightWayCross,
+	WideWall,
+};
+
+
+UENUM(BlueprintType)
+enum class EBattle_AttackCategories : uint8
+{
+	Offensive,
+	Utility,
+	Environment,
 };
 
 
@@ -152,6 +162,7 @@ enum class EBattle_AttackEffects : uint8
 	AddParalyzeStatus,
 	AddBurnStatus,
 	KnockbackTarget,
+	SpawnWall,
 };
 
 
@@ -457,6 +468,9 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 	// Attack Pattern
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EBattle_AttackPatterns AttackPattern;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EBattle_AttackCategories AttackCategory;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EBattle_AttackTargetsInRange AttackTargetsInRange;

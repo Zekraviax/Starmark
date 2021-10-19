@@ -270,6 +270,24 @@ void ACharacter_Pathfinder::ShowAttackRange()
 
 		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
+	// Rock Wall attack pattern
+	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::WideWall) {
+		// Set the StaticMesh
+		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
+			if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
+				AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
+				break;
+			}
+		}
+
+		FVector WideWallLocation = FVector(250, 0, -100);
+		FVector WideWallScale = FVector(1.f, 2.f, 0.5f);
+
+		AttackTraceActor->SetRelativeLocation(WideWallLocation);
+		AttackTraceActor->SetRelativeScale3D(WideWallScale);
+
+		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
 
 	// Get all hit actors
 	TArray<AActor*> OverlappingActors;
@@ -284,7 +302,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 }
 
 
-void ACharacter_Pathfinder::LaunchAttack_Implementation(ACharacter_Pathfinder* Target)
+void ACharacter_Pathfinder::LaunchAttack_Implementation(AActor* Target)
 {
 	// Tell the client to update the server
 	UE_LOG(LogTemp, Warning, TEXT("LaunchAttack / Attack chosen: %s"), *CurrentSelectedAttack.Name);

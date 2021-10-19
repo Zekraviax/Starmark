@@ -2,6 +2,7 @@
 
 
 #include "Actor_GridTile.h"
+#include "Character_DestructibleObject.h"
 #include "Character_Pathfinder.h"
 #include "Kismet/GameplayStatics.h"
 #include "Widget_HUD_Battle.h"
@@ -40,21 +41,23 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	for (int i = 0; i < FoundActors.Num(); i++) {
 		ACharacter_Pathfinder* CurrentAvatar = Cast<ACharacter_Pathfinder>(FoundActors[i]);
 
-		if (AvatarTurnOrder.Num() <= 0)
-			AvatarTurnOrder.Add(CurrentAvatar);
-		else {
-			for (int j = 0; j < AvatarTurnOrder.Num(); j++) {
-				ACharacter_Pathfinder* AvatarInTurnOrder = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[j]);
+		if (!Cast<ACharacter_DestructibleObject>(CurrentAvatar)) {
+			if (AvatarTurnOrder.Num() <= 0)
+				AvatarTurnOrder.Add(CurrentAvatar);
+			else {
+				for (int j = 0; j < AvatarTurnOrder.Num(); j++) {
+					ACharacter_Pathfinder* AvatarInTurnOrder = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[j]);
 
-				if (CurrentAvatar->AvatarData.BaseStats.Speed >= AvatarInTurnOrder->AvatarData.BaseStats.Speed &&
-					!AvatarTurnOrder.Contains(CurrentAvatar)) {
-					AvatarTurnOrder.Insert(CurrentAvatar, j);
-					break;
+					if (CurrentAvatar->AvatarData.BaseStats.Speed >= AvatarInTurnOrder->AvatarData.BaseStats.Speed &&
+						!AvatarTurnOrder.Contains(CurrentAvatar)) {
+						AvatarTurnOrder.Insert(CurrentAvatar, j);
+						break;
+					}
+
+					// If we reach the end of the array and the Avatar isn't faster than any of the other Avatars, just add it at the end
+					if (j == AvatarTurnOrder.Num() - 1 && !AvatarTurnOrder.Contains(CurrentAvatar))
+						AvatarTurnOrder.Add(CurrentAvatar);
 				}
-
-				// If we reach the end of the array and the Avatar isn't faster than any of the other Avatars, just add it at the end
-				if (j == AvatarTurnOrder.Num() - 1 && !AvatarTurnOrder.Contains(CurrentAvatar))
-					AvatarTurnOrder.Add(CurrentAvatar);
 			}
 		}
 	}

@@ -10,6 +10,7 @@
 
 
 // Forward Declarations
+class AActor_GridTile;
 class ACharacter_Pathfinder;
 
 
@@ -33,6 +34,10 @@ public:
 // Variables
 // --------------------------------------------------
 
+// ------------------------- References
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<ACharacter_Pathfinder> RockWall_Class;
+
 // ------------------------- Data Tables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* StatusEffectsDataTable;
@@ -52,4 +57,7 @@ public:
 // ------------------------- Other
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_KnockbackTarget(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Spawn_RockWall(AActor_GridTile* TargetTile);
 };

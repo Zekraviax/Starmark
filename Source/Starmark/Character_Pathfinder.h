@@ -80,7 +80,7 @@ public:
 	FAvatar_AttackStruct CurrentSelectedAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	TArray<ACharacter_Pathfinder*> ValidAttackTargetsArray;
+	TArray<AActor*> ValidAttackTargetsArray;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<FAvatar_StatusEffect> CurrentStatusEffectsArray;
@@ -126,7 +126,7 @@ public:
 	void ShowAttackRange();
 
 	UFUNCTION(BlueprintCallable, Client, Reliable)
-	void LaunchAttack(ACharacter_Pathfinder* Target);
+	void LaunchAttack(AActor* Target);
 
 	UFUNCTION(BlueprintCallable)
 	void SetTilesOccupiedBySize();

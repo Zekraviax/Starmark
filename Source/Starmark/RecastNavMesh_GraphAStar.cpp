@@ -302,7 +302,7 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 						//}
 					}
 					else {
-						DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Black, false, 2.f, false, 4.f);
+						//DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Black, false, 2.f, false, 4.f);
 					}
 
 

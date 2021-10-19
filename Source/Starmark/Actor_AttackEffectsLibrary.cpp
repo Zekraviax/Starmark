@@ -1,6 +1,7 @@
 #include "Actor_AttackEffectsLibrary.h"
 
 
+#include "Actor_GridTile.h"
 #include "Character_Pathfinder.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -37,19 +38,20 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 	switch (AttackEffect)
 	{
 	case (EBattle_AttackEffects::AddParalyzeStatus):
-		if (Cast<ACharacter_Pathfinder>(Target)) {
+		if (Cast<ACharacter_Pathfinder>(Target))
 			Attack_AddParalyze(Attacker, Cast<ACharacter_Pathfinder>(Target));
-		}
 		break;
 	case (EBattle_AttackEffects::AddBurnStatus):
-		if (Cast<ACharacter_Pathfinder>(Target)) {
+		if (Cast<ACharacter_Pathfinder>(Target))
 			Attack_AddParalyze(Attacker, Cast<ACharacter_Pathfinder>(Target));
-		}
 		break;
 	case (EBattle_AttackEffects::KnockbackTarget):
-		if (Cast<ACharacter_Pathfinder>(Target)) {
+		if (Cast<ACharacter_Pathfinder>(Target))
 			Attack_AddParalyze(Attacker, Cast<ACharacter_Pathfinder>(Target));
-		}
+		break;
+	case (EBattle_AttackEffects::SpawnWall):
+		if (Cast<AActor_GridTile>(Target))
+			Spawn_RockWall(Cast<AActor_GridTile>(Target));
 		break;
 	default:
 		break;
@@ -76,6 +78,7 @@ void AActor_AttackEffectsLibrary::Attack_AddBurn_Implementation(ACharacter_Pathf
 }
 
 
+// ------------------------- Other
 void AActor_AttackEffectsLibrary::Attack_KnockbackTarget_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
 {
 	FRotator KnockbackDirection = UKismetMathLibrary::FindLookAtRotation(Attacker->GetActorLocation(), Defender->GetActorLocation());
@@ -87,4 +90,13 @@ void AActor_AttackEffectsLibrary::Attack_KnockbackTarget_Implementation(ACharact
 	KnockbackVector = FVector((KnockbackVector.X + Defender->GetActorLocation().X), (KnockbackVector.Y + Defender->GetActorLocation().Y), Defender->GetActorLocation().Z);
 
 	Defender->SetActorLocation(FVector(KnockbackVector.X * 1, KnockbackVector.Y * 1, Defender->GetActorLocation().Z), true);
+}
+
+
+void AActor_AttackEffectsLibrary::Spawn_RockWall_Implementation(AActor_GridTile* TargetTile)
+{
+	FActorSpawnParameters SpawnInfo;
+	FVector Location = FVector(TargetTile->GetActorLocation().X, TargetTile->GetActorLocation().Y, TargetTile->GetActorLocation().Z + 50);
+
+	ACharacter_Pathfinder* NewRockWallActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(RockWall_Class, Location, FRotator::ZeroRotator, SpawnInfo);
 }
