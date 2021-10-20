@@ -38,10 +38,6 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 
 	SetInputMode(FInputModeGameAndUI());
 	bShowMouseCursor = true;
-
-	//if (LobbyWidget_Reference->IsValidLowLevel())
-	//	LobbyWidget_Reference->GetAllPlayerProfiles();
-
 }
 
 
@@ -80,6 +76,8 @@ void APlayerController_Lobby::OnAvatarWidgetComponentClicked(UWidgetComponent_Av
 		UMaterial* TemporaryAvatarMaterial = CurrentSelectedAvatarWidgetComponent->AvatarMaterial;
 		FText TemporaryAvatarName = CurrentSelectedAvatarWidgetComponent->AvatarName->GetText();
 
+		// Swap index in player library
+
 		// First swap: From the Second WidgetComponent to the First
 		CurrentSelectedAvatarWidgetComponent->AvatarData = SecondClickedAvatarWidgetComponent->AvatarData;
 		CurrentSelectedAvatarWidgetComponent->AvatarMaterial = SecondClickedAvatarWidgetComponent->AvatarMaterial;
@@ -95,23 +93,6 @@ void APlayerController_Lobby::OnAvatarWidgetComponentClicked(UWidgetComponent_Av
 		SecondClickedAvatarWidgetComponent->UpdateWidgetMaterials();
 
 		CurrentSelectedAvatarWidgetComponent = NULL;
-
-		// Update player team
-		//TArray<UUserWidget*> FoundAvatarWidgetComponents;
-		//UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundAvatarWidgetComponents, UWidgetComponent_Avatar::StaticClass(), true);
-
-		////UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-		//Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerProfileReference->CurrentAvatarTeam.Empty();
-
-		//for (int i = 0; i < FoundAvatarWidgetComponents.Num(); i++) {
-		//	UWidgetComponent_Avatar* AvatarWidgetComponentReference = Cast<UWidgetComponent_Avatar>(FoundAvatarWidgetComponents[i]);
-		//	if (AvatarWidgetComponentReference->IndexInPlayerTeam >= 0) {
-		//		Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerProfileReference->CurrentAvatarTeam.Insert(AvatarWidgetComponentReference->AvatarData, AvatarWidgetComponentReference->IndexInPlayerTeam);
-		//		Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerProfileReference->AvatarLibrary.Remove(AvatarWidgetComponentReference->AvatarData);
-		//	}
-		//}
-
-		//Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->SaveToCurrentProfile();
 
 		if (OnAvatarChangedSlotDelegate.IsBound())
 			OnAvatarChangedSlotDelegate.Broadcast();

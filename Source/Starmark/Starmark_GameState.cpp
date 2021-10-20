@@ -34,32 +34,70 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 {
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundActors);
+	TArray<ACharacter_Pathfinder*> SlowedAvatars, SlowedAvatarsInTurnOrder;
 
 	AvatarTurnOrder.Empty();
 
 	// Use Nested Loops to compare Avatars' Speeds.
 	for (int i = 0; i < FoundActors.Num(); i++) {
 		ACharacter_Pathfinder* CurrentAvatar = Cast<ACharacter_Pathfinder>(FoundActors[i]);
+		if (!Cast<ACharacter_DestructibleObject>(CurrentAvatar)) {
+
+			for (int j = 0; j < CurrentAvatar->CurrentStatusEffectsArray.Num(); j++) {
+				if (CurrentAvatar->CurrentStatusEffectsArray[j].Name == "Drowning") {
+					SlowedAvatars.AddUnique(CurrentAvatar);
+					break;
+				}
+			}
+
+			if (!SlowedAvatars.Contains(CurrentAvatar)) {
+				if (AvatarTurnOrder.Num() <= 0)
+					AvatarTurnOrder.Add(CurrentAvatar);
+				else {
+					for (int j = 0; j < AvatarTurnOrder.Num(); j++) {
+						ACharacter_Pathfinder* AvatarInTurnOrder = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[j]);
+
+						if (CurrentAvatar->AvatarData.BaseStats.Speed >= AvatarInTurnOrder->AvatarData.BaseStats.Speed &&
+							!AvatarTurnOrder.Contains(CurrentAvatar)) {
+							AvatarTurnOrder.Insert(CurrentAvatar, j);
+							break;
+						}
+
+						// If we reach the end of the array and the Avatar isn't faster than any of the other Avatars, just add it at the end
+						if (j == AvatarTurnOrder.Num() - 1 && !AvatarTurnOrder.Contains(CurrentAvatar))
+							AvatarTurnOrder.Add(CurrentAvatar);
+					}
+				}
+			}
+		}
+	}
+	// Compare slowed Actors' speed
+	for (int i = 0; i < SlowedAvatars.Num(); i++) {
+		ACharacter_Pathfinder* CurrentAvatar = Cast<ACharacter_Pathfinder>(SlowedAvatars[i]);
 
 		if (!Cast<ACharacter_DestructibleObject>(CurrentAvatar)) {
-			if (AvatarTurnOrder.Num() <= 0)
-				AvatarTurnOrder.Add(CurrentAvatar);
-			else {
-				for (int j = 0; j < AvatarTurnOrder.Num(); j++) {
-					ACharacter_Pathfinder* AvatarInTurnOrder = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[j]);
+			if (SlowedAvatarsInTurnOrder.Num() == 1) {
+				SlowedAvatarsInTurnOrder.Add(CurrentAvatar);
+			} else {
+				for (int j = 0; j < SlowedAvatarsInTurnOrder.Num(); j++) {
+					ACharacter_Pathfinder* AvatarInTurnOrder = Cast<ACharacter_Pathfinder>(SlowedAvatarsInTurnOrder[j]);
 
 					if (CurrentAvatar->AvatarData.BaseStats.Speed >= AvatarInTurnOrder->AvatarData.BaseStats.Speed &&
-						!AvatarTurnOrder.Contains(CurrentAvatar)) {
-						AvatarTurnOrder.Insert(CurrentAvatar, j);
+						!SlowedAvatarsInTurnOrder.Contains(CurrentAvatar)) {
+						SlowedAvatarsInTurnOrder.Insert(CurrentAvatar, j);
 						break;
 					}
 
 					// If we reach the end of the array and the Avatar isn't faster than any of the other Avatars, just add it at the end
-					if (j == AvatarTurnOrder.Num() - 1 && !AvatarTurnOrder.Contains(CurrentAvatar))
-						AvatarTurnOrder.Add(CurrentAvatar);
+					if (j == AvatarTurnOrder.Num() - 1 && !SlowedAvatarsInTurnOrder.Contains(CurrentAvatar))
+						SlowedAvatarsInTurnOrder.Add(CurrentAvatar);
 				}
 			}
 		}
+	}
+
+	for (int i = 0; i < SlowedAvatarsInTurnOrder.Num(); i++) {
+		AvatarTurnOrder.Insert(SlowedAvatarsInTurnOrder[i], AvatarTurnOrder.Num());
 	}
 
 	DynamicAvatarTurnOrder = AvatarTurnOrder;

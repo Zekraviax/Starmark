@@ -45,9 +45,13 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 		if (Cast<ACharacter_Pathfinder>(Target))
 			Attack_AddParalyze(Attacker, Cast<ACharacter_Pathfinder>(Target));
 		break;
+	case (EBattle_AttackEffects::AddDrowningStatus):
+		if (Cast<ACharacter_Pathfinder>(Target))
+			Attack_AddDrowning(Attacker, Cast<ACharacter_Pathfinder>(Target));
+		break;
 	case (EBattle_AttackEffects::KnockbackTarget):
 		if (Cast<ACharacter_Pathfinder>(Target))
-			Attack_AddParalyze(Attacker, Cast<ACharacter_Pathfinder>(Target));
+			Attack_KnockbackTarget(Attacker, Cast<ACharacter_Pathfinder>(Target));
 		break;
 	case (EBattle_AttackEffects::SpawnWall):
 		if (Cast<AActor_GridTile>(Target))
@@ -75,6 +79,15 @@ void AActor_AttackEffectsLibrary::Attack_AddBurn_Implementation(ACharacter_Pathf
 
 	FAvatar_StatusEffect* BurnStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Burned", ContextString);
 	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect("Burned", BurnStatus->Image, BurnStatus->TurnsRemaining));
+}
+
+
+void AActor_AttackEffectsLibrary::Attack_AddDrowning_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
+{
+	FString ContextString;
+
+	FAvatar_StatusEffect* DrowningStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Drowning", ContextString);
+	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect("Drowning", DrowningStatus->Image, DrowningStatus->TurnsRemaining));
 }
 
 
