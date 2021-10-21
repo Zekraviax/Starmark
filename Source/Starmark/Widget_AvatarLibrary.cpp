@@ -96,11 +96,6 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 	// Adjust all children in the Uniform Grid Panel
 	for (int j = 0; j < AvatarLibraryUniformGridPanel->GetChildrenCount(); j++) {
 		Cast<UUniformGridSlot>(AvatarLibraryUniformGridPanel->GetChildAt(j)->Slot)->SetVerticalAlignment(EVerticalAlignment::VAlign_Fill);
-		// Set Index in Player Library
-		//if (Cast<UWidgetComponent_Avatar>(AvatarLibraryUniformGridPanel->GetChildAt(j))->AvatarName->GetText().ToString() == "Empty Slot" ||
-		//	Cast<UWidgetComponent_Avatar>(AvatarLibraryUniformGridPanel->GetChildAt(j))->AvatarName->GetText().ToString() == "AvatarName") {
-		//	Cast<UWidgetComponent_Avatar>(AvatarLibraryUniformGridPanel->GetChildAt(j))->AvatarData.IndexInPlayerLibrary = j;
-		//}
 	}
 
 	// Bind AvatarSlotChangedDelegate
@@ -143,6 +138,4 @@ void UWidget_AvatarLibrary::OnAvatarChangedSlotDelegateBroadcast()
 	}
 
 	PlayerStateReference->SaveToCurrentProfile();
-
-	//OnWidgetOpened();
 }

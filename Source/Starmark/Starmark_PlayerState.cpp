@@ -157,23 +157,25 @@ void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Path
 {
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
-	if (Avatar->PlayerControllerReference->PlayerParty.IsValidIndex(Avatar->IndexInPlayerParty)) {
-		Avatar->PlayerControllerReference->PlayerParty.RemoveAt(Avatar->IndexInPlayerParty);
+	if (IsValid(Avatar->PlayerControllerReference)) {
+		if (Avatar->PlayerControllerReference->PlayerParty.IsValidIndex(Avatar->IndexInPlayerParty)) {
+			Avatar->PlayerControllerReference->PlayerParty.RemoveAt(Avatar->IndexInPlayerParty);
 
-		// Remove from turn order
-		UE_LOG(LogTemp, Warning, TEXT("Battle_AvatarDefeated / Remove Avatar %s from Turn Order"), *Avatar->AvatarData.AvatarName);
-		GameStateReference->AvatarTurnOrder.Remove(Avatar);
-		GameStateReference->DynamicAvatarTurnOrder.Remove(Avatar);
+			// Remove from turn order
+			UE_LOG(LogTemp, Warning, TEXT("Battle_AvatarDefeated / Remove Avatar %s from Turn Order"), *Avatar->AvatarData.AvatarName);
+			GameStateReference->AvatarTurnOrder.Remove(Avatar);
+			GameStateReference->DynamicAvatarTurnOrder.Remove(Avatar);
 
-		Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_AssembleTurnOrderText();
+			Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_AssembleTurnOrderText();
+		}
+
+		if (Avatar->PlayerControllerReference->PlayerParty.Num() <= 0) {
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player has run out of Avatars")));
+			GameStateReference->EndOfBattle_Implementation();
+		}
+		else
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player Avatars Remaining: %d"), Avatar->PlayerControllerReference->PlayerParty.Num()));
 	}
-
-	if (Avatar->PlayerControllerReference->PlayerParty.Num() <= 0) {
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player has run out of Avatars")));
-		GameStateReference->EndOfBattle_Implementation();
-	}
-	else 
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player Avatars Remaining: %d"), Avatar->PlayerControllerReference->PlayerParty.Num()));
 
 	Avatar->Destroy();
 }

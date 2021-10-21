@@ -323,11 +323,15 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 
 	// Apply move effects after the damage has been dealt
 	for (int i = 0; i < AttackData.AttackEffectsOnTarget.Num(); i++) {
-		//UAttackEffects_FunctionLibrary::SwitchOnAttackEffect(AttackData.AttackEffectsOnTarget[i], Attacker, Target);
 		if (!AttackEffectsLibrary_Reference && AttackEffectsLibrary_Class)
 			AttackEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_AttackEffectsLibrary>(AttackEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
 
 		AttackEffectsLibrary_Reference->SwitchOnAttackEffect(AttackData.AttackEffectsOnTarget[i], Attacker, Target);
+
+		if (AttackData.Name == "Drown") {
+			Cast<AStarmark_GameState>(GetWorld()->GetGameState())->SetTurnOrder(PlayerControllerReferences);
+			// Re-set the turn order text
+		}
 	}
 
 	// Tell the server to update everyone
