@@ -111,6 +111,8 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 void ACharacter_Pathfinder::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	//SetAttackTraceActorLocationSnappedToGrid();
 }
 
 
@@ -182,13 +184,67 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 }
 
 
+void ACharacter_Pathfinder::SetAttackTraceActorLocationSnappedToGrid()
+{
+	// Attach the attack component to the mouse if certain attacks are selected
+	//if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::AOE_Circle) {
+	//	if (IsValid(PlayerControllerReference)) {
+	//		AttackTraceActor->SetWorldLocation(PlayerControllerReference->CursorLocationSnappedToGrid);
+	//	}
+	//}
+
+	// Get all tiles and overlapping tiles
+	TArray<AActor*> GridTilesArray;
+	TArray<UPrimitiveComponent*> OverlappingActors;
+	//AttackTraceActor->GetOverlappingActors(OverlappingActors, AActor_GridTile::StaticClass());
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+
+	//for (int i = 0; i < GridTilesArray.Num(); i++) {
+	//	AActor_GridTile* GridTile = Cast<AActor_GridTile>(GridTilesArray[i]);
+
+	//	if (GridTile->DynamicMaterial) {
+	//		if (OverlappingActors.Contains(GridTile)) {
+	//			GridTile->ChangeColourOnMouseHover = false;
+	//			GridTile->DynamicMaterial->SetVectorParameterValue(FName("Colour"), FLinearColor(1.f, 0.2f, 0.0f));
+	//		} else {
+	//			GridTile->ChangeColourOnMouseHover = true;
+	//			GridTile->DynamicMaterial->SetVectorParameterValue(FName("Colour"), FLinearColor(1.f, 1.f, 1.f));
+	//		}
+	//	}
+	//}
+
+	// Check for tiles that overlap the AttackTraceActor
+	for (int i = 0; i < GridTilesArray.Num(); i++) {
+		AActor_GridTile* GridTile = Cast<AActor_GridTile>(GridTilesArray[i]);
+
+		GridTile->GetOverlappingComponents(OverlappingActors);
+		if (OverlappingActors.Contains(AttackTraceActor)) {
+			GridTile->ChangeColourOnMouseHover = false;
+			GridTile->DynamicMaterial->SetVectorParameterValue(FName("Colour"), FLinearColor(1.f, 0.2f, 0.0f));
+		} else {
+			GridTile->ChangeColourOnMouseHover = true;
+			GridTile->DynamicMaterial->SetVectorParameterValue(FName("Colour"), FLinearColor(1.f, 1.f, 1.f));
+		}
+	}
+}
+
+
+void ACharacter_Pathfinder::Delayed_SetAttackTraceActorLocation()
+{
+	// Set timer
+	//GetWorld()->GetTimerManager().SetTimer(DelayedAttackTraceActorOverlapTimerHandle, this, &ACharacter_Pathfinder::SetAttackTraceActorLocationSnappedToGrid, 0.2f, false);
+	SetAttackTraceActorLocationSnappedToGrid();
+}
+
+
 // ------------------------- Battle
 void ACharacter_Pathfinder::ShowAttackRange()
 {
 	AttackTraceActor->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
 
 	// Circle Trace
-	if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Circle) {
+	if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Circle ||
+		CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::AOE_Circle) {
 		// Set the StaticMesh
 		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
 			if (AttackTraceStaticMeshes[i]->GetName().Contains("Sphere")) {
@@ -197,6 +253,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			}
 		}
 
+		// Attach an AOE_Circle to the mouse
 		if (AttackRotationSnapToDegrees != 90)
 			AttackRotationSnapToDegrees = 90;
 

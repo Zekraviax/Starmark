@@ -58,6 +58,11 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 
 	SetBattleWidgetVariables();
+
+	// Set cursor location
+	//FVector mouseLocation, mouseRotation;
+	//DeprojectMousePositionToWorld(mouseLocation, mouseRotation);
+	//CursorLocationSnappedToGrid = mouseLocation.GridSnap(200.f);
 }
 
 
@@ -215,6 +220,10 @@ void APlayerController_Base::SendMoveCommandToServer_Implementation(FVector Move
 void APlayerController_Base::Client_SendEndOfTurnCommandToServer_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Client_SendEndOfTurnCommandToServer / Call SendEndOfTurnCommandToServer()"));
+
+	CurrentSelectedAvatar->CurrentSelectedAttack.Name = "Default";
+	CurrentSelectedAvatar->CurrentSelectedAttack.AttackPattern = EBattle_AttackPatterns::Circle;
+
 	SendEndOfTurnCommandToServer();
 }
 

@@ -104,6 +104,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int AttackRotationSnapToDegrees = 90;
 
+	UPROPERTY()
+	FTimerHandle DelayedAttackTraceActorOverlapTimerHandle;
+
 // Functions
 // --------------------------------------------------
 
@@ -120,6 +123,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnAvatarClicked();
+
+	UFUNCTION()
+	void SetAttackTraceActorLocationSnappedToGrid();
+
+	UFUNCTION()
+	void Delayed_SetAttackTraceActorLocation();
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)

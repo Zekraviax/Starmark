@@ -135,6 +135,7 @@ enum class EBattle_AttackPatterns : uint8
 	FourWayCross,
 	EightWayCross,
 	WideWall,
+	AOE_Circle,
 };
 
 
@@ -164,6 +165,7 @@ enum class EBattle_AttackEffects : uint8
 	AddDrowningStatus,
 	KnockbackTarget,
 	SpawnWall,
+	NoFriendlyFire,
 };
 
 
@@ -499,7 +501,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	// ------------------------- Base Data
+// ------------------------- Base Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
 	FString AvatarName;
 
@@ -515,7 +517,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
 	EAvatar_Marks Mark;
 
-	// ------------------------- Battle
+// ------------------------- Battle
 	// Instinct Abilities
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
@@ -545,7 +547,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<FAvatar_AttackStruct> CurrentAttacks;
 
-	// ------------------------- Appearance
+// ------------------------- Appearance
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
 	UMaterial* DefaultImage;
 
@@ -565,7 +567,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other DataTables")
 	TArray<FDataTableRowHandle> AttacksLearnedByBuyingWithEssence;
 
-	// ------------------------- Encyclopedia
+// ------------------------- Encyclopedia
 	// Number
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Encyclopedia")
 	int EncyclopediaNumber;

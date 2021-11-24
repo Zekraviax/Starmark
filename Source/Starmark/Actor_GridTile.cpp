@@ -2,6 +2,7 @@
 
 
 #include "Character_Pathfinder.h"
+#include "Starmark_GameState.h"
 
 
 // Sets default values
@@ -62,6 +63,19 @@ void AActor_GridTile::OnMouseBeginHover()
 {
 	if (DynamicMaterial->IsValidLowLevel() && ChangeColourOnMouseHover)
 		DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+
+	// Set AttackTraceActor to this tile's location if it isn't centered around the player
+	// Get the current Avatar
+	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+	ACharacter_Pathfinder* CurrentAvatar = GameStateReference->DynamicAvatarTurnOrder[GameStateReference->CurrentAvatarTurnIndex];
+
+	if (CurrentAvatar->CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::AOE_Circle) {
+		if (CurrentAvatar->PlayerControllerReference) {
+			CurrentAvatar->AttackTraceActor->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y + 200, CurrentAvatar->AttackTraceActor->GetComponentLocation().Z), true, nullptr, ETeleportType::ResetPhysics);
+
+			CurrentAvatar->Delayed_SetAttackTraceActorLocation();
+		}
+	}
 }
 
 

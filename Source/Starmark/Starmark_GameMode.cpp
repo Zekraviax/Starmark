@@ -283,6 +283,14 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	}
 
 	if (IsValid(TargetAsCharacter) && AttackData.AttackCategory == EBattle_AttackCategories::Offensive) {
+
+		// Check for the No Friendly Fire attack ability
+		if (AttackData.AttackEffectsOnTarget.Contains(EBattle_AttackEffects::NoFriendlyFire)) {
+			if (Attacker->MultiplayerControllerUniqueID == TargetAsCharacter->MultiplayerControllerUniqueID) {
+				return;
+			}
+		}
+
 		MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(AttackData.Type).ToString();
 		TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(TargetAsCharacter->AvatarData.PrimaryType).ToString();
 
@@ -330,16 +338,14 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 
 		if (AttackData.Name == "Drown") {
 			Cast<AStarmark_GameState>(GetWorld()->GetGameState())->SetTurnOrder(PlayerControllerReferences);
+
 			// Re-set the turn order text
+			Server_AssembleTurnOrderText();
+
+			// Call the EndTurn function again (?)
+			Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn();
 		}
 	}
-
-	// Tell the server to update everyone
-	Server_UpdateAllAvatarDecals();
-
-	//for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-	//	PlayerControllerReferences[i]->Player_OnAvatarTurnChanged();
-	//}
 }
 
 

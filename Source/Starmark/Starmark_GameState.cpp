@@ -76,7 +76,7 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 		ACharacter_Pathfinder* CurrentAvatar = Cast<ACharacter_Pathfinder>(SlowedAvatars[i]);
 
 		if (!Cast<ACharacter_DestructibleObject>(CurrentAvatar)) {
-			if (SlowedAvatarsInTurnOrder.Num() == 1) {
+			if (SlowedAvatarsInTurnOrder.Num() <= 0) {
 				SlowedAvatarsInTurnOrder.Add(CurrentAvatar);
 			} else {
 				for (int j = 0; j < SlowedAvatarsInTurnOrder.Num(); j++) {
@@ -97,7 +97,8 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	}
 
 	for (int i = 0; i < SlowedAvatarsInTurnOrder.Num(); i++) {
-		AvatarTurnOrder.Insert(SlowedAvatarsInTurnOrder[i], AvatarTurnOrder.Num());
+		//AvatarTurnOrder.Insert(SlowedAvatarsInTurnOrder[i], AvatarTurnOrder.Num());
+		AvatarTurnOrder.Add(SlowedAvatarsInTurnOrder[i]);
 	}
 
 	DynamicAvatarTurnOrder = AvatarTurnOrder;
