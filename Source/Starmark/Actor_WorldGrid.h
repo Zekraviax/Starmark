@@ -9,17 +9,31 @@ UCLASS()
 class STARMARK_API AActor_WorldGrid : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AActor_WorldGrid();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+public:
+// Variables
+// --------------------------------------------------
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+// ------------------------- 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FIntPoint> GridTileCoordinates;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FIntPoint MapSize;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FVector2D GridTileSize;
+
+// Functions
+// --------------------------------------------------
+
+// ------------------------- 
+	UFUNCTION()
+	bool IsValidGridCell(const FIntPoint& Location) const;
+
+	UFUNCTION()
+	bool IsGridCellWalkable(const FIntPoint& Location) const;
+
+	UFUNCTION()
+	bool GetGridCellForWorldPos(const FVector& WorldPos, FIntPoint& GridPos) const;
 };

@@ -50,6 +50,9 @@ public:
 	UPROPERTY()
 	AActor* OccupyingActor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int MovementCost = 1;
+
 // ------------------------- Multiplayer
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int AssignedMultiplayerUniqueID;

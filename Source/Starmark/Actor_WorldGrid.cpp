@@ -1,25 +1,23 @@
 #include "Actor_WorldGrid.h"
 
 
-// Sets default values
-AActor_WorldGrid::AActor_WorldGrid()
+bool AActor_WorldGrid::IsValidGridCell(const FIntPoint& Location) const
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	return (Location.X >= 0 && Location.Y >= 0) && (Location.X < MapSize.X && Location.Y < MapSize.Y);
 }
 
-// Called when the game starts or when spawned
-void AActor_WorldGrid::BeginPlay()
+
+bool AActor_WorldGrid::IsGridCellWalkable(const FIntPoint& Location) const
 {
-	Super::BeginPlay();
-	
+	return (!GridTileCoordinates.Contains(Location));
 }
 
-// Called every frame
-void AActor_WorldGrid::Tick(float DeltaTime)
+
+bool AActor_WorldGrid::GetGridCellForWorldPos(const FVector& WorldPos, FIntPoint& GridPos) const
 {
-	Super::Tick(DeltaTime);
+	FVector MyLocation = GetActorLocation();
 
+	GridPos.X = (WorldPos.X - MyLocation.X) / GridTileSize.X;
+
+	return false;
 }
-
