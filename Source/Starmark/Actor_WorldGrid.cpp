@@ -1,25 +1,66 @@
 #include "Actor_WorldGrid.h"
 
+#include "Actor_GridTile.h"
+#include "Kismet/GameplayStatics.h"
 
-// Sets default values
-AActor_WorldGrid::AActor_WorldGrid()
+
+bool AActor_WorldGrid::IsValidGridCell(const FIntPoint& Location) const
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	bool FoundATile = GetWorldTileActorAtGridCoordinates(Location);
 
+	return (Location.X >= 0 && Location.Y >= 0) && (Location.X < MapSize.X && Location.Y < MapSize.Y) && FoundATile;
 }
 
-// Called when the game starts or when spawned
-void AActor_WorldGrid::BeginPlay()
+
+bool AActor_WorldGrid::IsGridCellWalkable(const FIntPoint& Location) const
 {
-	Super::BeginPlay();
-	
+	return (!GridTileCoordinates.Contains(Location));
 }
 
-// Called every frame
-void AActor_WorldGrid::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 
+bool AActor_WorldGrid::ConvertWorldTileToGridCoordinates(const FVector& WorldPos, FIntPoint& GridPos) const
+{
+	FVector MyLocation = GetActorLocation();
+
+	GridPos.X = (WorldPos.X - MyLocation.X) / GridTileSize.X;
+	GridPos.Y = (WorldPos.Y - MyLocation.Y) / GridTileSize.Y;
+
+	// Returns a bool, but also outputs the grid coordinates
+	return (GridPos.X >= 0 && GridPos.Y >= 0 && GridPos.X < MapSize.X && GridPos.Y < MapSize.Y);
 }
 
+
+FVector AActor_WorldGrid::ConvertGridCoordinatesToWorldTile(const FIntPoint& GridCoordinates) const
+{
+	FVector MyLocation = GetActorLocation();
+
+	return FVector(GridCoordinates.X * GridTileSize.X + MyLocation.X, GridCoordinates.Y * GridTileSize.Y + MyLocation.Y, MyLocation.Z);
+}
+
+
+FVector AActor_WorldGrid::ConvertGridCoordinatesToWorldTileCenter(const FIntPoint& GridCoordinates) const
+{
+	return ConvertGridCoordinatesToWorldTile(GridCoordinates) + (FVector(GridTileSize.Y, GridTileSize.X, 0) * 0.5f);
+}
+
+
+AActor_GridTile* AActor_WorldGrid::GetWorldTileActorAtGridCoordinates(const FIntPoint& GridCoordinates) const
+{
+	AActor_GridTile* TileReference = nullptr;
+	TArray<AActor*> GridTilesArray;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+	for (int i = 0; i < GridTilesArray.Num(); i++) {
+		AActor_GridTile* FoundTile = Cast<AActor_GridTile>(GridTilesArray[i]);
+		FIntPoint TileGridCoordinates;
+
+		ConvertWorldTileToGridCoordinates(FoundTile->GetActorLocation(), TileGridCoordinates);
+
+		if (GridCoordinates == TileGridCoordinates) {
+			TileReference = FoundTile;
+			break;
+		}
+	}
+
+	return TileReference;
+}

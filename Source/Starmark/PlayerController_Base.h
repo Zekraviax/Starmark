@@ -6,7 +6,7 @@
 #include "Actor_CharacterTest.h"
 #include "Character_Pathfinder.h"
 #include "Engine.h"
-#include "UnrealNetwork.h"
+#include "Net/UnrealNetwork.h"
 
 #include "PlayerController_Base.generated.h"
 

@@ -9,7 +9,7 @@
 #include "PlayerController_Lobby.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_PlayerState.h"
-#include "WidgetBlueprintLibrary.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "WidgetComponent_Avatar.h"
 #include "Widget_AvatarCreation.h"
 

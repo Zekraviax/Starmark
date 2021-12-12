@@ -73,7 +73,7 @@ void AActor_GridTile::OnMouseBeginHover()
 		if (CurrentAvatar->PlayerControllerReference) {
 			CurrentAvatar->AttackTraceActor->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y + 200, CurrentAvatar->AttackTraceActor->GetComponentLocation().Z), true, nullptr, ETeleportType::ResetPhysics);
 
-			CurrentAvatar->Delayed_SetAttackTraceActorLocation();
+			CurrentAvatar->SetAttackTraceActorLocationSnappedToGrid();
 		}
 	}
 }

@@ -3,6 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UnrealNetwork.h"
+#include "Net/UnrealNetwork.h"
 #include "Online.h"
 #include "EngineMinimal.h"

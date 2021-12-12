@@ -5,7 +5,7 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "SaveData_PlayerProfilesList.h"
-#include "WidgetBlueprintLibrary.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "WidgetComponent_FoundServer.h"
 #include "Widget_ServerBrowser.h"
 

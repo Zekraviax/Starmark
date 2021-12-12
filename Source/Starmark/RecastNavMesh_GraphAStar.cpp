@@ -183,10 +183,10 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 			{
 				// get the current node w/ the highest priority
 				// from the list of open nodes
-				n0 = new node(pq[pqi].HeapTop().getxPos(), pq[pqi].HeapTop().getyPos(),
-					pq[pqi].HeapTop().getLevel(), pq[pqi].HeapTop().getPriority());
+				n0 = new node(pq[pqi].HeapTop().getxPos(), pq[pqi].HeapTop().getyPos(), pq[pqi].HeapTop().getLevel(), pq[pqi].HeapTop().getPriority());
 
-				x = n0->getxPos(); y = n0->getyPos();
+				x = n0->getxPos(); 
+				y = n0->getyPos();
 
 				pq[pqi].HeapPopDiscard(nodePredicate(), true); // remove the node from the open list
 				open_nodes_map[x][y] = 0;
@@ -241,15 +241,11 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 					return Result;
 				}
 
-
-
-
 				// Line Trace Variables
 				FHitResult LineTraceResult;
 				FVector End;
 				FVector TileStartLocation = FVector(Query.StartLocation.X, Query.StartLocation.Y, 0.f).GridSnap(200.f) + FVector(0.f, 0.f, Query.StartLocation.Z) + FVector(n0->getxPos() - 16, n0->getyPos() - 16, 0) * 200;
-				//FCollisionQueryParams CollisionParams;
-				
+
 				// generate moves (child nodes) in all possible directions
 				for (i = 0; i < dir; i++)
 				{
@@ -265,55 +261,21 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 					End = FVector(TileLocation.X, TileLocation.Y, (TileLocation.Z - 100.f));
 					bool SuccessfulLineTrace = RecastNavMesh->GetWorld()->LineTraceSingleByChannel(LineTraceResult, TileLocation, End, ECC_GameTraceChannel1);
 
-					//UE_LOG(LogTemp, Warning, TEXT("FindPath / Trace Location: %s"), *TileLocation.ToString());
-					//UE_LOG(LogTemp, Warning, TEXT("FindPath / SuccessfulLineTrace is: %s"), SuccessfulLineTrace ? TEXT("true") : TEXT("false"));
-
-					//if (Reachable)
-					//	DrawDebugLine(RecastNavMesh->GetWorld(), TileStartLocation, TileLocation, FColor::Red, false, 5.f, false, 4.f);
-					//else 
-					//	DrawDebugLine(RecastNavMesh->GetWorld(), TileStartLocation, TileLocation, FColor::Green, false, 5.f, false, 4.f);
-
 					if (SuccessfulLineTrace) {
 						AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(LineTraceResult.GetActor());
-
-						//for (int k = 0; k < GridTileReference->Properties.Num(); k++) {
-						//	UE_LOG(LogTemp, Warning, TEXT("FindPath / GridTile Property: %s"), *UEnum::GetDisplayValueAsText<E_GridTile_Properties>(GridTileReference->Properties[k]).ToString());
-						//}
 
 						if (IsValid(GridTileReference)) {
 							if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_Occupied) ||
 								GridTileReference->Properties.Contains(E_GridTile_Properties::E_Wall)) {
 								Reachable = true;
-
-								//DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Yellow, false, 2.f, false, 4.f);
 							}
-							//else {
-							//	DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Green, false, 2.f, false, 4.f);
-							//}
-							//DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Red, false, 2.f, false, 4.f);
 						}
-
-
-						//if (!Reachable) {
-						//	DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Green, false, 2.f, false, 4.f);
-						//}
-						//else {
-						//	DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Yellow, false, 2.f, false, 4.f);
-						//}
-					}
-					else {
-						//DrawDebugLine(RecastNavMesh->GetWorld(), TileLocation, End, FColor::Black, false, 2.f, false, 4.f);
 					}
 
-
-					if (!(xdx<0 || xdx>n - 1 || ydy<0 || ydy>m - 1 || map[xdx][ydy] == 1
-						|| closed_nodes_map[xdx][ydy] == 1 || Reachable))
+					if (!(xdx<0 || xdx>n - 1 || ydy<0 || ydy>m - 1 || map[xdx][ydy] == 1 || closed_nodes_map[xdx][ydy] == 1 || Reachable))
 					{
-						//UE_LOG(LogTemp, Warning, TEXT("FindPath / Reachable is: %s"), Reachable ? TEXT("true") : TEXT("false"));
-
 						// generate a child node
-						m0 = new node(xdx, ydy, n0->getLevel(),
-							n0->getPriority());
+						m0 = new node(xdx, ydy, n0->getLevel(), n0->getPriority());
 						m0->nextLevel(i);
 						m0->updatePriority(EndTile.X, EndTile.Y);
 
@@ -324,9 +286,7 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 							pq[pqi].HeapPush(*m0, nodePredicate());
 							// mark its parent node direction
 							dir_map[xdx][ydy] = (i + dir / 2) % dir;
-						}
-						else if (open_nodes_map[xdx][ydy] > m0->getPriority())
-						{
+						} else if (open_nodes_map[xdx][ydy] > m0->getPriority()) {
 							// update the priority info
 							open_nodes_map[xdx][ydy] = m0->getPriority();
 							// update the parent direction info
@@ -336,21 +296,24 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 							// by emptying one pq to the other one
 							// except the node to be replaced will be ignored
 							// and the new node will be pushed in instead
-							while (!(pq[pqi].HeapTop().getxPos() == xdx &&
-								pq[pqi].HeapTop().getyPos() == ydy))
+							while (!(pq[pqi].HeapTop().getxPos() == xdx && pq[pqi].HeapTop().getyPos() == ydy))
 							{
 								pq[1 - pqi].HeapPush(pq[pqi].HeapTop(), nodePredicate());
 								pq[pqi].HeapPopDiscard(nodePredicate(), true);
 							}
+
 							pq[pqi].HeapPopDiscard(nodePredicate(), true); // remove the wanted node
 
 							// empty the larger size pq to the smaller one
-							if (pq[pqi].Num() > pq[1 - pqi].Num()) pqi = 1 - pqi;
+							if (pq[pqi].Num() > pq[1 - pqi].Num()) 
+								pqi = 1 - pqi;
+
 							while (!(pq[pqi].Num() == 0))
 							{
 								pq[1 - pqi].HeapPush(pq[pqi].HeapTop(), nodePredicate());
 								pq[pqi].HeapPopDiscard(nodePredicate(), true);
 							}
+
 							pqi = 1 - pqi;
 							pq[pqi].HeapPush(*m0, nodePredicate()); // add the better node instead
 						}
@@ -359,8 +322,6 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 				}
 				delete n0; // garbage collection
 			}
-
-
 
 			return Result; // no route found
 		}

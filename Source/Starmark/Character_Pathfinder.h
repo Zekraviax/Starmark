@@ -9,7 +9,7 @@
 #include "Engine/SkeletalMesh.h"
 #include "Starmark_Variables.h"
 #include "Engine.h"
-#include "UnrealNetwork.h"
+#include "Net/UnrealNetwork.h"
 
 #include "Character_Pathfinder.generated.h"
 
@@ -104,9 +104,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int AttackRotationSnapToDegrees = 90;
 
-	UPROPERTY()
-	FTimerHandle DelayedAttackTraceActorOverlapTimerHandle;
-
 // Functions
 // --------------------------------------------------
 
@@ -126,9 +123,6 @@ public:
 
 	UFUNCTION()
 	void SetAttackTraceActorLocationSnappedToGrid();
-
-	UFUNCTION()
-	void Delayed_SetAttackTraceActorLocation();
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)

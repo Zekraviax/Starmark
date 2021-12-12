@@ -4,7 +4,7 @@
 #include "GameFramework/PlayerState.h"
 
 #include "Starmark_Variables.h"
-#include "UnrealNetwork.h"
+#include "Net/UnrealNetwork.h"
 
 #include "Starmark_PlayerState.generated.h"
 

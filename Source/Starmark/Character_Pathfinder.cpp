@@ -87,7 +87,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 
 	// Multiplayer
 	bReplicates = true; 
-	bReplicateMovement = true; 
+	//bReplicateMovement = true; 
 	bNetUseOwnerRelevancy = true;
 	IndexInPlayerParty = -1;
 	//ActorSelected->SetIsReplicated(true);
@@ -186,32 +186,10 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 
 void ACharacter_Pathfinder::SetAttackTraceActorLocationSnappedToGrid()
 {
-	// Attach the attack component to the mouse if certain attacks are selected
-	//if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::AOE_Circle) {
-	//	if (IsValid(PlayerControllerReference)) {
-	//		AttackTraceActor->SetWorldLocation(PlayerControllerReference->CursorLocationSnappedToGrid);
-	//	}
-	//}
-
 	// Get all tiles and overlapping tiles
 	TArray<AActor*> GridTilesArray;
 	TArray<UPrimitiveComponent*> OverlappingActors;
-	//AttackTraceActor->GetOverlappingActors(OverlappingActors, AActor_GridTile::StaticClass());
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
-
-	//for (int i = 0; i < GridTilesArray.Num(); i++) {
-	//	AActor_GridTile* GridTile = Cast<AActor_GridTile>(GridTilesArray[i]);
-
-	//	if (GridTile->DynamicMaterial) {
-	//		if (OverlappingActors.Contains(GridTile)) {
-	//			GridTile->ChangeColourOnMouseHover = false;
-	//			GridTile->DynamicMaterial->SetVectorParameterValue(FName("Colour"), FLinearColor(1.f, 0.2f, 0.0f));
-	//		} else {
-	//			GridTile->ChangeColourOnMouseHover = true;
-	//			GridTile->DynamicMaterial->SetVectorParameterValue(FName("Colour"), FLinearColor(1.f, 1.f, 1.f));
-	//		}
-	//	}
-	//}
 
 	// Check for tiles that overlap the AttackTraceActor
 	for (int i = 0; i < GridTilesArray.Num(); i++) {
@@ -227,15 +205,6 @@ void ACharacter_Pathfinder::SetAttackTraceActorLocationSnappedToGrid()
 		}
 	}
 }
-
-
-void ACharacter_Pathfinder::Delayed_SetAttackTraceActorLocation()
-{
-	// Set timer
-	//GetWorld()->GetTimerManager().SetTimer(DelayedAttackTraceActorOverlapTimerHandle, this, &ACharacter_Pathfinder::SetAttackTraceActorLocationSnappedToGrid, 0.2f, false);
-	SetAttackTraceActorLocationSnappedToGrid();
-}
-
 
 // ------------------------- Battle
 void ACharacter_Pathfinder::ShowAttackRange()
