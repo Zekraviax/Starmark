@@ -10,6 +10,16 @@
 #include "Actor_GridTile.generated.h"
 
 
+// Unique Enums
+UENUM(BlueprintType)
+enum class E_GridTile_ColourChangeContext : uint8
+{
+	Normal,
+	OnMouseHover,
+	OnMouseHoverTileUnreachable,
+	WithinAttackRange,
+};
+
 
 UCLASS()
 class STARMARK_API AActor_GridTile : public AActor
@@ -75,4 +85,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnMouseEndHover();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateTileColour(E_GridTile_ColourChangeContext ColourChangeContext);
 };

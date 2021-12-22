@@ -122,6 +122,7 @@ enum class E_GridTile_Properties : uint8
 	E_Wall,
 	E_Occupied,
 	E_PlayerAvatarSpawn,
+	E_StoneRoad
 };
 
 
@@ -166,6 +167,7 @@ enum class EBattle_AttackEffects : uint8
 	KnockbackTarget,
 	SpawnWall,
 	NoFriendlyFire,
+	SpawnStoneRoad,
 };
 
 

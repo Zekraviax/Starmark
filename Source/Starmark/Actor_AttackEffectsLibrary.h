@@ -61,6 +61,10 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_KnockbackTarget(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 
+// ------------------------- Grid Tile Effects
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Spawn_RockWall(AActor_GridTile* TargetTile);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void AddProperty_StoneRoad(AActor_GridTile* TargetTile);
 };

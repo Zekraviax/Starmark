@@ -57,6 +57,10 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 		if (Cast<AActor_GridTile>(Target))
 			Spawn_RockWall(Cast<AActor_GridTile>(Target));
 		break;
+	case (EBattle_AttackEffects::SpawnStoneRoad):
+		if (Cast<AActor_GridTile>(Target))
+			AddProperty_StoneRoad(Cast<AActor_GridTile>(Target));
+		break;
 	default:
 		break;
 	}
@@ -106,10 +110,17 @@ void AActor_AttackEffectsLibrary::Attack_KnockbackTarget_Implementation(ACharact
 }
 
 
+// ------------------------- Grid Tile Effects
 void AActor_AttackEffectsLibrary::Spawn_RockWall_Implementation(AActor_GridTile* TargetTile)
 {
 	FActorSpawnParameters SpawnInfo;
 	FVector Location = FVector(TargetTile->GetActorLocation().X, TargetTile->GetActorLocation().Y, TargetTile->GetActorLocation().Z + 50);
 
 	ACharacter_Pathfinder* NewRockWallActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(RockWall_Class, Location, FRotator::ZeroRotator, SpawnInfo);
+}
+
+
+void AActor_AttackEffectsLibrary::AddProperty_StoneRoad_Implementation(AActor_GridTile* TargetTile)
+{
+	TargetTile->Properties.Add(E_GridTile_Properties::E_StoneRoad);
 }

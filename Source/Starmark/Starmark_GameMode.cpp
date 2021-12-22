@@ -2,7 +2,6 @@
 
 #include "Actor_AttackEffectsLibrary.h"
 #include "Actor_GridTile.h"
-#include "AttackEffects_FunctionLibrary.h"
 #include "Character_Pathfinder.h"
 #include "PlayerController_Base.h"
 #include "PlayerPawn_Static.h"
@@ -283,7 +282,6 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	}
 
 	if (IsValid(TargetAsCharacter) && AttackData.AttackCategory == EBattle_AttackCategories::Offensive) {
-
 		// Check for the No Friendly Fire attack ability
 		if (AttackData.AttackEffectsOnTarget.Contains(EBattle_AttackEffects::NoFriendlyFire)) {
 			if (Attacker->MultiplayerControllerUniqueID == TargetAsCharacter->MultiplayerControllerUniqueID) {

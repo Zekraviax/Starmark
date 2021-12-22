@@ -9,7 +9,7 @@
 #include "AIController.h"
 
 
-DECLARE_CYCLE_STAT(TEXT("Custom Pathfinding"), STAT_Navigation_CustomPathfinding, STATGROUP_Navigation)
+//DECLARE_CYCLE_STAT(TEXT("Custom Pathfinding"), STAT_Navigation_CustomPathfinding, STATGROUP_Navigation)
 
 
 // Class definition for Node
@@ -101,7 +101,7 @@ ARecastNavMesh_GraphAStar::ARecastNavMesh_GraphAStar(const FObjectInitializer& O
 
 FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties& AgentProperties, const FPathFindingQuery& Query)
 {
-	SCOPE_CYCLE_COUNTER(STAT_Navigation_CustomPathfinding);
+	//SCOPE_CYCLE_COUNTER(STAT_Navigation_CustomPathfinding);
 
 	const ANavigationData* Self = Query.NavData.Get();
 	check(Cast<const ARecastNavMesh>(Self));

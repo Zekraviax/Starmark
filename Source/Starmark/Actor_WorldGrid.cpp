@@ -14,7 +14,22 @@ bool AActor_WorldGrid::IsValidGridCell(const FIntPoint& Location) const
 
 bool AActor_WorldGrid::IsGridCellWalkable(const FIntPoint& Location) const
 {
-	return (!GridTileCoordinates.Contains(Location));
+	// Check if the tile coordinates are in the grid array
+	//if (!GridTileCoordinates.Contains(Location))
+	//	return false;
+
+	// Check if the tile has any properties that make it un-traversable
+	AActor_GridTile* GridTile = nullptr;
+	GridTile = GetWorldTileActorAtGridCoordinates(Location);
+	
+	if (!IsValid(GridTile))
+		return false;
+
+	if (GridTile->Properties.Contains(E_GridTile_Properties::E_Occupied) ||
+		GridTile->Properties.Contains(E_GridTile_Properties::E_Wall))
+		return false;
+
+	return true;
 }
 
 

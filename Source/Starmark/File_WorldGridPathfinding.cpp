@@ -1,5 +1,6 @@
 #include "File_WorldGridPathfinding.h"
 
+#include "Actor_GridTile.h"
 #include "Actor_WorldGrid.h"
 
 
@@ -24,13 +25,25 @@ float WorldGridGraphQueryFiler::GetHeuristicCost(FIntPoint StartLocation, FIntPo
 
 float WorldGridGraphQueryFiler::GetTraversalCost(FIntPoint StartLocation, FIntPoint EndLocation) const
 {
-	return 1.f;
+	float TraversalCost = 1.f;
+	AActor_GridTile* TileReference = nullptr;
+	TileReference = WorldGridReference->GetWorldTileActorAtGridCoordinates(StartLocation);
+
+	if (TileReference->IsValidLowLevel()) {
+		if (TileReference->Properties.Contains(E_GridTile_Properties::E_StoneRoad))
+			TraversalCost = 0.f;
+		else
+			TraversalCost = TileReference->MovementCost;
+	}
+
+	return TraversalCost;
 }
 
 
 bool WorldGridGraphQueryFiler::IsTraversalAllowed(const FIntPoint FirstPoint, const FIntPoint SecondPoint) const
 {
-	if (!WorldGridReference->IsGridCellWalkable(FirstPoint) || !WorldGridReference->IsGridCellWalkable(SecondPoint))
+	//if (!WorldGridReference->IsGridCellWalkable(FirstPoint) || !WorldGridReference->IsGridCellWalkable(SecondPoint))
+	if (!WorldGridReference->IsGridCellWalkable(SecondPoint))
 		return false;
 
 	static const FIntPoint XOffset(1, 0);
@@ -92,8 +105,6 @@ bool WorldGridGraph::IsValidRef(FNodeRef NodeRef) const
 
 WorldGridGraph::FNodeRef WorldGridGraph::GetNeighbour(const FNodeRef NodeRef, const int32 NeighbourIndex) const
 {
-	//FIntPoint NeighbourCoordinateOffsets[4] = { FIntPoint(0, 1) }; { FIntPoint(0, 1) }, { FIntPoint(0, 1) }, { FIntPoint(0, 1) };
-
 	static const FIntPoint NeighbourCoordinateOffsets[4] =
 	{
 		{ 1, 0 },

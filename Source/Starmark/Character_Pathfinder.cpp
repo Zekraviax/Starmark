@@ -2,7 +2,6 @@
 
 #include "Actor_GridTile.h"
 #include "AIController_Avatar.h"
-#include "AttackEffects_FunctionLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "CollisionQueryParams.h"
 #include "CollisionShape.h"
@@ -17,6 +16,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PlayerController_Base.h"
+#include "Runtime/NavigationSystem/Public/NavigationSystem.h"
 #include "Widget_HUD_Battle.h"
 #include "WidgetComponent_AvatarBattleData.h"
 #include "Starmark_GameState.h"
@@ -66,7 +66,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	AttackTraceActor = CreateDefaultSubobject<UStaticMeshComponent>("AttackTraceActor");
 	AttackTraceActor->SetupAttachment(RootComponent);
 	AttackTraceActor->SetVisibility(true);
-	AttackTraceActor->SetHiddenInGame(true);
+	AttackTraceActor->SetHiddenInGame(false);
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -132,9 +132,8 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 	AvatarData.CurrentTileMoves = AvatarData.MaximumTileMoves;
 
 	// Set default selected attack
-	if (CurrentKnownAttacks.Num() > 0) {
+	if (CurrentKnownAttacks.Num() > 0)
 		CurrentSelectedAttack = CurrentKnownAttacks[0];
-	}
 
 	IndexInPlayerParty = 0;
 }
@@ -211,7 +210,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 {
 	AttackTraceActor->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
 
-	// Circle Trace
+	// Circle/Sphere Trace
 	if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Circle ||
 		CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::AOE_Circle) {
 		// Set the StaticMesh
@@ -229,16 +228,13 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		int DefaultSphereLocationX = 100;									// Add 100 for every tile range
 		int DefaultSphereScale = 2 * CurrentSelectedAttack.BaseRange;		// Add 2 for every tile range
 
-		FVector SphereLocation = FVector(200 * CurrentSelectedAttack.BaseRange, 0, -100);
+		FVector SphereLocation = FVector(-100 * CurrentSelectedAttack.BaseRange, 0, -100);
 		FRotator SphereRotation = FRotator(0, 0, 0);
 		FVector SphereScale = FVector(DefaultSphereScale, DefaultSphereScale, DefaultSphereScale);
 
 		AttackTraceActor->SetRelativeLocation(SphereLocation);
+		//AttackTraceActor->SetRelativeRotation();
 		AttackTraceActor->SetRelativeScale3D(SphereScale);
-
-		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-
-		//AttackTraceActor->GetOverlappingActors();
 	}
 	// Cone Trace
 	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Cone) {
@@ -264,9 +260,8 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		FVector ConeScale = FVector(DefaultConeScaleX + CurrentSelectedAttack.BaseRange, DefaultConeScaleY + CurrentSelectedAttack.BaseRange * 2, DefaultConeScaleZ + CurrentSelectedAttack.BaseRange);
 		
 		AttackTraceActor->SetRelativeLocation(ConeLocation);
+		//AttackTraceActor->SetRelativeRotation();
 		AttackTraceActor->SetRelativeScale3D(ConeScale);
-
-		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
 	// Four-Way and Eight-Way Line Traces
 	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
@@ -284,14 +279,18 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		else
 			AttackRotationSnapToDegrees = 90;
 
-		int DefaultRectangleLocationX = 150;									// Add 100 for every tile range
-		int DefaultRectangleScale = 2 * CurrentSelectedAttack.BaseRange;		// Add 2 for every tile range
+		int DefaultRectangleLocationX = 350;									// Add 100 for every tile range
+		//int DefaultRectangleScale = 2 * CurrentSelectedAttack.BaseRange;		// Add 2 for every tile range
+		int DefaultRectangleScale = CurrentSelectedAttack.BaseRange - 1;
 
-		FVector RectangleLocation = FVector(150 + (400 * CurrentSelectedAttack.BaseRange), 0, -100);
-		FRotator RectangleRotation = FRotator(0, 0, 0);
+		//FVector RectangleLocation = FVector(150 + (400 * CurrentSelectedAttack.BaseRange), 0, -100);
+		//FVector RectangleLocation = FVector(350 + (100 * CurrentSelectedAttack.BaseRange), 0, -100);
+		FVector RectangleLocation = FVector(200, 0, -100);
+		//FRotator RectangleRotation = FRotator(180, 180, 270);
 		FVector RectangleScale = FVector(1, 0.5, DefaultRectangleScale);
 
 		AttackTraceActor->SetRelativeLocation(RectangleLocation);
+		//AttackTraceActor->SetWorldRotation(RectangleRotation);
 		AttackTraceActor->SetRelativeScale3D(RectangleScale);
 
 		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -310,10 +309,11 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		FVector WideWallScale = FVector(1.f, 2.f, 0.5f);
 
 		AttackTraceActor->SetRelativeLocation(WideWallLocation);
+		//AttackTraceActor->SetRelativeRotation();
 		AttackTraceActor->SetRelativeScale3D(WideWallScale);
-
-		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
+
+	AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	// Get all hit actors
 	TArray<AActor*> OverlappingActors;
@@ -378,11 +378,18 @@ void ACharacter_Pathfinder::AvatarBeginTileOverlap_Implementation()
 }
 
 
+void ACharacter_Pathfinder::FindPathAndSpendMovementPoints()
+{
+	//GetWorld()->GetNavigationSystem()
+}
+
+
 // ------------------------- Multiplayer
 void ACharacter_Pathfinder::Client_GetAvatarData_Implementation(FAvatar_Struct NewAvatarData)
 {
 	Local_GetAvatarData(NewAvatarData);
 }
+
 
 void ACharacter_Pathfinder::Local_GetAvatarData(FAvatar_Struct NewAvatarData)
 {

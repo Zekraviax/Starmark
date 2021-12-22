@@ -143,6 +143,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void AvatarBeginTileOverlap();
 
+	UFUNCTION(BlueprintCallable)
+	void FindPathAndSpendMovementPoints();
+
 // ------------------------- Multiplayer
 	UFUNCTION(Client, Unreliable)
 	void Client_GetAvatarData(FAvatar_Struct NewAvatarData);

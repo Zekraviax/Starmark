@@ -47,10 +47,9 @@ void AActor_GridTile::UpdateGridTileState()
 	GridTileHitbox->GetOverlappingActors(OverlappingActors, ACharacter_Pathfinder::StaticClass());
 
 	if (this) {
-		if (OverlappingActors.Num() <= 0) {
-			// Clear TraversalProperties that aren't permanent (e.g. Occupied by an Avatar)
+		// Clear TraversalProperties that aren't permanent (e.g. Occupied by an Avatar)
+		if (OverlappingActors.Num() <= 0)
 			Properties.Remove(E_GridTile_Properties::E_Occupied);
-		}
 	}
 
 	//// If the TraversalProperties array is empty, add the default Property
@@ -61,9 +60,6 @@ void AActor_GridTile::UpdateGridTileState()
 
 void AActor_GridTile::OnMouseBeginHover()
 {
-	if (DynamicMaterial->IsValidLowLevel() && ChangeColourOnMouseHover)
-		DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
-
 	// Set AttackTraceActor to this tile's location if it isn't centered around the player
 	// Get the current Avatar
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
@@ -71,9 +67,7 @@ void AActor_GridTile::OnMouseBeginHover()
 
 	if (CurrentAvatar->CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::AOE_Circle) {
 		if (CurrentAvatar->PlayerControllerReference) {
-			CurrentAvatar->AttackTraceActor->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y + 200, CurrentAvatar->AttackTraceActor->GetComponentLocation().Z), true, nullptr, ETeleportType::ResetPhysics);
-
-			CurrentAvatar->SetAttackTraceActorLocationSnappedToGrid();
+			//CurrentAvatar->AttackTraceActor->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y + 200, CurrentAvatar->AttackTraceActor->GetComponentLocation().Z), true, nullptr, ETeleportType::ResetPhysics);
 		}
 	}
 }
@@ -81,6 +75,38 @@ void AActor_GridTile::OnMouseBeginHover()
 
 void AActor_GridTile::OnMouseEndHover()
 {
-	if (DynamicMaterial->IsValidLowLevel() && ChangeColourOnMouseHover)
-		DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::White);
+
+}
+
+
+void AActor_GridTile::UpdateTileColour(E_GridTile_ColourChangeContext ColourChangeContext)
+{
+	if (DynamicMaterial->IsValidLowLevel()) {
+		switch (ColourChangeContext)
+		{
+		case (E_GridTile_ColourChangeContext::Normal):
+			// Heirarcy of colours based on factors such as tile properties
+			// Lowest priority: White (no properties that change colour)
+			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::White);
+			// Road (free travel)
+			if (Properties.Contains(E_GridTile_Properties::E_StoneRoad))
+				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.5f, 0.2f, 0.f, 1.f));
+			// Highest priority: Tile is un-traversable
+			if (Properties.Contains(E_GridTile_Properties::E_Wall) ||
+				Properties.Contains(E_GridTile_Properties::E_Occupied))
+				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.1f, 0.1f, 0.1f, 1.f));
+				break;
+		case (E_GridTile_ColourChangeContext::OnMouseHover):
+			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+			break;
+		case (E_GridTile_ColourChangeContext::OnMouseHoverTileUnreachable):
+			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+			break;
+		case (E_GridTile_ColourChangeContext::WithinAttackRange):
+			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.2f, 0.f, 1.f));
+			break;
+		default:
+			break;
+		}
+	}
 }

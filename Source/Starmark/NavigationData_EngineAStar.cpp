@@ -2,8 +2,11 @@
 
 #include "Actor_WorldGrid.h"
 #include "AI/Navigation/NavigationTypes.h"
+#include "Character_Pathfinder.h"
 #include "EngineUtils.h"
+#include "File_WorldGridPathfinding.h"
 #include "Kismet/GameplayStatics.h"
+#include "Starmark_GameState.h"
 
 
 ANavigationData_EngineAStar::ANavigationData_EngineAStar(const FObjectInitializer& ObjectInitializer)
@@ -88,8 +91,15 @@ FPathFindingResult ANavigationData_EngineAStar::FindPath(const FNavAgentProperti
 
 			Path.Insert(StartPositionOnGrid, 0);
 
+			// Get the avatar's data so we can simulate movement without spending move points ?
+			AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(AStar->GetWorld()->GetGameState());
+
 			// Insert all points from the path into the navpath
 			for (auto& Point : Path) {
+				// Subtract movement points only if the avatar is moving
+				//if (GameStateReference->AvatarTurnOrder[GameStateReference->CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves >= QueryFilter.GetTraversalCost(Point, Point))
+				//	GameStateReference->AvatarTurnOrder[GameStateReference->CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves -= QueryFilter.GetTraversalCost(Point, Point);
+
 				NavPath->GetPathPoints().Add(FNavPathPoint(AStar->WorldGridReference->ConvertGridCoordinatesToWorldTile(Point)));
 
 				UE_LOG(LogTemp, Warning, TEXT("NaviationData_EngineAStar / A* path coordinate converted to world tile: %s"), *AStar->WorldGridReference->ConvertGridCoordinatesToWorldTile(Point).ToString());
