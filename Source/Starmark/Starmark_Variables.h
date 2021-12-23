@@ -107,22 +107,14 @@ enum class EAvatar_Marks : uint8
 
 //------------------------- Grid
 UENUM(BlueprintType)
-enum class EHTileOrientationFlag : uint8
-{
-	FLAT,
-	POINTY,
-	NONE
-};
-
-
-UENUM(BlueprintType)
 enum class E_GridTile_Properties : uint8
 {
 	E_None,
 	E_Wall,
 	E_Occupied,
 	E_PlayerAvatarSpawn,
-	E_StoneRoad
+	E_StoneRoad,
+	Shadow,
 };
 
 
@@ -155,6 +147,7 @@ enum class EBattle_AttackTargetsInRange : uint8
 	E_AttackAllTargets,
 	E_AttackClickedAvatar,
 	SelectAllGridTiles,
+	SelectAllGridTilesAndSelectAllAvatars,
 };
 
 UENUM(BlueprintType)
@@ -165,9 +158,12 @@ enum class EBattle_AttackEffects : uint8
 	AddBurnStatus,
 	AddDrowningStatus,
 	KnockbackTarget,
-	SpawnWall,
+	// Other
 	NoFriendlyFire,
+	// Change Grid Tile Properties
+	SpawnWall,
 	SpawnStoneRoad,
+	SpawnShadow,
 };
 
 
