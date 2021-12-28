@@ -67,7 +67,7 @@ void AActor_GridTile::OnMouseBeginHover()
 
 	if (CurrentAvatar->CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::AOE_Circle) {
 		if (CurrentAvatar->PlayerControllerReference) {
-			//CurrentAvatar->AttackTraceActor->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y + 200, CurrentAvatar->AttackTraceActor->GetComponentLocation().Z), true, nullptr, ETeleportType::ResetPhysics);
+			CurrentAvatar->AttackTraceActor->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y + 200, CurrentAvatar->AttackTraceActor->GetComponentLocation().Z), true, nullptr, ETeleportType::ResetPhysics);
 		}
 	}
 }
@@ -91,10 +91,13 @@ void AActor_GridTile::UpdateTileColour(E_GridTile_ColourChangeContext ColourChan
 			// Road (free travel)
 			if (Properties.Contains(E_GridTile_Properties::E_StoneRoad))
 				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.5f, 0.2f, 0.f, 1.f));
+			// Shadow
+			if (Properties.Contains(E_GridTile_Properties::Shadow))
+				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.1f, 0.1f, 0.1f, 1.f));
 			// Highest priority: Tile is un-traversable
 			if (Properties.Contains(E_GridTile_Properties::E_Wall) ||
 				Properties.Contains(E_GridTile_Properties::E_Occupied))
-				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.1f, 0.1f, 0.1f, 1.f));
+				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.5f, 0.5f, 0.5f, 1.f));
 				break;
 		case (E_GridTile_ColourChangeContext::OnMouseHover):
 			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);

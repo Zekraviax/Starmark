@@ -8,6 +8,7 @@
 
 
 // Forward Declarations
+class AActor_StatusEffectsLibrary;
 class ACharacter_Pathfinder;
 class APlayerPawn_Static;
 
@@ -129,6 +130,7 @@ enum class EBattle_AttackPatterns : uint8
 	EightWayCross,
 	WideWall,
 	AOE_Circle,
+	SingleTile,
 };
 
 
@@ -144,10 +146,11 @@ enum class EBattle_AttackCategories : uint8
 UENUM(BlueprintType)
 enum class EBattle_AttackTargetsInRange : uint8
 {
-	E_AttackAllTargets,
-	E_AttackClickedAvatar,
+	AttackAllTargets,
+	AttackClickedAvatar,
 	SelectAllGridTiles,
 	SelectAllGridTilesAndSelectAllAvatars,
+	Self,
 };
 
 UENUM(BlueprintType)
@@ -157,8 +160,9 @@ enum class EBattle_AttackEffects : uint8
 	AddParalyzeStatus,
 	AddBurnStatus,
 	AddDrowningStatus,
-	KnockbackTarget,
+	AddStoneSkinStatus,
 	// Other
+	KnockbackTarget,
 	NoFriendlyFire,
 	// Change Grid Tile Properties
 	SpawnWall,
@@ -428,19 +432,35 @@ struct STARMARK_API FAvatar_StatusEffect : public FTableRowBase
 	UTexture2D* Image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Description;
+
+	// How long the status effect lasts
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int MaximumTurns;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int TurnsRemaining;
+
+	// Use the StatusEffectsLibrary to handle special functions such as remembering variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor_StatusEffectsLibrary* SpecialFunctionsActor;
 
 	FAvatar_StatusEffect()
 	{
 		Name = "Default";
 		Image = nullptr;
+		Description = "Default";
+		MaximumTurns = 1;
 		TurnsRemaining = 1;
+		SpecialFunctionsActor = nullptr;
 	}
 
-	FAvatar_StatusEffect(FString InName, UTexture2D* InImage, int InTurnsRemaining)
+	FAvatar_StatusEffect(FString InName, UTexture2D* InImage, FString InDescription, int InMaxinumTurns, int InTurnsRemaining)
 	{
 		Name = InName;
 		Image = InImage;
+		Description = InDescription;
+		MaximumTurns = InMaxinumTurns;
 		TurnsRemaining = InTurnsRemaining;
 	}
 };

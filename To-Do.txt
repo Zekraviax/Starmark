@@ -1,0 +1,59 @@
+Refactor:
+* Move functions to their best possible files
+* Rename functions
+* Rename variables
+* Rename files (?)
+* Remove redundant UFUNCTION and UPROPERTY macros
+* Remove redundant files
+* Update UFUNCTION and UPROPERTY Categories
+* Replace all instances of Variable?IsValidLowLevel() with IsValid(Variable)
+
+
+Blueprints-To-Code Conversions:
+* PlayerController_Base_Blueprint
+* Starmark_GameMode_Blueprint
+* Starmark_GameMode_Lobby_Blueprint
+* Starmark_PlayerState_Blueprint
+* Widget_MainMenu_Child
+* Widget_ServerHost_Blueprint
+* Widget_ServerCreator_Blueprint
+* WidgetComponent_PlayerProfile
+
+
+Core Gameplay:
+* Add the ability to summon and switch out Reserve Avatars.
+* Add a coin-flip/dice-roll when two Avatars are speed-tied.
+* Avatar data needs to be updated in the Player’s party when swapping Reserve Avatars is implemented.
+* Add loading screens.
+* Allow already created Avatars to be edited.
+
+
+Menus:
+* Add ‘Currently Loaded Profile’ to Main Menu and Profile Select Screen.
+* Create Options menus.
+* Get more backgrounds for the menus. (Black and white stars image)
+* Prevent players from giving multiple profiles the same name.
+
+
+Multiplayer:
+* Check if all players are ready before launching a multiplayer match.
+* Add cancel/exit buttons to the multiplayer search and lobby screens.
+* Allow hosts to designate other players as the host when in a multiplayer lobby (?).
+* Add a chat box to the server lobby.
+* Prevent players from readying if they don’t have a profile/team loaded.
+* Allow lobby hosts to set a maximum player limit.
+
+
+Demo:
+* Create a few different maps with different environments, obstacles and hazards.
+* Allow players to change the colour of Avatars.
+* Allow players to improve Avatars’ stats by distributing a set amount of points.
+* Replace the current default Avatar images with transparent versions.
+* Open the current Main Menu Background in Photoshop and edit the colours to create a few different versions.
+
+
+Other:
+* Fix TEnumAsByte compiler warning.
+* Fix GameInstance complier warnings.
+* Re-add type calculator and mark calculator as options on the main menu.
+* Add more log messages that display when there's an error or an oversight in the code.

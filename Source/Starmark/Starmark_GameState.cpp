@@ -110,10 +110,17 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 	if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex)) {
 		AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves;
 
-		for (int i = 0; i < AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray.Num(); i++) {
-			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
-				AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves / 2;
-				break;
+		// Reduce durations of all statuses
+		for (int i = AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray.Num() - 1; i >= 0; i--) {
+			AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].TurnsRemaining--;
+
+			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].TurnsRemaining <= 0) {
+				AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray.RemoveAt(i);
+			} else {
+				if (AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
+					AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves / 2;
+					break;
+				}
 			}
 		}
 	}
@@ -162,9 +169,11 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 
 	// Update the dynamic turn order
-	ACharacter_Pathfinder* FirstAvatarInDynamicTurnOrder = DynamicAvatarTurnOrder[0];
-	DynamicAvatarTurnOrder.RemoveAt(0);
-	DynamicAvatarTurnOrder.Insert(FirstAvatarInDynamicTurnOrder, DynamicAvatarTurnOrder.Num());
+	if (DynamicAvatarTurnOrder.Num() > 0) {
+		ACharacter_Pathfinder* FirstAvatarInDynamicTurnOrder = DynamicAvatarTurnOrder[0];
+		DynamicAvatarTurnOrder.RemoveAt(0);
+		DynamicAvatarTurnOrder.Insert(FirstAvatarInDynamicTurnOrder, DynamicAvatarTurnOrder.Num());
+	}
 
 	// Assign currently controlled avatars based on the dynamic turn order
 	for (int i = DynamicAvatarTurnOrder.Num() - 1; i >= 0; i--) {

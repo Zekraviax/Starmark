@@ -57,6 +57,9 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_AddDrowning(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Attack_AddStoneSkin(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+
 // ------------------------- Other
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_KnockbackTarget(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
@@ -67,4 +70,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void AddProperty_StoneRoad(AActor_GridTile* TargetTile);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void AddProperty_Shadow(AActor_GridTile* TargetTile);
 };

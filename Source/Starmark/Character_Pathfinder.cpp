@@ -210,61 +210,8 @@ void ACharacter_Pathfinder::ShowAttackRange()
 {
 	AttackTraceActor->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
 
-	// Circle/Sphere Trace
-	if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Circle ||
-		CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::AOE_Circle) {
-		// Set the StaticMesh
-		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
-			if (AttackTraceStaticMeshes[i]->GetName().Contains("Sphere")) {
-				AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
-				break;
-			}
-		}
-
-		// Attach an AOE_Circle to the mouse
-		if (AttackRotationSnapToDegrees != 90)
-			AttackRotationSnapToDegrees = 90;
-
-		int DefaultSphereLocationX = 100;									// Add 100 for every tile range
-		int DefaultSphereScale = 2 * CurrentSelectedAttack.BaseRange;		// Add 2 for every tile range
-
-		FVector SphereLocation = FVector(-100 * CurrentSelectedAttack.BaseRange, 0, -100);
-		FRotator SphereRotation = FRotator(0, 0, 0);
-		FVector SphereScale = FVector(DefaultSphereScale, DefaultSphereScale, DefaultSphereScale);
-
-		AttackTraceActor->SetRelativeLocation(SphereLocation);
-		//AttackTraceActor->SetRelativeRotation();
-		AttackTraceActor->SetRelativeScale3D(SphereScale);
-	}
-	// Cone Trace
-	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Cone) {
-		// Set the StaticMesh
-		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
-			if (AttackTraceStaticMeshes[i]->GetName().Contains("Cone")) {
-				AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
-				break;
-			}
-		}
-
-		if (AttackRotationSnapToDegrees != 90)
-			AttackRotationSnapToDegrees = 90;
-
-		// Set the relative location and scale through maths
-		int DefaultConeLocationX = 300; // Add 190 for every tile range the cone should reach
-		int DefaultConeScaleX = 1;		// Add 1 for every tile range
-		int DefaultConeScaleY = 0;		// Add 2 for every tile range
-		int DefaultConeScaleZ = 0;		// Add 1 for every tile range
-
-		FVector ConeLocation = FVector(DefaultConeLocationX + (CurrentSelectedAttack.BaseRange * 190), 0, -100);
-		FRotator ConeRotation = FRotator(180, 90, 180);
-		FVector ConeScale = FVector(DefaultConeScaleX + CurrentSelectedAttack.BaseRange, DefaultConeScaleY + CurrentSelectedAttack.BaseRange * 2, DefaultConeScaleZ + CurrentSelectedAttack.BaseRange);
-		
-		AttackTraceActor->SetRelativeLocation(ConeLocation);
-		//AttackTraceActor->SetRelativeRotation();
-		AttackTraceActor->SetRelativeScale3D(ConeScale);
-	}
-	// Four-Way and Eight-Way Line Traces
-	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
+	// Center the attack component on the avatar
+	if (CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::Self) {
 		// Set the StaticMesh
 		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
 			if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
@@ -273,58 +220,138 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			}
 		}
 
-		// Adjust the Rotation Snap degree
-		if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross)
-			AttackRotationSnapToDegrees = 45;
-		else
-			AttackRotationSnapToDegrees = 90;
-
-		int DefaultRectangleLocationX = 350;									// Add 100 for every tile range
-		//int DefaultRectangleScale = 2 * CurrentSelectedAttack.BaseRange;		// Add 2 for every tile range
-		int DefaultRectangleScale = CurrentSelectedAttack.BaseRange - 1;
-
-		//FVector RectangleLocation = FVector(150 + (400 * CurrentSelectedAttack.BaseRange), 0, -100);
-		//FVector RectangleLocation = FVector(350 + (100 * CurrentSelectedAttack.BaseRange), 0, -100);
-		FVector RectangleLocation = FVector(200, 0, -100);
-		//FRotator RectangleRotation = FRotator(180, 180, 270);
-		FVector RectangleScale = FVector(1, 0.5, DefaultRectangleScale);
-
-		AttackTraceActor->SetRelativeLocation(RectangleLocation);
-		//AttackTraceActor->SetWorldRotation(RectangleRotation);
-		AttackTraceActor->SetRelativeScale3D(RectangleScale);
-
-		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	}
-	// Rock Wall attack pattern
-	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::WideWall) {
-		// Set the StaticMesh
-		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
-			if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
-				AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
-				break;
+		AttackTraceActor->SetRelativeLocation(FVector(-50, 0, -100));
+		AttackTraceActor->SetRelativeScale3D(FVector(0.3f, 0.3f, 0.3f));
+	} else {
+		// Circle/Sphere Trace
+		if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Circle ||
+			CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::AOE_Circle) {
+			// Set the StaticMesh
+			for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
+				if (AttackTraceStaticMeshes[i]->GetName().Contains("Sphere")) {
+					AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
+					break;
+				}
 			}
+
+			// Attach an AOE_Circle to the mouse
+			if (AttackRotationSnapToDegrees != 90)
+				AttackRotationSnapToDegrees = 90;
+
+			int DefaultSphereLocationX = 100;									// Add 100 for every tile range
+			int DefaultSphereScale = 2 * CurrentSelectedAttack.BaseRange;		// Add 2 for every tile range
+
+			FVector SphereLocation = FVector(-200 * CurrentSelectedAttack.BaseRange, 0, -100);
+			FRotator SphereRotation = FRotator(0, 0, 0);
+			FVector SphereScale = FVector(DefaultSphereScale, DefaultSphereScale, DefaultSphereScale);
+
+			AttackTraceActor->SetRelativeLocation(SphereLocation);
+			//AttackTraceActor->SetRelativeRotation();
+			AttackTraceActor->SetRelativeScale3D(SphereScale);
 		}
+		// Cone Trace
+		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Cone) {
+			// Set the StaticMesh
+			for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
+				if (AttackTraceStaticMeshes[i]->GetName().Contains("Cone")) {
+					AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
+					break;
+				}
+			}
 
-		FVector WideWallLocation = FVector(250, 0, -100);
-		FVector WideWallScale = FVector(1.f, 2.f, 0.5f);
+			if (AttackRotationSnapToDegrees != 90)
+				AttackRotationSnapToDegrees = 90;
 
-		AttackTraceActor->SetRelativeLocation(WideWallLocation);
-		//AttackTraceActor->SetRelativeRotation();
-		AttackTraceActor->SetRelativeScale3D(WideWallScale);
+			// Set the relative location and scale through maths
+			int DefaultConeLocationX = 300; // Add 190 for every tile range the cone should reach
+			int DefaultConeScaleX = 1;		// Add 1 for every tile range
+			int DefaultConeScaleY = 0;		// Add 2 for every tile range
+			int DefaultConeScaleZ = 0;		// Add 1 for every tile range
+
+			FVector ConeLocation = FVector(DefaultConeLocationX + (CurrentSelectedAttack.BaseRange * 190), 0, -100);
+			FRotator ConeRotation = FRotator(180, 90, 180);
+			FVector ConeScale = FVector(DefaultConeScaleX + CurrentSelectedAttack.BaseRange, DefaultConeScaleY + CurrentSelectedAttack.BaseRange * 2, DefaultConeScaleZ + CurrentSelectedAttack.BaseRange);
+
+			AttackTraceActor->SetRelativeLocation(ConeLocation);
+			//AttackTraceActor->SetRelativeRotation();
+			AttackTraceActor->SetRelativeScale3D(ConeScale);
+		}
+		// Four-Way and Eight-Way Line Traces
+		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
+			// Set the StaticMesh
+			for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
+				if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
+					AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
+					break;
+				}
+			}
+
+			// Adjust the Rotation Snap degree
+			if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross)
+				AttackRotationSnapToDegrees = 45;
+			else
+				AttackRotationSnapToDegrees = 90;
+
+			int DefaultRectangleLocationX = 350;									// Add 100 for every tile range
+			//int DefaultRectangleScale = 2 * CurrentSelectedAttack.BaseRange;		// Add 2 for every tile range
+			int DefaultRectangleScale = CurrentSelectedAttack.BaseRange - 1;
+
+			FVector RectangleLocation = FVector(200, 0, -100);
+			FVector RectangleScale = FVector(1, 0.5, DefaultRectangleScale);
+
+			AttackTraceActor->SetRelativeLocation(RectangleLocation);
+			AttackTraceActor->SetRelativeScale3D(RectangleScale);
+
+			AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		}
+		// Rock Wall attack pattern
+		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::WideWall) {
+			// Set the StaticMesh
+			for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
+				if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
+					AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
+					break;
+				}
+			}
+
+			FVector WideWallLocation = FVector(250, 0, -100);
+			FVector WideWallScale = FVector(1.f, 2.f, 0.5f);
+
+			AttackTraceActor->SetRelativeLocation(WideWallLocation);
+			//AttackTraceActor->SetRelativeRotation();
+			AttackTraceActor->SetRelativeScale3D(WideWallScale);
+		}
+		// Self
+		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::SingleTile) {
+			// Set the StaticMesh
+			for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
+				if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
+					AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
+					break;
+				}
+			}
+
+			FVector SingleTileLocation = FVector(0, 0, 0);
+			FVector SingleTileScale = FVector(1.f, 1.f, 1.f);
+
+			AttackTraceActor->SetRelativeLocation(SingleTileLocation);
+			//AttackTraceActor->SetRelativeRotation();
+			AttackTraceActor->SetRelativeScale3D(SingleTileScale);
+		}
 	}
 
 	AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	// Get all hit actors
-	TArray<AActor*> OverlappingActors;
-	AttackTraceActor->GetOverlappingActors(OverlappingActors);
-	for (int i = 0; i < OverlappingActors.Num(); i++) {
-		if (Cast<AActor_GridTile>(OverlappingActors[i])) {
-			AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(OverlappingActors[i]);
-			GridTileReference->DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.2f, 0.f, 1.f));
-			GridTileReference->ChangeColourOnMouseHover = false;
-		}
-	}
+	//TArray<AActor*> OverlappingActors;
+	//AttackTraceActor->GetOverlappingActors(OverlappingActors);
+	//for (int i = 0; i < OverlappingActors.Num(); i++) {
+	//	if (Cast<AActor_GridTile>(OverlappingActors[i])) {
+	//		AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(OverlappingActors[i]);
+	//		GridTileReference->DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.2f, 0.f, 1.f));
+	//		GridTileReference->ChangeColourOnMouseHover = false;
+	//	}
+	//}
 }
 
 

@@ -49,6 +49,10 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 		if (Cast<ACharacter_Pathfinder>(Target))
 			Attack_AddDrowning(Attacker, Cast<ACharacter_Pathfinder>(Target));
 		break;
+	case (EBattle_AttackEffects::AddStoneSkinStatus):
+		if (Cast<ACharacter_Pathfinder>(Target))
+			Attack_AddStoneSkin(Attacker, Cast<ACharacter_Pathfinder>(Target));
+		break;
 	case (EBattle_AttackEffects::KnockbackTarget):
 		if (Cast<ACharacter_Pathfinder>(Target))
 			Attack_KnockbackTarget(Attacker, Cast<ACharacter_Pathfinder>(Target));
@@ -60,6 +64,10 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 	case (EBattle_AttackEffects::SpawnStoneRoad):
 		if (Cast<AActor_GridTile>(Target))
 			AddProperty_StoneRoad(Cast<AActor_GridTile>(Target));
+		break;
+	case (EBattle_AttackEffects::SpawnShadow):
+		if (Cast<AActor_GridTile>(Target))
+			AddProperty_Shadow(Cast<AActor_GridTile>(Target));
 		break;
 	default:
 		break;
@@ -73,7 +81,13 @@ void AActor_AttackEffectsLibrary::Attack_AddParalyze_Implementation(ACharacter_P
 	FString ContextString;
 
 	FAvatar_StatusEffect* ParalyzeStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Paralyzed", ContextString);
-	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect("Paralyzed", ParalyzeStatus->Image, ParalyzeStatus->TurnsRemaining));
+	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
+		"Paralyzed", 
+		ParalyzeStatus->Image, 
+		ParalyzeStatus->Description, 
+		ParalyzeStatus->MaximumTurns,
+		ParalyzeStatus->TurnsRemaining)
+	);
 }
 
 
@@ -82,7 +96,13 @@ void AActor_AttackEffectsLibrary::Attack_AddBurn_Implementation(ACharacter_Pathf
 	FString ContextString;
 
 	FAvatar_StatusEffect* BurnStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Burned", ContextString);
-	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect("Burned", BurnStatus->Image, BurnStatus->TurnsRemaining));
+	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
+		"Burned", 
+		BurnStatus->Image, 
+		BurnStatus->Description,
+		BurnStatus->MaximumTurns,
+		BurnStatus->TurnsRemaining)
+	);
 }
 
 
@@ -91,7 +111,28 @@ void AActor_AttackEffectsLibrary::Attack_AddDrowning_Implementation(ACharacter_P
 	FString ContextString;
 
 	FAvatar_StatusEffect* DrowningStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Drowning", ContextString);
-	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect("Drowning", DrowningStatus->Image, DrowningStatus->TurnsRemaining));
+	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
+		"Drowning", 
+		DrowningStatus->Image,
+		DrowningStatus->Description,
+		DrowningStatus->MaximumTurns,
+		DrowningStatus->TurnsRemaining)
+	);
+}
+
+
+void AActor_AttackEffectsLibrary::Attack_AddStoneSkin_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
+{
+	FString ContextString;
+
+	FAvatar_StatusEffect* StoneSkinStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("StoneSkin", ContextString);
+	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
+		StoneSkinStatus->Name,
+		StoneSkinStatus->Image,
+		StoneSkinStatus->Description,
+		StoneSkinStatus->MaximumTurns,
+		StoneSkinStatus->TurnsRemaining)
+	);
 }
 
 
@@ -123,4 +164,10 @@ void AActor_AttackEffectsLibrary::Spawn_RockWall_Implementation(AActor_GridTile*
 void AActor_AttackEffectsLibrary::AddProperty_StoneRoad_Implementation(AActor_GridTile* TargetTile)
 {
 	TargetTile->Properties.Add(E_GridTile_Properties::E_StoneRoad);
+}
+
+
+void AActor_AttackEffectsLibrary::AddProperty_Shadow_Implementation(AActor_GridTile* TargetTile)
+{
+	TargetTile->Properties.Add(E_GridTile_Properties::Shadow);
 }

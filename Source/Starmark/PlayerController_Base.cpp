@@ -160,7 +160,7 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 	if (CurrentSelectedAvatar->CurrentSelectedAttack.Name != "Default" &&
 		CurrentSelectedAvatar->ValidAttackTargetsArray.Num() > 0) {
 		if (ClickedActor &&
-			CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::E_AttackClickedAvatar) {
+			CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::AttackClickedAvatar) {
 			// If we're attacking, and we clicked on a valid target in-range, launch an attack
 			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Launch attack against ClickedActor"));
 			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / ClickedActor is: %s"), *ClickedActor->GetFullName());
@@ -172,8 +172,7 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 					Client_SendEndOfTurnCommandToServer();
 				}
 			}
-		}
-		else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::E_AttackAllTargets) {
+		} else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::AttackAllTargets) {
 			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Launch attack against all valid targets in range: %d"), CurrentSelectedAvatar->ValidAttackTargetsArray.Num());
 
 			for (int i = 0; i < CurrentSelectedAvatar->ValidAttackTargetsArray.Num(); i++) {
@@ -184,8 +183,7 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 			}
 
 			Client_SendEndOfTurnCommandToServer();
-		}
-		else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::SelectAllGridTiles) {
+		} else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::SelectAllGridTiles) {
 			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Select all valid grid tiles in range: %d"), CurrentSelectedAvatar->ValidAttackTargetsArray.Num());
 
 			for (int i = 0; i < CurrentSelectedAvatar->ValidAttackTargetsArray.Num(); i++) {
@@ -194,6 +192,23 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 					CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<AActor_GridTile>(CurrentSelectedAvatar->ValidAttackTargetsArray[i]));
 				}
 			}
+
+			Client_SendEndOfTurnCommandToServer();
+		} else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::SelectAllGridTilesAndSelectAllAvatars) {
+			for (int i = 0; i < CurrentSelectedAvatar->ValidAttackTargetsArray.Num(); i++) {
+				if (Cast<AActor_GridTile>(CurrentSelectedAvatar->ValidAttackTargetsArray[i])) {
+					UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Target GridTile is: %s"), *CurrentSelectedAvatar->ValidAttackTargetsArray[i]->GetFullName());
+					CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<AActor_GridTile>(CurrentSelectedAvatar->ValidAttackTargetsArray[i]));
+				}
+				else if (Cast<ACharacter_Pathfinder>(CurrentSelectedAvatar->ValidAttackTargetsArray[i])) {
+					UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Target Actor is: %s"), *CurrentSelectedAvatar->ValidAttackTargetsArray[i]->GetFullName());
+					CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(CurrentSelectedAvatar->ValidAttackTargetsArray[i]));
+				}
+			}
+
+			Client_SendEndOfTurnCommandToServer();
+		} else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::Self) {
+			CurrentSelectedAvatar->LaunchAttack_Implementation(CurrentSelectedAvatar);
 
 			Client_SendEndOfTurnCommandToServer();
 		}

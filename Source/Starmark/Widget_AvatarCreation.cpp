@@ -165,19 +165,25 @@ void UWidget_AvatarCreation::OnMoveOneDropDownChanged(FString Option)
 	else {
 		FString ContextString;
 
-		for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
-			if (Option == SimpleAttacksRowNames[i].ToString()) {
-				CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
-				MoveOneNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
-				break;
-			}
-		}
 
-		for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
-			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
-				CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
-				MoveOneNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
-				break;
+		if (Option == "None") {
+			CurrentAvatar.CurrentAttacks.RemoveAt(0);
+			MoveOneNameText->SetText(FText::FromString("None"));
+		} else {
+			for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
+				if (Option == SimpleAttacksRowNames[i].ToString()) {
+					CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
+					MoveOneNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
+					break;
+				}
+			}
+
+			for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
+				if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
+					CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
+					MoveOneNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
+					break;
+				}
 			}
 		}
 	}
