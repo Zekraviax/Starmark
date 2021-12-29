@@ -11,6 +11,7 @@
 
 // Forward Declarations
 class AActor_GridTile;
+class AActor_StatusEffectsLibrary;
 class ACharacter_Pathfinder;
 
 
@@ -35,6 +36,12 @@ public:
 // --------------------------------------------------
 
 // ------------------------- References
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AActor_StatusEffectsLibrary> StatusEffectsLibrary_Class;
+
+	UPROPERTY()
+	AActor_StatusEffectsLibrary* StatusEffectsLibrary_Reference;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ACharacter_Pathfinder> RockWall_Class;
 

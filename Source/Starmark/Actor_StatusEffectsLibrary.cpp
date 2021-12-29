@@ -32,10 +32,25 @@ void AActor_StatusEffectsLibrary::Tick(float DeltaTime)
 void AActor_StatusEffectsLibrary::OnStatusEffectApplied_Implementation(ACharacter_Pathfinder* AffectedAvatar, FAvatar_StatusEffect StatusEffectReference)
 {
 	// switch expression of type 'const FString' is illegal
-	if (StatusEffectReference.Name == FString("StoneSkin")) {
-		RememberedVariableOne = FMath::RoundToInt(AffectedAvatar->AvatarData.BaseStats.Defence * 1.5);
+	if (StatusEffectReference.Name == FString("Stone Skin")) {
+		RememberedVariableOne = FMath::CeilToInt(AffectedAvatar->AvatarData.BaseStats.Defence * 1.5);
 		AffectedAvatar->AvatarData.BaseStats.Defence += RememberedVariableOne;
 		StatusEffectReference.SpecialFunctionsActor = this;
+
+		AffectedAvatar->CurrentStatusEffectsArray.Add(StatusEffectReference);
+	} else {
+
+	}
+}
+
+
+void AActor_StatusEffectsLibrary::OnStatusEffectRemoved_Implementation(ACharacter_Pathfinder* AffectedAvatar, FAvatar_StatusEffect StatusEffectReference)
+{
+	if (StatusEffectReference.Name == FString("Stone Skin")) {
+		AffectedAvatar->AvatarData.BaseStats.Defence -= RememberedVariableOne;
+		StatusEffectReference.SpecialFunctionsActor->Destroy();
+
+		AffectedAvatar->CurrentStatusEffectsArray.Remove(StatusEffectReference);
 	} else {
 
 	}

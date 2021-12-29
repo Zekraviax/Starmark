@@ -463,6 +463,16 @@ struct STARMARK_API FAvatar_StatusEffect : public FTableRowBase
 		MaximumTurns = InMaxinumTurns;
 		TurnsRemaining = InTurnsRemaining;
 	}
+
+	bool operator==(const FAvatar_StatusEffect& OtherStatusEffect)
+	{
+		return (Name == OtherStatusEffect.Name &&
+				Image == OtherStatusEffect.Image &&
+				Description == OtherStatusEffect.Description &&
+				MaximumTurns == OtherStatusEffect.MaximumTurns &&
+				TurnsRemaining == OtherStatusEffect.TurnsRemaining &&
+				SpecialFunctionsActor == OtherStatusEffect.SpecialFunctionsActor);
+	}
 };
 
 

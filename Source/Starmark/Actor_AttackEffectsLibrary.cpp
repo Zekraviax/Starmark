@@ -2,6 +2,7 @@
 
 
 #include "Actor_GridTile.h"
+#include "Actor_StatusEffectsLibrary.h"
 #include "Character_Pathfinder.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -126,13 +127,19 @@ void AActor_AttackEffectsLibrary::Attack_AddStoneSkin_Implementation(ACharacter_
 	FString ContextString;
 
 	FAvatar_StatusEffect* StoneSkinStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("StoneSkin", ContextString);
-	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
-		StoneSkinStatus->Name,
-		StoneSkinStatus->Image,
-		StoneSkinStatus->Description,
-		StoneSkinStatus->MaximumTurns,
-		StoneSkinStatus->TurnsRemaining)
-	);
+	//Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
+	//	StoneSkinStatus->Name,
+	//	StoneSkinStatus->Image,
+	//	StoneSkinStatus->Description,
+	//	StoneSkinStatus->MaximumTurns,
+	//	StoneSkinStatus->TurnsRemaining)
+	//);
+
+	if (IsValid(StatusEffectsLibrary_Class)) {
+		FActorSpawnParameters SpawnInfo;
+		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
+		StatusEffectsLibrary_Reference->OnStatusEffectApplied(Defender, *StoneSkinStatus);
+	}
 }
 
 

@@ -2,6 +2,7 @@
 
 
 #include "Actor_GridTile.h"
+#include "Actor_StatusEffectsLibrary.h"
 #include "Character_DestructibleObject.h"
 #include "Character_Pathfinder.h"
 #include "Kismet/GameplayStatics.h"
@@ -115,7 +116,7 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 			AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].TurnsRemaining--;
 
 			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].TurnsRemaining <= 0) {
-				AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray.RemoveAt(i);
+				AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectRemoved(AvatarTurnOrder[CurrentAvatarTurnIndex], AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i]);
 			} else {
 				if (AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
 					AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves / 2;
