@@ -256,16 +256,8 @@ void APlayerController_Base::Player_OnAvatarTurnChanged_Implementation()
 
 	if (IsValid(BattleWidgetReference)) {
 		BattleWidgetReference->EndTurnCommandButton->SetIsEnabled(IsCurrentlyActingPlayer);
-
-		//if (IsCurrentlyActingPlayer) {
-		//	BattleWidgetReference->AvatarAttacksBox->SetVisibility(ESlateVisibility::Visible);
-		//}
-		//else {
-		//	BattleWidgetReference->AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
-		//}
 	}
 
-	CurrentSelectedAvatar->CurrentSelectedAttack.Name = "Default";
 	CurrentSelectedAvatar->ValidAttackTargetsArray.Empty();
 
 	SetBattleWidgetVariables();

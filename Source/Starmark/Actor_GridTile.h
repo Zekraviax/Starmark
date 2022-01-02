@@ -81,7 +81,7 @@ public:
 	void UpdateGridTileState();
 
 	UFUNCTION(BlueprintCallable)
-	void OnMouseBeginHover();
+	void OnMouseBeginHover(ACharacter_Pathfinder* CurrentAvatar);
 
 	UFUNCTION(BlueprintCallable)
 	void OnMouseEndHover();

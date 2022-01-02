@@ -4,6 +4,7 @@
 #include "Actor_GridTile.h"
 #include "Actor_StatusEffectsLibrary.h"
 #include "Character_Pathfinder.h"
+#include "Character_NonAvatarEntity.h"
 #include "Kismet/KismetMathLibrary.h"
 
 
@@ -44,7 +45,7 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 		break;
 	case (EBattle_AttackEffects::AddBurnStatus):
 		if (Cast<ACharacter_Pathfinder>(Target))
-			Attack_AddParalyze(Attacker, Cast<ACharacter_Pathfinder>(Target));
+			Attack_AddBurn(Attacker, Cast<ACharacter_Pathfinder>(Target));
 		break;
 	case (EBattle_AttackEffects::AddDrowningStatus):
 		if (Cast<ACharacter_Pathfinder>(Target))
@@ -54,6 +55,10 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 		if (Cast<ACharacter_Pathfinder>(Target))
 			Attack_AddStoneSkin(Attacker, Cast<ACharacter_Pathfinder>(Target));
 		break;
+	case (EBattle_AttackEffects::AddBleedStatus):
+		if (Cast<ACharacter_Pathfinder>(Target))
+			Attack_AddBleed(Attacker, Cast<ACharacter_Pathfinder>(Target));
+		break;
 	case (EBattle_AttackEffects::KnockbackTarget):
 		if (Cast<ACharacter_Pathfinder>(Target))
 			Attack_KnockbackTarget(Attacker, Cast<ACharacter_Pathfinder>(Target));
@@ -62,11 +67,15 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 		if (Cast<AActor_GridTile>(Target))
 			Spawn_RockWall(Cast<AActor_GridTile>(Target));
 		break;
-	case (EBattle_AttackEffects::SpawnStoneRoad):
+	case (EBattle_AttackEffects::SpawnHurricane):
+		if (Cast<AActor_GridTile>(Target))
+			Spawn_Hurricane(Cast<AActor_GridTile>(Target));
+		break;
+	case (EBattle_AttackEffects::AddPropertyStoneRoad):
 		if (Cast<AActor_GridTile>(Target))
 			AddProperty_StoneRoad(Cast<AActor_GridTile>(Target));
 		break;
-	case (EBattle_AttackEffects::SpawnShadow):
+	case (EBattle_AttackEffects::AddPropertyShadow):
 		if (Cast<AActor_GridTile>(Target))
 			AddProperty_Shadow(Cast<AActor_GridTile>(Target));
 		break;
@@ -125,21 +134,28 @@ void AActor_AttackEffectsLibrary::Attack_AddDrowning_Implementation(ACharacter_P
 void AActor_AttackEffectsLibrary::Attack_AddStoneSkin_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
 {
 	FString ContextString;
-
 	FAvatar_StatusEffect* StoneSkinStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("StoneSkin", ContextString);
-	//Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
-	//	StoneSkinStatus->Name,
-	//	StoneSkinStatus->Image,
-	//	StoneSkinStatus->Description,
-	//	StoneSkinStatus->MaximumTurns,
-	//	StoneSkinStatus->TurnsRemaining)
-	//);
 
 	if (IsValid(StatusEffectsLibrary_Class)) {
 		FActorSpawnParameters SpawnInfo;
 		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
 		StatusEffectsLibrary_Reference->OnStatusEffectApplied(Defender, *StoneSkinStatus);
 	}
+}
+
+
+void AActor_AttackEffectsLibrary::Attack_AddBleed_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
+{
+	FString ContextString;
+
+	FAvatar_StatusEffect* BleedStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Bleeding", ContextString);
+	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
+		"Bleeding",
+		BleedStatus->Image,
+		BleedStatus->Description,
+		BleedStatus->MaximumTurns,
+		BleedStatus->TurnsRemaining)
+	);
 }
 
 
@@ -164,7 +180,19 @@ void AActor_AttackEffectsLibrary::Spawn_RockWall_Implementation(AActor_GridTile*
 	FActorSpawnParameters SpawnInfo;
 	FVector Location = FVector(TargetTile->GetActorLocation().X, TargetTile->GetActorLocation().Y, TargetTile->GetActorLocation().Z + 50);
 
-	ACharacter_Pathfinder* NewRockWallActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(RockWall_Class, Location, FRotator::ZeroRotator, SpawnInfo);
+	ACharacter_NonAvatarEntity* NewRockWallActor = GetWorld()->SpawnActor<ACharacter_NonAvatarEntity>(RockWall_Class, Location, FRotator::ZeroRotator, SpawnInfo);
+	TargetTile->Properties.Add(E_GridTile_Properties::E_Wall);
+}
+
+
+void AActor_AttackEffectsLibrary::Spawn_Hurricane_Implementation(AActor_GridTile* TargetTile)
+{
+	FActorSpawnParameters SpawnInfo;
+	FVector Location = FVector(TargetTile->GetActorLocation().X, TargetTile->GetActorLocation().Y, TargetTile->GetActorLocation().Z + 50);
+
+	ACharacter_NonAvatarEntity* NewHurricaneActor = GetWorld()->SpawnActor<ACharacter_NonAvatarEntity>(NonAvatarEntity_Class, Location, FRotator::ZeroRotator, SpawnInfo);
+	//NewHurricaneActor->EntityType = E_NonAvatarEntity_EntityType::Hurricane;
+	NewHurricaneActor->HurricaneOnSpawn();
 }
 
 

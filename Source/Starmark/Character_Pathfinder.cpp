@@ -211,7 +211,8 @@ void ACharacter_Pathfinder::ShowAttackRange()
 	AttackTraceActor->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
 
 	// Center the attack component on the avatar
-	if (CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::Self) {
+	if (CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::Self ||
+		CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::SingleTile) {
 		// Set the StaticMesh
 		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
 			if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
@@ -234,7 +235,6 @@ void ACharacter_Pathfinder::ShowAttackRange()
 				}
 			}
 
-			// Attach an AOE_Circle to the mouse
 			if (AttackRotationSnapToDegrees != 90)
 				AttackRotationSnapToDegrees = 90;
 
@@ -314,29 +314,12 @@ void ACharacter_Pathfinder::ShowAttackRange()
 				}
 			}
 
-			FVector WideWallLocation = FVector(250, 0, -100);
+			FVector WideWallLocation = FVector(150, 0, -100);
 			FVector WideWallScale = FVector(1.f, 2.f, 0.5f);
 
 			AttackTraceActor->SetRelativeLocation(WideWallLocation);
 			//AttackTraceActor->SetRelativeRotation();
 			AttackTraceActor->SetRelativeScale3D(WideWallScale);
-		}
-		// Self
-		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::SingleTile) {
-			// Set the StaticMesh
-			for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
-				if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
-					AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
-					break;
-				}
-			}
-
-			FVector SingleTileLocation = FVector(0, 0, 0);
-			FVector SingleTileScale = FVector(1.f, 1.f, 1.f);
-
-			AttackTraceActor->SetRelativeLocation(SingleTileLocation);
-			//AttackTraceActor->SetRelativeRotation();
-			AttackTraceActor->SetRelativeScale3D(SingleTileScale);
 		}
 	}
 
@@ -405,9 +388,12 @@ void ACharacter_Pathfinder::AvatarBeginTileOverlap_Implementation()
 }
 
 
-void ACharacter_Pathfinder::FindPathAndSpendMovementPoints()
+void ACharacter_Pathfinder::AvatarStopMoving(bool SnapToGrid)
 {
-	//GetWorld()->GetNavigationSystem()
+	// make sure this avatar's position is snapped to the grid
+	if (GetActorLocation() != GetActorLocation().GridSnap(200) && SnapToGrid) {
+		Cast<AAIController_Avatar>(GetController())->MoveToLocation((GetActorLocation().GridSnap(200)), -1.f, false, false, false, true, 0, false);
+	}
 }
 
 
@@ -421,7 +407,4 @@ void ACharacter_Pathfinder::Client_GetAvatarData_Implementation(FAvatar_Struct N
 void ACharacter_Pathfinder::Local_GetAvatarData(FAvatar_Struct NewAvatarData)
 {
 	AvatarData = NewAvatarData;
-
-	//if (AvatarBattleData_Component) 
-	//	AvatarBattleDataComponent_Reference->UpdateAvatarData(NewAvatarData);
 }

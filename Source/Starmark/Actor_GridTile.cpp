@@ -52,22 +52,29 @@ void AActor_GridTile::UpdateGridTileState()
 			Properties.Remove(E_GridTile_Properties::E_Occupied);
 	}
 
-	//// If the TraversalProperties array is empty, add the default Property
+	// If the TraversalProperties array is empty, add the default Property
 	if (Properties.Num() <= 0)
 		Properties.AddUnique(E_GridTile_Properties::E_None);
 }
 
 
-void AActor_GridTile::OnMouseBeginHover()
+void AActor_GridTile::OnMouseBeginHover(ACharacter_Pathfinder* CurrentAvatar)
 {
 	// Set AttackTraceActor to this tile's location if it isn't centered around the player
-	// Get the current Avatar
-	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
-	ACharacter_Pathfinder* CurrentAvatar = GameStateReference->DynamicAvatarTurnOrder[GameStateReference->CurrentAvatarTurnIndex];
 
-	if (CurrentAvatar->CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::AOE_Circle) {
-		if (CurrentAvatar->PlayerControllerReference) {
-			CurrentAvatar->AttackTraceActor->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y + 200, CurrentAvatar->AttackTraceActor->GetComponentLocation().Z), true, nullptr, ETeleportType::ResetPhysics);
+
+	if (IsValid(CurrentAvatar)) {
+		if (CurrentAvatar->CurrentSelectedAttack.AttachAttackTraceActorToMouse) {
+			if (CurrentAvatar->PlayerControllerReference) {
+				FVector AttackTraceActorLocation = FVector::ZeroVector;
+
+				if (CurrentAvatar->CurrentSelectedAttack.BaseRange > 1)
+					AttackTraceActorLocation = FVector(GetActorLocation().X, GetActorLocation().Y - (200 * CurrentAvatar->CurrentSelectedAttack.BaseRange), CurrentAvatar->AttackTraceActor->GetComponentLocation().Z);
+				else
+					AttackTraceActorLocation = FVector(GetActorLocation().X, GetActorLocation().Y, CurrentAvatar->AttackTraceActor->GetComponentLocation().Z);
+				
+				CurrentAvatar->AttackTraceActor->SetWorldLocation(AttackTraceActorLocation, true, nullptr, ETeleportType::ResetPhysics);
+			}
 		}
 	}
 }

@@ -3,7 +3,7 @@
 
 #include "Actor_GridTile.h"
 #include "Actor_StatusEffectsLibrary.h"
-#include "Character_DestructibleObject.h"
+#include "Character_NonAvatarEntity.h"
 #include "Character_Pathfinder.h"
 #include "Kismet/GameplayStatics.h"
 #include "Widget_HUD_Battle.h"
@@ -42,8 +42,7 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	// Use Nested Loops to compare Avatars' Speeds.
 	for (int i = 0; i < FoundActors.Num(); i++) {
 		ACharacter_Pathfinder* CurrentAvatar = Cast<ACharacter_Pathfinder>(FoundActors[i]);
-		if (!Cast<ACharacter_DestructibleObject>(CurrentAvatar)) {
-
+		if (!Cast<ACharacter_NonAvatarEntity>(CurrentAvatar)) {
 			for (int j = 0; j < CurrentAvatar->CurrentStatusEffectsArray.Num(); j++) {
 				if (CurrentAvatar->CurrentStatusEffectsArray[j].Name == "Drowning") {
 					SlowedAvatars.AddUnique(CurrentAvatar);
@@ -76,7 +75,7 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	for (int i = 0; i < SlowedAvatars.Num(); i++) {
 		ACharacter_Pathfinder* CurrentAvatar = Cast<ACharacter_Pathfinder>(SlowedAvatars[i]);
 
-		if (!Cast<ACharacter_DestructibleObject>(CurrentAvatar)) {
+		if (!Cast<ACharacter_NonAvatarEntity>(CurrentAvatar)) {
 			if (SlowedAvatarsInTurnOrder.Num() <= 0) {
 				SlowedAvatarsInTurnOrder.Add(CurrentAvatar);
 			} else {
@@ -98,7 +97,6 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	}
 
 	for (int i = 0; i < SlowedAvatarsInTurnOrder.Num(); i++) {
-		//AvatarTurnOrder.Insert(SlowedAvatarsInTurnOrder[i], AvatarTurnOrder.Num());
 		AvatarTurnOrder.Add(SlowedAvatarsInTurnOrder[i]);
 	}
 
@@ -166,6 +164,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
 	for (int j = 0; j < GridTilesArray.Num(); j++) {
 		Cast<AActor_GridTile>(GridTilesArray[j])->ChangeColourOnMouseHover = true;
+		Cast<AActor_GridTile>(GridTilesArray[j])->UpdateTileColour(E_GridTile_ColourChangeContext::Normal);
 	}
 
 
@@ -178,8 +177,13 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 	// Assign currently controlled avatars based on the dynamic turn order
 	for (int i = DynamicAvatarTurnOrder.Num() - 1; i >= 0; i--) {
-		if (IsValid(DynamicAvatarTurnOrder[i]))
+		if (IsValid(DynamicAvatarTurnOrder[i])) {
 			DynamicAvatarTurnOrder[i]->PlayerControllerReference->CurrentSelectedAvatar = DynamicAvatarTurnOrder[i];
+
+			DynamicAvatarTurnOrder[i]->CurrentSelectedAttack.Name = "None";
+			DynamicAvatarTurnOrder[i]->CurrentSelectedAttack.AttachAttackTraceActorToMouse = false;
+			DynamicAvatarTurnOrder[i]->ValidAttackTargetsArray.Empty();
+		}
 	}
 
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_UpdateAllAvatarDecals();

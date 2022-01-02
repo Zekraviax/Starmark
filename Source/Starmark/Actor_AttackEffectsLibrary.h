@@ -12,6 +12,7 @@
 // Forward Declarations
 class AActor_GridTile;
 class AActor_StatusEffectsLibrary;
+class ACharacter_NonAvatarEntity;
 class ACharacter_Pathfinder;
 
 
@@ -43,7 +44,10 @@ public:
 	AActor_StatusEffectsLibrary* StatusEffectsLibrary_Reference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<ACharacter_Pathfinder> RockWall_Class;
+	TSubclassOf<ACharacter_NonAvatarEntity> RockWall_Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<ACharacter_NonAvatarEntity> NonAvatarEntity_Class;
 
 // ------------------------- Data Tables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -67,6 +71,9 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_AddStoneSkin(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Attack_AddBleed(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+
 // ------------------------- Other
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_KnockbackTarget(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
@@ -74,6 +81,9 @@ public:
 // ------------------------- Grid Tile Effects
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Spawn_RockWall(AActor_GridTile* TargetTile);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Spawn_Hurricane(AActor_GridTile* TargetTile);
 
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void AddProperty_StoneRoad(AActor_GridTile* TargetTile);

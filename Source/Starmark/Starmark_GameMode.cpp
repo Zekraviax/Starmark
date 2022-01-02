@@ -296,7 +296,20 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 		MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
 		TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
 
-		// Attack Damage Formula
+		if (AttackData.AttackEffectsOnTarget.Contains(EBattle_AttackEffects::LowerTargetHealthEqualsHigherDamageDealt)) {
+			//int VariableBasePower = FMath::CeilToInt((TargetAsCharacter->AvatarData.CurrentHealthPoints / TargetAsCharacter->AvatarData.BaseStats.HealthPoints) * 25);
+			float VariableBasePower = 1.f;
+			VariableBasePower = (float)TargetAsCharacter->AvatarData.CurrentHealthPoints / (float)TargetAsCharacter->AvatarData.BaseStats.HealthPoints;
+			VariableBasePower = 0.9 - VariableBasePower;
+			VariableBasePower = VariableBasePower * 100.f;
+
+			if (VariableBasePower < 1)
+				VariableBasePower = 1;
+
+			AttackData.BasePower = FMath::CeilToInt(VariableBasePower);
+		}
+
+		// Standard Attack Damage Formula
 		CurrentDamage = FMath::CeilToInt(Attacker->AvatarData.BaseStats.Attack * AttackData.BasePower);
 		UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Attacker's Attack * Attack's Base Power is: %d"), CurrentDamage);
 		CurrentDamage = FMath::CeilToInt(CurrentDamage / TargetAsCharacter->AvatarData.BaseStats.Defence);

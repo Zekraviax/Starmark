@@ -161,13 +161,17 @@ enum class EBattle_AttackEffects : uint8
 	AddBurnStatus,
 	AddDrowningStatus,
 	AddStoneSkinStatus,
+	AddBleedStatus,
 	// Other
 	KnockbackTarget,
 	NoFriendlyFire,
 	// Change Grid Tile Properties
 	SpawnWall,
-	SpawnStoneRoad,
-	SpawnShadow,
+	SpawnHurricane,
+	AddPropertyStoneRoad,
+	AddPropertyShadow,
+	// Alternative Attack Functions/Properties
+	LowerTargetHealthEqualsHigherDamageDealt,
 };
 
 
@@ -343,15 +347,15 @@ struct STARMARK_API FAvatar_BaseStats
 
 	FAvatar_BaseStats()
 	{
-		HealthPoints = 10;
-		ManaPoints = 10;
-		Attack = 1;
-		Defence = 1;
-		SpecialAttack = 1;
-		SpecialDefence = 1;
-		Speed = 1;
-		Evade = 1;
-		Power = 1;
+		HealthPoints = 100;
+		ManaPoints = 100;
+		Attack = 10;
+		Defence = 10;
+		SpecialAttack = 10;
+		SpecialDefence = 10;
+		Speed = 10;
+		Evade = 10;
+		Power = 10;
 	}
 };
 
@@ -512,6 +516,12 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<EBattle_AttackEffects> AttackEffectsOnTarget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool AttachAttackTraceActorToMouse;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool RotateAvatarTowardsMouse;
+
 	FAvatar_AttackStruct()
 	{
 		Name = "Default";
@@ -520,6 +530,8 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 		BaseRange = 1;
 		ManaCost = 1;
 		AttackPattern = EBattle_AttackPatterns::Circle;
+		AttachAttackTraceActorToMouse = false;
+		RotateAvatarTowardsMouse = true;
 	}
 };
 

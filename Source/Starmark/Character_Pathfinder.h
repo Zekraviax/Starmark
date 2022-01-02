@@ -56,7 +56,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	TSubclassOf<UWidgetComponent_AvatarBattleData> AvatarBattleDataComponent_Class;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataComponent_Reference;
 
 // ------------------------- Avatar
@@ -144,7 +144,7 @@ public:
 	void AvatarBeginTileOverlap();
 
 	UFUNCTION(BlueprintCallable)
-	void FindPathAndSpendMovementPoints();
+	void AvatarStopMoving(bool SnapToGrid);
 
 // ------------------------- Multiplayer
 	UFUNCTION(Client, Unreliable)

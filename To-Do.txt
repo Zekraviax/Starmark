@@ -6,7 +6,7 @@ Refactor:
 * Remove redundant UFUNCTION and UPROPERTY macros
 * Remove redundant files
 * Update UFUNCTION and UPROPERTY Categories
-* Replace all instances of Variable?IsValidLowLevel() with IsValid(Variable)
+* Replace all instances of Variable.IsValidLowLevel() with IsValid(Variable)
 
 
 Blueprints-To-Code Conversions:
@@ -51,6 +51,10 @@ Demo:
 * Allow players to improve Avatars’ stats by distributing a set amount of points.
 * Replace the current default Avatar images with transparent versions.
 * Open the current Main Menu Background in Photoshop and edit the colours to create a few different versions.
+
+
+Bug fixes:
+* If the turn order is altered, the game becomes unplayable if the same avatar would act twice in a row.
 
 
 Other:
