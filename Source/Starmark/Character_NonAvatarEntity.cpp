@@ -4,6 +4,7 @@
 #include "Actor_GridTile.h"
 #include "AIController_Avatar.h"
 #include "Character_Pathfinder.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 ACharacter_NonAvatarEntity::ACharacter_NonAvatarEntity()
@@ -17,16 +18,38 @@ ACharacter_NonAvatarEntity::ACharacter_NonAvatarEntity()
 // ------------------------- Hurricane
 void ACharacter_NonAvatarEntity::HurricaneOnSpawn()
 {
+	// Destroy unneeded components
 	ActorSelectedPlane->DestroyComponent();
 	ActorSelected->DestroyComponent();
 	AttackTraceActor->DestroyComponent();
 	AvatarBattleData_Component->DestroyComponent();
 	GetMesh()->DestroyComponent();
 
+	// Set important variables
 	BoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	BoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-
 	EntityType = E_NonAvatarEntity_EntityType::Hurricane;
+
+	// Draw-In all avatars by 1 tile
+	FRotator KnockbackDirection = FRotator::ZeroRotator;
+	FVector KnockbackVector = FVector::ZeroVector;
+	TArray<AActor*> Avatars;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
+
+	for (int i = 0; i < Avatars.Num(); i++) {
+		if (!Cast<ACharacter_NonAvatarEntity>(Avatars[i])) {
+			ACharacter_Pathfinder* Avatar = Cast<ACharacter_Pathfinder>(Avatars[i]);
+			KnockbackDirection = UKismetMathLibrary::FindLookAtRotation(Avatar->GetActorLocation(), GetActorLocation());
+			KnockbackVector = KnockbackDirection.Vector();
+
+			// Multiply the number of tiles to knock the target back by 200
+			KnockbackVector.X = KnockbackVector.X * 200;
+			KnockbackVector.Y = KnockbackVector.Y * 200;
+			KnockbackVector = FVector((KnockbackVector.X + Avatar->GetActorLocation().X), (KnockbackVector.Y + Avatar->GetActorLocation().Y), Avatar->GetActorLocation().Z);
+
+			Avatar->SetActorLocation(FVector(KnockbackVector.X, KnockbackVector.Y, Avatar->GetActorLocation().Z), true);
+		}
+	}
 }
 
 
@@ -63,9 +86,5 @@ void ACharacter_NonAvatarEntity::HurricaneOnAvatarCollision(ACharacter_Pathfinde
 
 		Avatar->LaunchCharacter(LaunchVelocity, false, true);
 		Avatar->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-
-		// set a delay before restoring collisions
-		BoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		BoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
 }

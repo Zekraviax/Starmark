@@ -165,6 +165,7 @@ void AActor_AttackEffectsLibrary::Attack_KnockbackTarget_Implementation(ACharact
 	FRotator KnockbackDirection = UKismetMathLibrary::FindLookAtRotation(Attacker->GetActorLocation(), Defender->GetActorLocation());
 	FVector KnockbackVector = KnockbackDirection.Vector();
 
+	// Multiply the number of tiles to knock the target back by 200
 	KnockbackVector.X = KnockbackVector.X * 200;
 	KnockbackVector.Y = KnockbackVector.Y * 200;
 
