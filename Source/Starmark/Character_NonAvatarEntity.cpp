@@ -43,9 +43,10 @@ void ACharacter_NonAvatarEntity::HurricaneOnSpawn()
 			KnockbackVector = KnockbackDirection.Vector();
 
 			// Multiply the number of tiles to knock the target back by 200
-			KnockbackVector.X = KnockbackVector.X * 200;
-			KnockbackVector.Y = KnockbackVector.Y * 200;
+			KnockbackVector.X = KnockbackVector.X * 125;
+			KnockbackVector.Y = KnockbackVector.Y * 125;
 			KnockbackVector = FVector((KnockbackVector.X + Avatar->GetActorLocation().X), (KnockbackVector.Y + Avatar->GetActorLocation().Y), Avatar->GetActorLocation().Z);
+			KnockbackVector = KnockbackVector.GridSnap(200.f);
 
 			Avatar->SetActorLocation(FVector(KnockbackVector.X, KnockbackVector.Y, Avatar->GetActorLocation().Z), true);
 		}

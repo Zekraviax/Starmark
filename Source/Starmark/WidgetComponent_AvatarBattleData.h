@@ -44,8 +44,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* AvatarText;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UTextBlock* TypesText;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	//UTextBlock* TypesText;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* HealthDisplayText;

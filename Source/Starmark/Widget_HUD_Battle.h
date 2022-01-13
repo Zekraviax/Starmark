@@ -29,17 +29,13 @@ public:
 	UTextBlock* TurnOrderTextBlock;
 
 	UPROPERTY(meta = (BindWidget))
+	UTextBlock* TurnAndRoundCounterTextBlock;
+
+	UPROPERTY(meta = (BindWidget))
 	UUniformGridPanel* AvatarAttacksBox;
 
 	UPROPERTY(meta = (BindWidget))
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataWidget;
-
-	// Buttons
-	UPROPERTY(meta = (BindWidget))
-	UButton* MoveCommandButton;
-
-	UPROPERTY(meta = (BindWidget))
-	UButton* AttackCommandButton;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* SwitchCommandButton;
@@ -61,21 +57,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateTurnOrderText(FString NewText);
 
-	UFUNCTION(BlueprintCallable)
-	void OnPlayerClick();
-
-	UFUNCTION(BlueprintCallable)
-	void OnPlayerCurrentlyActingStateChanged();
-
 // ------------------------- Commands
 	UFUNCTION(BlueprintCallable)
 	void MoveCommand();
-
-	UFUNCTION(BlueprintCallable)
-	void AttackCommand();
-
-	UFUNCTION(BlueprintCallable)
-	void SwitchCommand();
 
 	UFUNCTION(BlueprintCallable)
 	void EndCommand();

@@ -214,8 +214,8 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 		}
 
 		// Update HUD only if the player clicked on an actor
-		if (BattleWidgetReference)
-			BattleWidgetReference->OnPlayerClick();
+		//if (BattleWidgetReference)
+		//	BattleWidgetReference->OnPlayerClick();
 	}
 }
 

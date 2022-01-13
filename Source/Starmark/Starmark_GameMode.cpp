@@ -329,14 +329,6 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 				CurrentDamage = CurrentDamage / 2;
 		}
 
-		// Check for the target's status effects
-		// Stone Skin
-		//for (int i = 0; i < TargetAsCharacter->CurrentStatusEffectsArray.Num(); i++) {
-		//	if (TargetAsCharacter->CurrentStatusEffectsArray[i].Name == "Stone Skin") {
-		//		CurrentDamage = FMath::RoundToInt(CurrentDamage / 2);
-		//	}
-		//}
-
 		// Ensure that at least 1 damage is dealt
 		if (CurrentDamage < 1)
 			CurrentDamage = 1;

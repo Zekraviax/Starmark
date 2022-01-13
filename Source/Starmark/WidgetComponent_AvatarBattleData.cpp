@@ -34,7 +34,7 @@ void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinke
 		AvatarText->SetText(FText::FromString(LinkedAvatar.AvatarName));
 
 	// Avatar Type(s)
-	TypesText->SetText(FText::FromString(UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar.PrimaryType).ToString()));
+	//TypesText->SetText(FText::FromString(UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar.PrimaryType).ToString()));
 
 	// Progress Bar variables
 	float HealthDivision = float(LinkedAvatar.CurrentHealthPoints) / float(LinkedAvatar.BaseStats.HealthPoints);
