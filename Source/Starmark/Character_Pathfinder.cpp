@@ -81,10 +81,6 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	// Set 'Simulation Generates Hit Events'
 	BoxComponent->SetNotifyRigidBodyCollision(true);
 
-	// AI
-	//AIControllerClass = AAIController_Avatar::StaticClass();
-	//AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
 	// Multiplayer
 	bReplicates = true; 
 	//bReplicateMovement = true; 
@@ -111,8 +107,6 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 void ACharacter_Pathfinder::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	//SetAttackTraceActorLocationSnappedToGrid();
 }
 
 
@@ -276,6 +270,44 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			//AttackTraceActor->SetRelativeRotation();
 			AttackTraceActor->SetRelativeScale3D(ConeScale);
 		}
+		// Ring attack pattern
+		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Ring) {
+			FVector OriginCoordinates = FVector::ZeroVector;
+			ValidAttackTargetsArray.Empty();
+
+			// Get the current mouse/avatar position
+			if (CurrentSelectedAttack.AttachAttackTraceActorToMouse)
+				OriginCoordinates = PlayerControllerReference->CursorLocationSnappedToGrid;
+			else 
+				OriginCoordinates = GetActorLocation().GridSnap(200.f);
+
+			// Get all of the tiles and avatars around the origin coordinates
+			TArray<AActor*> GridTilesArray, AvatarsArray, ActorsArray;
+
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), AvatarsArray);
+
+			ActorsArray.Append(GridTilesArray);
+			ActorsArray.Append(AvatarsArray);
+
+			for (int i = 0; i < ActorsArray.Num(); i++) {
+				if ((ActorsArray[i]->GetActorLocation().X == OriginCoordinates.X || ActorsArray[i]->GetActorLocation().X == OriginCoordinates.X + 200.f || ActorsArray[i]->GetActorLocation().X == OriginCoordinates.X - 200.f) &&
+					(ActorsArray[i]->GetActorLocation().Y == OriginCoordinates.Y || ActorsArray[i]->GetActorLocation().Y == OriginCoordinates.Y + 200.f || ActorsArray[i]->GetActorLocation().Y == OriginCoordinates.Y - 200.f) &&
+					ActorsArray[i]->GetActorLocation() != OriginCoordinates) {
+					ValidAttackTargetsArray.Add(ActorsArray[i]);
+
+					if (Cast<AActor_GridTile>(ActorsArray[i])) {
+						Cast<AActor_GridTile>(ActorsArray[i])->ChangeColourOnMouseHover = false;
+						Cast<AActor_GridTile>(ActorsArray[i])->UpdateTileColour(E_GridTile_ColourChangeContext::WithinAttackRange);
+					}
+				} else {
+					if (Cast<AActor_GridTile>(ActorsArray[i])) {
+						Cast<AActor_GridTile>(ActorsArray[i])->ChangeColourOnMouseHover = true;
+						Cast<AActor_GridTile>(ActorsArray[i])->UpdateTileColour(E_GridTile_ColourChangeContext::Normal);
+					}
+				}
+			}
+		}
 		// Four-Way and Eight-Way Line Traces
 		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
 			// Set the StaticMesh
@@ -324,17 +356,6 @@ void ACharacter_Pathfinder::ShowAttackRange()
 	}
 
 	AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-
-	// Get all hit actors
-	//TArray<AActor*> OverlappingActors;
-	//AttackTraceActor->GetOverlappingActors(OverlappingActors);
-	//for (int i = 0; i < OverlappingActors.Num(); i++) {
-	//	if (Cast<AActor_GridTile>(OverlappingActors[i])) {
-	//		AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(OverlappingActors[i]);
-	//		GridTileReference->DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.2f, 0.f, 1.f));
-	//		GridTileReference->ChangeColourOnMouseHover = false;
-	//	}
-	//}
 }
 
 

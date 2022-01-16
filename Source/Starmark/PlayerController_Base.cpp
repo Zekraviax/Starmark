@@ -157,7 +157,19 @@ void APlayerController_Base::Server_GetDataFromProfile_Implementation()
 
 void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
+	// Check all overlapping actors
+	TArray<AActor*> OverlappingActors;
+	//AttackTraceActor->GetOverlappingActors(OverlappingActors);
+	CurrentSelectedAvatar->AttackTraceActor->GetOverlappingActors(OverlappingActors);
+
+	for (int i = 0; i < OverlappingActors.Num(); i++) {
+		UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / OverlappingActor is: %s"), *OverlappingActors[i]->GetFullName());
+	}
+
+
+
 	if (CurrentSelectedAvatar->CurrentSelectedAttack.Name != "Default" &&
+		CurrentSelectedAvatar->CurrentSelectedAttack.Name != "None" &&
 		CurrentSelectedAvatar->ValidAttackTargetsArray.Num() > 0) {
 		if (ClickedActor &&
 			CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::AttackClickedAvatar) {
@@ -212,10 +224,6 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 
 			Client_SendEndOfTurnCommandToServer();
 		}
-
-		// Update HUD only if the player clicked on an actor
-		//if (BattleWidgetReference)
-		//	BattleWidgetReference->OnPlayerClick();
 	}
 }
 

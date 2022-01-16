@@ -2,6 +2,7 @@
 
 
 #include "Character_Pathfinder.h"
+#include "PlayerController_Base.h"
 #include "Starmark_GameState.h"
 
 
@@ -61,8 +62,6 @@ void AActor_GridTile::UpdateGridTileState()
 void AActor_GridTile::OnMouseBeginHover(ACharacter_Pathfinder* CurrentAvatar)
 {
 	// Set AttackTraceActor to this tile's location if it isn't centered around the player
-
-
 	if (IsValid(CurrentAvatar)) {
 		if (CurrentAvatar->CurrentSelectedAttack.AttachAttackTraceActorToMouse) {
 			if (CurrentAvatar->PlayerControllerReference) {
@@ -74,9 +73,15 @@ void AActor_GridTile::OnMouseBeginHover(ACharacter_Pathfinder* CurrentAvatar)
 					AttackTraceActorLocation = FVector(GetActorLocation().X, GetActorLocation().Y, CurrentAvatar->AttackTraceActor->GetComponentLocation().Z);
 				
 				CurrentAvatar->AttackTraceActor->SetWorldLocation(AttackTraceActorLocation, true, nullptr, ETeleportType::ResetPhysics);
+
+				// Update MouseCursor location
+				CurrentAvatar->PlayerControllerReference->CursorLocationSnappedToGrid = GetActorLocation().GridSnap(200.f);
 			}
 		}
 	}
+
+
+
 }
 
 
@@ -101,6 +106,9 @@ void AActor_GridTile::UpdateTileColour(E_GridTile_ColourChangeContext ColourChan
 			// Shadow
 			if (Properties.Contains(E_GridTile_Properties::Shadow))
 				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.1f, 0.1f, 0.1f, 1.f));
+			// Fire
+			if (Properties.Contains(E_GridTile_Properties::Fire))
+				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.9f, 0.3f, 0.f, 1.f));
 			// Highest priority: Tile is un-traversable
 			if (Properties.Contains(E_GridTile_Properties::E_Wall) ||
 				Properties.Contains(E_GridTile_Properties::E_Occupied))

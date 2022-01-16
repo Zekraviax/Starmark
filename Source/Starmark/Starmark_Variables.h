@@ -116,6 +116,7 @@ enum class E_GridTile_Properties : uint8
 	E_PlayerAvatarSpawn,
 	E_StoneRoad,
 	Shadow,
+	Fire,
 };
 
 
@@ -131,6 +132,7 @@ enum class EBattle_AttackPatterns : uint8
 	WideWall,
 	AOE_Circle,
 	SingleTile,
+	Ring,
 };
 
 
@@ -170,6 +172,7 @@ enum class EBattle_AttackEffects : uint8
 	SpawnHurricane,
 	AddPropertyStoneRoad,
 	AddPropertyShadow,
+	AddPropertyFire,
 	// Alternative Attack Functions/Properties
 	LowerTargetHealthEqualsHigherDamageDealt,
 };

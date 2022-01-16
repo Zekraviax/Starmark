@@ -18,6 +18,7 @@ enum class E_NonAvatarEntity_EntityType : uint8
 {
 	RockWall,
 	Hurricane,
+	Fire,
 };
 
 
@@ -39,6 +40,13 @@ public:
 // ------------------------- Entity
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	E_NonAvatarEntity_EntityType EntityType;
+
+// ------------------------- Non-Avatar Entity
+	UPROPERTY()
+	bool CanBeClicked = false;
+
+	UPROPERTY()
+	bool CanBeHurtByAttacks = false;
 
 // Functions
 // --------------------------------------------------
