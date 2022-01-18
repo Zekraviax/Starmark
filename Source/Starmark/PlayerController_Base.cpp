@@ -158,15 +158,13 @@ void APlayerController_Base::Server_GetDataFromProfile_Implementation()
 void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
 	// Check all overlapping actors
-	TArray<AActor*> OverlappingActors;
+	//TArray<AActor*> OverlappingActors;
 	//AttackTraceActor->GetOverlappingActors(OverlappingActors);
-	CurrentSelectedAvatar->AttackTraceActor->GetOverlappingActors(OverlappingActors);
+	//CurrentSelectedAvatar->AttackTraceActor->GetOverlappingActors(OverlappingActors);
 
-	for (int i = 0; i < OverlappingActors.Num(); i++) {
-		UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / OverlappingActor is: %s"), *OverlappingActors[i]->GetFullName());
-	}
-
-
+	//for (int i = 0; i < OverlappingActors.Num(); i++) {
+	//	UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / OverlappingActor is: %s"), *OverlappingActors[i]->GetFullName());
+	//}
 
 	if (CurrentSelectedAvatar->CurrentSelectedAttack.Name != "Default" &&
 		CurrentSelectedAvatar->CurrentSelectedAttack.Name != "None" &&
@@ -266,7 +264,7 @@ void APlayerController_Base::Player_OnAvatarTurnChanged_Implementation()
 		BattleWidgetReference->EndTurnCommandButton->SetIsEnabled(IsCurrentlyActingPlayer);
 	}
 
-	CurrentSelectedAvatar->ValidAttackTargetsArray.Empty();
+	//CurrentSelectedAvatar->ValidAttackTargetsArray.Empty();
 
 	SetBattleWidgetVariables();
 

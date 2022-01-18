@@ -84,8 +84,5 @@ public:
 	void OnMouseBeginHover(ACharacter_Pathfinder* CurrentAvatar);
 
 	UFUNCTION(BlueprintCallable)
-	void OnMouseEndHover();
-
-	UFUNCTION(BlueprintCallable)
 	void UpdateTileColour(E_GridTile_ColourChangeContext ColourChangeContext);
 };

@@ -14,7 +14,7 @@ void UWidgetComponent_AvatarAttack::OnButtonPressed()
 		PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack = PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[AvatarAttackIndex];
 
 		// Clear valid targets for old attacks
-		PlayerControllerReference->CurrentSelectedAvatar->ValidAttackTargetsArray.Empty();
+		//PlayerControllerReference->CurrentSelectedAvatar->ValidAttackTargetsArray.Empty();
 
 		// Get new valid targets
 		PlayerControllerReference->CurrentSelectedAvatar->ShowAttackRange();

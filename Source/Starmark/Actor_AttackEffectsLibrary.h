@@ -90,4 +90,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void AddProperty_Shadow(AActor_GridTile* TargetTile);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void AddProperty_Fire(AActor_GridTile* TargetTile);
 };

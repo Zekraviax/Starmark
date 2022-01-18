@@ -79,15 +79,6 @@ void AActor_GridTile::OnMouseBeginHover(ACharacter_Pathfinder* CurrentAvatar)
 			}
 		}
 	}
-
-
-
-}
-
-
-void AActor_GridTile::OnMouseEndHover()
-{
-
 }
 
 
@@ -108,7 +99,7 @@ void AActor_GridTile::UpdateTileColour(E_GridTile_ColourChangeContext ColourChan
 				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.1f, 0.1f, 0.1f, 1.f));
 			// Fire
 			if (Properties.Contains(E_GridTile_Properties::Fire))
-				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.9f, 0.3f, 0.f, 1.f));
+				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.6f, 0.2f, 0.f, 1.f));
 			// Highest priority: Tile is un-traversable
 			if (Properties.Contains(E_GridTile_Properties::E_Wall) ||
 				Properties.Contains(E_GridTile_Properties::E_Occupied))

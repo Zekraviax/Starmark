@@ -79,6 +79,10 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 		if (Cast<AActor_GridTile>(Target))
 			AddProperty_Shadow(Cast<AActor_GridTile>(Target));
 		break;
+	case (EBattle_AttackEffects::AddPropertyFire):
+		if (Cast<AActor_GridTile>(Target))
+			AddProperty_Fire(Cast<AActor_GridTile>(Target));
+		break;
 	default:
 		break;
 	}
@@ -206,4 +210,10 @@ void AActor_AttackEffectsLibrary::AddProperty_StoneRoad_Implementation(AActor_Gr
 void AActor_AttackEffectsLibrary::AddProperty_Shadow_Implementation(AActor_GridTile* TargetTile)
 {
 	TargetTile->Properties.Add(E_GridTile_Properties::Shadow);
+}
+
+
+void AActor_AttackEffectsLibrary::AddProperty_Fire_Implementation(AActor_GridTile* TargetTile)
+{
+	TargetTile->Properties.Add(E_GridTile_Properties::Fire);
 }

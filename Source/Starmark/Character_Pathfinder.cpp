@@ -203,6 +203,8 @@ void ACharacter_Pathfinder::SetAttackTraceActorLocationSnappedToGrid()
 void ACharacter_Pathfinder::ShowAttackRange()
 {
 	AttackTraceActor->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
+	AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	AttackTraceActor->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
 	// Center the attack component on the avatar
 	if (CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::Self ||
@@ -217,6 +219,8 @@ void ACharacter_Pathfinder::ShowAttackRange()
 
 		AttackTraceActor->SetRelativeLocation(FVector(-50, 0, -100));
 		AttackTraceActor->SetRelativeScale3D(FVector(0.3f, 0.3f, 0.3f));
+
+
 	} else {
 		// Circle/Sphere Trace
 		if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Circle ||
@@ -272,8 +276,11 @@ void ACharacter_Pathfinder::ShowAttackRange()
 		}
 		// Ring attack pattern
 		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Ring) {
+			AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			AttackTraceActor->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
 			FVector OriginCoordinates = FVector::ZeroVector;
-			ValidAttackTargetsArray.Empty();
+			//ValidAttackTargetsArray.Empty();
 
 			// Get the current mouse/avatar position
 			if (CurrentSelectedAttack.AttachAttackTraceActorToMouse)
@@ -333,8 +340,6 @@ void ACharacter_Pathfinder::ShowAttackRange()
 
 			AttackTraceActor->SetRelativeLocation(RectangleLocation);
 			AttackTraceActor->SetRelativeScale3D(RectangleScale);
-
-			AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		}
 		// Rock Wall attack pattern
 		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::WideWall) {
@@ -354,8 +359,6 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			AttackTraceActor->SetRelativeScale3D(WideWallScale);
 		}
 	}
-
-	AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 
