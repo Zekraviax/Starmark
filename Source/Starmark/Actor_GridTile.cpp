@@ -74,8 +74,9 @@ void AActor_GridTile::OnMouseBeginHover(ACharacter_Pathfinder* CurrentAvatar)
 				
 				CurrentAvatar->AttackTraceActor->SetWorldLocation(AttackTraceActorLocation, true, nullptr, ETeleportType::ResetPhysics);
 
-				// Update MouseCursor location
+				// Update MouseCursor location and AttackTrace location
 				CurrentAvatar->PlayerControllerReference->CursorLocationSnappedToGrid = GetActorLocation().GridSnap(200.f);
+				CurrentAvatar->ShowAttackRange();
 			}
 		}
 	}

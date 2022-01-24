@@ -5,4 +5,4 @@
 #include "CoreMinimal.h"
 #include "Net/UnrealNetwork.h"
 #include "Online.h"
-#include "EngineMinimal.h"
+#include "Engine/Engine.h"

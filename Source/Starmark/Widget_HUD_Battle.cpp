@@ -14,15 +14,20 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 		if (AvatarAttacksBox) {
 			for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
 				if (PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.IsValidIndex(i)) {
-					Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AttackNameText->SetText(FText::FromString(PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[i].Name));
+					if (PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[i].Name == "Default" ||
+						PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[i].Name == "None") {
+						AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Hidden);
+					} else {
+						Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AttackNameText->SetText(FText::FromString(PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[i].Name));
 
-					Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->PlayerControllerReference = PlayerControllerReference;
-					Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AvatarAttackIndex = i;
+						Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->PlayerControllerReference = PlayerControllerReference;
+						Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))->AvatarAttackIndex = i;
 
-					AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Visible);
-				}
-				else
+						AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Visible);
+					}
+				} else {
 					AvatarAttacksBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Hidden);
+				}
 			}
 		}
 	}

@@ -114,11 +114,17 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 			AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].TurnsRemaining--;
 
 			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].TurnsRemaining <= 0) {
-				AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectRemoved(AvatarTurnOrder[CurrentAvatarTurnIndex], AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i]);
+				if (IsValid(AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].SpecialFunctionsActor))
+					AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectRemoved(AvatarTurnOrder[CurrentAvatarTurnIndex], AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i]);
+				else
+					AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray.RemoveAt(i);
 			} else {
+				// On Status Effect Start-of-turn effects
 				if (AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
 					AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves / 2;
 					break;
+				} else if (IsValid(AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].SpecialFunctionsActor)) {
+					AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectStartOfTurn(AvatarTurnOrder[CurrentAvatarTurnIndex], AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i]);
 				}
 			}
 		}

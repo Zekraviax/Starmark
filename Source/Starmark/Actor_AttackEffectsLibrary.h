@@ -74,9 +74,21 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_AddBleed(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Attack_AddSoak(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Attack_AddSpellbound(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+
 // ------------------------- Other
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_KnockbackTarget(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Attack_RefundMana(ACharacter_Pathfinder* Attacker);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Attack_TransferMana(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 
 // ------------------------- Grid Tile Effects
 	UFUNCTION(BlueprintCallable, Server, Unreliable)

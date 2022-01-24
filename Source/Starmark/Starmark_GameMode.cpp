@@ -145,6 +145,10 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 		Server_UpdateAllAvatarDecals();
 
+		for (int i = 0; i < 1; i++) {
+
+		}
+
 		// Set first player to act
 		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
 	}
@@ -221,13 +225,24 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 		NewAvatarActor->CurrentKnownAttacks.Add(AvatarData.CurrentAttacks[i]);
 	}
 
+	// Set Model
+	//if (AvatarData.Model) {
+
+	//}
+
 	// Sent data to Clients
 	NewAvatarActor->Client_GetAvatarData(NewAvatarActor->AvatarData);
 
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 	PlayerController->OnRepNotify_CurrentSelectedAvatar();
 
-	NewAvatarActor->SetTilesOccupiedBySize();
+	//NewAvatarActor->SetTilesOccupiedBySize();
+	// Set spawn tile to be occupied
+	if (Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Contains(E_GridTile_Properties::E_None))
+		Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Remove(E_GridTile_Properties::E_None);
+
+	Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Add(E_GridTile_Properties::E_Occupied);
+	Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->OccupyingActor = NewAvatarActor;
 }
 
 
@@ -268,10 +283,11 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	FAvatar_UltimateTypeChart* TargetTypeChartRow;
 	FAvatar_AttackStruct AttackData;
 	FActorSpawnParameters SpawnInfo;
-	TArray<FName> ComplexAttackRowNames = AvatarComplexAttacksDataTable->GetRowNames();
 	FString ContextString, MoveTypeAsString, TargetTypeAsString;
-	int CurrentDamage = 1;
+	TArray<FName> ComplexAttackRowNames = AvatarComplexAttacksDataTable->GetRowNames();
 	ACharacter_Pathfinder* TargetAsCharacter = Cast<ACharacter_Pathfinder>(Target);
+	//int AttackerStat, DefenderStat;
+	int CurrentDamage = 1;
 
 	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Attack chosen: %s"), *AttackName);
 	for (int i = 0; i < ComplexAttackRowNames.Num(); i++) {
@@ -297,11 +313,11 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 		TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
 
 		if (AttackData.AttackEffectsOnTarget.Contains(EBattle_AttackEffects::LowerTargetHealthEqualsHigherDamageDealt)) {
-			//int VariableBasePower = FMath::CeilToInt((TargetAsCharacter->AvatarData.CurrentHealthPoints / TargetAsCharacter->AvatarData.BaseStats.HealthPoints) * 25);
 			float VariableBasePower = 1.f;
 			VariableBasePower = (float)TargetAsCharacter->AvatarData.CurrentHealthPoints / (float)TargetAsCharacter->AvatarData.BaseStats.HealthPoints;
 			VariableBasePower = 0.9 - VariableBasePower;
 			VariableBasePower = VariableBasePower * 100.f;
+			VariableBasePower += 10;
 
 			if (VariableBasePower < 1)
 				VariableBasePower = 1;
@@ -309,14 +325,19 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 			AttackData.BasePower = FMath::CeilToInt(VariableBasePower);
 		}
 
+		// Get either the Physical or Special stats, based on the move
+
 		// Standard Attack Damage Formula
 		CurrentDamage = FMath::CeilToInt(Attacker->AvatarData.BaseStats.Attack * AttackData.BasePower);
 		UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Attacker's Attack * Attack's Base Power is: %d"), CurrentDamage);
 		CurrentDamage = FMath::CeilToInt(CurrentDamage / TargetAsCharacter->AvatarData.BaseStats.Defence);
 		UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Current Damage / Defender's Defence is: %d"), CurrentDamage);
 		//CurrentDamage = FMath::CeilToInt((Attacker->AvatarData.BaseStats.Power) * CurrentDamage);
-		CurrentDamage = FMath::CeilToInt(CurrentDamage / 6);
-		UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Current Damage / 6 is: %d"), CurrentDamage);
+		//CurrentDamage = FMath::CeilToInt(CurrentDamage / 2);
+		//UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Current Damage / 2 is: %d"), CurrentDamage);
+
+		// Get the averages of the attacker' and defender's combat stats and use them in the damage calculation
+		// Clamp the value between 0.5 and 1.5 so we can use it as a multiplier
 
 		// Compare each Move type against the Target type
 		for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
@@ -327,6 +348,20 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 			// 0.5x Damage
 			else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
 				CurrentDamage = CurrentDamage / 2;
+		}
+
+		// Increase elemental damage against Soaked targets
+		// (Simple attacks are non-elemental)
+		if (AttackData.Type != EAvatar_Types::E_None) {
+			// Get the Soaking status
+			FAvatar_StatusEffect* SoakStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Soaking", ContextString);
+			//if (TargetAsCharacter->CurrentStatusEffectsArray.Contains(*SoakStatus)) {
+			for (int i = 0; i < TargetAsCharacter->CurrentStatusEffectsArray.Num(); i++) {
+				if (TargetAsCharacter->CurrentStatusEffectsArray[i] == *SoakStatus) {
+					CurrentDamage += CurrentDamage * 0.5;
+					break;
+				}
+			}
 		}
 
 		// Ensure that at least 1 damage is dealt

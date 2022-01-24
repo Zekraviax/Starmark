@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "Engine/SkeletalMesh.h"
+#include "Engine/StaticMesh.h"
 #include "Materials/Material.h"
 
 #include "Starmark_Variables.generated.h"
@@ -120,7 +122,6 @@ enum class E_GridTile_Properties : uint8
 };
 
 
-
 //------------------------- Battle
 UENUM(BlueprintType)
 enum class EBattle_AttackPatterns : uint8
@@ -164,9 +165,13 @@ enum class EBattle_AttackEffects : uint8
 	AddDrowningStatus,
 	AddStoneSkinStatus,
 	AddBleedStatus,
+	AddSoakStatus,
+	AddSpellboundStatus,
 	// Other
 	KnockbackTarget,
 	NoFriendlyFire,
+	RefundManaPointsPerTargetHit,
+	TransferManaPoints,
 	// Change Grid Tile Properties
 	SpawnWall,
 	SpawnHurricane,
@@ -175,6 +180,17 @@ enum class EBattle_AttackEffects : uint8
 	AddPropertyFire,
 	// Alternative Attack Functions/Properties
 	LowerTargetHealthEqualsHigherDamageDealt,
+};
+
+
+// UI
+UENUM(BlueprintType)
+enum class E_RightClickMenu_Commands : uint8
+{
+	Cancel,
+	EditAvatar,
+	EquipAvatar,
+	UnequipAvatar,
 };
 
 
@@ -471,16 +487,15 @@ struct STARMARK_API FAvatar_StatusEffect : public FTableRowBase
 		TurnsRemaining = InTurnsRemaining;
 	}
 
-	bool operator==(const FAvatar_StatusEffect& OtherStatusEffect)
+	bool operator==(const FAvatar_StatusEffect& OtherStatusEffect) const
 	{
 		return (Name == OtherStatusEffect.Name &&
 				Image == OtherStatusEffect.Image &&
 				Description == OtherStatusEffect.Description &&
-				MaximumTurns == OtherStatusEffect.MaximumTurns &&
-				TurnsRemaining == OtherStatusEffect.TurnsRemaining &&
 				SpecialFunctionsActor == OtherStatusEffect.SpecialFunctionsActor);
 	}
 };
+
 
 
 USTRUCT(BlueprintType)
@@ -598,8 +613,26 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	FAvatar_Size Size;
 
 	// 3D Model
-	// Material
-	// Default Colour
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
+	//UStaticMesh* StaticMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
+	USkeletalMesh* SkeletalMesh;
+
+	// Dyable Material
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
+	UMaterial* DyableMaterial;
+
+	// Colours
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
+	TArray<FLinearColor> DefaultColours;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
+	TArray<FLinearColor> CurrentColours;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
+	int DyableColourCount;
+
 	// Animations
 	// Menu Image(s)
 
@@ -638,6 +671,11 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
 	int IndexInPlayerLibrary;
 
+	// Fetch all the attacks from the datatable when the battle starts,
+	// not when the avatar is created or edited
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
+	TArray<FName> CurrentEquippedAttackNames;
+
 	FAvatar_Struct()
 	{
 		AvatarName = "Default";
@@ -652,6 +690,9 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		MaximumActionPoints = 1;
 		CurrentActionPoints = 1;
 		SameTypeAttackBonusMultiplier = 150;
+		SkeletalMesh = nullptr;
+		DyableMaterial = nullptr;
+		DyableColourCount = 0;
 		EncyclopediaNumber = 0;
 		Lore = "Default";
 		OccupiedTiles.AddUnique(FIntPoint(0, 0));

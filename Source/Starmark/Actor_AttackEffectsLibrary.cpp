@@ -59,9 +59,25 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 		if (Cast<ACharacter_Pathfinder>(Target))
 			Attack_AddBleed(Attacker, Cast<ACharacter_Pathfinder>(Target));
 		break;
+	case (EBattle_AttackEffects::AddSoakStatus):
+		if (Cast<ACharacter_Pathfinder>(Target))
+			Attack_AddSoak(Attacker, Cast<ACharacter_Pathfinder>(Target));
+		break;
+	case (EBattle_AttackEffects::AddSpellboundStatus):
+		if (Cast<ACharacter_Pathfinder>(Target))
+			Attack_AddSpellbound(Attacker, Cast<ACharacter_Pathfinder>(Target));
+		break;
 	case (EBattle_AttackEffects::KnockbackTarget):
 		if (Cast<ACharacter_Pathfinder>(Target))
 			Attack_KnockbackTarget(Attacker, Cast<ACharacter_Pathfinder>(Target));
+		break;
+	case (EBattle_AttackEffects::RefundManaPointsPerTargetHit):
+		if (Cast<ACharacter_Pathfinder>(Target))
+			Attack_RefundMana(Attacker);
+		break;
+	case (EBattle_AttackEffects::TransferManaPoints):
+		if (Cast<ACharacter_Pathfinder>(Target))
+			Attack_TransferMana(Attacker, Cast<ACharacter_Pathfinder>(Target));
 		break;
 	case (EBattle_AttackEffects::SpawnWall):
 		if (Cast<AActor_GridTile>(Target))
@@ -163,6 +179,47 @@ void AActor_AttackEffectsLibrary::Attack_AddBleed_Implementation(ACharacter_Path
 }
 
 
+void AActor_AttackEffectsLibrary::Attack_AddSoak_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
+{
+	FString ContextString;
+	FAvatar_StatusEffect* SoakStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Soaking", ContextString);
+
+	//if (IsValid(StatusEffectsLibrary_Class)) {
+	//	if (!IsValid(StatusEffectsLibrary_Reference)) {
+	//		FActorSpawnParameters SpawnInfo;
+	//		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
+	//	}
+
+	//	StatusEffectsLibrary_Reference->OnStatusEffectApplied(Defender, *SoakStatus);
+	//}
+
+	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
+		"Soaking",
+		SoakStatus->Image,
+		SoakStatus->Description,
+		SoakStatus->MaximumTurns,
+		SoakStatus->TurnsRemaining)
+	);
+}
+
+
+void AActor_AttackEffectsLibrary::Attack_AddSpellbound_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
+{
+	FString ContextString;
+	FAvatar_StatusEffect* SpellboundStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Spellbound", ContextString);
+
+	if (IsValid(StatusEffectsLibrary_Class)) {
+		FActorSpawnParameters SpawnInfo;
+		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
+
+		StatusEffectsLibrary_Reference->RememberedAvatarOne = Attacker;
+		StatusEffectsLibrary_Reference->RememberedAvatarTwo = Defender;
+
+		StatusEffectsLibrary_Reference->OnStatusEffectApplied(Defender, *SpellboundStatus);
+	}
+}
+
+
 // ------------------------- Other
 void AActor_AttackEffectsLibrary::Attack_KnockbackTarget_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
 {
@@ -176,6 +233,28 @@ void AActor_AttackEffectsLibrary::Attack_KnockbackTarget_Implementation(ACharact
 	KnockbackVector = FVector((KnockbackVector.X + Defender->GetActorLocation().X), (KnockbackVector.Y + Defender->GetActorLocation().Y), Defender->GetActorLocation().Z);
 
 	Defender->SetActorLocation(FVector(KnockbackVector.X * 1, KnockbackVector.Y * 1, Defender->GetActorLocation().Z), true);
+}
+
+
+void AActor_AttackEffectsLibrary::Attack_RefundMana_Implementation(ACharacter_Pathfinder* Attacker)
+{
+	int RefundAmount = FMath::CeilToInt(Attacker->CurrentSelectedAttack.ManaCost / Attacker->CurrentSelectedAttack.BaseRange);
+
+	Attacker->AvatarData.CurrentManaPoints += RefundAmount;
+
+	if (Attacker->AvatarData.CurrentManaPoints > Attacker->AvatarData.BaseStats.ManaPoints)
+		Attacker->AvatarData.CurrentManaPoints = Attacker->AvatarData.BaseStats.ManaPoints;
+}
+
+
+void AActor_AttackEffectsLibrary::Attack_TransferMana_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
+{
+	int ManaToTransfer = 0;
+
+	ManaToTransfer = FMath::CeilToInt(Attacker->AvatarData.CurrentManaPoints / 2);
+	Attacker->AvatarData.CurrentManaPoints -= ManaToTransfer;
+
+	Defender->AvatarData.CurrentManaPoints += ManaToTransfer;
 }
 
 

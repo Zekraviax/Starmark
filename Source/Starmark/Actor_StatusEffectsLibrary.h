@@ -41,6 +41,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int RememberedVariableOne = 0;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ACharacter_Pathfinder* RememberedAvatarOne = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ACharacter_Pathfinder* RememberedAvatarTwo = nullptr;
+
 
 // Functions
 // --------------------------------------------------
@@ -48,6 +54,10 @@ public:
 	// Replicated functions can't have return values
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void OnStatusEffectApplied(ACharacter_Pathfinder* AffectedAvatar, FAvatar_StatusEffect StatusEffectReference);
+
+	// On Start-of-turn
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void OnStatusEffectStartOfTurn(ACharacter_Pathfinder* AffectedAvatar, FAvatar_StatusEffect StatusEffectReference);
 
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void OnStatusEffectRemoved(ACharacter_Pathfinder* AffectedAvatar, FAvatar_StatusEffect StatusEffectReference);

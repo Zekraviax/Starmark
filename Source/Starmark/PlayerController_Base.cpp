@@ -58,11 +58,6 @@ void APlayerController_Base::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 
 	SetBattleWidgetVariables();
-
-	// Set cursor location
-	//FVector mouseLocation, mouseRotation;
-	//DeprojectMousePositionToWorld(mouseLocation, mouseRotation);
-	//CursorLocationSnappedToGrid = mouseLocation.GridSnap(200.f);
 }
 
 
@@ -157,27 +152,22 @@ void APlayerController_Base::Server_GetDataFromProfile_Implementation()
 
 void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
-	// Check all overlapping actors
-	//TArray<AActor*> OverlappingActors;
-	//AttackTraceActor->GetOverlappingActors(OverlappingActors);
-	//CurrentSelectedAvatar->AttackTraceActor->GetOverlappingActors(OverlappingActors);
-
-	//for (int i = 0; i < OverlappingActors.Num(); i++) {
-	//	UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / OverlappingActor is: %s"), *OverlappingActors[i]->GetFullName());
-	//}
-
 	if (CurrentSelectedAvatar->CurrentSelectedAttack.Name != "Default" &&
 		CurrentSelectedAvatar->CurrentSelectedAttack.Name != "None" &&
+		CurrentSelectedAvatar->CurrentSelectedAttack.Name != "---" &&
 		CurrentSelectedAvatar->ValidAttackTargetsArray.Num() > 0) {
+
+		// Subtract attack's MP cost
+		CurrentSelectedAvatar->AvatarData.CurrentManaPoints -= CurrentSelectedAvatar->CurrentSelectedAttack.ManaCost;
+
 		if (ClickedActor &&
 			CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::AttackClickedAvatar) {
 			// If we're attacking, and we clicked on a valid target in-range, launch an attack
 			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Launch attack against ClickedActor"));
 			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / ClickedActor is: %s"), *ClickedActor->GetFullName());
-
+			
 			if (Cast<ACharacter_Pathfinder>(ClickedActor)) {
-				if (CurrentSelectedAvatar != ClickedActor &&
-					CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(ClickedActor)) {
+				if (CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(ClickedActor)) {
 					CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(ClickedActor));
 					Client_SendEndOfTurnCommandToServer();
 				}
@@ -264,13 +254,11 @@ void APlayerController_Base::Player_OnAvatarTurnChanged_Implementation()
 		BattleWidgetReference->EndTurnCommandButton->SetIsEnabled(IsCurrentlyActingPlayer);
 	}
 
-	//CurrentSelectedAvatar->ValidAttackTargetsArray.Empty();
-
 	SetBattleWidgetVariables();
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
 	for (int j = 0; j < GridTilesArray.Num(); j++) {
-		Cast<AActor_GridTile>(GridTilesArray[j])->DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::White);
+		Cast<AActor_GridTile>(GridTilesArray[j])->UpdateTileColour(E_GridTile_ColourChangeContext::Normal);
 		Cast<AActor_GridTile>(GridTilesArray[j])->ChangeColourOnMouseHover = true;
 	}
 }

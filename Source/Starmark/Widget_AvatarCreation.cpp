@@ -172,7 +172,7 @@ void UWidget_AvatarCreation::OnMoveOneDropDownChanged(FString Option)
 		} else {
 			for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
 				if (Option == SimpleAttacksRowNames[i].ToString()) {
-					CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
+					//CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
 					MoveOneNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
 					break;
 				}
@@ -180,7 +180,7 @@ void UWidget_AvatarCreation::OnMoveOneDropDownChanged(FString Option)
 
 			for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
 				if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
-					CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
+					//CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
 					MoveOneNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
 					break;
 				}
@@ -199,7 +199,7 @@ void UWidget_AvatarCreation::OnMoveTwoDropDownChanged(FString Option)
 
 		for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
 			if (Option == SimpleAttacksRowNames[i].ToString()) {
-				CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
+				//CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
 				MoveTwoNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
 				break;
 			}
@@ -207,7 +207,7 @@ void UWidget_AvatarCreation::OnMoveTwoDropDownChanged(FString Option)
 
 		for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
 			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
-				CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
+				//CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
 				MoveTwoNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
 				break;
 			}
@@ -225,7 +225,7 @@ void UWidget_AvatarCreation::OnMoveThreeDropDownChanged(FString Option)
 
 		for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
 			if (Option == SimpleAttacksRowNames[i].ToString()) {
-				CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
+				//CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
 				MoveThreeNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
 				break;
 			}
@@ -233,7 +233,7 @@ void UWidget_AvatarCreation::OnMoveThreeDropDownChanged(FString Option)
 
 		for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
 			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
-				CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
+				//CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
 				MoveThreeNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
 				break;
 			}
@@ -244,14 +244,14 @@ void UWidget_AvatarCreation::OnMoveThreeDropDownChanged(FString Option)
 
 void UWidget_AvatarCreation::OnMoveFourDropDownChanged(FString Option)
 {
+	FString ContextString;
+
 	if (Option.Len() == 0 || Option == "")
 		MoveFourNameText->SetText(FText::FromString("None"));
 	else {
-		FString ContextString;
-
 		for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
 			if (Option == SimpleAttacksRowNames[i].ToString()) {
-				CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
+				//CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
 				MoveFourNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
 				break;
 			}
@@ -259,7 +259,7 @@ void UWidget_AvatarCreation::OnMoveFourDropDownChanged(FString Option)
 
 		for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
 			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
-				CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
+				//CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
 				MoveFourNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
 				break;
 			}
@@ -277,6 +277,45 @@ void UWidget_AvatarCreation::OnSaveButtonPressed()
 		CurrentAvatar.IndexInPlayerLibrary = PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num() + 6;
 		PlayerStateReference->PlayerProfileReference->AvatarLibrary.Add(CurrentAvatar);
 	} else {
+		// Clear out old moves, then add new moves
+		FString ContextString;
+		FAvatar_AttackStruct CurrentAttack;
+		CurrentAvatar.CurrentAttacks.Empty();
+
+		for (int i = 0; i <= 3; i++) {
+			for (int j = 0; j < SimpleAttacksRowNames.Num(); j++) {
+				CurrentAttack = *SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(SimpleAttacksRowNames[i]), ContextString);
+				if (CurrentAttack.Name == MoveOneNameText->GetText().ToString() ||
+					CurrentAttack.Name == MoveTwoNameText->GetText().ToString() ||
+					CurrentAttack.Name == MoveThreeNameText->GetText().ToString() ||
+					CurrentAttack.Name == MoveFourNameText->GetText().ToString()) {
+					CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(SimpleAttacksRowNames[j], ContextString), i);
+					break;
+				}
+			}
+
+			// Check if no simple attack was found before iterating through the complex attacks
+			if (!CurrentAvatar.CurrentAttacks.IsValidIndex(0)) {
+				for (int k = 0; k < ComplexAttacksRowNames.Num(); k++) {
+					CurrentAttack = *ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[k]), ContextString);
+
+					if (CurrentAttack.Name == MoveOneNameText->GetText().ToString() ||
+						CurrentAttack.Name == MoveTwoNameText->GetText().ToString() ||
+						CurrentAttack.Name == MoveThreeNameText->GetText().ToString() ||
+						CurrentAttack.Name == MoveFourNameText->GetText().ToString()) {
+						CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(ComplexAttacksRowNames[k], ContextString), i);
+					}
+				}
+			}
+
+			// If no simple or complex attack was found, add a null entry
+			if (!CurrentAvatar.CurrentAttacks.IsValidIndex(0)) {
+				FAvatar_AttackStruct* NullAttack = new FAvatar_AttackStruct();
+				CurrentAvatar.CurrentAttacks.Insert(*NullAttack, i);
+			}
+		}
+
+		// Update the avatar if it's in the player's team
 		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
 			if (PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
 				PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i] = CurrentAvatar;
@@ -284,6 +323,7 @@ void UWidget_AvatarCreation::OnSaveButtonPressed()
 			}
 		}
 
+		// Update the avatar if it's in the player's library
 		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num(); i++) {
 			if (PlayerStateReference->PlayerProfileReference->AvatarLibrary[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
 				PlayerStateReference->PlayerProfileReference->AvatarLibrary[i] = CurrentAvatar;

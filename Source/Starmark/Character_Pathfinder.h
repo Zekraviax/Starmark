@@ -15,6 +15,7 @@
 
 
 // Forward Declarations
+class AActor_GridTile;
 class APlayerController_Base;
 class UWidgetComponent_AvatarBattleData;
 
@@ -91,18 +92,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int MultiplayerControllerUniqueID;
 
-// ------------------------- Other
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Other")
-	APlayerController_Base* PlayerControllerReference;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	UStaticMeshComponent* AttackTraceActor;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<UStaticMesh*> AttackTraceStaticMeshes;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int AttackRotationSnapToDegrees = 90;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	TArray<AActor_GridTile*> CurrentPathTiles;
+
+// ------------------------- Other
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	APlayerController_Base* PlayerControllerReference;
 
 // Functions
 // --------------------------------------------------

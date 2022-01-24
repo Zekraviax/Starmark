@@ -206,21 +206,48 @@ void ACharacter_Pathfinder::ShowAttackRange()
 	AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	AttackTraceActor->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
-	// Center the attack component on the avatar
+	// Center the attack component on a single tile
 	if (CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::Self ||
 		CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::SingleTile) {
-		// Set the StaticMesh
-		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
-			if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
-				AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
-				break;
+		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		AttackTraceActor->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+		FVector OriginCoordinates = FVector::ZeroVector;
+		ValidAttackTargetsArray.Empty();
+
+		// Get the current mouse/avatar position
+		if (CurrentSelectedAttack.AttachAttackTraceActorToMouse)
+			OriginCoordinates = PlayerControllerReference->CursorLocationSnappedToGrid;
+		else
+			OriginCoordinates = GetActorLocation().GridSnap(200.f);
+
+		// Get all of the tiles and avatars around the origin coordinates
+		TArray<AActor*> GridTilesArray, AvatarsArray, ActorsArray;
+
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), AvatarsArray);
+
+		ActorsArray.Append(GridTilesArray);
+		ActorsArray.Append(AvatarsArray);
+
+		for (int i = 0; i < ActorsArray.Num(); i++) {
+			if (ActorsArray[i]->GetActorLocation().Equals(OriginCoordinates, 100.f)) {
+				if (Cast<AActor_GridTile>(ActorsArray[i])) {
+					Cast<AActor_GridTile>(ActorsArray[i])->ChangeColourOnMouseHover = false;
+					Cast<AActor_GridTile>(ActorsArray[i])->UpdateTileColour(E_GridTile_ColourChangeContext::WithinAttackRange);
+
+					if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::SingleTile)
+						ValidAttackTargetsArray.Add(ActorsArray[i]);
+				} else if (Cast<ACharacter_Pathfinder>(ActorsArray[i])) {
+					ValidAttackTargetsArray.Add(ActorsArray[i]);
+				}
+			} else {
+				if (Cast<AActor_GridTile>(ActorsArray[i])) {
+					Cast<AActor_GridTile>(ActorsArray[i])->ChangeColourOnMouseHover = true;
+					Cast<AActor_GridTile>(ActorsArray[i])->UpdateTileColour(E_GridTile_ColourChangeContext::Normal);
+				}
 			}
 		}
-
-		AttackTraceActor->SetRelativeLocation(FVector(-50, 0, -100));
-		AttackTraceActor->SetRelativeScale3D(FVector(0.3f, 0.3f, 0.3f));
-
-
 	} else {
 		// Circle/Sphere Trace
 		if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Circle ||

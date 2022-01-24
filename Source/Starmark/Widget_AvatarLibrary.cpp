@@ -1,5 +1,6 @@
 #include "Widget_AvatarLibrary.h"
 
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/PanelWidget.h"
 #include "Components/UniformGridSlot.h"
@@ -9,9 +10,8 @@
 #include "PlayerController_Lobby.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_PlayerState.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
-#include "WidgetComponent_Avatar.h"
 #include "Widget_AvatarCreation.h"
+#include "WidgetComponent_Avatar.h"
 
 
 // ------------------------- Widget
@@ -38,7 +38,12 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 
 						AvatarWidgetComponent_Reference->PairedWidget = this;
 						AvatarWidgetComponent_Reference->ApplyNewAvatarData(PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i]);
+
 						AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
+
+						AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::UnequipAvatar);
+						AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
+						AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
 						break;
 					}
 				}
@@ -61,6 +66,11 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 
 			AvatarWidgetComponent_Reference->PairedWidget = this;
 			AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
+
+			AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EquipAvatar);
+			AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
+			AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
+
 			AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Row, Column);
 		}
 

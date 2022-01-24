@@ -12,6 +12,7 @@
 
 // Forward Declarations
 class UWidget_AvatarCreation;
+class UWidgetComponent_RightClickMenu;
 
 
 // Delegates
@@ -54,18 +55,27 @@ public:
 	int IndexInPlayerTeam = -1;
 
 // ------------------------- References
-	UPROPERTY()
-	UUserWidget* PairedWidget;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UWidget_AvatarCreation> AvatarCreationWidget_Class;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidget_AvatarCreation* AvatarCreationWidget_Reference;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWidgetComponent_RightClickMenu> RightClickMenu_Class;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UWidgetComponent_RightClickMenu* RightClickMenu_Reference;
+
 // ------------------------- Widget
+	UPROPERTY()
+	UUserWidget* PairedWidget;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	E_AvatarWidgetComponent_Function CurrentFunction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<E_RightClickMenu_Commands> RightClickMenuCommands;
 
 // ------------------------- Delegates
 	UPROPERTY()

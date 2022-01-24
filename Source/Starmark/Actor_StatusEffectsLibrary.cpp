@@ -38,8 +38,38 @@ void AActor_StatusEffectsLibrary::OnStatusEffectApplied_Implementation(ACharacte
 		StatusEffectReference.SpecialFunctionsActor = this;
 
 		AffectedAvatar->CurrentStatusEffectsArray.Add(StatusEffectReference);
+	} else if (StatusEffectReference.Name == FString("Spellbound")) {
+		StatusEffectReference.SpecialFunctionsActor = this;
+		AffectedAvatar->CurrentStatusEffectsArray.Add(StatusEffectReference);
 	} else {
+		// Do nothing
+	}
+}
 
+
+void AActor_StatusEffectsLibrary::OnStatusEffectStartOfTurn_Implementation(ACharacter_Pathfinder* AffectedAvatar, FAvatar_StatusEffect StatusEffectReference)
+{
+	if (StatusEffectReference.Name == FString("Paralyzed")) {
+		AffectedAvatar->AvatarData.CurrentTileMoves = FMath::CeilToInt(AffectedAvatar->AvatarData.MaximumTileMoves / 2);
+	} else if (StatusEffectReference.Name == FString("Spellbound")) {
+		int HealthToTransfer = 0;
+		int ManaToTransfer = 0;
+
+		HealthToTransfer = FMath::CeilToInt(RememberedAvatarTwo->AvatarData.BaseStats.HealthPoints * 0.2);
+		ManaToTransfer = FMath::CeilToInt(RememberedAvatarTwo->AvatarData.BaseStats.ManaPoints * 0.2);
+		RememberedAvatarTwo->AvatarData.CurrentHealthPoints -= HealthToTransfer;
+		RememberedAvatarTwo->AvatarData.CurrentManaPoints -= ManaToTransfer;
+
+		RememberedAvatarOne->AvatarData.CurrentHealthPoints += HealthToTransfer;
+		if (RememberedAvatarOne->AvatarData.CurrentHealthPoints > RememberedAvatarOne->AvatarData.BaseStats.HealthPoints)
+			RememberedAvatarOne->AvatarData.CurrentHealthPoints = RememberedAvatarOne->AvatarData.BaseStats.HealthPoints;
+
+		RememberedAvatarOne->AvatarData.CurrentManaPoints += ManaToTransfer;
+		if (RememberedAvatarOne->AvatarData.CurrentManaPoints > RememberedAvatarOne->AvatarData.BaseStats.ManaPoints)
+			RememberedAvatarOne->AvatarData.CurrentManaPoints = RememberedAvatarOne->AvatarData.BaseStats.ManaPoints;
+	}
+	else {
+		// Do nothing
 	}
 }
 
@@ -48,10 +78,11 @@ void AActor_StatusEffectsLibrary::OnStatusEffectRemoved_Implementation(ACharacte
 {
 	if (StatusEffectReference.Name == FString("Stone Skin")) {
 		AffectedAvatar->AvatarData.BaseStats.Defence -= RememberedVariableOne;
-		StatusEffectReference.SpecialFunctionsActor->Destroy();
-
-		AffectedAvatar->CurrentStatusEffectsArray.Remove(StatusEffectReference);
 	} else {
-
+		// Do nothing
 	}
+
+	StatusEffectReference.SpecialFunctionsActor->Destroy();
+
+	AffectedAvatar->CurrentStatusEffectsArray.Remove(StatusEffectReference);
 }

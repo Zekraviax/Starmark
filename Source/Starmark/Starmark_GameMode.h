@@ -29,13 +29,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarDataTable;
 
+// ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarSimpleAttacksDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarComplexAttacksDataTable;
 
-// ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<APlayerController_Base*> PlayerControllerReferences;
 
@@ -56,6 +56,9 @@ public:
 
 	UPROPERTY()
 	AActor_AttackEffectsLibrary* AttackEffectsLibrary_Reference;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* StatusEffectsDataTable;
 
 // ------------------------- Multiplayer
 	UPROPERTY()
