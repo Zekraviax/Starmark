@@ -25,12 +25,13 @@ void ACharacter_NonAvatarEntity::HurricaneOnSpawn()
 	AvatarBattleData_Component->DestroyComponent();
 	GetMesh()->DestroyComponent();
 
-	// Set important variables
+	// Set the Hitbox to overlap all actors
 	BoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	BoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
 	EntityType = E_NonAvatarEntity_EntityType::Hurricane;
 
-	// Draw-In all avatars by 1 tile
+	// Draw in all avatars one tile towards the center of the hurricane
 	FRotator KnockbackDirection = FRotator::ZeroRotator;
 	FVector KnockbackVector = FVector::ZeroVector;
 	TArray<AActor*> Avatars;
@@ -42,7 +43,7 @@ void ACharacter_NonAvatarEntity::HurricaneOnSpawn()
 			KnockbackDirection = UKismetMathLibrary::FindLookAtRotation(Avatar->GetActorLocation(), GetActorLocation());
 			KnockbackVector = KnockbackDirection.Vector();
 
-			// Multiply the number of tiles to knock the target back by 200
+			// Knockback distance = 125 * desired number of tiles
 			KnockbackVector.X = KnockbackVector.X * 125;
 			KnockbackVector.Y = KnockbackVector.Y * 125;
 			KnockbackVector = FVector((KnockbackVector.X + Avatar->GetActorLocation().X), (KnockbackVector.Y + Avatar->GetActorLocation().Y), Avatar->GetActorLocation().Z);

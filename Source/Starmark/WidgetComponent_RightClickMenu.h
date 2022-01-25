@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
+#include "Components/CanvasPanel.h"
 #include "Components/VerticalBox.h"
 #include "Starmark_Variables.h"
 
@@ -23,6 +24,9 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UVerticalBox* ButtonsVerticalBox;
 
@@ -45,4 +49,7 @@ public:
 // ------------------------- Widget
 	UFUNCTION()
 	void OnWidgetCreated();
+
+	UFUNCTION(BlueprintCallable)
+	FVector2D GetRightClickMenuPosition(UWidget* Widget);
 };

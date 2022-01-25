@@ -1,5 +1,6 @@
 #include "WidgetComponent_RightClickMenu.h"
 
+#include "Components/CanvasPanelSlot.h"
 #include "WidgetComponent_Avatar.h"
 #include "WidgetComponent_RightClickMenuButton.h"
 
@@ -10,18 +11,26 @@ void UWidgetComponent_RightClickMenu::OnWidgetCreated()
 		Commands.Add(E_RightClickMenu_Commands::Cancel);
 
 	if (IsValid(RightClickMenuButton_Class)) {
+		ButtonsVerticalBox->ClearChildren();
+
 		for (int i = 0; i < Commands.Num(); i++) {
 			RightClickMenuButton_Reference = CreateWidget<UWidgetComponent_RightClickMenuButton>(this, RightClickMenuButton_Class);
 			RightClickMenuButton_Reference->ButtonLabel->SetText(UEnum::GetDisplayValueAsText(Commands[i]));
+			
+			Cast<UCanvasPanelSlot>(RightClickMenuButton_Reference->RightClickMenuButton->Slot)->SetSize(FVector2D(256.f, 48.f));
+
 			ButtonsVerticalBox->AddChildToVerticalBox(RightClickMenuButton_Reference);
 		}
 	}
+	Cast<UCanvasPanelSlot>(ButtonsVerticalBox->Slot)->SetPosition(GetRightClickMenuPosition(OwnerWidget));
+}
 
-	//this->AddToViewport();
 
-	// Set position in Viewport
-	FGeometry OwnerGeometry = this->GetCachedGeometry();
-	//FVector2D Position = OwnerGeometry.AbsoluteToLocal(this->GetCachedGeometry().GetAbsolutePosition() + this->GetCachedGeometry().GetLocalSize() / 2.f);
-	FVector2D Position = GetCachedGeometry().AbsoluteToLocal(FVector2D(OwnerWidget->GetCachedGeometry().GetAbsolutePosition().X - (OwnerWidget->GetCachedGeometry().GetLocalSize().X / 2), (OwnerWidget->GetCachedGeometry().GetAbsolutePosition().Y)));
-	this->SetPositionInViewport(Position);
+FVector2D UWidgetComponent_RightClickMenu::GetRightClickMenuPosition(UWidget* Widget)
+{
+	FGeometry Geometry = this->GetCachedGeometry();
+	FVector2D WidgetAbsolutePosition = Widget->GetCachedGeometry().GetAbsolutePosition();
+	FVector2D Position = Geometry.AbsoluteToLocal(FVector2D(Widget->GetCachedGeometry().GetAbsolutePosition().X + Widget->GetCachedGeometry().GetLocalSize().X, Widget->GetCachedGeometry().GetAbsolutePosition().Y + Widget->GetCachedGeometry().GetLocalSize().Y / 2));
+
+	return Position;
 }

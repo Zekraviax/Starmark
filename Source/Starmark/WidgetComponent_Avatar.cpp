@@ -1,5 +1,6 @@
 #include "WidgetComponent_Avatar.h"
 
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/CanvasPanelSlot.h"
 #include "PlayerController_Lobby.h"
 #include "Widget_AvatarCreation.h"
@@ -40,19 +41,32 @@ void UWidgetComponent_Avatar::OnInteractButtonPressed()
 
 void UWidgetComponent_Avatar::OnRightMouseButtonDown()
 {
-	// Open the right click menu
-	if (IsValid(RightClickMenu_Class) &&
-		!IsValid(RightClickMenu_Reference)) {
-		RightClickMenu_Reference = CreateWidget<UWidgetComponent_RightClickMenu>(this, RightClickMenu_Class);
+	TArray<UUserWidget*> FoundRightClickMenuWidgets;
+	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundRightClickMenuWidgets, UWidgetComponent_RightClickMenu::StaticClass(), true);
+
+	if (FoundRightClickMenuWidgets.Num() > 0) {
+		for (int i = 0; i < FoundRightClickMenuWidgets.Num(); i++) {
+			if (i == 0)
+				RightClickMenu_Reference = Cast<UWidgetComponent_RightClickMenu>(FoundRightClickMenuWidgets[i]);
+			else
+				FoundRightClickMenuWidgets[i]->RemoveFromParent();
+		}
+	} else {
+		if (IsValid(RightClickMenu_Class))
+			RightClickMenu_Reference = CreateWidget<UWidgetComponent_RightClickMenu>(this, RightClickMenu_Class);
 	}
 
+
 	if (IsValid(RightClickMenu_Reference)) {
+		RightClickMenu_Reference->Commands.Empty();
 		RightClickMenu_Reference->Commands.Append(RightClickMenuCommands);
+
 		RightClickMenu_Reference->OwnerWidget = this;
-		RightClickMenu_Reference->OnWidgetCreated();
 
 		if (!RightClickMenu_Reference->IsInViewport())
 			RightClickMenu_Reference->AddToViewport();
+
+		RightClickMenu_Reference->OnWidgetCreated();
 	}
 
 	//if (AvatarCreationWidget_Class) {
