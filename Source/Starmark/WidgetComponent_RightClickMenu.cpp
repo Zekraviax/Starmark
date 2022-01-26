@@ -16,6 +16,8 @@ void UWidgetComponent_RightClickMenu::OnWidgetCreated()
 		for (int i = 0; i < Commands.Num(); i++) {
 			RightClickMenuButton_Reference = CreateWidget<UWidgetComponent_RightClickMenuButton>(this, RightClickMenuButton_Class);
 			RightClickMenuButton_Reference->ButtonLabel->SetText(UEnum::GetDisplayValueAsText(Commands[i]));
+			RightClickMenuButton_Reference->Command = Commands[i];
+			RightClickMenuButton_Reference->RightClickMenuWidget = this;
 			
 			Cast<UCanvasPanelSlot>(RightClickMenuButton_Reference->RightClickMenuButton->Slot)->SetSize(FVector2D(256.f, 48.f));
 

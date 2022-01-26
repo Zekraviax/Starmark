@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Materials/Material.h"
 #include "Starmark_Variables.h"
@@ -42,6 +43,9 @@ public:
 // ------------------------- Components
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* AvatarName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UImage* AvatarImage;
 
 // ------------------------- Avatars
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -97,4 +101,11 @@ public:
 
 	UFUNCTION()
 	void ApplyNewAvatarData(FAvatar_Struct NewAvatarData);
+
+// ------------------------- Right Click Menu
+	UFUNCTION()
+	void RightClickMenuFunction_EditAvatar();
+
+	//UFUNCTION()
+	//void RightClickMenuFunction_EquipAvatar();
 };

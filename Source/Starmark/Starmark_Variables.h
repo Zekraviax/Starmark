@@ -191,6 +191,7 @@ enum class E_RightClickMenu_Commands : uint8
 	EditAvatar,
 	EquipAvatar,
 	UnequipAvatar,
+	DeleteAvatar,
 };
 
 

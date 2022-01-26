@@ -45,6 +45,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnWidgetOpened();
 
+	UFUNCTION()
+	void UpdateAllAvatarsInTeam();
+
 // ------------------------- Delegates
 	UFUNCTION()
 	void BindAvatarCreatedDelegate(UWidgetComponent_Avatar* AvatarWidgetComponentReference);

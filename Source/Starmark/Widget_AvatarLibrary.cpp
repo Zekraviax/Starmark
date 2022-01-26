@@ -8,6 +8,7 @@
 #include "Materials/Material.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "PlayerController_Lobby.h"
+#include "Styling/SlateBrush.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_PlayerState.h"
 #include "Widget_AvatarCreation.h"
@@ -28,6 +29,7 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 		// Populate Avatar Team Slots
 		FoundChildWidgetComponents = Cast<UPanelWidget>(LibraryWidgetTree->RootWidget)->GetAllChildren();
 
+		// ?
 		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
 			for (int j = 0; j < FoundChildWidgetComponents.Num(); j++) {
 				if (Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]) ) {
@@ -41,9 +43,14 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 
 						AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
 
-						AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::UnequipAvatar);
-						AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
+						AvatarWidgetComponent_Reference->RightClickMenuCommands.Empty();
+
+						if (AvatarWidgetComponent_Reference->AvatarData.AvatarName != "None") {
+							AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
+							AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::UnequipAvatar);
+						}
 						AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
+
 						break;
 					}
 				}
@@ -53,7 +60,7 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 		// Clear old widgets
 		AvatarLibraryUniformGridPanel->ClearChildren();
 
-		// Populate Avatar Library
+		// Populate the Avatar Library (Avatars not currently in the players' team)
 		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num(); i++) {
 			AvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
 			AvatarWidgetComponent_Reference->ApplyNewAvatarData(PlayerStateReference->PlayerProfileReference->AvatarLibrary[i]);
@@ -111,6 +118,49 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 	// Bind AvatarSlotChangedDelegate
 	if (!Cast<APlayerController_Lobby>(GetWorld()->GetFirstPlayerController())->OnAvatarChangedSlotDelegate.Contains(this, FName("OnAvatarChangedSlotDelegateBroadcast")))
 		Cast<APlayerController_Lobby>(GetWorld()->GetFirstPlayerController())->OnAvatarChangedSlotDelegate.AddDynamic(this, &UWidget_AvatarLibrary::OnAvatarChangedSlotDelegateBroadcast);
+}
+
+
+void UWidget_AvatarLibrary::UpdateAllAvatarsInTeam()
+{
+	UWidgetTree* LibraryWidgetTree = this->WidgetTree;
+	TArray<UWidget*> FoundChildWidgetComponents;
+	TArray<UTexture*> QuestionMarkMaterials;
+	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
+	FoundChildWidgetComponents = Cast<UPanelWidget>(LibraryWidgetTree->RootWidget)->GetAllChildren();
+	QuestionMarkMaterial->GetUsedTextures(QuestionMarkMaterials, EMaterialQualityLevel::Medium, true, ERHIFeatureLevel::ES3_1, true);
+
+	for (int j = 0; j < FoundChildWidgetComponents.Num(); j++) {
+		if (Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j])) {
+			UWidgetComponent_Avatar* AvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
+
+			if (AvatarWidgetComponent_Reference->IndexInPlayerTeam >= 0) {
+				bool FoundAvatarInSlot = false;
+				for (int k = 0; k < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); k++) {
+					if (PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[k].IndexInPlayerLibrary == AvatarWidgetComponent_Reference->IndexInPlayerTeam) {
+						FoundAvatarInSlot = true;
+						AvatarWidgetComponent_Reference->AvatarData = PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[k];
+						break;
+					}
+				}
+
+				AvatarWidgetComponent_Reference->RightClickMenuCommands.Empty();	
+
+				if (FoundAvatarInSlot) {
+					AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
+					AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::UnequipAvatar);
+
+					AvatarWidgetComponent_Reference->UpdateWidgetMaterials();
+				} else {
+					AvatarWidgetComponent_Reference->AvatarData = FAvatar_Struct();
+					AvatarWidgetComponent_Reference->AvatarName->SetText(FText::FromString("Empty Slot"));
+					AvatarWidgetComponent_Reference->AvatarImage->SetBrushFromTexture(Cast<UTexture2D>(QuestionMarkMaterials[0]), true);
+				}
+
+				AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
+			}
+		}
+	}
 }
 
 
