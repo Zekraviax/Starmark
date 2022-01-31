@@ -46,6 +46,10 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 	PlayerControllerReferences.Add(NewPlayerController);
 	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / PlayerControllerReferences found: %d"), PlayerControllerReferences.Num());
 
+	// Clear Combat Log
+	if (CombatLogTextArray.Num() > 0)
+		CombatLogTextArray.Empty();
+
 	// When all players have joined, begin running the functions needed to start the battle
 	if (ExpectedPlayers >= 2 && PlayerControllerReferences.Num() >= ExpectedPlayers) {
 		UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / Call Server_BeginMultiplayerBattle()"));
@@ -59,8 +63,7 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 
 void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 {
-	AStarmark_GameState* GameStateReference = nullptr;
-	GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		PlayerControllerReferences[i]->Server_GetDataFromProfile();
@@ -88,11 +91,8 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 
 void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementation(APlayerController_Base* PlayerControllerReference)
 {
-	AStarmark_GameState* GameStateReference = nullptr;
-	GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
-
+	//AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 	TArray<FAvatar_Struct> CurrentPlayerTeam = Cast<UStarmark_GameInstance>(PlayerControllerReferences[0]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam;
-
 	int SpawnedAvatarCount = 0;
 
 	for (int j = CurrentPlayerTeam.Num() - 1; j >= 0; j--) {
@@ -144,12 +144,8 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		}
 
 		Server_UpdateAllAvatarDecals();
-
-		for (int i = 0; i < 1; i++) {
-
-		}
-
-		// Set first player to act
+		
+		// Set first Avatar's controller as the currently acting player
 		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
 	}
 }
@@ -184,7 +180,7 @@ void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Base* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData)
 {
 	FString ContextString;
-	FActorSpawnParameters SpawnInfo;
+	const FActorSpawnParameters SpawnInfo;
 	TArray<AActor*> FoundGridTileActors, ValidMultiplayerSpawnTiles;
 	TArray<FName> AvatarRowNames;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTileActors);
@@ -192,7 +188,7 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 
 	// Find all tiles that can spawn avatars in multiplayer battles
 	for (int i = 0; i < FoundGridTileActors.Num(); i++) {
-		AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(FoundGridTileActors[i]);
+		const AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(FoundGridTileActors[i]);
 
 		if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_PlayerAvatarSpawn) &&
 			GridTileReference->AssignedMultiplayerUniqueID == PlayerController->MultiplayerUniqueID &&
@@ -279,8 +275,6 @@ void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 
 void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinder* Attacker, AActor* Target, const FString& AttackName)
 {
-	FAvatar_UltimateTypeChart* MoveTypeChartRow;
-	FAvatar_UltimateTypeChart* TargetTypeChartRow;
 	FAvatar_AttackStruct AttackData;
 	FActorSpawnParameters SpawnInfo;
 	FString ContextString, MoveTypeAsString, TargetTypeAsString;
@@ -298,6 +292,9 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	}
 
 	if (IsValid(TargetAsCharacter) && AttackData.AttackCategory == EBattle_AttackCategories::Offensive) {
+		FAvatar_UltimateTypeChart* TargetTypeChartRow;
+		FAvatar_UltimateTypeChart* MoveTypeChartRow;
+		
 		// Check for the No Friendly Fire attack ability
 		if (AttackData.AttackEffectsOnTarget.Contains(EBattle_AttackEffects::NoFriendlyFire)) {
 			if (Attacker->MultiplayerControllerUniqueID == TargetAsCharacter->MultiplayerControllerUniqueID) {
@@ -325,7 +322,7 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 			AttackData.BasePower = FMath::CeilToInt(VariableBasePower);
 		}
 
-		// Get either the Physical or Special stats, based on the move
+		// To-Do: Get either the Physical or Special stats, based on the move
 
 		// Standard Attack Damage Formula
 		CurrentDamage = FMath::CeilToInt(Attacker->AvatarData.BaseStats.Attack * AttackData.BasePower);
@@ -355,7 +352,6 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 		if (AttackData.Type != EAvatar_Types::E_None) {
 			// Get the Soaking status
 			FAvatar_StatusEffect* SoakStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Soaking", ContextString);
-			//if (TargetAsCharacter->CurrentStatusEffectsArray.Contains(*SoakStatus)) {
 			for (int i = 0; i < TargetAsCharacter->CurrentStatusEffectsArray.Num(); i++) {
 				if (TargetAsCharacter->CurrentStatusEffectsArray[i] == *SoakStatus) {
 					CurrentDamage += CurrentDamage * 0.5;
@@ -373,6 +369,16 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 		// Subtract Health
 		AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(Attacker->PlayerControllerReference->PlayerState);
 		PlayerStateReference->Server_SubtractHealth_Implementation(TargetAsCharacter, CurrentDamage);
+
+		// Restore half of the heal if the attacker has Vampirism
+		FAvatar_StatusEffect* VampirismStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Vampirism", ContextString);
+		for (int i = 0; i < TargetAsCharacter->CurrentStatusEffectsArray.Num(); i++) {
+			if (TargetAsCharacter->CurrentStatusEffectsArray[i] == *VampirismStatus) {
+				//CurrentDamage += CurrentDamage * 0.5;
+				PlayerStateReference->Server_AddHealth(Attacker, FMath::CeilToInt(CurrentDamage * 0.5));
+				break;
+			}
+		}
 	}
 
 

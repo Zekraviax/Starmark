@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString CurrentTurnOrderText;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
+	bool AvatarDiedThisTurn = false;
+
 // Functions
 // --------------------------------------------------
 

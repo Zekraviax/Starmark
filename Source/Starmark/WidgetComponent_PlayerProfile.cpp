@@ -8,7 +8,7 @@
 // ------------------------- Components
 void UWidgetComponent_PlayerProfile::OnSelectProfileButtonPressed()
 {
-	UPlayer_SaveData* ReturnProfile = Cast<UPlayer_SaveData>(UGameplayStatics::LoadGameFromSlot(ProfileNameText->GetText().ToString(), 0));
+	//UPlayer_SaveData* ReturnProfile = Cast<UPlayer_SaveData>(UGameplayStatics::LoadGameFromSlot(ProfileNameText->GetText().ToString(), 0));
 
 	// Set the profile in the PlayerStateReference in blueprints (for now)
 

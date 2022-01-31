@@ -123,8 +123,7 @@ void APlayerController_Base::OnRepNotify_CurrentSelectedAvatar_Implementation()
 		} else {
 			GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.2f, false);
 		}
-	}
-	else {
+	} else {
 		GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Base::OnRepNotify_CurrentSelectedAvatar, 0.2f, false);
 	}
 }

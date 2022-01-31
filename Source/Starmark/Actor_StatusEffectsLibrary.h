@@ -50,7 +50,6 @@ public:
 
 // Functions
 // --------------------------------------------------
-
 	// Replicated functions can't have return values
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void OnStatusEffectApplied(ACharacter_Pathfinder* AffectedAvatar, FAvatar_StatusEffect StatusEffectReference);

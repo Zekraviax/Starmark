@@ -35,15 +35,14 @@ void AActor_StatusEffectsLibrary::OnStatusEffectApplied_Implementation(ACharacte
 	if (StatusEffectReference.Name == FString("Stone Skin")) {
 		RememberedVariableOne = FMath::CeilToInt(AffectedAvatar->AvatarData.BaseStats.Defence * 1.5);
 		AffectedAvatar->AvatarData.BaseStats.Defence += RememberedVariableOne;
-		StatusEffectReference.SpecialFunctionsActor = this;
 
-		AffectedAvatar->CurrentStatusEffectsArray.Add(StatusEffectReference);
-	} else if (StatusEffectReference.Name == FString("Spellbound")) {
-		StatusEffectReference.SpecialFunctionsActor = this;
 		AffectedAvatar->CurrentStatusEffectsArray.Add(StatusEffectReference);
 	} else {
 		// Do nothing
 	}
+
+	StatusEffectReference.SpecialFunctionsActor = this;
+	AffectedAvatar->CurrentStatusEffectsArray.Add(StatusEffectReference);
 }
 
 
@@ -51,6 +50,8 @@ void AActor_StatusEffectsLibrary::OnStatusEffectStartOfTurn_Implementation(AChar
 {
 	if (StatusEffectReference.Name == FString("Paralyzed")) {
 		AffectedAvatar->AvatarData.CurrentTileMoves = FMath::CeilToInt(AffectedAvatar->AvatarData.MaximumTileMoves / 2);
+	} else if (StatusEffectReference.Name == FString("Bleeding")) {
+		AffectedAvatar->AvatarData.CurrentHealthPoints -= FMath::CeilToInt(AffectedAvatar->AvatarData.BaseStats.HealthPoints * 0.2);
 	} else if (StatusEffectReference.Name == FString("Spellbound")) {
 		int HealthToTransfer = 0;
 		int ManaToTransfer = 0;

@@ -167,15 +167,13 @@ void AActor_AttackEffectsLibrary::Attack_AddStoneSkin_Implementation(ACharacter_
 void AActor_AttackEffectsLibrary::Attack_AddBleed_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
 {
 	FString ContextString;
-
 	FAvatar_StatusEffect* BleedStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Bleeding", ContextString);
-	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
-		"Bleeding",
-		BleedStatus->Image,
-		BleedStatus->Description,
-		BleedStatus->MaximumTurns,
-		BleedStatus->TurnsRemaining)
-	);
+
+	if (IsValid(StatusEffectsLibrary_Class)) {
+		FActorSpawnParameters SpawnInfo;
+		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
+		StatusEffectsLibrary_Reference->OnStatusEffectApplied(Defender, *BleedStatus);
+	}
 }
 
 
@@ -183,15 +181,6 @@ void AActor_AttackEffectsLibrary::Attack_AddSoak_Implementation(ACharacter_Pathf
 {
 	FString ContextString;
 	FAvatar_StatusEffect* SoakStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Soaking", ContextString);
-
-	//if (IsValid(StatusEffectsLibrary_Class)) {
-	//	if (!IsValid(StatusEffectsLibrary_Reference)) {
-	//		FActorSpawnParameters SpawnInfo;
-	//		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
-	//	}
-
-	//	StatusEffectsLibrary_Reference->OnStatusEffectApplied(Defender, *SoakStatus);
-	//}
 
 	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
 		"Soaking",

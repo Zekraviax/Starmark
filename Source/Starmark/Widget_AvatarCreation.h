@@ -96,6 +96,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* ComplexAttacksDataTable;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* AbilitiesDataTable;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* ItemsDataTable;
+
 	UPROPERTY()
 	TArray<FName> AvatarRowNames;
 
@@ -106,7 +112,16 @@ public:
 	TArray<FName> ComplexAttacksRowNames;
 
 	UPROPERTY()
+	TArray<FName> AbilityRowNames;
+
+	UPROPERTY()
+	TArray<FName> ItemRowNames;
+
+	UPROPERTY()
 	AStarmark_PlayerState* PlayerStateReference;
+
+	UPROPERTY()
+	FString ContextString;
 
 // ------------------------- Avatar
 	UPROPERTY()

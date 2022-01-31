@@ -1,23 +1,15 @@
 #include "Starmark_GameState.h"
 
-
+#include "Actor_AbilitiesLibrary.h"
 #include "Actor_GridTile.h"
 #include "Actor_StatusEffectsLibrary.h"
 #include "Character_NonAvatarEntity.h"
 #include "Character_Pathfinder.h"
+#include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
-#include "Widget_HUD_Battle.h"
-#include "Widget_ServerHost.h"
-#include "WidgetComponent_AvatarBattleData.h"
-#include "WidgetComponent_LobbyPlayerVals.h"
 #include "PlayerController_Base.h"
-#include "PlayerController_Lobby.h"
-#include "Player_SaveData.h"
-#include "Character_Pathfinder.h"
 #include "Starmark_PlayerState.h"
 #include "Starmark_GameMode.h"
-#include "GameFramework/Controller.h"
-#include "Engine/World.h"
 
 
 void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -107,26 +99,52 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 void AStarmark_GameState::AvatarBeginTurn_Implementation()
 {
 	if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex)) {
-		AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves;
+		ACharacter_Pathfinder* Avatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
+		
+		Avatar->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves;
 
 		// Reduce durations of all statuses
-		for (int i = AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray.Num() - 1; i >= 0; i--) {
-			AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].TurnsRemaining--;
+		for (int i = Avatar->CurrentStatusEffectsArray.Num() - 1; i >= 0; i--) {
+			Avatar->CurrentStatusEffectsArray[i].TurnsRemaining--;
 
-			if (AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].TurnsRemaining <= 0) {
-				if (IsValid(AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].SpecialFunctionsActor))
-					AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectRemoved(AvatarTurnOrder[CurrentAvatarTurnIndex], AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i]);
+			if (Avatar->CurrentStatusEffectsArray[i].TurnsRemaining <= 0) {
+				if (IsValid(Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor))
+					Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectRemoved(Avatar, Avatar->CurrentStatusEffectsArray[i]);
 				else
-					AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray.RemoveAt(i);
+					Avatar->CurrentStatusEffectsArray.RemoveAt(i);
 			} else {
 				// On Status Effect Start-of-turn effects
-				if (AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
-					AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves / 2;
+				if (Avatar->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
+					Avatar->AvatarData.CurrentTileMoves = Avatar->AvatarData.MaximumTileMoves / 2;
 					break;
-				} else if (IsValid(AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].SpecialFunctionsActor)) {
-					AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectStartOfTurn(AvatarTurnOrder[CurrentAvatarTurnIndex], AvatarTurnOrder[CurrentAvatarTurnIndex]->CurrentStatusEffectsArray[i]);
+				} else if (IsValid(Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor)) {
+					Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectStartOfTurn(Avatar, Avatar->CurrentStatusEffectsArray[i]);
 				}
 			}
+		}
+
+		// Check for any abilities that trigger at the start of the turn
+		if (Avatar->AvatarData.Ability.TriggerCondition == E_Ability_TriggerConditions::OnAvatarStartOfTurn) {
+			// Ensure that there is only one AbilityActor because there only needs to be one that all Avatars can use
+			if (Avatar->AvatarData.Ability.AbilityLibraryActor == nullptr) {
+				TArray<AActor*> AbilityLibraryActors;
+				UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_AbilitiesLibrary::StaticClass(), AbilityLibraryActors);
+
+				if (AbilityLibraryActors.Num() > 0) {
+					for (int i = 0; i < AbilityLibraryActors.Num(); i++) {
+						if (i == 0) 
+							Avatar->AvatarData.Ability.AbilityLibraryActor = Cast<AActor_AbilitiesLibrary>(AbilityLibraryActors[i]);
+						else
+							AbilityLibraryActors[i]->Destroy();
+					}
+				} else {
+					const FActorSpawnParameters SpawnInfo;
+					Avatar->AvatarData.Ability.AbilityLibraryActor = GetWorld()->SpawnActor<AActor_AbilitiesLibrary>(AActor_AbilitiesLibrary::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
+				}
+			}
+
+			// Call the ability function
+			Avatar->AvatarData.Ability.AbilityLibraryActor->SwitchOnAbilityEffect(Avatar->AvatarData.Ability.Function, Avatar, Avatar);
 		}
 	}
 
@@ -144,6 +162,9 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	TArray<AActor*> GridTilesArray;
 
 	CurrentAvatarTurnIndex++;
+
+	// Check if an Avatar died this turn
+	// If true, check for reserve Avatars before ending the turn
 
 	// Reset Round if all Avatars have acted
 	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num())

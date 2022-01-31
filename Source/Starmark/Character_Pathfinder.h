@@ -17,6 +17,7 @@
 // Forward Declarations
 class AActor_GridTile;
 class APlayerController_Base;
+class UWidget_HUD_Battle;
 class UWidgetComponent_AvatarBattleData;
 
 
@@ -24,7 +25,6 @@ UCLASS()
 class STARMARK_API ACharacter_Pathfinder : public ACharacter
 {
 	GENERATED_BODY()
-
 
 public:
 	ACharacter_Pathfinder();
@@ -48,7 +48,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UBoxComponent* BoxComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	FLinearColor ActorSelected_DynamicMaterial_Colour;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")

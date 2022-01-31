@@ -20,6 +20,7 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 {
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
+	UWidgetComponent_Avatar* AvatarWidgetComponent_Reference = nullptr;
 	UWidgetTree* LibraryWidgetTree = this->WidgetTree;
 	TArray<UWidget*> FoundChildWidgetComponents;
 	int Column = -1;
@@ -29,11 +30,11 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 		// Populate Avatar Team Slots
 		FoundChildWidgetComponents = Cast<UPanelWidget>(LibraryWidgetTree->RootWidget)->GetAllChildren();
 
-		// ?
+		// Add Avatars to the team slots, making sure that the index in the players team is preserved
 		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
 			for (int j = 0; j < FoundChildWidgetComponents.Num(); j++) {
 				if (Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]) ) {
-					UWidgetComponent_Avatar* AvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
+					AvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
 					if (AvatarWidgetComponent_Reference->IndexInPlayerTeam == i) {
 						if (PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].IndexInPlayerLibrary != i)
 							PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].IndexInPlayerLibrary = i;
@@ -48,6 +49,7 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 						if (AvatarWidgetComponent_Reference->AvatarData.AvatarName != "None") {
 							AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
 							AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::UnequipAvatar);
+							AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::DeleteAvatar);
 						}
 						AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
 
@@ -76,6 +78,7 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 
 			AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EquipAvatar);
 			AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
+			AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::DeleteAvatar);
 			AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
 
 			AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Row, Column);
@@ -127,12 +130,13 @@ void UWidget_AvatarLibrary::UpdateAllAvatarsInTeam()
 	TArray<UWidget*> FoundChildWidgetComponents;
 	TArray<UTexture*> QuestionMarkMaterials;
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
+	UWidgetComponent_Avatar* AvatarWidgetComponent_Reference = nullptr;
 	FoundChildWidgetComponents = Cast<UPanelWidget>(LibraryWidgetTree->RootWidget)->GetAllChildren();
 	QuestionMarkMaterial->GetUsedTextures(QuestionMarkMaterials, EMaterialQualityLevel::Medium, true, ERHIFeatureLevel::ES3_1, true);
 
 	for (int j = 0; j < FoundChildWidgetComponents.Num(); j++) {
 		if (Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j])) {
-			UWidgetComponent_Avatar* AvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
+			AvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
 
 			if (AvatarWidgetComponent_Reference->IndexInPlayerTeam >= 0) {
 				bool FoundAvatarInSlot = false;

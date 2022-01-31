@@ -10,6 +10,7 @@
 
 
 // Forward Declarations
+class AActor_AbilitiesLibrary;
 class AActor_StatusEffectsLibrary;
 class ACharacter_Pathfinder;
 class APlayerPawn_Static;
@@ -156,6 +157,7 @@ enum class EBattle_AttackTargetsInRange : uint8
 	Self,
 };
 
+
 UENUM(BlueprintType)
 enum class EBattle_AttackEffects : uint8
 {
@@ -167,6 +169,7 @@ enum class EBattle_AttackEffects : uint8
 	AddBleedStatus,
 	AddSoakStatus,
 	AddSpellboundStatus,
+	AddVampirismStatus,
 	// Other
 	KnockbackTarget,
 	NoFriendlyFire,
@@ -180,6 +183,24 @@ enum class EBattle_AttackEffects : uint8
 	AddPropertyFire,
 	// Alternative Attack Functions/Properties
 	LowerTargetHealthEqualsHigherDamageDealt,
+	// Special Functions
+	SummonAvatar,
+};
+
+
+UENUM(BlueprintType)
+enum class E_Ability_Functions : uint8
+{
+	Regenerate,
+};
+
+
+UENUM(BlueprintType)
+enum class E_Ability_TriggerConditions : uint8
+{
+	Passive,
+	OnAvatarDefeated,
+	OnAvatarStartOfTurn,
 };
 
 
@@ -498,7 +519,6 @@ struct STARMARK_API FAvatar_StatusEffect : public FTableRowBase
 };
 
 
-
 USTRUCT(BlueprintType)
 struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 {
@@ -556,6 +576,56 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 
 
 USTRUCT(BlueprintType)
+struct STARMARK_API FAvatar_AbilityStruct : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	E_Ability_Functions Function;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	E_Ability_TriggerConditions TriggerCondition;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor_AbilitiesLibrary* AbilityLibraryActor;
+	
+	FAvatar_AbilityStruct()
+	{
+		Name = "Default";
+		Function = E_Ability_Functions::Regenerate;
+		TriggerCondition = E_Ability_TriggerConditions::Passive;
+		Description = "Default";
+		AbilityLibraryActor = nullptr;
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct STARMARK_API FAvatar_ItemStruct : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Description;
+
+	FAvatar_ItemStruct()
+	{
+		Name = "Default";
+		Description = "Default";
+	}
+};
+
+
+USTRUCT(BlueprintType)
 struct STARMARK_API FAvatar_Struct : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -605,6 +675,12 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<FAvatar_AttackStruct> CurrentAttacks;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	FAvatar_AbilityStruct Ability;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	FAvatar_ItemStruct HeldItem;
 
 // ------------------------- Appearance
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")

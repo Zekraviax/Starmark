@@ -35,6 +35,10 @@ void UWidget_PlayerProfileCreator::OnWidgetOpened()
 			PlayerProfileWidgetComponent_Reference->ProfileName = ProfilesList->PlayerProfileNames[i];
 			PlayerProfileWidgetComponent_Reference->ProfileNameText->SetText(FText::FromString(ProfilesList->PlayerProfileNames[i]));
 
+			//PlayerProfileWidgetComponent_Reference->ProfileName = ProfilesList->PlayerProfileNames[i];
+			//const TCHAR* ProfileNameChar = *;
+			//PlayerProfileWidgetComponent_Reference->ProfileNameWithStars = PlayerProfileWidgetComponent_Reference->ProfileNameWithStars.Replace(TEXT("[ProfileName]"), *PlayerProfileWidgetComponent_Reference->ProfileName);
+
 			// Bind delegate
 			PlayerProfileWidgetComponent_Reference->OnPlayerProfileLoadedDelegate.AddDynamic(this, &UWidget_PlayerProfileCreator::OnPlayerProfileLoadedDelegateBroadcast);
 

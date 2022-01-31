@@ -81,6 +81,9 @@ public:
 	void Server_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void Server_AddHealth(ACharacter_Pathfinder* Avatar, int Healing);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Battle_AvatarDefeated(ACharacter_Pathfinder* Avatar);
 
 	UFUNCTION(Server, Reliable)

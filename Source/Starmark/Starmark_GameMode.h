@@ -12,6 +12,7 @@
 // Forward Declarations
 class AActor_AttackEffectsLibrary;
 class ACharacter_Pathfinder;
+class APlayerController_Base;
 class APlayerPawn_Static;
 class APlayerPawn_Flying;
 
@@ -59,6 +60,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* StatusEffectsDataTable;
+
+	UPROPERTY()
+	TArray<FString> CombatLogTextArray;
 
 // ------------------------- Multiplayer
 	UPROPERTY()

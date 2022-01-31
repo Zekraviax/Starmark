@@ -294,7 +294,6 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			int DefaultConeScaleZ = 0;		// Add 1 for every tile range
 
 			FVector ConeLocation = FVector(DefaultConeLocationX + (CurrentSelectedAttack.BaseRange * 190), 0, -100);
-			FRotator ConeRotation = FRotator(180, 90, 180);
 			FVector ConeScale = FVector(DefaultConeScaleX + CurrentSelectedAttack.BaseRange, DefaultConeScaleY + CurrentSelectedAttack.BaseRange * 2, DefaultConeScaleZ + CurrentSelectedAttack.BaseRange);
 
 			AttackTraceActor->SetRelativeLocation(ConeLocation);
@@ -307,7 +306,6 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			AttackTraceActor->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
 			FVector OriginCoordinates = FVector::ZeroVector;
-			//ValidAttackTargetsArray.Empty();
 
 			// Get the current mouse/avatar position
 			if (CurrentSelectedAttack.AttachAttackTraceActorToMouse)
@@ -315,7 +313,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			else 
 				OriginCoordinates = GetActorLocation().GridSnap(200.f);
 
-			// Get all of the tiles and avatars around the origin coordinates
+			// Get all of the tiles and Avatars around the origin coordinates
 			TArray<AActor*> GridTilesArray, AvatarsArray, ActorsArray;
 
 			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
@@ -382,7 +380,6 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			FVector WideWallScale = FVector(1.f, 2.f, 0.5f);
 
 			AttackTraceActor->SetRelativeLocation(WideWallLocation);
-			//AttackTraceActor->SetRelativeRotation();
 			AttackTraceActor->SetRelativeScale3D(WideWallScale);
 		}
 	}
@@ -441,7 +438,7 @@ void ACharacter_Pathfinder::AvatarBeginTileOverlap_Implementation()
 
 void ACharacter_Pathfinder::AvatarStopMoving(bool SnapToGrid)
 {
-	// make sure this avatar's position is snapped to the grid
+	// Make sure this Avatar's position is snapped to the grid
 	if (GetActorLocation() != GetActorLocation().GridSnap(200) && SnapToGrid) {
 		Cast<AAIController_Avatar>(GetController())->MoveToLocation((GetActorLocation().GridSnap(200)), -1.f, false, false, false, true, 0, false);
 	}

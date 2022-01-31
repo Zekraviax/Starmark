@@ -32,8 +32,7 @@ void AStarmark_PlayerState::UpdatePlayerData()
 {
 	UE_LOG(LogTemp, Warning, TEXT("UpdatePlayerData / IsValid(GetWorld()) returns: %s"), IsValid(GetWorld()) ? TEXT("true") : TEXT("false"));
 	UE_LOG(LogTemp, Warning, TEXT("UpdatePlayerData / IsValid(GetGameInstance) returns: %s"), IsValid(UGameplayStatics::GetGameInstance(GetWorld())) ? TEXT("true") : TEXT("false"));
-
-	//if (!GameInstanceReference)
+	
 	if (GetWorld()) {
 		if (UGameplayStatics::GetGameInstance(GetWorld())) {
 			GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
@@ -67,16 +66,7 @@ void AStarmark_PlayerState::Server_UpdatePlayerData_Implementation()
 
 			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
 			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *ReplicatedPlayerName);
-
-			//for (int i = PlayerState_PlayerParty.Num() - 1; i >= 0; i--) {
-			//	if (PlayerState_PlayerParty[i].AvatarName != "Default") {
-			//		UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / PlayerState_PlayerParty member number %d is: %s"), i, *PlayerState_PlayerParty[i].AvatarName);
-			//	} else {
-			//		PlayerState_PlayerParty.RemoveAt(i);
-			//		UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / Remove invalid member %d from PlayerState_PlayerParty"), i);
-			//	}
-			//}
-
+			
 			// Update player controller
 			Cast<APlayerController_Base>(GetPawn()->GetController())->PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
 			Cast<APlayerController_Base>(GetPawn()->GetController())->PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
@@ -131,8 +121,6 @@ void AStarmark_PlayerState::PlayerState_BeginBattle_Implementation()
 {
 	// Retrieve player profile
 	Server_UpdatePlayerData();
-
-	//Client_UpdateReplicatedPlayerName();
 }
 
 
@@ -153,15 +141,30 @@ void AStarmark_PlayerState::Server_SubtractHealth_Implementation(ACharacter_Path
 }
 
 
+void AStarmark_PlayerState::Server_AddHealth_Implementation(ACharacter_Pathfinder* Avatar, int Healing)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Server_AddHealth / IsValid(Defender) returns: %s"), IsValid(Avatar) ? TEXT("true") : TEXT("false"));
+
+	if (IsValid(Avatar)) {
+		Avatar->AvatarData.CurrentHealthPoints += Healing;
+		Avatar->UpdateAvatarDataInPlayerParty();
+
+		if (Avatar->AvatarData.CurrentHealthPoints > Avatar->AvatarData.BaseStats.HealthPoints)
+			Avatar->AvatarData.CurrentHealthPoints = Avatar->AvatarData.BaseStats.HealthPoints;
+	}
+}
+
+
 void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Pathfinder* Avatar)
 {
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+	APlayerController_Base* PlayerControllerReference = Avatar->PlayerControllerReference;
 
 	if (IsValid(Avatar->PlayerControllerReference)) {
 		if (Avatar->PlayerControllerReference->PlayerParty.IsValidIndex(Avatar->IndexInPlayerParty)) {
 			Avatar->PlayerControllerReference->PlayerParty.RemoveAt(Avatar->IndexInPlayerParty);
 
-			// Remove from turn order
+			// Remove the Avatar from the turn order
 			UE_LOG(LogTemp, Warning, TEXT("Battle_AvatarDefeated / Remove Avatar %s from Turn Order"), *Avatar->AvatarData.AvatarName);
 			GameStateReference->AvatarTurnOrder.Remove(Avatar);
 			GameStateReference->DynamicAvatarTurnOrder.Remove(Avatar);
@@ -172,9 +175,27 @@ void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Path
 		if (Avatar->PlayerControllerReference->PlayerParty.Num() <= 0) {
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player has run out of Avatars")));
 			GameStateReference->EndOfBattle_Implementation();
-		}
-		else
+		} else {
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player Avatars Remaining: %d"), Avatar->PlayerControllerReference->PlayerParty.Num()));
+
+			// Check for any avatars in reserve
+			bool FoundAvatarInReserve = false;
+			
+			for (int i = 0; i < Avatar->PlayerControllerReference->PlayerParty.Num(); i++) {
+				FAvatar_Struct FoundAvatar = Avatar->PlayerControllerReference->PlayerParty[i];
+				if (FoundAvatar.CurrentHealthPoints > 0 && FoundAvatar.IndexInPlayerLibrary >= 4) {
+					// To-Do: Allow the player to summon an Avatar from reserve as a special action.
+					FoundAvatarInReserve = true;
+
+					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackEffectsOnTarget.Empty();
+					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackEffectsOnTarget.Add(EBattle_AttackEffects::SummonAvatar);
+					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange = EBattle_AttackTargetsInRange::SelectAllGridTiles;
+					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackPattern = EBattle_AttackPatterns::SingleTile;
+					
+					break;
+				}
+			}
+		}
 	}
 
 	Avatar->Destroy();

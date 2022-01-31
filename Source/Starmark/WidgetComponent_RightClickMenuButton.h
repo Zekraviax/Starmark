@@ -47,4 +47,7 @@ public:
 
 	UFUNCTION()
 	void UnequipAvatar();
+
+	UFUNCTION()
+	void DeleteAvatar();
 };

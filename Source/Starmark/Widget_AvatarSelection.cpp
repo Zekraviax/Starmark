@@ -13,6 +13,7 @@ void UWidget_AvatarSelection::OnWidgetOpened()
 {
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
+	UWidgetComponent_Avatar* AvatarWidgetComponent_Reference = nullptr;
 	UWidgetTree* SelectionWidgetTree = this->WidgetTree;
 	TArray<UWidget*> FoundChildWidgetComponents;
 	int Column = -1;
@@ -28,7 +29,7 @@ void UWidget_AvatarSelection::OnWidgetOpened()
 		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
 			for (int j = 0; j < FoundChildWidgetComponents.Num(); j++) {
 				if (Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j])) {
-					UWidgetComponent_Avatar* AvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
+					AvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
 					if (AvatarWidgetComponent_Reference->IndexInPlayerTeam == i) {
 						AvatarWidgetComponent_Reference->ApplyNewAvatarData(PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i]);
 						AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;

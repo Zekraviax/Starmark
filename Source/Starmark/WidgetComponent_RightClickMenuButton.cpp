@@ -22,6 +22,9 @@ void UWidgetComponent_RightClickMenuButton::OnButtonClicked()
 	case (E_RightClickMenu_Commands::UnequipAvatar):
 		UnequipAvatar();
 		break;
+	case (E_RightClickMenu_Commands::DeleteAvatar):
+		DeleteAvatar();
+		break;
 	case (E_RightClickMenu_Commands::Cancel):
 		// do nothing except remove this widget.
 		break;
@@ -92,6 +95,31 @@ void UWidgetComponent_RightClickMenuButton::UnequipAvatar()
 	TArray<UUserWidget*> FoundAvatarLibraryWidgets, FoundAvatarComponents;
 	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundAvatarLibraryWidgets, UWidget_AvatarLibrary::StaticClass(), true);
 	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundAvatarComponents, UWidgetComponent_Avatar::StaticClass(), true);
+
+	// Update all Avatar widgets
+	for (int i = 0; i < FoundAvatarLibraryWidgets.Num(); i++) {
+		Cast<UWidget_AvatarLibrary>(FoundAvatarLibraryWidgets[i])->OnWidgetOpened();
+		Cast<UWidget_AvatarLibrary>(FoundAvatarLibraryWidgets[i])->UpdateAllAvatarsInTeam();
+	}
+
+	PlayerStateReference->SaveToCurrentProfile();
+}
+
+
+void UWidgetComponent_RightClickMenuButton::DeleteAvatar()
+{
+	TArray<UUserWidget*> FoundAvatarLibraryWidgets;
+	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
+	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundAvatarLibraryWidgets, UWidget_AvatarLibrary::StaticClass(), true);
+	UWidgetComponent_Avatar* AvatarSlot = Cast<UWidgetComponent_Avatar>(RightClickMenuWidget->OwnerWidget);
+
+	if (AvatarSlot->IndexInPlayerTeam >= 0) {
+		PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Remove(AvatarSlot->AvatarData);
+	} else {
+		PlayerStateReference->PlayerProfileReference->AvatarLibrary.Remove(AvatarSlot->AvatarData);
+	}
+
+	AvatarSlot->AvatarData = FAvatar_Struct();
 
 	// Update all Avatar widgets
 	for (int i = 0; i < FoundAvatarLibraryWidgets.Num(); i++) {

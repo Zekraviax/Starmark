@@ -3,9 +3,10 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
+#include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
-#include "Components/Button.h"
+#include "Components/VerticalBox.h"
 
 #include "Widget_HUD_Battle.generated.h"
 
@@ -42,6 +43,9 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* EndTurnCommandButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UVerticalBox* CombatLog;
 
 // ------------------------- References
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
