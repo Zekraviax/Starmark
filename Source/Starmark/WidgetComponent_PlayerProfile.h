@@ -21,9 +21,7 @@ class STARMARK_API UWidgetComponent_PlayerProfile : public UUserWidget
 {
 	GENERATED_BODY()
 
-
 public:
-
 // Variables
 // --------------------------------------------------
 

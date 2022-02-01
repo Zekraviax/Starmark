@@ -5,7 +5,6 @@
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "Starmark_Variables.h"
 
 #include "WidgetComponent_AvatarAttack.generated.h"
 

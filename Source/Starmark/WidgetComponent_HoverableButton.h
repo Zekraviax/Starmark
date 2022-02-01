@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Widget_PartyCreate.generated.h"
+#include "WidgetComponent_HoverableButton.generated.h"
 
 
 UCLASS()
-class STARMARK_API UWidget_PartyCreate : public UUserWidget
+class STARMARK_API UWidgetComponent_HoverableButton : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -16,10 +16,8 @@ public:
 
 // ------------------------- Components
 
-
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Widget
-	
 };

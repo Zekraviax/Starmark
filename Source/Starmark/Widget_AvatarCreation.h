@@ -9,6 +9,7 @@
 #include "Components/TextBlock.h"
 #include "Engine/DataTable.h"
 #include "Starmark_Variables.h"
+#include "Widgets/Input/SComboBox.h"
 
 #include "Widget_AvatarCreation.generated.h"
 

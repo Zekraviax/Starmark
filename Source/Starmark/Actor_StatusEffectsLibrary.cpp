@@ -53,11 +53,9 @@ void AActor_StatusEffectsLibrary::OnStatusEffectStartOfTurn_Implementation(AChar
 	} else if (StatusEffectReference.Name == FString("Bleeding")) {
 		AffectedAvatar->AvatarData.CurrentHealthPoints -= FMath::CeilToInt(AffectedAvatar->AvatarData.BaseStats.HealthPoints * 0.2);
 	} else if (StatusEffectReference.Name == FString("Spellbound")) {
-		int HealthToTransfer = 0;
-		int ManaToTransfer = 0;
-
-		HealthToTransfer = FMath::CeilToInt(RememberedAvatarTwo->AvatarData.BaseStats.HealthPoints * 0.2);
-		ManaToTransfer = FMath::CeilToInt(RememberedAvatarTwo->AvatarData.BaseStats.ManaPoints * 0.2);
+		int HealthToTransfer = HealthToTransfer = FMath::CeilToInt(RememberedAvatarTwo->AvatarData.BaseStats.HealthPoints * 0.2);
+		int ManaToTransfer = ManaToTransfer = FMath::CeilToInt(RememberedAvatarTwo->AvatarData.BaseStats.ManaPoints * 0.2);
+		
 		RememberedAvatarTwo->AvatarData.CurrentHealthPoints -= HealthToTransfer;
 		RememberedAvatarTwo->AvatarData.CurrentManaPoints -= ManaToTransfer;
 
