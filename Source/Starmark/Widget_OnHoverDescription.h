@@ -22,5 +22,12 @@ public:
 	UTextBlock* Title;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* MainText;
+	UTextBlock* Body;
+
+// Functions
+// --------------------------------------------------
+
+// ------------------------- Widget
+	UFUNCTION(BlueprintCallable)
+	void SetDescriptionText(FText TitleText, FText BodyText);
 };

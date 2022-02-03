@@ -33,25 +33,25 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UComboBoxString* SpeciesDropDown;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UComboBoxString* AbilityDropDown;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UComboBoxString* AccessoryDropDown;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UComboBoxString* MoveOneDropDown;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UComboBoxString* MoveTwoDropDown;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UComboBoxString* MoveThreeDropDown;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UComboBoxString* MoveFourDropDown;
 
 	UPROPERTY(meta = (BindWidget))

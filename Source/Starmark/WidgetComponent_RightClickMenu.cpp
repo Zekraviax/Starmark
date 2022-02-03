@@ -24,15 +24,16 @@ void UWidgetComponent_RightClickMenu::OnWidgetCreated()
 			ButtonsVerticalBox->AddChildToVerticalBox(RightClickMenuButton_Reference);
 		}
 	}
+	
 	Cast<UCanvasPanelSlot>(ButtonsVerticalBox->Slot)->SetPosition(GetRightClickMenuPosition(OwnerWidget));
 }
 
 
 FVector2D UWidgetComponent_RightClickMenu::GetRightClickMenuPosition(UWidget* Widget)
 {
-	FGeometry Geometry = this->GetCachedGeometry();
-	FVector2D WidgetAbsolutePosition = Widget->GetCachedGeometry().GetAbsolutePosition();
-	FVector2D Position = Geometry.AbsoluteToLocal(FVector2D(Widget->GetCachedGeometry().GetAbsolutePosition().X + Widget->GetCachedGeometry().GetLocalSize().X, Widget->GetCachedGeometry().GetAbsolutePosition().Y + Widget->GetCachedGeometry().GetLocalSize().Y / 2));
+	const FGeometry Geometry = this->GetCachedGeometry();
+	//const FVector2D WidgetPosition = Cast<UCanvasPanelSlot>(Widget->Slot)->GetPosition();
 
+	const FVector2D Position = Geometry.AbsoluteToLocal(FVector2D(Widget->GetCachedGeometry().GetAbsolutePosition().X + Widget->GetCachedGeometry().GetLocalSize().X, Widget->GetCachedGeometry().GetAbsolutePosition().Y + Widget->GetCachedGeometry().GetLocalSize().Y / 2));
 	return Position;
 }
