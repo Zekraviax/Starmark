@@ -1,20 +1,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Actor_AttackEffectsLibrary.h"
 #include "GameFramework/PlayerController.h"
 
-#include "Actor_CharacterTest.h"
 #include "Character_Pathfinder.h"
 #include "Engine.h"
-#include "Net/UnrealNetwork.h"
 
 #include "PlayerController_Base.generated.h"
 
 
 // Forward Declarations
-class UWidget_HUD_Battle;
 class AAIController_Avatar;
 class UPlayer_SaveData;
+class UWidget_HUD_Battle;
 
 
 // Unique Enums
@@ -103,6 +102,12 @@ public:
 // ------------------------- Other
 	UPROPERTY()
 	FTimerHandle DelayedEndTurnTimerHandle;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AActor_AttackEffectsLibrary> AttackEffectsLibrary_Class;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	AActor_AttackEffectsLibrary* AttackEffectsLibrary_Reference;
 
 // Functions
 // --------------------------------------------------

@@ -1,14 +1,12 @@
 #include "PlayerController_Base.h"
 
 
+#include "Actor_AttackEffectsLibrary.h"
 #include "Actor_GridTile.h"
 #include "AIController.h"
-#include "AIController_Avatar.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "NavigationSystem.h"
-#include "PlayerPawn_Static.h"
 #include "Player_SaveData.h"
 #include "Starmark_GameMode.h"
 #include "Starmark_GameInstance.h"
@@ -151,14 +149,37 @@ void APlayerController_Base::Server_GetDataFromProfile_Implementation()
 
 void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 {
-	if (CurrentSelectedAvatar->CurrentSelectedAttack.Name != "Default" &&
+	TArray<AActor*> AttackEffectsLibraries;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_AttackEffectsLibrary::StaticClass(), AttackEffectsLibraries);
+
+	// The Hat Trick functions should take priority over other moves
+	if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackEffectsOnTarget.Contains(EBattle_AttackEffects::SpawnHats)) {
+		if (AttackEffectsLibraries.Num() <=  0) {
+			AttackEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_AttackEffectsLibrary>(AttackEffectsLibrary_Class);
+			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Spawn AttackEffectsLibrary_Reference"));
+		}
+
+		if (AttackEffectsLibrary_Reference->HatTilesArray.Num() < 3) {
+			if (Cast<AActor_GridTile>(ClickedActor)) {
+				AttackEffectsLibrary_Reference->HatTilesArray.Add(Cast<AActor_GridTile>(ClickedActor));
+				UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Add selected tile to HatTilesArray"));
+			}
+		}
+
+		if (AttackEffectsLibrary_Reference->HatTilesArray.Num() >= 3) {
+			AttackEffectsLibrary_Reference->Spawn_Hats();
+			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Spawn hats for Hat Trick."));
+		}
+
+
+	} else if (CurrentSelectedAvatar->CurrentSelectedAttack.Name != "Default" &&
 		CurrentSelectedAvatar->CurrentSelectedAttack.Name != "None" &&
 		CurrentSelectedAvatar->CurrentSelectedAttack.Name != "---" &&
 		CurrentSelectedAvatar->ValidAttackTargetsArray.Num() > 0) {
 
 		// Subtract attack's MP cost
 		CurrentSelectedAvatar->AvatarData.CurrentManaPoints -= CurrentSelectedAvatar->CurrentSelectedAttack.ManaCost;
-
+	} else {
 		if (ClickedActor &&
 			CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::AttackClickedAvatar) {
 			// If we're attacking, and we clicked on a valid target in-range, launch an attack
@@ -209,7 +230,8 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 		} else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::Self) {
 			CurrentSelectedAvatar->LaunchAttack_Implementation(CurrentSelectedAvatar);
 
-			Client_SendEndOfTurnCommandToServer();
+			if (CurrentSelectedAvatar->CurrentSelectedAttack.EndAvatarTurnOnUse)
+				Client_SendEndOfTurnCommandToServer();
 		}
 	}
 }

@@ -4,7 +4,6 @@
 #include "GameFramework/Actor.h"
 
 #include "Components/BoxComponent.h"
-#include "Components/StaticMeshComponent.h"
 #include "Starmark_Variables.h"
 
 #include "Actor_GridTile.generated.h"

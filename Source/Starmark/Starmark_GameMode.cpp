@@ -91,7 +91,6 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 
 void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementation(APlayerController_Base* PlayerControllerReference)
 {
-	//AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 	TArray<FAvatar_Struct> CurrentPlayerTeam = Cast<UStarmark_GameInstance>(PlayerControllerReferences[0]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam;
 	int SpawnedAvatarCount = 0;
 

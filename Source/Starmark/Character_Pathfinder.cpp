@@ -262,8 +262,7 @@ void ACharacter_Pathfinder::ShowAttackRange()
 
 			if (AttackRotationSnapToDegrees != 90)
 				AttackRotationSnapToDegrees = 90;
-
-			int DefaultSphereLocationX = 100;									// Add 100 for every tile range
+			
 			int DefaultSphereScale = 2 * CurrentSelectedAttack.BaseRange;		// Add 2 for every tile range
 
 			FVector SphereLocation = FVector(-200 * CurrentSelectedAttack.BaseRange, 0, -100);
@@ -271,7 +270,6 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			FVector SphereScale = FVector(DefaultSphereScale, DefaultSphereScale, DefaultSphereScale);
 
 			AttackTraceActor->SetRelativeLocation(SphereLocation);
-			//AttackTraceActor->SetRelativeRotation();
 			AttackTraceActor->SetRelativeScale3D(SphereScale);
 		}
 		// Cone Trace
@@ -297,7 +295,6 @@ void ACharacter_Pathfinder::ShowAttackRange()
 			FVector ConeScale = FVector(DefaultConeScaleX + CurrentSelectedAttack.BaseRange, DefaultConeScaleY + CurrentSelectedAttack.BaseRange * 2, DefaultConeScaleZ + CurrentSelectedAttack.BaseRange);
 
 			AttackTraceActor->SetRelativeLocation(ConeLocation);
-			//AttackTraceActor->SetRelativeRotation();
 			AttackTraceActor->SetRelativeScale3D(ConeScale);
 		}
 		// Ring attack pattern

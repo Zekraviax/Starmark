@@ -49,7 +49,7 @@ UWidget_OnHoverDescription* UWidgetComponent_HoverableButton::OnMouseBeginHover(
 		
 		// Set size
 		const FVector2D ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
-		Cast<UCanvasPanelSlot>(DescriptionWidget_Reference->Slot)->SetSize(FVector2D(FMath::CeilToInt(ViewportSize.X) / 5, FMath::CeilToInt(ViewportSize.Y) / 3)); 
+		Cast<UCanvasPanelSlot>(DescriptionWidget_Reference->Slot)->SetSize(FVector2D(FMath::CeilToInt(ViewportSize.X) / 3, FMath::CeilToInt(ViewportSize.Y) / 3)); 
 		
 		// Set position on screen
 	}

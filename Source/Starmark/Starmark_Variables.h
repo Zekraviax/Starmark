@@ -113,13 +113,14 @@ enum class EAvatar_Marks : uint8
 UENUM(BlueprintType)
 enum class E_GridTile_Properties : uint8
 {
-	E_None,
+	E_None						UMETA(DisplayName = "None"),
 	E_Wall,
 	E_Occupied,
 	E_PlayerAvatarSpawn,
 	E_StoneRoad,
 	Shadow,
 	Fire,
+	Hat,
 };
 
 
@@ -131,10 +132,12 @@ enum class EBattle_AttackPatterns : uint8
 	Cone,
 	FourWayCross,
 	EightWayCross,
-	WideWall,
 	AOE_Circle,
 	SingleTile,
 	Ring,
+	// Special patterns for single attacks
+	WideWall,
+	TwoTiles,
 };
 
 
@@ -155,6 +158,7 @@ enum class EBattle_AttackTargetsInRange : uint8
 	SelectAllGridTiles,
 	SelectAllGridTilesAndSelectAllAvatars,
 	Self,
+	SelectTwoTilesAndSelf,
 };
 
 
@@ -178,6 +182,7 @@ enum class EBattle_AttackEffects : uint8
 	// Change Grid Tile Properties
 	SpawnWall,
 	SpawnHurricane,
+	SpawnHats,
 	AddPropertyStoneRoad,
 	AddPropertyShadow,
 	AddPropertyFire,
@@ -507,6 +512,7 @@ struct STARMARK_API FAvatar_StatusEffect : public FTableRowBase
 		Description = InDescription;
 		MaximumTurns = InMaxinumTurns;
 		TurnsRemaining = InTurnsRemaining;
+		//SpecialFunctionsActor = InSpecialFunctionsActor;
 	}
 
 	bool operator==(const FAvatar_StatusEffect& OtherStatusEffect) const
@@ -539,6 +545,9 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int ManaCost;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Description;
+	
 	// Attack Pattern
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EBattle_AttackPatterns AttackPattern;
@@ -561,6 +570,9 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool RotateAvatarTowardsMouse;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool EndAvatarTurnOnUse;
+
 	FAvatar_AttackStruct()
 	{
 		Name = "Default";
@@ -568,9 +580,13 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 		BasePower = 1;
 		BaseRange = 1;
 		ManaCost = 1;
+		Description = "Default.";
 		AttackPattern = EBattle_AttackPatterns::Circle;
+		//AttackCategory =
+		//AttackTargetsInRange = 
 		AttachAttackTraceActorToMouse = false;
 		RotateAvatarTowardsMouse = true;
+		EndAvatarTurnOnUse = true;
 	}
 };
 
@@ -616,6 +632,8 @@ struct STARMARK_API FAvatar_ItemStruct : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;
+
+	//TArray<FAvatar_ItemFunctions> ItemFunctions
 
 	FAvatar_ItemStruct()
 	{
@@ -767,6 +785,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		MaximumActionPoints = 1;
 		CurrentActionPoints = 1;
 		SameTypeAttackBonusMultiplier = 150;
+		DefaultImage = nullptr;
 		SkeletalMesh = nullptr;
 		DyableMaterial = nullptr;
 		DyableColourCount = 0;
@@ -775,9 +794,10 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		OccupiedTiles.AddUnique(FIntPoint(0, 0));
 		Tier = 1;
 		TokensRequired = 1;
+		IndexInPlayerLibrary = -1000000;
 	}
 
-	bool operator==(const FAvatar_Struct& OtherAvatar)
+	bool operator==(const FAvatar_Struct& OtherAvatar) const
 	{
 		return (AvatarName == OtherAvatar.AvatarName &&
 			Nickname == OtherAvatar.Nickname);

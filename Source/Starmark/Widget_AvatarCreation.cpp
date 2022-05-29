@@ -278,13 +278,12 @@ void UWidget_AvatarCreation::OnMoveThreeDropDownChanged(FString Option)
 }
 
 
-void UWidget_AvatarCreation::OnMoveFourDropDownChanged(FString Option)
+void UWidget_AvatarCreation::OnMoveFourDropDownChanged(const FString Option)
 {
-	FString ContextString;
-
 	if (Option.Len() == 0 || Option == "")
 		MoveFourNameText->SetText(FText::FromString("None"));
 	else {
+		const FString ContextString;
 		for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
 			if (Option == SimpleAttacksRowNames[i].ToString()) {
 				//CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);

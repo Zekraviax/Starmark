@@ -11,6 +11,7 @@
 
 // Forward Declarations
 class AActor_GridTile;
+class AActor_HatTrick;
 class AActor_StatusEffectsLibrary;
 class ACharacter_NonAvatarEntity;
 class ACharacter_Pathfinder;
@@ -47,16 +48,29 @@ public:
 	TSubclassOf<ACharacter_NonAvatarEntity> RockWall_Class;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AActor_HatTrick> HatTrick_Class;	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ACharacter_NonAvatarEntity> NonAvatarEntity_Class;
 
 // ------------------------- Data Tables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* StatusEffectsDataTable;
 
+// ------------------------- Moves
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<AActor_GridTile*> HatTilesArray;
+
+// ------------------------- Other
+	const FActorSpawnParameters SpawnInfo;
+
 // Functions
 // --------------------------------------------------
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void SwitchOnAttackEffect(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, AActor* Target);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void RepeatingSwitchOnAttackEffect(FAvatar_AttackStruct Attack, ACharacter_Pathfinder* Attacker, AActor* Target);
 
 // ------------------------- Status Effects
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
@@ -96,6 +110,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Spawn_Hurricane(AActor_GridTile* TargetTile);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Spawn_Hats(AActor_GridTile* TargetTile = nullptr);
 
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void AddProperty_StoneRoad(AActor_GridTile* TargetTile);

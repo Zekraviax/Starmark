@@ -11,11 +11,10 @@
 // ------------------------- Widget
 void UWidget_AvatarSelection::OnWidgetOpened()
 {
-	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	const UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
 	UWidgetComponent_Avatar* AvatarWidgetComponent_Reference = nullptr;
-	UWidgetTree* SelectionWidgetTree = this->WidgetTree;
-	TArray<UWidget*> FoundChildWidgetComponents;
+	const UWidgetTree* SelectionWidgetTree = this->WidgetTree;
 	int Column = -1;
 	int Row = 0;
 
@@ -24,7 +23,7 @@ void UWidget_AvatarSelection::OnWidgetOpened()
 
 	if (PlayerStateReference->PlayerProfileReference && AvatarWidgetComponent_Class) {
 		// Populate Avatar Team Slots
-		FoundChildWidgetComponents = Cast<UPanelWidget>(SelectionWidgetTree->RootWidget)->GetAllChildren();
+		TArray<UWidget*> FoundChildWidgetComponents = Cast<UPanelWidget>(SelectionWidgetTree->RootWidget)->GetAllChildren();
 
 		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
 			for (int j = 0; j < FoundChildWidgetComponents.Num(); j++) {

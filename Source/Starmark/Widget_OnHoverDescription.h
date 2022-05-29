@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
 
 #include "Widget_OnHoverDescription.generated.h"
 
@@ -18,11 +19,14 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* Title;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* Body;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UImage* BackgroundImage;
 
 // Functions
 // --------------------------------------------------

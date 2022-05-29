@@ -2,6 +2,7 @@
 
 
 #include "Actor_GridTile.h"
+#include "Actor_HatTrick.h"
 #include "Actor_StatusEffectsLibrary.h"
 #include "Character_Pathfinder.h"
 #include "Character_NonAvatarEntity.h"
@@ -87,6 +88,10 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 		if (Cast<AActor_GridTile>(Target))
 			Spawn_Hurricane(Cast<AActor_GridTile>(Target));
 		break;
+	case (EBattle_AttackEffects::SpawnHats):
+		if (Cast<AActor_GridTile>(Target))
+			Spawn_Hats(Cast<AActor_GridTile>(Target));
+		break;
 	case (EBattle_AttackEffects::AddPropertyStoneRoad):
 		if (Cast<AActor_GridTile>(Target))
 			AddProperty_StoneRoad(Cast<AActor_GridTile>(Target));
@@ -105,12 +110,18 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 }
 
 
+void AActor_AttackEffectsLibrary::RepeatingSwitchOnAttackEffect_Implementation(FAvatar_AttackStruct Attack, ACharacter_Pathfinder* Attacker, AActor* Target)
+{
+	
+}
+
+
 // ------------------------- Status Effect Attacks
 void AActor_AttackEffectsLibrary::Attack_AddParalyze_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
 {
-	FString ContextString;
+	const FString ContextString;
 
-	FAvatar_StatusEffect* ParalyzeStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Paralyzed", ContextString);
+	const FAvatar_StatusEffect* ParalyzeStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Paralyzed", ContextString);
 	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
 		"Paralyzed", 
 		ParalyzeStatus->Image, 
@@ -250,7 +261,6 @@ void AActor_AttackEffectsLibrary::Attack_TransferMana_Implementation(ACharacter_
 // ------------------------- Grid Tile Effects
 void AActor_AttackEffectsLibrary::Spawn_RockWall_Implementation(AActor_GridTile* TargetTile)
 {
-	FActorSpawnParameters SpawnInfo;
 	FVector Location = FVector(TargetTile->GetActorLocation().X, TargetTile->GetActorLocation().Y, TargetTile->GetActorLocation().Z + 50);
 
 	ACharacter_NonAvatarEntity* NewRockWallActor = GetWorld()->SpawnActor<ACharacter_NonAvatarEntity>(RockWall_Class, Location, FRotator::ZeroRotator, SpawnInfo);
@@ -260,12 +270,24 @@ void AActor_AttackEffectsLibrary::Spawn_RockWall_Implementation(AActor_GridTile*
 
 void AActor_AttackEffectsLibrary::Spawn_Hurricane_Implementation(AActor_GridTile* TargetTile)
 {
-	FActorSpawnParameters SpawnInfo;
 	FVector Location = FVector(TargetTile->GetActorLocation().X, TargetTile->GetActorLocation().Y, TargetTile->GetActorLocation().Z + 50);
 
 	ACharacter_NonAvatarEntity* NewHurricaneActor = GetWorld()->SpawnActor<ACharacter_NonAvatarEntity>(NonAvatarEntity_Class, Location, FRotator::ZeroRotator, SpawnInfo);
-	//NewHurricaneActor->EntityType = E_NonAvatarEntity_EntityType::Hurricane;
 	NewHurricaneActor->HurricaneOnSpawn();
+}
+
+
+void AActor_AttackEffectsLibrary::Spawn_Hats_Implementation(AActor_GridTile* TargetTile)
+{
+	AActor_HatTrick* HatTrickActor = nullptr;
+	FVector SpawnLocation = FVector::ZeroVector;
+
+	for (int i = 0; i < HatTilesArray.Num(); i++) {
+		SpawnLocation = FVector(HatTilesArray[i]->GetActorLocation().X, HatTilesArray[i]->GetActorLocation().Y, HatTilesArray[i]->GetActorLocation().Z + 50);
+		HatTrickActor = GetWorld()->SpawnActor<AActor_HatTrick>(HatTrick_Class, HatTilesArray[i]->GetActorLocation(), FRotator::ZeroRotator, SpawnInfo);
+	}
+
+	Destroy();
 }
 
 
