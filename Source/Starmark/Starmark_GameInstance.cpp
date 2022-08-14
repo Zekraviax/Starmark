@@ -1,5 +1,6 @@
 #include "Starmark_GameInstance.h"
 
+#include "Actor_GridTile.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Engine/LocalPlayer.h"
 #include "Kismet/GameplayStatics.h"
@@ -47,6 +48,26 @@ void UStarmark_GameInstance::LoadProfile(FString ProfileName)
 }
 
 
+AActor_GridTile* UStarmark_GameInstance::FindTileByCoordinates(int x, int y)
+{
+	TArray<AActor*> GridTilesArray;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+	AActor_GridTile* GridTile = nullptr;
+
+	for (AActor* Tile : GridTilesArray) {
+		GridTile = Cast<AActor_GridTile>(Tile);
+		if (Tile->GetActorLocation().X / 200 == x && Tile->GetActorLocation().Y / 200 == y) {
+			return GridTile;
+		}
+	}
+
+	return nullptr;
+}
+
+
+
+// Networking
+// --------------------------------------------------
 bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers, FString CustomLobbyName)
 {
 	// Get the Online Subsystem to work with

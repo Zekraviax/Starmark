@@ -11,7 +11,7 @@
 
 // Forward Declarations
 class AActor_GridTile;
-class AActor_HatTrick;
+class ACharacter_HatTrick;
 class AActor_StatusEffectsLibrary;
 class ACharacter_NonAvatarEntity;
 class ACharacter_Pathfinder;
@@ -48,7 +48,7 @@ public:
 	TSubclassOf<ACharacter_NonAvatarEntity> RockWall_Class;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AActor_HatTrick> HatTrick_Class;	
+	TSubclassOf<ACharacter_HatTrick> HatTrick_Class;	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ACharacter_NonAvatarEntity> NonAvatarEntity_Class;
@@ -122,4 +122,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void AddProperty_Fire(AActor_GridTile* TargetTile);
+
+// ------------------------- Full Move Functions
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Light_Illuminate(AActor_GridTile* TargetTile);
 };

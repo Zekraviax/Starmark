@@ -1,8 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "Actor_HatTrick.generated.h"
+#include "Character_NonAvatarEntity.h"
+#include "Character_HatTrick.generated.h"
 
 
 // Forward Declarations
@@ -11,23 +11,13 @@ class ACharacter_Pathfinder;
 
 
 UCLASS()
-class STARMARK_API AActor_HatTrick : public AActor
+class STARMARK_API ACharacter_HatTrick : public ACharacter_NonAvatarEntity
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AActor_HatTrick();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+public:
+	ACharacter_HatTrick();
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	
 // Variables
 // --------------------------------------------------
 
@@ -40,11 +30,10 @@ public:
 
 	UPROPERTY()
 	bool IsOwnerHiddenInThisHat = false;
-	
+
+
 // Functions
 // --------------------------------------------------
 
 // -------------------------
-	UFUNCTION()
-	void SelectHatToHideAvatar();
 };

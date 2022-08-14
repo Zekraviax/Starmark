@@ -27,9 +27,9 @@ class STARMARK_API ACharacter_NonAvatarEntity : public ACharacter_Pathfinder
 {
 	GENERATED_BODY()
 
+public:
 	ACharacter_NonAvatarEntity();
 
-public:
 // Variables
 // --------------------------------------------------
 

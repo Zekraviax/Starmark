@@ -2,7 +2,7 @@
 
 
 #include "Actor_GridTile.h"
-#include "Actor_HatTrick.h"
+#include "Character_HatTrick.h"
 #include "Actor_StatusEffectsLibrary.h"
 #include "Character_Pathfinder.h"
 #include "Character_NonAvatarEntity.h"
@@ -264,7 +264,7 @@ void AActor_AttackEffectsLibrary::Spawn_RockWall_Implementation(AActor_GridTile*
 	FVector Location = FVector(TargetTile->GetActorLocation().X, TargetTile->GetActorLocation().Y, TargetTile->GetActorLocation().Z + 50);
 
 	ACharacter_NonAvatarEntity* NewRockWallActor = GetWorld()->SpawnActor<ACharacter_NonAvatarEntity>(RockWall_Class, Location, FRotator::ZeroRotator, SpawnInfo);
-	TargetTile->Properties.Add(E_GridTile_Properties::E_Wall);
+	TargetTile->Properties.AddUnique(E_GridTile_Properties::E_Wall);
 }
 
 
@@ -279,13 +279,16 @@ void AActor_AttackEffectsLibrary::Spawn_Hurricane_Implementation(AActor_GridTile
 
 void AActor_AttackEffectsLibrary::Spawn_Hats_Implementation(AActor_GridTile* TargetTile)
 {
-	AActor_HatTrick* HatTrickActor = nullptr;
+	ACharacter_HatTrick* HatTrickActor = nullptr;
 	FVector SpawnLocation = FVector::ZeroVector;
 
+	// Spawn three hats
 	for (int i = 0; i < HatTilesArray.Num(); i++) {
-		SpawnLocation = FVector(HatTilesArray[i]->GetActorLocation().X, HatTilesArray[i]->GetActorLocation().Y, HatTilesArray[i]->GetActorLocation().Z + 50);
-		HatTrickActor = GetWorld()->SpawnActor<AActor_HatTrick>(HatTrick_Class, HatTilesArray[i]->GetActorLocation(), FRotator::ZeroRotator, SpawnInfo);
+		SpawnLocation = FVector(HatTilesArray[i]->GetActorLocation().X, HatTilesArray[i]->GetActorLocation().Y, HatTilesArray[i]->GetActorLocation().Z + 100);
+		HatTrickActor = GetWorld()->SpawnActor<ACharacter_HatTrick>(HatTrick_Class, SpawnLocation, FRotator::ZeroRotator, SpawnInfo);
 	}
+
+	// Make the player choose one hat to hide their avatar in
 
 	Destroy();
 }
@@ -293,17 +296,34 @@ void AActor_AttackEffectsLibrary::Spawn_Hats_Implementation(AActor_GridTile* Tar
 
 void AActor_AttackEffectsLibrary::AddProperty_StoneRoad_Implementation(AActor_GridTile* TargetTile)
 {
-	TargetTile->Properties.Add(E_GridTile_Properties::E_StoneRoad);
+	TargetTile->Properties.AddUnique(E_GridTile_Properties::E_StoneRoad);
 }
 
 
 void AActor_AttackEffectsLibrary::AddProperty_Shadow_Implementation(AActor_GridTile* TargetTile)
 {
-	TargetTile->Properties.Add(E_GridTile_Properties::Shadow);
+	TargetTile->Properties.AddUnique(E_GridTile_Properties::Shadow);
 }
 
 
 void AActor_AttackEffectsLibrary::AddProperty_Fire_Implementation(AActor_GridTile* TargetTile)
 {
-	TargetTile->Properties.Add(E_GridTile_Properties::Fire);
+	TargetTile->Properties.AddUnique(E_GridTile_Properties::Fire);
+}
+
+
+// ------------------------- Full Move Functions
+void AActor_AttackEffectsLibrary::Light_Illuminate_Implementation(AActor_GridTile* TargetTile)
+{
+	if (TargetTile->Properties.Contains(E_GridTile_Properties::Shadow)) {
+		TargetTile->Properties.Remove(E_GridTile_Properties::Shadow);
+	}
+
+	if (TargetTile->Properties.Contains(E_GridTile_Properties::Haze)) {
+		TargetTile->Properties.Remove(E_GridTile_Properties::Haze);
+	}
+
+	if (TargetTile->Properties.Num() < 1) {
+		TargetTile->Properties.AddUnique(E_GridTile_Properties::E_None);
+	}
 }

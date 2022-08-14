@@ -10,6 +10,10 @@
 #include "Starmark_GameInstance.generated.h"
 
 
+// Forward Declarations
+class AActor_GridTile;
+
+
 UCLASS()
 class STARMARK_API UStarmark_GameInstance : public UGameInstance
 {
@@ -43,9 +47,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LoadProfile(FString ProfileName);
 
+// ------------------------- Level
+	UFUNCTION()
+	AActor_GridTile* FindTileByCoordinates(int x, int y);
+
+
 // Networking
 // --------------------------------------------------
-
 	/* Delegate called when session created */
 	FOnCreateSessionCompleteDelegate OnCreateSessionCompleteDelegate;
 	/* Delegate called when session started */

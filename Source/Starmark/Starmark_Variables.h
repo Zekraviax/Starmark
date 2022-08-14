@@ -121,6 +121,7 @@ enum class E_GridTile_Properties : uint8
 	Shadow,
 	Fire,
 	Hat,
+	Haze,
 };
 
 
@@ -190,6 +191,8 @@ enum class EBattle_AttackEffects : uint8
 	LowerTargetHealthEqualsHigherDamageDealt,
 	// Special Functions
 	SummonAvatar,
+	// Full Move Functions
+	Light_Illuminate,
 };
 
 

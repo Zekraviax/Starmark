@@ -3,6 +3,7 @@
 
 #include "Actor_AttackEffectsLibrary.h"
 #include "Actor_GridTile.h"
+#include "Character_HatTrick.h"
 #include "AIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -19,7 +20,6 @@
 APlayerController_Base::APlayerController_Base()
 {
 	bShowMouseCursor = true;
-
 	IsCurrentlyActingPlayer = false;
 	PlayerClickMode = E_PlayerCharacter_ClickModes::E_Nothing;
 
@@ -153,7 +153,15 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_AttackEffectsLibrary::StaticClass(), AttackEffectsLibraries);
 
 	// The Hat Trick functions should take priority over other moves
-	if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackEffectsOnTarget.Contains(EBattle_AttackEffects::SpawnHats)) {
+	if (ClickedActor->GetClass()->GetFullName().Contains("HatTrick")) {
+		// Hide avatar
+		Cast<ACharacter_HatTrick>(ClickedActor)->IsOwnerHiddenInThisHat = true;
+		CurrentSelectedAvatar->SetActorLocation(ClickedActor->GetActorLocation());
+		CurrentSelectedAvatar->SetActorHiddenInGame(true);
+
+		// End avatar turn
+		Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn();
+	} else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackEffectsOnTarget.Contains(EBattle_AttackEffects::SpawnHats)) {
 		if (AttackEffectsLibraries.Num() <=  0) {
 			AttackEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_AttackEffectsLibrary>(AttackEffectsLibrary_Class);
 			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Spawn AttackEffectsLibrary_Reference"));
@@ -179,7 +187,7 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 
 		// Subtract attack's MP cost
 		CurrentSelectedAvatar->AvatarData.CurrentManaPoints -= CurrentSelectedAvatar->CurrentSelectedAttack.ManaCost;
-	} else {
+
 		if (ClickedActor &&
 			CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::AttackClickedAvatar) {
 			// If we're attacking, and we clicked on a valid target in-range, launch an attack
