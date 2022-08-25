@@ -104,6 +104,10 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 		if (Cast<AActor_GridTile>(Target))
 			AddProperty_Fire(Cast<AActor_GridTile>(Target));
 		break;
+	case (EBattle_AttackEffects::Light_Illuminate):
+		if (Cast<AActor_GridTile>(Target))
+			Light_Illuminate(Cast<AActor_GridTile>(Target));
+		break;
 	default:
 		break;
 	}

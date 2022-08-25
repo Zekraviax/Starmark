@@ -36,7 +36,7 @@ public:
 	UPROPERTY()
 	FString CurrentProfileName;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UPlayer_SaveData* CurrentProfileReference;
 
 

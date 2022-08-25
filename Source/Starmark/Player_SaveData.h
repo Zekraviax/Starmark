@@ -28,6 +28,6 @@ public:
 	UPROPERTY()
 	TArray<FAvatar_Struct> AvatarLibrary;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<FAvatar_Struct> CurrentAvatarTeam;
 };

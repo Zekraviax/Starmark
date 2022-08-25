@@ -66,13 +66,13 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	AttackTraceActor = CreateDefaultSubobject<UStaticMeshComponent>("AttackTraceActor");
 	AttackTraceActor->SetupAttachment(RootComponent);
 	AttackTraceActor->SetVisibility(true);
-	AttackTraceActor->SetHiddenInGame(false);
+	AttackTraceActor->SetHiddenInGame(true);
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
-	//Hitbox Component
+	// Hitbox Component
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComponent");
 	BoxComponent->SetupAttachment(RootComponent);
 	BoxComponent->SetVisibility(true);

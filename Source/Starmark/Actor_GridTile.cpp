@@ -62,24 +62,24 @@ void AActor_GridTile::UpdateGridTileState()
 void AActor_GridTile::OnMouseBeginHover(ACharacter_Pathfinder* CurrentAvatar)
 {
 	// Set AttackTraceActor to this tile's location if it isn't centered around the player
-	if (IsValid(CurrentAvatar)) {
-		if (CurrentAvatar->CurrentSelectedAttack.AttachAttackTraceActorToMouse) {
-			if (CurrentAvatar->PlayerControllerReference) {
-				FVector AttackTraceActorLocation = FVector::ZeroVector;
+	//if (IsValid(CurrentAvatar)) {
+	//	if (CurrentAvatar->CurrentSelectedAttack.AttachAttackTraceActorToMouse) {
+	//		if (CurrentAvatar->PlayerControllerReference) {
+	//			FVector AttackTraceActorLocation = FVector::ZeroVector;
 
-				if (CurrentAvatar->CurrentSelectedAttack.BaseRange > 1)
-					AttackTraceActorLocation = FVector(GetActorLocation().X, GetActorLocation().Y - (200 * CurrentAvatar->CurrentSelectedAttack.BaseRange), CurrentAvatar->AttackTraceActor->GetComponentLocation().Z);
-				else
-					AttackTraceActorLocation = FVector(GetActorLocation().X, GetActorLocation().Y, CurrentAvatar->AttackTraceActor->GetComponentLocation().Z);
-				
-				CurrentAvatar->AttackTraceActor->SetWorldLocation(AttackTraceActorLocation, true, nullptr, ETeleportType::ResetPhysics);
+	//			if (CurrentAvatar->CurrentSelectedAttack.BaseRange > 1)
+	//				AttackTraceActorLocation = FVector(GetActorLocation().X, GetActorLocation().Y - (200 * CurrentAvatar->CurrentSelectedAttack.BaseRange), CurrentAvatar->AttackTraceActor->GetComponentLocation().Z);
+	//			else
+	//				AttackTraceActorLocation = FVector(GetActorLocation().X, GetActorLocation().Y, CurrentAvatar->AttackTraceActor->GetComponentLocation().Z);
+	//			
+	//			CurrentAvatar->AttackTraceActor->SetWorldLocation(AttackTraceActorLocation, true, nullptr, ETeleportType::ResetPhysics);
 
-				// Update MouseCursor location and AttackTrace location
-				CurrentAvatar->PlayerControllerReference->CursorLocationSnappedToGrid = GetActorLocation().GridSnap(200.f);
-				CurrentAvatar->ShowAttackRange();
-			}
-		}
-	}
+	//			// Update MouseCursor location and AttackTrace location
+	//			CurrentAvatar->PlayerControllerReference->CursorLocationSnappedToGrid = GetActorLocation().GridSnap(200.f);
+	//			CurrentAvatar->ShowAttackRange();
+	//		}
+	//	}
+	//}
 }
 
 
@@ -106,6 +106,53 @@ void AActor_GridTile::UpdateTileColour(E_GridTile_ColourChangeContext ColourChan
 				Properties.Contains(E_GridTile_Properties::E_Occupied))
 				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.5f, 0.5f, 0.5f, 1.f));
 				break;
+		case (E_GridTile_ColourChangeContext::OnMouseHover):
+			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+			break;
+		case (E_GridTile_ColourChangeContext::OnMouseHoverTileUnreachable):
+			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+			break;
+		case (E_GridTile_ColourChangeContext::WithinAttackRange):
+			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.2f, 0.f, 1.f));
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+
+void AActor_GridTile::SetTileHighlightProperties(bool IsVisible, bool ShouldChangeColourOnMouseOver, E_GridTile_ColourChangeContext ColourChangeContext)
+{
+	if (TileHighlightPlane->IsValidLowLevel()) {
+		// Set visibility
+		TileHighlightPlane->SetVisibility(IsVisible);
+		TileHighlightPlane->SetHiddenInGame(!IsVisible);
+
+		// Set colour changing
+		ChangeColourOnMouseHover = ShouldChangeColourOnMouseOver;
+
+		// Change colour
+		switch (ColourChangeContext)
+		{
+		case (E_GridTile_ColourChangeContext::Normal):
+			// Heirarcy of colours based on factors such as tile properties
+			// Lowest priority: White (no properties that change colour)
+			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::White);
+			// Road (free travel)
+			if (Properties.Contains(E_GridTile_Properties::E_StoneRoad))
+				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.5f, 0.2f, 0.f, 1.f));
+			// Shadow
+			if (Properties.Contains(E_GridTile_Properties::Shadow))
+				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.1f, 0.1f, 0.1f, 1.f));
+			// Fire
+			if (Properties.Contains(E_GridTile_Properties::Fire))
+				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.6f, 0.2f, 0.f, 1.f));
+			// Highest priority: Tile is un-traversable
+			if (Properties.Contains(E_GridTile_Properties::E_Wall) ||
+				Properties.Contains(E_GridTile_Properties::E_Occupied))
+				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.5f, 0.5f, 0.5f, 1.f));
+			break;
 		case (E_GridTile_ColourChangeContext::OnMouseHover):
 			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
 			break;

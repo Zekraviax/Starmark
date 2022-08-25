@@ -46,11 +46,17 @@ public:
 	UStaticMeshComponent* Floor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* TileHighlightPlane;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBoxComponent* GridTileHitbox;
 
 // ------------------------- Tile
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<E_GridTile_Properties> Properties;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInterface* TileHighlightMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterialInstanceDynamic* DynamicMaterial;
@@ -84,4 +90,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateTileColour(E_GridTile_ColourChangeContext ColourChangeContext);
+
+	UFUNCTION(BlueprintCallable)
+	void SetTileHighlightProperties(bool IsVisible, bool ShouldChangeColourOnMouseOver, E_GridTile_ColourChangeContext ColourChangeContext);
 };
