@@ -19,21 +19,10 @@ void UWidgetComponent_AvatarAttack::OnButtonPressed()
 		// Set selected Attack
 		PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack = PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[AvatarAttackIndex];
 
-		// Clear valid targets for old attacks
-		//PlayerControllerReference->CurrentSelectedAvatar->ValidAttackTargetsArray.Empty();
-
 		// Get new valid targets
 		PlayerControllerReference->CurrentSelectedAvatar->ShowAttackRange();
 
 		// Enable rotation towards mouse cursor
 		PlayerControllerReference->CurrentSelectedAvatar->RotateAvatarTowardsMouse = true;
-
-
-		// Hat Trick: Get the tile the player is on and add it to the hat trick array
-		if (PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackEffectsOnTarget.Contains(EBattle_AttackEffects::SpawnHats)) {
-			ACharacter_Pathfinder* AvatarReference = PlayerControllerReference->CurrentSelectedAvatar;
-			AActor_GridTile* CurrentTile = Cast<UStarmark_GameInstance>(GetWorld()->GetGameInstance())->FindTileByCoordinates(AvatarReference->GetActorLocation().X / 200, AvatarReference->GetActorLocation().Y / 200);
-			Cast<APlayerController_Base>(GetWorld()->GetFirstPlayerController())->OnPrimaryClick(CurrentTile);
-		}
 	}
 }

@@ -149,8 +149,8 @@ void AStarmark_PlayerState::Server_AddHealth_Implementation(ACharacter_Pathfinde
 		Avatar->AvatarData.CurrentHealthPoints += Healing;
 		Avatar->UpdateAvatarDataInPlayerParty();
 
-		if (Avatar->AvatarData.CurrentHealthPoints > Avatar->AvatarData.BaseStats.HealthPoints)
-			Avatar->AvatarData.CurrentHealthPoints = Avatar->AvatarData.BaseStats.HealthPoints;
+		if (Avatar->AvatarData.CurrentHealthPoints > Avatar->AvatarData.BaseStats.MaximumHealthPoints)
+			Avatar->AvatarData.CurrentHealthPoints = Avatar->AvatarData.BaseStats.MaximumHealthPoints;
 	}
 }
 

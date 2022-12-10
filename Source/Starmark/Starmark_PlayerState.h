@@ -31,6 +31,13 @@ public:
 	UPROPERTY()
 	UStarmark_GameInstance* GameInstanceReference;
 
+// ------------------------- Avatar
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* AvatarDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FName> AvatarsDataTableRowNames;
+
 // ------------------------- Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<FAvatar_Struct> PlayerState_PlayerParty;
@@ -45,9 +52,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString PlayerReadyStatus = "Not Ready";
 
-// ------------------------- Avatar
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UDataTable* AvatarDataTable;
+// ------------------------- Other
+	UPROPERTY()
+	FString PlayerStateContextString;
 
 
 // Functions

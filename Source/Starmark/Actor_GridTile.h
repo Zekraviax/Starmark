@@ -61,6 +61,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterialInstanceDynamic* DynamicMaterial;
 
+	// List of randomly chosen base baterials
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UMaterialInterface*> RandomlyChosenMaterialsArray;
+
 	// Occupying Actor
 	UPROPERTY()
 	AActor* OccupyingActor;

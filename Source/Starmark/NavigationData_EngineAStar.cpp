@@ -82,8 +82,12 @@ FPathFindingResult ANavigationData_EngineAStar::FindPath(const FNavAgentProperti
 			TArray<FIntPoint> Path;
 			EGraphAStarResult AStarResult = AStar->Pathfinder->FindPath(StartPositionOnGrid, EndPositionOnGrid, QueryFilter, Path);
 
+			//  || AStarResult == EGraphAStarResult::GoalUnreachable
 			if (AStarResult == EGraphAStarResult::SearchFail || AStarResult == EGraphAStarResult::InfiniteLoop) {
 				UE_LOG(LogTemp, Warning, TEXT("NaviationData_EngineAStar / A* failed to find path: %d"), AStarResult);
+				UE_LOG(LogTemp, Warning, TEXT("NaviationData_EngineAStar / Did search reach limit?: %s"), NavPath->DidSearchReachedLimit() ? TEXT("true") : TEXT("false"));
+				UE_LOG(LogTemp, Warning, TEXT("NaviationData_EngineAStar / Path length: %s"), *FString::FromInt(Path.Num()));
+
 
 				Result.Result = ENavigationQueryResult::Fail;
 				return Result;
@@ -96,10 +100,6 @@ FPathFindingResult ANavigationData_EngineAStar::FindPath(const FNavAgentProperti
 
 			// Insert all points from the path into the navpath
 			for (auto& Point : Path) {
-				// Subtract movement points only if the avatar is moving
-				//if (GameStateReference->AvatarTurnOrder[GameStateReference->CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves >= QueryFilter.GetTraversalCost(Point, Point))
-				//	GameStateReference->AvatarTurnOrder[GameStateReference->CurrentAvatarTurnIndex]->AvatarData.CurrentTileMoves -= QueryFilter.GetTraversalCost(Point, Point);
-
 				NavPath->GetPathPoints().Add(FNavPathPoint(AStar->WorldGridReference->ConvertGridCoordinatesToWorldTile(Point)));
 
 				UE_LOG(LogTemp, Warning, TEXT("NaviationData_EngineAStar / A* path coordinate converted to world tile: %s"), *AStar->WorldGridReference->ConvertGridCoordinatesToWorldTile(Point).ToString());

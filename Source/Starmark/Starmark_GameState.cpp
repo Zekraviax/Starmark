@@ -3,13 +3,15 @@
 #include "Actor_AbilitiesLibrary.h"
 #include "Actor_GridTile.h"
 #include "Actor_StatusEffectsLibrary.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Character_NonAvatarEntity.h"
 #include "Character_Pathfinder.h"
 #include "Engine/World.h"
-#include "Kismet/GameplayStatics.h"
-#include "PlayerController_Base.h"
 #include "Starmark_PlayerState.h"
 #include "Starmark_GameMode.h"
+#include "Kismet/GameplayStatics.h"
+#include "PlayerController_Base.h"
+#include "Widget_HUD_Battle.h"
 
 
 void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -104,24 +106,24 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 		Avatar->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves;
 
 		// Reduce durations of all statuses
-		for (int i = Avatar->CurrentStatusEffectsArray.Num() - 1; i >= 0; i--) {
-			Avatar->CurrentStatusEffectsArray[i].TurnsRemaining--;
+		//for (int i = Avatar->CurrentStatusEffectsArray.Num() - 1; i >= 0; i--) {
+		//	Avatar->CurrentStatusEffectsArray[i].TurnsRemaining--;
 
-			if (Avatar->CurrentStatusEffectsArray[i].TurnsRemaining <= 0) {
-				if (IsValid(Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor))
-					Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectRemoved(Avatar, Avatar->CurrentStatusEffectsArray[i]);
-				else
-					Avatar->CurrentStatusEffectsArray.RemoveAt(i);
-			} else {
-				// On Status Effect Start-of-turn effects
-				if (Avatar->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
-					Avatar->AvatarData.CurrentTileMoves = Avatar->AvatarData.MaximumTileMoves / 2;
-					break;
-				} else if (IsValid(Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor)) {
-					Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectStartOfTurn(Avatar, Avatar->CurrentStatusEffectsArray[i]);
-				}
-			}
-		}
+		//	if (Avatar->CurrentStatusEffectsArray[i].TurnsRemaining <= 0) {
+		//		if (IsValid(Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor))
+		//			Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectRemoved(Avatar, Avatar->CurrentStatusEffectsArray[i]);
+		//		else
+		//			Avatar->CurrentStatusEffectsArray.RemoveAt(i);
+		//	} else {
+		//		// On Status Effect Start-of-turn effects
+		//		if (Avatar->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
+		//			Avatar->AvatarData.CurrentTileMoves = Avatar->AvatarData.MaximumTileMoves / 2;
+		//			break;
+		//		} else if (IsValid(Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor)) {
+		//			Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectStartOfTurn(Avatar, Avatar->CurrentStatusEffectsArray[i]);
+		//		}
+		//	}
+		//}
 
 		// Check for any abilities that trigger at the start of the turn
 		if (Avatar->AvatarData.Ability.TriggerCondition == E_Ability_TriggerConditions::OnAvatarStartOfTurn) {
@@ -146,11 +148,39 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 			// Call the ability function
 			Avatar->AvatarData.Ability.AbilityLibraryActor->SwitchOnAbilityEffect(Avatar->AvatarData.Ability.Function, Avatar, Avatar);
 		}
+
+		// Check that the currently acting entity isn't stunned
+		if (StunStatus.Name != "Stunned") {
+			StunStatus = *StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Stunned", GameStateContextString);
+		}
+
+		if (!Avatar->CurrentStatusEffectsArray.Contains(StunStatus)) {
+			// If the currently acting entity is an enemy, activate their AI functions
+			//if (Avatar->AvatarData.Factions.Contains(EEntity_Factions::Enemy1)) {
+			//	AAIController_EnemyEntity* EnemyController = Cast<AAIController_EnemyEntity>(Avatar->GetController());
+
+			//	if (EnemyController->SelfEntityReference != Avatar) {
+			//		EnemyController->SelfEntityReference = Avatar;
+			//		EnemyController->Possess(Avatar);
+			//	}
+
+			//	EnemyController->StepOne_ChooseTarget();
+			//}
+		}
 	}
 
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
 		PlayerController->Player_OnAvatarTurnChanged();
+	}
+
+	// Update HUD
+	if (GameModeReference == nullptr) {
+		GameModeReference = Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode());
+	}
+
+	for (APlayerController_Base* Controller : GameModeReference->PlayerControllerReferences) {
+		Controller->Local_GetEntitiesInTurnOrder(DynamicAvatarTurnOrder, CurrentAvatarTurnIndex);
 	}
 }
 
@@ -178,6 +208,8 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 		if (PlayerController) {
 			if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex)) {
 				if (AvatarTurnOrder[CurrentAvatarTurnIndex]->PlayerControllerReference == PlayerController) {
+					// Check that the currently acting entity isn't stunned (?)
+
 					PlayerController->IsCurrentlyActingPlayer = true;
 					PlayerController->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
 				} else {
@@ -187,11 +219,10 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 		}
 	}
 
-	// Set all GridTiles to default colours and colourability
+	// Set all GridTiles to default colours and visibility
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
 	for (int j = 0; j < GridTilesArray.Num(); j++) {
-		Cast<AActor_GridTile>(GridTilesArray[j])->ChangeColourOnMouseHover = true;
-		Cast<AActor_GridTile>(GridTilesArray[j])->UpdateTileColour(E_GridTile_ColourChangeContext::Normal);
+		Cast<AActor_GridTile>(GridTilesArray[j])->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
 	}
 
 
@@ -205,11 +236,36 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	// Assign currently controlled avatars based on the dynamic turn order
 	for (int i = DynamicAvatarTurnOrder.Num() - 1; i >= 0; i--) {
 		if (IsValid(DynamicAvatarTurnOrder[i])) {
-			DynamicAvatarTurnOrder[i]->PlayerControllerReference->CurrentSelectedAvatar = DynamicAvatarTurnOrder[i];
+			if (DynamicAvatarTurnOrder[i]->PlayerControllerReference->IsValidLowLevel()) {
 
+				for (int x = DynamicAvatarTurnOrder[i]->CurrentStatusEffectsArray.Num() - 1; x >= 0; x--) {
+					if (DynamicAvatarTurnOrder[i]->CurrentStatusEffectsArray[x].Name == "Stunned") {
+						GetWorldTimerManager().SetTimer(StunTimerHandle, this, &AStarmark_GameState::StunDelayedSkipTurn, 1.f);
+						DynamicAvatarTurnOrder[i]->CurrentStatusEffectsArray.RemoveAt(x);
+					}
+				}
+
+				// Clean up entities' controllers
+				DynamicAvatarTurnOrder[i]->PlayerControllerReference->TileHighlightMode = E_PlayerCharacter_HighlightModes::E_MovePath;
+			}
+			else {
+				UE_LOG(LogTemp, Warning, TEXT("AvatarEndTurn / Next entity in turn order does not have a player controller."));
+			}
+
+			// Clean up all entities
 			DynamicAvatarTurnOrder[i]->CurrentSelectedAttack.Name = "None";
 			DynamicAvatarTurnOrder[i]->CurrentSelectedAttack.AttachAttackTraceActorToMouse = false;
 			DynamicAvatarTurnOrder[i]->ValidAttackTargetsArray.Empty();
+			DynamicAvatarTurnOrder[i]->AttackTraceActor->SetVisibility(false);
+			DynamicAvatarTurnOrder[i]->AttackTraceActor->SetHiddenInGame(true);
+
+			// Reset the players' hud
+			TArray<UUserWidget*> FoundBattleHudWidgets;
+			UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundBattleHudWidgets, UWidget_HUD_Battle::StaticClass(), true);
+			for (UUserWidget* FoundWidget : FoundBattleHudWidgets) {
+				UWidget_HUD_Battle* HUD = Cast<UWidget_HUD_Battle>(FoundWidget);
+				HUD->ResetBattleHud();
+			}
 		}
 	}
 
@@ -225,4 +281,10 @@ void AStarmark_GameState::EndOfBattle_Implementation()
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("End Of Battle. Returning to Main Menu...")));
 
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->EndOfBattle();
+}
+
+
+void AStarmark_GameState::StunDelayedSkipTurn_Implementation()
+{
+	AvatarEndTurn();
 }

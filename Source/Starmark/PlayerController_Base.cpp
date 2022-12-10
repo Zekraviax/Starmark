@@ -77,8 +77,8 @@ void APlayerController_Base::SetBattleWidgetVariables()
 		if (BattleWidgetReference->PlayerControllerReference != this)
 			BattleWidgetReference->PlayerControllerReference = this;
 
+		// To-Do: Fix these
 		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
-		BattleWidgetReference->UpdateAvatarAttacksComponents();
 		BattleWidgetReference->AvatarBattleDataWidget->GetAvatarStatusEffects(CurrentSelectedAvatar->CurrentStatusEffectsArray);
 	}
 }
@@ -90,9 +90,17 @@ void APlayerController_Base::Client_GetTurnOrderText_Implementation(const FStrin
 }
 
 
-void APlayerController_Base::Local_GetTurnOrderText(const FString & NewTurnOrderText)
+void APlayerController_Base::Local_GetTurnOrderText(const FString& NewTurnOrderText)
 {
 	BattleWidgetReference->UpdateTurnOrderText(NewTurnOrderText);
+}
+
+
+void APlayerController_Base::Local_GetEntitiesInTurnOrder(TArray<ACharacter_Pathfinder*> TurnOrderArray, int IndexOfCurrentlyActingEntity)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Local_GetEntitiesInTurnOrder / Begin function"));
+
+	BattleWidgetReference->SetUiIconsInTurnOrder(TurnOrderArray, IndexOfCurrentlyActingEntity);
 }
 
 
@@ -147,7 +155,7 @@ void APlayerController_Base::Server_GetDataFromProfile_Implementation()
 }
 
 
-void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
+void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor, TArray<AActor*> ValidTargetsArray)
 {
 	TArray<AActor*> AttackEffectsLibraries;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_AttackEffectsLibrary::StaticClass(), AttackEffectsLibraries);
@@ -162,7 +170,7 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 		// End avatar turn
 		Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn();
 	} else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackEffectsOnTarget.Contains(EBattle_AttackEffects::SpawnHats)) {
-		if (AttackEffectsLibraries.Num() <=  0) {
+		if (AttackEffectsLibraries.Num() <= 0) {
 			AttackEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_AttackEffectsLibrary>(AttackEffectsLibrary_Class);
 			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Spawn AttackEffectsLibrary_Reference"));
 		}
@@ -173,23 +181,24 @@ void APlayerController_Base::OnPrimaryClick(AActor* ClickedActor)
 				UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Add selected tile to HatTilesArray"));
 			}
 		}
-
-		if (AttackEffectsLibrary_Reference->HatTilesArray.Num() >= 3) {
-			AttackEffectsLibrary_Reference->Spawn_Hats();
-			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Spawn hats for Hat Trick."));
-		}
-
-
 	} else if (CurrentSelectedAvatar->CurrentSelectedAttack.Name != "Default" &&
 		CurrentSelectedAvatar->CurrentSelectedAttack.Name != "None" &&
 		CurrentSelectedAvatar->CurrentSelectedAttack.Name != "---" &&
-		CurrentSelectedAvatar->ValidAttackTargetsArray.Num() > 0) {
-
+		ValidTargetsArray.Num() > 0) {
 		// Subtract attack's MP cost
 		CurrentSelectedAvatar->AvatarData.CurrentManaPoints -= CurrentSelectedAvatar->CurrentSelectedAttack.ManaCost;
 
 		if (ClickedActor &&
 			CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::AttackClickedAvatar) {
+
+			// Find an entity amongst the valid targets
+			for (AActor* Actor : ValidTargetsArray) {
+				if (Cast<ACharacter_Pathfinder>(Actor)) {
+					ClickedActor = Cast<ACharacter_Pathfinder>(Actor);
+					break;
+				}
+			}
+
 			// If we're attacking, and we clicked on a valid target in-range, launch an attack
 			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / Launch attack against ClickedActor"));
 			UE_LOG(LogTemp, Warning, TEXT("OnPrimaryClick / ClickedActor is: %s"), *ClickedActor->GetFullName());
@@ -278,17 +287,11 @@ void APlayerController_Base::SendEndOfTurnCommandToServer_Implementation()
 void APlayerController_Base::Player_OnAvatarTurnChanged_Implementation()
 {
 	TArray<AActor*> GridTilesArray;
-
-	if (IsValid(BattleWidgetReference)) {
-		BattleWidgetReference->EndTurnCommandButton->SetIsEnabled(IsCurrentlyActingPlayer);
-	}
-
 	SetBattleWidgetVariables();
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
 	for (int j = 0; j < GridTilesArray.Num(); j++) {
-		Cast<AActor_GridTile>(GridTilesArray[j])->UpdateTileColour(E_GridTile_ColourChangeContext::Normal);
-		Cast<AActor_GridTile>(GridTilesArray[j])->ChangeColourOnMouseHover = true;
+		Cast<AActor_GridTile>(GridTilesArray[j])->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
 	}
 }
 

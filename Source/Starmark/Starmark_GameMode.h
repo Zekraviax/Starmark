@@ -15,6 +15,7 @@ class ACharacter_Pathfinder;
 class APlayerController_Base;
 class APlayerPawn_Static;
 class APlayerPawn_Flying;
+class AStarmark_GameState;
 
 
 UCLASS()
@@ -26,17 +27,21 @@ public:
 // Variables
 // --------------------------------------------------
 
-// ------------------------- Avatar
+// ------------------------- References
+	UPROPERTY()
+	AStarmark_GameState* GameStateReference;
+
+// ------------------------- Data Tables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarDataTable;
 
-// ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarSimpleAttacksDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarComplexAttacksDataTable;
 
+// ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<APlayerController_Base*> PlayerControllerReferences;
 
@@ -70,6 +75,10 @@ public:
 
 	UPROPERTY()
 	int MultiplayerUniqueIDCounter;
+
+// ------------------------- Other
+	UPROPERTY()
+	FString GameModeContextString;
 
 // Functions
 // --------------------------------------------------

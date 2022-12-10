@@ -70,6 +70,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
 	bool RotateAvatarTowardsMouse = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Entity")
+	FDataTableRowHandle AvatarDataTableRow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Entity")
+	bool FetchDataFromDataTable;
+
 // ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	UDataTable* UltimateTypeChartDataTable;
@@ -136,7 +142,7 @@ public:
 	void LaunchAttack(AActor* Target);
 
 	UFUNCTION(BlueprintCallable)
-	void SetTilesOccupiedBySize();
+	void SetTilesOccupiedBySize(bool ClearTiles);
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateAvatarDataInPlayerParty();

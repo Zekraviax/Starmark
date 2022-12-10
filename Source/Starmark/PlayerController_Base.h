@@ -123,7 +123,10 @@ public:
 	void Client_GetTurnOrderText(const FString& NewTurnOrderText);
 
 	UFUNCTION()
-	void Local_GetTurnOrderText(const FString& NewTurnOrderText);
+	void Local_GetTurnOrderText(const FString & NewTurnOrderText);
+
+	UFUNCTION()
+	void Local_GetEntitiesInTurnOrder(TArray<ACharacter_Pathfinder*> TurnOrderArray, int IndexOfCurrentlyActingEntity);
 
 // ------------------------- Avatar
 	UFUNCTION(BlueprintCallable, Client, Reliable)
@@ -137,7 +140,7 @@ public:
 	void Server_SetReadyToStartMultiplayerBattle();
 
 	UFUNCTION(BlueprintCallable)
-	void OnPrimaryClick(AActor* ClickedActor);
+	void OnPrimaryClick(AActor* ClickedActor, TArray<AActor*> ValidTargetsArray);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void SendMoveCommandToServer(FVector MoveLocation);

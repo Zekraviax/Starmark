@@ -127,6 +127,14 @@ enum class E_GridTile_Properties : uint8
 
 //------------------------- Battle
 UENUM(BlueprintType)
+enum class EEntity_Factions : uint8
+{
+	Player1,
+	Enemy1,
+};
+
+
+UENUM(BlueprintType)
 enum class EBattle_AttackPatterns : uint8
 {
 	Circle,
@@ -368,10 +376,10 @@ struct STARMARK_API FAvatar_BaseStats
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int HealthPoints;
+	int MaximumHealthPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int ManaPoints;
+	int MaximumManaPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Attack;
@@ -396,8 +404,8 @@ struct STARMARK_API FAvatar_BaseStats
 
 	FAvatar_BaseStats()
 	{
-		HealthPoints = 100;
-		ManaPoints = 100;
+		MaximumHealthPoints = 100;
+		MaximumManaPoints = 100;
 		Attack = 10;
 		Defence = 10;
 		SpecialAttack = 10;
@@ -515,7 +523,6 @@ struct STARMARK_API FAvatar_StatusEffect : public FTableRowBase
 		Description = InDescription;
 		MaximumTurns = InMaxinumTurns;
 		TurnsRemaining = InTurnsRemaining;
-		//SpecialFunctionsActor = InSpecialFunctionsActor;
 	}
 
 	bool operator==(const FAvatar_StatusEffect& OtherStatusEffect) const
@@ -703,9 +710,17 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	FAvatar_ItemStruct HeldItem;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	TArray<EEntity_Factions> Factions;
+
 // ------------------------- Appearance
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
 	UMaterial* DefaultImage;
+
+	// Animations
+	// Menu Image(s)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
+	TArray<UTexture2D*> UiImages;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
 	FAvatar_Size Size;
@@ -730,9 +745,6 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
 	int DyableColourCount;
-
-	// Animations
-	// Menu Image(s)
 
 // ------------------------- Other Data Tables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other DataTables")
@@ -764,8 +776,9 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
 	int TokensRequired;
 
-	// 0 - 3 are reserved for active avatars
-	// 4 and 5 are reserved for reserve avatars
+	// 0 is the default for newly created avatars
+	// 1 - 4 are reserved for active avatars
+	// 5 and 6 are reserved for reserve avatars
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
 	int IndexInPlayerLibrary;
 
@@ -788,6 +801,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		MaximumActionPoints = 1;
 		CurrentActionPoints = 1;
 		SameTypeAttackBonusMultiplier = 150;
+		Factions.AddUnique(EEntity_Factions::Player1);
 		DefaultImage = nullptr;
 		SkeletalMesh = nullptr;
 		DyableMaterial = nullptr;

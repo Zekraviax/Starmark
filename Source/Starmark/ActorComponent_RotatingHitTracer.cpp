@@ -9,8 +9,6 @@ UActorComponent_RotatingHitTracer::UActorComponent_RotatingHitTracer()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 
@@ -18,9 +16,6 @@ UActorComponent_RotatingHitTracer::UActorComponent_RotatingHitTracer()
 void UActorComponent_RotatingHitTracer::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 
@@ -28,7 +23,4 @@ void UActorComponent_RotatingHitTracer::BeginPlay()
 void UActorComponent_RotatingHitTracer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
-

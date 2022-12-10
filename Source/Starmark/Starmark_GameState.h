@@ -4,15 +4,17 @@
 #include "GameFramework/GameState.h"
 
 #include "Engine/Datatable.h"
+#include "Starmark_Variables.h"
 
 #include "Starmark_GameState.generated.h"
 
 
 // Forward Declarations
 class ACharacter_Pathfinder;
-class UWidget_HUD_Battle;
 class APlayerController_Base;
+class AStarmark_GameMode;
 class UWidgetComponent_LobbyPlayerVals;
+class UWidget_HUD_Battle;
 
 
 UCLASS()
@@ -23,6 +25,10 @@ class STARMARK_API AStarmark_GameState : public AGameState
 public:
 // Variables
 // --------------------------------------------------
+
+// ------------------------- References
+	UPROPERTY()
+	AStarmark_GameMode* GameModeReference;
 
 // ------------------------- Widgets
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -48,6 +54,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
 	bool AvatarDiedThisTurn = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* StatusEffectsDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	FString GameStateContextString;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FAvatar_StatusEffect StunStatus;
+
+	UPROPERTY()
+	FTimerHandle StunTimerHandle;
+
+
 // Functions
 // --------------------------------------------------
 
@@ -63,4 +82,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void EndOfBattle();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void StunDelayedSkipTurn();
 };

@@ -199,9 +199,6 @@ void UWidget_AvatarCreation::OnMoveOneDropDownChanged(FString Option)
 	if (Option.Len() == 0 || Option == "")
 		MoveOneNameText->SetText(FText::FromString("None"));
 	else {
-		FString ContextString;
-
-
 		if (Option == "None") {
 			if (CurrentAvatar.CurrentAttacks.IsValidIndex(0))
 				CurrentAvatar.CurrentAttacks.RemoveAt(0);
@@ -352,18 +349,20 @@ void UWidget_AvatarCreation::OnSaveButtonPressed()
 	}
 
 	// Update the avatar if it's in the player's team
-	for (int i = 0; i < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
-		if (PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
-			PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i] = CurrentAvatar;
-			break;
+	if (IsEditingExistingAvatar) {
+		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
+			if (PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
+				PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i] = CurrentAvatar;
+				break;
+			}
 		}
-	}
 
-	// Update the avatar if it's in the player's library
-	for (int i = 0; i < PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num(); i++) {
-		if (PlayerStateReference->PlayerProfileReference->AvatarLibrary[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
-			PlayerStateReference->PlayerProfileReference->AvatarLibrary[i] = CurrentAvatar;
-			break;
+		// Update the avatar if it's in the player's library
+		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num(); i++) {
+			if (PlayerStateReference->PlayerProfileReference->AvatarLibrary[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
+				PlayerStateReference->PlayerProfileReference->AvatarLibrary[i] = CurrentAvatar;
+				break;
+			}
 		}
 	}
 

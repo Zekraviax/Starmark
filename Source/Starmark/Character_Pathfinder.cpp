@@ -44,8 +44,8 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	// Actor Selected Decal (Don't delete this)
 	ActorSelected = CreateDefaultSubobject<UDecalComponent>("ActorSelected");
 	ActorSelected->SetupAttachment(RootComponent);
-	ActorSelected->SetVisibility(true);
-	ActorSelected->SetHiddenInGame(false);
+	ActorSelected->SetVisibility(false);
+	ActorSelected->SetHiddenInGame(true);
 	ActorSelected->DecalSize = FVector(32.0f, 64.0f, 64.0f);
 	ActorSelected->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 	ActorSelected->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
@@ -57,10 +57,10 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	ActorSelectedPlane->SetHiddenInGame(false);
 
 	// AvatarBattleData WidgetComponent
-	AvatarBattleData_Component = CreateDefaultSubobject<UWidgetComponent>("AvatarBattleData_Component");
-	AvatarBattleData_Component->SetupAttachment(RootComponent);
-	AvatarBattleData_Component->SetVisibility(true);
-	AvatarBattleData_Component->SetHiddenInGame(true);
+	//AvatarBattleData_Component = CreateDefaultSubobject<UWidgetComponent>("AvatarBattleData_Component");
+	//AvatarBattleData_Component->SetupAttachment(RootComponent);
+	//AvatarBattleData_Component->SetVisibility(true);
+	//AvatarBattleData_Component->SetHiddenInGame(true);
 
 	// Attack Trace Actor Component
 	AttackTraceActor = CreateDefaultSubobject<UStaticMeshComponent>("AttackTraceActor");
@@ -121,8 +121,8 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 	ActorLocationSnappedToGrid.Z = GetActorLocation().Z;
 	SetActorLocation(ActorLocationSnappedToGrid);
 
-	AvatarData.CurrentHealthPoints = AvatarData.BaseStats.HealthPoints;
-	AvatarData.CurrentManaPoints = AvatarData.BaseStats.ManaPoints;
+	AvatarData.CurrentHealthPoints = AvatarData.BaseStats.MaximumHealthPoints;
+	AvatarData.CurrentManaPoints = AvatarData.BaseStats.MaximumManaPoints;
 	AvatarData.CurrentTileMoves = AvatarData.MaximumTileMoves;
 
 	// Set default selected attack
@@ -206,179 +206,56 @@ void ACharacter_Pathfinder::ShowAttackRange()
 	AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	AttackTraceActor->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
-	// Center the attack component on a single tile
-	if (CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::Self ||
-		CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::SingleTile) {
-		AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		AttackTraceActor->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	// Turn off all highlights
+	TArray<AActor*> GridTilesArray;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+	for (AActor* GridTileInArray : GridTilesArray) {
+		AActor_GridTile* Tile = Cast<AActor_GridTile>(GridTileInArray);
+		Tile->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
+	}
 
-		FVector OriginCoordinates = FVector::ZeroVector;
-		ValidAttackTargetsArray.Empty();
+	AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	AttackTraceActor->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
-		// Get the current mouse/avatar position
-		if (CurrentSelectedAttack.AttachAttackTraceActorToMouse)
-			OriginCoordinates = PlayerControllerReference->CursorLocationSnappedToGrid;
+	if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::WideWall) {
+		// Set the StaticMesh
+		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
+			if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
+				AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
+				break;
+			}
+		}
+
+		FVector WideWallLocation = FVector(150, 0, -100);
+		FVector WideWallScale = FVector(0.5f, 2.f, 0.2f);
+
+		AttackTraceActor->SetRelativeLocation(WideWallLocation);
+		AttackTraceActor->SetRelativeScale3D(WideWallScale);
+	}
+	// Four-Way and Eight-Way Line Traces
+	else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
+		// Set the StaticMesh
+		for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
+			if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
+				AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
+				break;
+			}
+		}
+
+		// Adjust the Rotation Snap degree
+		if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross)
+			AttackRotationSnapToDegrees = 45;
 		else
-			OriginCoordinates = GetActorLocation().GridSnap(200.f);
+			AttackRotationSnapToDegrees = 90;
 
-		// Get all of the tiles and avatars around the origin coordinates
-		TArray<AActor*> GridTilesArray, AvatarsArray, ActorsArray;
+		int DefaultRectangleLocationX = 350; // Add 100 for every tile range
+		int DefaultRectangleScale = CurrentSelectedAttack.BaseRange - 1;
 
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), AvatarsArray);
+		FVector RectangleLocation = FVector(200, 0, -100);
+		FVector RectangleScale = FVector(1, 0.1, DefaultRectangleScale);
 
-		ActorsArray.Append(GridTilesArray);
-		ActorsArray.Append(AvatarsArray);
-
-		for (int i = 0; i < ActorsArray.Num(); i++) {
-			if (ActorsArray[i]->GetActorLocation().Equals(OriginCoordinates, 100.f)) {
-				if (Cast<AActor_GridTile>(ActorsArray[i])) {
-					Cast<AActor_GridTile>(ActorsArray[i])->ChangeColourOnMouseHover = false;
-					Cast<AActor_GridTile>(ActorsArray[i])->UpdateTileColour(E_GridTile_ColourChangeContext::WithinAttackRange);
-
-					if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::SingleTile)
-						ValidAttackTargetsArray.Add(ActorsArray[i]);
-				} else if (Cast<ACharacter_Pathfinder>(ActorsArray[i])) {
-					ValidAttackTargetsArray.Add(ActorsArray[i]);
-				}
-			} else {
-				if (Cast<AActor_GridTile>(ActorsArray[i])) {
-					Cast<AActor_GridTile>(ActorsArray[i])->ChangeColourOnMouseHover = true;
-					Cast<AActor_GridTile>(ActorsArray[i])->UpdateTileColour(E_GridTile_ColourChangeContext::Normal);
-				}
-			}
-		}
-	} else {
-		// Circle/Sphere Trace
-		if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Circle ||
-			CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::AOE_Circle) {
-			// Set the StaticMesh
-			for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
-				if (AttackTraceStaticMeshes[i]->GetName().Contains("Sphere")) {
-					AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
-					break;
-				}
-			}
-
-			if (AttackRotationSnapToDegrees != 90)
-				AttackRotationSnapToDegrees = 90;
-			
-			int DefaultSphereScale = 2 * CurrentSelectedAttack.BaseRange;		// Add 2 for every tile range
-
-			FVector SphereLocation = FVector(-200 * CurrentSelectedAttack.BaseRange, 0, -100);
-			FRotator SphereRotation = FRotator(0, 0, 0);
-			FVector SphereScale = FVector(DefaultSphereScale, DefaultSphereScale, DefaultSphereScale);
-
-			AttackTraceActor->SetRelativeLocation(SphereLocation);
-			AttackTraceActor->SetRelativeScale3D(SphereScale);
-		}
-		// Cone Trace
-		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Cone) {
-			// Set the StaticMesh
-			for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
-				if (AttackTraceStaticMeshes[i]->GetName().Contains("Cone")) {
-					AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
-					break;
-				}
-			}
-
-			if (AttackRotationSnapToDegrees != 90)
-				AttackRotationSnapToDegrees = 90;
-
-			// Set the relative location and scale through maths
-			int DefaultConeLocationX = 300; // Add 190 for every tile range the cone should reach
-			int DefaultConeScaleX = 1;		// Add 1 for every tile range
-			int DefaultConeScaleY = 0;		// Add 2 for every tile range
-			int DefaultConeScaleZ = 0;		// Add 1 for every tile range
-
-			FVector ConeLocation = FVector(DefaultConeLocationX + (CurrentSelectedAttack.BaseRange * 190), 0, -100);
-			FVector ConeScale = FVector(DefaultConeScaleX + CurrentSelectedAttack.BaseRange, DefaultConeScaleY + CurrentSelectedAttack.BaseRange * 2, DefaultConeScaleZ + CurrentSelectedAttack.BaseRange);
-
-			AttackTraceActor->SetRelativeLocation(ConeLocation);
-			AttackTraceActor->SetRelativeScale3D(ConeScale);
-		}
-		// Ring attack pattern
-		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::Ring) {
-			AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			AttackTraceActor->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-
-			FVector OriginCoordinates = FVector::ZeroVector;
-
-			// Get the current mouse/avatar position
-			if (CurrentSelectedAttack.AttachAttackTraceActorToMouse)
-				OriginCoordinates = PlayerControllerReference->CursorLocationSnappedToGrid;
-			else 
-				OriginCoordinates = GetActorLocation().GridSnap(200.f);
-
-			// Get all of the tiles and Avatars around the origin coordinates
-			TArray<AActor*> GridTilesArray, AvatarsArray, ActorsArray;
-
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), AvatarsArray);
-
-			ActorsArray.Append(GridTilesArray);
-			ActorsArray.Append(AvatarsArray);
-
-			for (int i = 0; i < ActorsArray.Num(); i++) {
-				if ((ActorsArray[i]->GetActorLocation().X == OriginCoordinates.X || ActorsArray[i]->GetActorLocation().X == OriginCoordinates.X + 200.f || ActorsArray[i]->GetActorLocation().X == OriginCoordinates.X - 200.f) &&
-					(ActorsArray[i]->GetActorLocation().Y == OriginCoordinates.Y || ActorsArray[i]->GetActorLocation().Y == OriginCoordinates.Y + 200.f || ActorsArray[i]->GetActorLocation().Y == OriginCoordinates.Y - 200.f) &&
-					ActorsArray[i]->GetActorLocation() != OriginCoordinates) {
-					ValidAttackTargetsArray.Add(ActorsArray[i]);
-
-					if (Cast<AActor_GridTile>(ActorsArray[i])) {
-						Cast<AActor_GridTile>(ActorsArray[i])->ChangeColourOnMouseHover = false;
-						Cast<AActor_GridTile>(ActorsArray[i])->UpdateTileColour(E_GridTile_ColourChangeContext::WithinAttackRange);
-					}
-				} else {
-					if (Cast<AActor_GridTile>(ActorsArray[i])) {
-						Cast<AActor_GridTile>(ActorsArray[i])->ChangeColourOnMouseHover = true;
-						Cast<AActor_GridTile>(ActorsArray[i])->UpdateTileColour(E_GridTile_ColourChangeContext::Normal);
-					}
-				}
-			}
-		}
-		// Four-Way and Eight-Way Line Traces
-		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
-			// Set the StaticMesh
-			for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
-				if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
-					AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
-					break;
-				}
-			}
-
-			// Adjust the Rotation Snap degree
-			if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross)
-				AttackRotationSnapToDegrees = 45;
-			else
-				AttackRotationSnapToDegrees = 90;
-
-			int DefaultRectangleLocationX = 350;									// Add 100 for every tile range
-			//int DefaultRectangleScale = 2 * CurrentSelectedAttack.BaseRange;		// Add 2 for every tile range
-			int DefaultRectangleScale = CurrentSelectedAttack.BaseRange - 1;
-
-			FVector RectangleLocation = FVector(200, 0, -100);
-			FVector RectangleScale = FVector(1, 0.5, DefaultRectangleScale);
-
-			AttackTraceActor->SetRelativeLocation(RectangleLocation);
-			AttackTraceActor->SetRelativeScale3D(RectangleScale);
-		}
-		// Rock Wall attack pattern
-		else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::WideWall) {
-			// Set the StaticMesh
-			for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
-				if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
-					AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
-					break;
-				}
-			}
-
-			FVector WideWallLocation = FVector(150, 0, -100);
-			FVector WideWallScale = FVector(1.f, 2.f, 0.5f);
-
-			AttackTraceActor->SetRelativeLocation(WideWallLocation);
-			AttackTraceActor->SetRelativeScale3D(WideWallScale);
-		}
+		AttackTraceActor->SetRelativeLocation(RectangleLocation);
+		AttackTraceActor->SetRelativeScale3D(RectangleScale);
 	}
 }
 
@@ -391,22 +268,43 @@ void ACharacter_Pathfinder::LaunchAttack_Implementation(AActor* Target)
 }
 
 
-void ACharacter_Pathfinder::SetTilesOccupiedBySize()
+void ACharacter_Pathfinder::SetTilesOccupiedBySize(bool ClearTiles)
 {
 	TArray<AActor*> OverlappingActors;
 	FVector Start = GetActorLocation();
 
-	for (int i = 0; i < AvatarData.OccupiedTiles.Num(); i++) {
-		BoxComponent->SetWorldLocation(FVector(Start.X + (200 * AvatarData.OccupiedTiles[i].X), Start.Y + (200 * AvatarData.OccupiedTiles[i].Y), 0.f));
-		BoxComponent->GetOverlappingActors(OverlappingActors, AActor_GridTile::StaticClass());
+	// Clear out tiles that were overlapped
+	if (ClearTiles) {
+		TArray<AActor*> GridTilesArray;
+
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+		for (AActor* TileInArray : GridTilesArray) {
+			AActor_GridTile* ActorAsGridTile = Cast<AActor_GridTile>(TileInArray);
+
+			if (ActorAsGridTile->OccupyingActor == this) {
+				ActorAsGridTile->OccupyingActor = nullptr;
+
+				if (ActorAsGridTile->Properties.Contains(E_GridTile_Properties::E_Occupied)) {
+					ActorAsGridTile->Properties.Remove(E_GridTile_Properties::E_Occupied);
+				}
+
+				if (ActorAsGridTile->Properties.Num() <= 0) {
+					ActorAsGridTile->Properties.AddUnique(E_GridTile_Properties::E_None);
+				}
+			}
+		}
 	}
 
+	// Set overlapping tiles to 'Occupied'
 	for (int j = 0; j < OverlappingActors.Num(); j++) {
 		Cast<AActor_GridTile>(OverlappingActors[j])->Properties.AddUnique(E_GridTile_Properties::E_Occupied);
+		Cast<AActor_GridTile>(OverlappingActors[j])->OccupyingActor = this;
+
 		UE_LOG(LogTemp, Warning, TEXT("SetTilesOccupiedBySize / Set Tile to be occupied."));
 
-		if (Cast<AActor_GridTile>(OverlappingActors[j])->Properties.Contains(E_GridTile_Properties::E_None))
+		if (Cast<AActor_GridTile>(OverlappingActors[j])->Properties.Contains(E_GridTile_Properties::E_None)) {
 			Cast<AActor_GridTile>(OverlappingActors[j])->Properties.Remove(E_GridTile_Properties::E_None);
+		}
 	}
 
 	BoxComponent->SetWorldLocation(Start);

@@ -246,8 +246,8 @@ void AActor_AttackEffectsLibrary::Attack_RefundMana_Implementation(ACharacter_Pa
 
 	Attacker->AvatarData.CurrentManaPoints += RefundAmount;
 
-	if (Attacker->AvatarData.CurrentManaPoints > Attacker->AvatarData.BaseStats.ManaPoints)
-		Attacker->AvatarData.CurrentManaPoints = Attacker->AvatarData.BaseStats.ManaPoints;
+	if (Attacker->AvatarData.CurrentManaPoints > Attacker->AvatarData.BaseStats.MaximumManaPoints)
+		Attacker->AvatarData.CurrentManaPoints = Attacker->AvatarData.BaseStats.MaximumManaPoints;
 }
 
 

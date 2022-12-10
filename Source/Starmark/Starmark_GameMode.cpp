@@ -39,7 +39,6 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerCont
 	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / MultiplayerUniqueIDCounter is: %d"), MultiplayerUniqueIDCounter);
 
 	// Load player data
-	//Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->LoadProfile(Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->CurrentProfileName);
 	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Server_UpdatePlayerData();
 	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Client_UpdateReplicatedPlayerName();
 
@@ -97,7 +96,13 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 	for (int j = CurrentPlayerTeam.Num() - 1; j >= 0; j--) {
 		if (CurrentPlayerTeam[j].AvatarName != "Default") {
 			if (SpawnedAvatarCount < 4) {
-				Server_SpawnAvatar(PlayerControllerReferences[0], j + 1, Cast<UStarmark_GameInstance>(PlayerControllerReferences[0]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam[j]);
+				// Make sure each character can use all of their attacks
+				//for (int x = 0; x < CurrentPlayerTeam[j].Attacks.Num(); x++) {
+				//	CurrentPlayerTeam[j].CurrentAttacks.Add(*AttacksDataTable->FindRow<FAvatar_AttackStruct>((CurrentPlayerTeam[j].Attacks[x].RowName), GameModeContextString));
+				//}
+
+				// Spawn the actor
+				Server_SpawnAvatar(PlayerControllerReferences[0], j + 1, CurrentPlayerTeam[j]);
 				SpawnedAvatarCount++;
 			}
 		} else {
@@ -146,6 +151,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		
 		// Set first Avatar's controller as the currently acting player
 		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
+		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->BattleWidgetReference->UpdateAvatarAttacksComponents();
 	}
 }
 
@@ -153,25 +159,28 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 {
 	FString NewTurnOrderText;
-	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+
+	if (GameStateReference == nullptr) {
+		GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+	}
 
 	for (int i = 0; i < GameStateReference->AvatarTurnOrder.Num(); i++) {
-		AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->PlayerState);
+		if (GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->IsValidLowLevel()) {
+			AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->PlayerState);
 
-		if (PlayerStateReference) {
-			if (PlayerStateReference->ReplicatedPlayerName == "" || PlayerStateReference->ReplicatedPlayerName.Len() <= 0)
-				PlayerStateReference->ReplicatedPlayerName = ("Player " + FString::FromInt(GameStateReference->AvatarTurnOrder[i]->PlayerControllerReference->MultiplayerUniqueID));
-
-			NewTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.AvatarName + " / " + PlayerStateReference->ReplicatedPlayerName + "\n");
+			// To-Do: Differentiate between player controlled entities and enemy entities in the turn order list.
+			NewTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.Nickname + "\n");
 		}
-		else
-			NewTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.AvatarName + " / ?\n");
+		else {
+			NewTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.Nickname + " / ?\n");
+		}
 	}
 
 	GameStateReference->CurrentTurnOrderText = NewTurnOrderText;
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		PlayerControllerReferences[i]->Client_GetTurnOrderText(GameStateReference->CurrentTurnOrderText);
+		PlayerControllerReferences[i]->Local_GetEntitiesInTurnOrder(GameStateReference->DynamicAvatarTurnOrder, GameStateReference->CurrentAvatarTurnIndex);
 	}
 }
 
@@ -189,26 +198,20 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	for (int i = 0; i < FoundGridTileActors.Num(); i++) {
 		const AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(FoundGridTileActors[i]);
 
-		if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_PlayerAvatarSpawn) &&
-			GridTileReference->AssignedMultiplayerUniqueID == PlayerController->MultiplayerUniqueID &&
-			GridTileReference->AvatarSlotNumber == IndexInPlayerParty) {
+		if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_PlayerAvatarSpawn) && GridTileReference->AvatarSlotNumber == IndexInPlayerParty) {
 			ValidMultiplayerSpawnTiles.Add(FoundGridTileActors[i]);
 		}
 	}
 
 	FVector Location = ValidMultiplayerSpawnTiles[0]->GetActorLocation();
-	Location.Z = 95;
+	Location.Z = 1000;
 
 	ACharacter_Pathfinder* NewAvatarActor = GetWorld()->SpawnActor<ACharacter_Pathfinder>(AvatarBlueprintClass, Location, FRotator::ZeroRotator, SpawnInfo);
 	NewAvatarActor->AvatarData = AvatarData;
 
-	// Random Avatars
-	//AvatarRowNames = AvatarDataTable->GetRowNames();
-	//NewAvatarActor->AvatarData = *AvatarDataTable->FindRow<FAvatar_Struct>(AvatarRowNames[FMath::RandRange(0, AvatarRowNames.Num() - 1)], ContextString);
-
 	// Avatar Stats
-	NewAvatarActor->AvatarData.CurrentHealthPoints = NewAvatarActor->AvatarData.BaseStats.HealthPoints;
-	NewAvatarActor->AvatarData.CurrentManaPoints = NewAvatarActor->AvatarData.BaseStats.ManaPoints;
+	NewAvatarActor->AvatarData.CurrentHealthPoints = NewAvatarActor->AvatarData.BaseStats.MaximumHealthPoints;
+	NewAvatarActor->AvatarData.CurrentManaPoints = NewAvatarActor->AvatarData.BaseStats.MaximumManaPoints;
 	NewAvatarActor->AvatarData.CurrentTileMoves = NewAvatarActor->AvatarData.MaximumTileMoves;
 
 	// MultiplayerUniqueID
@@ -220,18 +223,12 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 		NewAvatarActor->CurrentKnownAttacks.Add(AvatarData.CurrentAttacks[i]);
 	}
 
-	// Set Model
-	//if (AvatarData.Model) {
-
-	//}
-
 	// Sent data to Clients
 	NewAvatarActor->Client_GetAvatarData(NewAvatarActor->AvatarData);
 
 	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 	PlayerController->OnRepNotify_CurrentSelectedAvatar();
 
-	//NewAvatarActor->SetTilesOccupiedBySize();
 	// Set spawn tile to be occupied
 	if (Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Contains(E_GridTile_Properties::E_None))
 		Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Remove(E_GridTile_Properties::E_None);
@@ -279,8 +276,6 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	FString ContextString, MoveTypeAsString, TargetTypeAsString;
 	TArray<FName> ComplexAttackRowNames = AvatarComplexAttacksDataTable->GetRowNames();
 	ACharacter_Pathfinder* TargetAsCharacter = Cast<ACharacter_Pathfinder>(Target);
-	//int AttackerStat, DefenderStat;
-	int CurrentDamage = 1;
 
 	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Attack chosen: %s"), *AttackName);
 	for (int i = 0; i < ComplexAttackRowNames.Num(); i++) {
@@ -290,113 +285,13 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 		}
 	}
 
-	if (IsValid(TargetAsCharacter) && AttackData.AttackCategory == EBattle_AttackCategories::Offensive) {
-		FAvatar_UltimateTypeChart* TargetTypeChartRow;
-		FAvatar_UltimateTypeChart* MoveTypeChartRow;
-		
-		// Check for the No Friendly Fire attack ability
-		if (AttackData.AttackEffectsOnTarget.Contains(EBattle_AttackEffects::NoFriendlyFire)) {
-			if (Attacker->MultiplayerControllerUniqueID == TargetAsCharacter->MultiplayerControllerUniqueID) {
-				return;
-			}
-		}
-
-		MoveTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(AttackData.Type).ToString();
-		TargetTypeAsString = UEnum::GetDisplayValueAsText<EAvatar_Types>(TargetAsCharacter->AvatarData.PrimaryType).ToString();
-
-		// Check for type advantage or disadvantage
-		MoveTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*MoveTypeAsString), ContextString);
-		TargetTypeChartRow = UltimateTypeChartDataTable->FindRow<FAvatar_UltimateTypeChart>(FName(*TargetTypeAsString), ContextString);
-
-		if (AttackData.AttackEffectsOnTarget.Contains(EBattle_AttackEffects::LowerTargetHealthEqualsHigherDamageDealt)) {
-			float VariableBasePower = 1.f;
-			VariableBasePower = (float)TargetAsCharacter->AvatarData.CurrentHealthPoints / (float)TargetAsCharacter->AvatarData.BaseStats.HealthPoints;
-			VariableBasePower = 0.9 - VariableBasePower;
-			VariableBasePower = VariableBasePower * 100.f;
-			VariableBasePower += 10;
-
-			if (VariableBasePower < 1)
-				VariableBasePower = 1;
-
-			AttackData.BasePower = FMath::CeilToInt(VariableBasePower);
-		}
-
-		// To-Do: Get either the Physical or Special stats, based on the move
-
-		// Standard Attack Damage Formula
-		CurrentDamage = FMath::CeilToInt(Attacker->AvatarData.BaseStats.Attack * AttackData.BasePower);
-		UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Attacker's Attack * Attack's Base Power is: %d"), CurrentDamage);
-		CurrentDamage = FMath::CeilToInt(CurrentDamage / TargetAsCharacter->AvatarData.BaseStats.Defence);
-		UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Current Damage / Defender's Defence is: %d"), CurrentDamage);
-		//CurrentDamage = FMath::CeilToInt((Attacker->AvatarData.BaseStats.Power) * CurrentDamage);
-		//CurrentDamage = FMath::CeilToInt(CurrentDamage / 2);
-		//UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Current Damage / 2 is: %d"), CurrentDamage);
-
-		// Get the averages of the attacker' and defender's combat stats and use them in the damage calculation
-		// Clamp the value between 0.5 and 1.5 so we can use it as a multiplier
-
-		// Compare each Move type against the Target type
-		for (int j = 0; j < TargetTypeChartRow->CombinationTypes.Num(); j++) {
-			// 2x Damage
-			if (MoveTypeChartRow->DoesMoreDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
-				CurrentDamage = CurrentDamage * 2;
-
-			// 0.5x Damage
-			else if (MoveTypeChartRow->DoesLessDamageToTypes.Contains(TargetTypeChartRow->CombinationTypes[j]))
-				CurrentDamage = CurrentDamage / 2;
-		}
-
-		// Increase elemental damage against Soaked targets
-		// (Simple attacks are non-elemental)
-		if (AttackData.Type != EAvatar_Types::E_None) {
-			// Get the Soaking status
-			FAvatar_StatusEffect* SoakStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Soaking", ContextString);
-			for (int i = 0; i < TargetAsCharacter->CurrentStatusEffectsArray.Num(); i++) {
-				if (TargetAsCharacter->CurrentStatusEffectsArray[i] == *SoakStatus) {
-					CurrentDamage += CurrentDamage * 0.5;
-					break;
-				}
-			}
-		}
-
-		// Ensure that at least 1 damage is dealt
-		if (CurrentDamage < 1)
-			CurrentDamage = 1;
-
-		UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Calculated damage is: %d"), CurrentDamage);
-
-		// Subtract Health
-		AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(Attacker->PlayerControllerReference->PlayerState);
-		PlayerStateReference->Server_SubtractHealth_Implementation(TargetAsCharacter, CurrentDamage);
-
-		// Restore half of the heal if the attacker has Vampirism
-		FAvatar_StatusEffect* VampirismStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Vampirism", ContextString);
-		for (int i = 0; i < TargetAsCharacter->CurrentStatusEffectsArray.Num(); i++) {
-			if (TargetAsCharacter->CurrentStatusEffectsArray[i] == *VampirismStatus) {
-				//CurrentDamage += CurrentDamage * 0.5;
-				PlayerStateReference->Server_AddHealth(Attacker, FMath::CeilToInt(CurrentDamage * 0.5));
-				break;
-			}
-		}
+	// Apply move effects after the damage has been dealt
+	if (!AttackEffectsLibrary_Reference && AttackEffectsLibrary_Class) {
+		AttackEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_AttackEffectsLibrary>(AttackEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
 	}
 
-
-	// Apply move effects after the damage has been dealt
 	for (int i = 0; i < AttackData.AttackEffectsOnTarget.Num(); i++) {
-		if (!AttackEffectsLibrary_Reference && AttackEffectsLibrary_Class)
-			AttackEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_AttackEffectsLibrary>(AttackEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
-
 		AttackEffectsLibrary_Reference->SwitchOnAttackEffect(AttackData.AttackEffectsOnTarget[i], Attacker, Target);
-
-		if (AttackData.Name == "Drown") {
-			Cast<AStarmark_GameState>(GetWorld()->GetGameState())->SetTurnOrder(PlayerControllerReferences);
-
-			// Re-set the turn order text
-			Server_AssembleTurnOrderText();
-
-			// Call the EndTurn function again (?)
-			Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn();
-		}
 	}
 }
 

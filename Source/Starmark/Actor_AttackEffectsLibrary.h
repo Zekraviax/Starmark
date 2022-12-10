@@ -66,6 +66,7 @@ public:
 
 // Functions
 // --------------------------------------------------
+	// To-Do: Write down the difference between these two
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void SwitchOnAttackEffect(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, AActor* Target);
 

@@ -4,6 +4,10 @@
 #include "Blueprint/UserWidget.h"
 
 #include "Components/Button.h"
+#include "Components/GridPanel.h"
+#include "Components/HorizontalBox.h"
+#include "Components/Image.h"
+#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/VerticalBox.h"
@@ -33,7 +37,10 @@ public:
 	UTextBlock* TurnAndRoundCounterTextBlock;
 
 	UPROPERTY(meta = (BindWidget))
-	UUniformGridPanel* AvatarAttacksBox;
+	UGridPanel* CommandsBox;
+
+	UPROPERTY(meta = (BindWidget))
+	UGridPanel* AvatarAttacksBox;
 
 	UPROPERTY(meta = (BindWidget))
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataWidget;
@@ -41,11 +48,32 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UButton* SwitchCommandButton;
 
-	UPROPERTY(meta = (BindWidget))
-	UButton* EndTurnCommandButton;
+	//UPROPERTY(meta = (BindWidget))
+	UButton* EndTurnCommand;
 
 	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* CombatLog;
+
+	UPROPERTY(meta = (BindWidget))
+	UHorizontalBox* EntityIconsInTurnOrder;
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* CurrentEntityIcon;
+
+	UPROPERTY(meta = (BindWidget))
+	UProgressBar* HealthBar;
+
+	UPROPERTY(meta = (BindWidget))
+	UProgressBar* ManaBar;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* HealthText;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* ManaText;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* CurrentEntityNameText;
 
 // ------------------------- References
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -61,10 +89,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateTurnOrderText(FString NewText);
 
+	UFUNCTION()
+	void SetUiIconsInTurnOrder(TArray<ACharacter_Pathfinder*> TurnOrderArray, int IndexOfCurrentlyActingEntity);
+
+	UFUNCTION()
+	void SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity);
+
+	UFUNCTION(BlueprintCallable)
+	void ResetBattleHud();
+
 // ------------------------- Commands
 	UFUNCTION(BlueprintCallable)
 	void MoveCommand();
 
 	UFUNCTION(BlueprintCallable)
 	void EndCommand();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackCommand();
 };

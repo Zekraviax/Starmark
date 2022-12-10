@@ -17,6 +17,11 @@ AActor_GridTile::AActor_GridTile()
 	Floor->SetupAttachment(RootComponent);
 	Floor->SetRelativeTransform(FTransform(FRotator::ZeroRotator, FVector::ZeroVector, FVector(2.f, 2.f, 1.f)));
 
+	// Highlight Tile
+	TileHighlightPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TileHighlightPlane"));
+	TileHighlightPlane->SetupAttachment(Floor);
+	TileHighlightPlane->SetRelativeTransform(FTransform(FRotator(0, 0, 0), FVector(0, 0, 1), FVector(1.f, 1.f, 1.f)));
+
 	// Hitbox
 	GridTileHitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("GridTileHitbox"));
 	GridTileHitbox->SetupAttachment(RootComponent);
@@ -30,8 +35,20 @@ void AActor_GridTile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	DynamicMaterial = UMaterialInstanceDynamic::Create(Floor->GetMaterial(0), this);
-	Floor->SetMaterial(0, DynamicMaterial);
+	// Assign one of the random materials to this grid tile
+	if (RandomlyChosenMaterialsArray.Num() > 0) {
+		UMaterialInstanceDynamic* FloorDynamicMaterial = UMaterialInstanceDynamic::Create(RandomlyChosenMaterialsArray[FMath::RandRange(0, RandomlyChosenMaterialsArray.Num() - 1)], this);
+		Floor->SetMaterial(0, FloorDynamicMaterial);
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("GridTile %s is missing a floor texture."), *this->GetName());
+	}
+
+
+	// Create the dynamic material changes colour based on the players' interaction with the tile
+	DynamicMaterial = UMaterialInstanceDynamic::Create(TileHighlightMaterial, this);
+	TileHighlightPlane->SetMaterial(0, DynamicMaterial);
+	TileHighlightPlane->SetVisibility(false);
+	TileHighlightPlane->SetHiddenInGame(true);
 }
 
 // Called every frame
@@ -85,40 +102,40 @@ void AActor_GridTile::OnMouseBeginHover(ACharacter_Pathfinder* CurrentAvatar)
 
 void AActor_GridTile::UpdateTileColour(E_GridTile_ColourChangeContext ColourChangeContext)
 {
-	if (DynamicMaterial->IsValidLowLevel()) {
-		switch (ColourChangeContext)
-		{
-		case (E_GridTile_ColourChangeContext::Normal):
-			// Heirarcy of colours based on factors such as tile properties
-			// Lowest priority: White (no properties that change colour)
-			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::White);
-			// Road (free travel)
-			if (Properties.Contains(E_GridTile_Properties::E_StoneRoad))
-				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.5f, 0.2f, 0.f, 1.f));
-			// Shadow
-			if (Properties.Contains(E_GridTile_Properties::Shadow))
-				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.1f, 0.1f, 0.1f, 1.f));
-			// Fire
-			if (Properties.Contains(E_GridTile_Properties::Fire))
-				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.6f, 0.2f, 0.f, 1.f));
-			// Highest priority: Tile is un-traversable
-			if (Properties.Contains(E_GridTile_Properties::E_Wall) ||
-				Properties.Contains(E_GridTile_Properties::E_Occupied))
-				DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.5f, 0.5f, 0.5f, 1.f));
-				break;
-		case (E_GridTile_ColourChangeContext::OnMouseHover):
-			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
-			break;
-		case (E_GridTile_ColourChangeContext::OnMouseHoverTileUnreachable):
-			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
-			break;
-		case (E_GridTile_ColourChangeContext::WithinAttackRange):
-			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.2f, 0.f, 1.f));
-			break;
-		default:
-			break;
-		}
-	}
+	//if (DynamicMaterial->IsValidLowLevel()) {
+	//	switch (ColourChangeContext)
+	//	{
+	//	case (E_GridTile_ColourChangeContext::Normal):
+	//		// Heirarcy of colours based on factors such as tile properties
+	//		// Lowest priority: White (no properties that change colour)
+	//		DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::White);
+	//		// Road (free travel)
+	//		if (Properties.Contains(E_GridTile_Properties::E_StoneRoad))
+	//			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.5f, 0.2f, 0.f, 1.f));
+	//		// Shadow
+	//		if (Properties.Contains(E_GridTile_Properties::Shadow))
+	//			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.1f, 0.1f, 0.1f, 1.f));
+	//		// Fire
+	//		if (Properties.Contains(E_GridTile_Properties::Fire))
+	//			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.6f, 0.2f, 0.f, 1.f));
+	//		// Highest priority: Tile is un-traversable
+	//		if (Properties.Contains(E_GridTile_Properties::E_Wall) ||
+	//			Properties.Contains(E_GridTile_Properties::E_Occupied))
+	//			DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.5f, 0.5f, 0.5f, 1.f));
+	//			break;
+	//	case (E_GridTile_ColourChangeContext::OnMouseHover):
+	//		DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Green);
+	//		break;
+	//	case (E_GridTile_ColourChangeContext::OnMouseHoverTileUnreachable):
+	//		DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor::Red);
+	//		break;
+	//	case (E_GridTile_ColourChangeContext::WithinAttackRange):
+	//		DynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.2f, 0.f, 1.f));
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//}
 }
 
 
