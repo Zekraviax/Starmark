@@ -84,6 +84,7 @@ void UWidgetComponent_Avatar::ApplyNewAvatarData(FAvatar_Struct NewAvatarData)
 		AvatarData = NewAvatarData;
 		AvatarMaterial = AvatarData.DefaultImage;
 		AvatarName->SetText(FText::FromString(AvatarData.AvatarName));
+		IndexInPlayerTeam = AvatarData.IndexInPlayerLibrary;
 
 		UpdateWidgetMaterials();
 	}
@@ -95,11 +96,13 @@ void UWidgetComponent_Avatar::RightClickMenuFunction_EditAvatar()
 	if (AvatarCreationWidget_Class) {
 		AvatarCreationWidget_Reference = CreateWidget<UWidget_AvatarCreation>(this, AvatarCreationWidget_Class);
 		AvatarCreationWidget_Reference->IsEditingExistingAvatar = true;
-		AvatarCreationWidget_Reference->PopulateDropDownsWithAvatarData(AvatarData);
+		AvatarCreationWidget_Reference->PopulateDropDownsWithAvatarData(AvatarData, IndexInPlayerTeam);
 		AvatarCreationWidget_Reference->AddToViewport();
 
 		// Bind delegate in the AvatarLibrary
 		if (Cast<UWidget_AvatarLibrary>(PairedWidget))
 			Cast<UWidget_AvatarLibrary>(PairedWidget)->BindAvatarCreatedDelegate(this);
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("UWidgetComponent_Avatar / RightClickMenuFunction_EditAvatar / AvatarCreationWidget class not found."));
 	}
 }

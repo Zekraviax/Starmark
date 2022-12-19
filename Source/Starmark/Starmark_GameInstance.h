@@ -47,6 +47,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LoadProfile(FString ProfileName);
 
+	UFUNCTION(BlueprintCallable)
+	void DeleteProfile(FString ProfileName);
+
 // ------------------------- Level
 	UFUNCTION()
 	AActor_GridTile* FindTileByCoordinates(int x, int y);

@@ -35,6 +35,8 @@ void AActor_GridTile::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UE_LOG(LogTemp, Warning, TEXT("AActor_GridTile / BeginPlay / Begin function"));
+
 	// Assign one of the random materials to this grid tile
 	if (RandomlyChosenMaterialsArray.Num() > 0) {
 		UMaterialInstanceDynamic* FloorDynamicMaterial = UMaterialInstanceDynamic::Create(RandomlyChosenMaterialsArray[FMath::RandRange(0, RandomlyChosenMaterialsArray.Num() - 1)], this);
@@ -61,6 +63,8 @@ void AActor_GridTile::Tick(float DeltaTime)
 // ------------------------- Battle
 void AActor_GridTile::UpdateGridTileState()
 {
+	UE_LOG(LogTemp, Warning, TEXT("AActor_GridTile / UpdateGridTileState / Begin function"));
+
 	TArray<AActor*> OverlappingActors;
 	GridTileHitbox->GetOverlappingActors(OverlappingActors, ACharacter_Pathfinder::StaticClass());
 

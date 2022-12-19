@@ -48,6 +48,21 @@ void UStarmark_GameInstance::LoadProfile(FString ProfileName)
 }
 
 
+void UStarmark_GameInstance::DeleteProfile(FString ProfileName)
+{
+	USaveData_PlayerProfilesList* SaveGameObject = Cast<USaveData_PlayerProfilesList>(UGameplayStatics::LoadGameFromSlot("PlayerProfilesList", 0));
+
+	for (int i = SaveGameObject->PlayerProfileNames.Num() - 1; i >= 0; i--) {
+		if (SaveGameObject->PlayerProfileNames[i] == ProfileName) {
+			UGameplayStatics::DeleteGameInSlot(ProfileName, 0);
+			SaveGameObject->PlayerProfileNames.Remove(ProfileName);
+
+			UGameplayStatics::SaveGameToSlot(SaveGameObject, "PlayerProfilesList", 0);
+		}
+	}
+}
+
+
 AActor_GridTile* UStarmark_GameInstance::FindTileByCoordinates(int x, int y)
 {
 	TArray<AActor*> GridTilesArray;

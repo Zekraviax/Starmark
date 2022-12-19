@@ -79,7 +79,7 @@ void UWidget_AvatarCreation::PopulateDropDowns()
 }
 
 
-void UWidget_AvatarCreation::PopulateDropDownsWithAvatarData(FAvatar_Struct Avatar)
+void UWidget_AvatarCreation::PopulateDropDownsWithAvatarData(FAvatar_Struct Avatar, int SlotNumber)
 {
 	PopulateDropDowns();
 
@@ -232,7 +232,6 @@ void UWidget_AvatarCreation::OnMoveTwoDropDownChanged(FString Option)
 
 		for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
 			if (Option == SimpleAttacksRowNames[i].ToString()) {
-				//CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
 				MoveTwoNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
 				break;
 			}
@@ -240,7 +239,6 @@ void UWidget_AvatarCreation::OnMoveTwoDropDownChanged(FString Option)
 
 		for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
 			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
-				//CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
 				MoveTwoNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
 				break;
 			}
@@ -258,7 +256,6 @@ void UWidget_AvatarCreation::OnMoveThreeDropDownChanged(FString Option)
 
 		for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
 			if (Option == SimpleAttacksRowNames[i].ToString()) {
-				//CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
 				MoveThreeNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
 				break;
 			}
@@ -266,7 +263,6 @@ void UWidget_AvatarCreation::OnMoveThreeDropDownChanged(FString Option)
 
 		for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
 			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
-				//CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
 				MoveThreeNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
 				break;
 			}
@@ -283,7 +279,6 @@ void UWidget_AvatarCreation::OnMoveFourDropDownChanged(const FString Option)
 		const FString ContextString;
 		for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
 			if (Option == SimpleAttacksRowNames[i].ToString()) {
-				//CurrentAvatar.CurrentAttacks.Insert(*SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString), 0);
 				MoveFourNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
 				break;
 			}
@@ -291,7 +286,6 @@ void UWidget_AvatarCreation::OnMoveFourDropDownChanged(const FString Option)
 
 		for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
 			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
-				//CurrentAvatar.CurrentAttacks.Insert(*ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString), 0);
 				MoveFourNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
 				break;
 			}
@@ -367,7 +361,7 @@ void UWidget_AvatarCreation::OnSaveButtonPressed()
 	}
 
 	if (!IsEditingExistingAvatar) {
-		CurrentAvatar.IndexInPlayerLibrary = PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num() + 6;
+		CurrentAvatar.IndexInPlayerLibrary = (PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num() * -1) - 1;
 		PlayerStateReference->PlayerProfileReference->AvatarLibrary.Add(CurrentAvatar);
 	}
 

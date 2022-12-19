@@ -9,7 +9,7 @@
 AActor_AbilitiesLibrary::AActor_AbilitiesLibrary()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -30,6 +30,8 @@ void AActor_AbilitiesLibrary::Tick(float DeltaTime)
 
 void AActor_AbilitiesLibrary::SwitchOnAbilityEffect_Implementation(E_Ability_Functions AbilityFunction, ACharacter_Pathfinder* Avatar, AActor* Target)
 {
+	UE_LOG(LogTemp, Warning, TEXT("AActor_AbilitiesLibrary / SwitchOnAbilityEffect_Implementation / Begin function"));
+
 	switch(AbilityFunction)
 	{
 		case(E_Ability_Functions::Regenerate):

@@ -18,6 +18,8 @@
 // ------------------------- Widget
 void UWidget_AvatarLibrary::OnWidgetOpened()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UWidget_AvatarLibrary / OnWidgetOpened / Begin function"));
+
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
 	UWidgetComponent_Avatar* AvatarWidgetComponent_Reference = nullptr;
@@ -43,7 +45,6 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 						AvatarWidgetComponent_Reference->ApplyNewAvatarData(PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i]);
 
 						AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
-
 						AvatarWidgetComponent_Reference->RightClickMenuCommands.Empty();
 
 						if (AvatarWidgetComponent_Reference->AvatarData.AvatarName != "None") {
@@ -51,6 +52,7 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 							AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::UnequipAvatar);
 							AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::DeleteAvatar);
 						}
+
 						AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
 
 						break;

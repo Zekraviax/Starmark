@@ -123,5 +123,6 @@ void UWidget_PlayerProfileCreator::OnAvatarLibraryButtonPressed()
 void UWidget_PlayerProfileCreator::OnPlayerProfileLoadedDelegateBroadcast()
 {
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
+
 	AvatarLibraryButton->SetIsEnabled(PlayerStateReference->PlayerProfileReference->IsValidLowLevel());
 }
