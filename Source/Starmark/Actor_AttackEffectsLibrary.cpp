@@ -2,10 +2,12 @@
 
 
 #include "Actor_GridTile.h"
-#include "Character_HatTrick.h"
+#include "Actor_RangedAttackProjectile.h"
 #include "Actor_StatusEffectsLibrary.h"
+#include "Character_HatTrick.h"
 #include "Character_Pathfinder.h"
 #include "Character_NonAvatarEntity.h"
+#include "Starmark_PlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
 
 
@@ -13,7 +15,7 @@
 AActor_AttackEffectsLibrary::AActor_AttackEffectsLibrary()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -37,7 +39,7 @@ void AActor_AttackEffectsLibrary::Tick(float DeltaTime)
 void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_AttackEffects AttackEffect, ACharacter_Pathfinder* Attacker, AActor* Target)
 {
 	FString ContextString;
-
+	
 	switch (AttackEffect)
 	{
 	case (EBattle_AttackEffects::AddParalyzeStatus):
@@ -116,7 +118,6 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 
 void AActor_AttackEffectsLibrary::RepeatingSwitchOnAttackEffect_Implementation(FAvatar_AttackStruct Attack, ACharacter_Pathfinder* Attacker, AActor* Target)
 {
-	
 }
 
 
@@ -127,9 +128,9 @@ void AActor_AttackEffectsLibrary::Attack_AddParalyze_Implementation(ACharacter_P
 
 	const FAvatar_StatusEffect* ParalyzeStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Paralyzed", ContextString);
 	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
-		"Paralyzed", 
-		ParalyzeStatus->Image, 
-		ParalyzeStatus->Description, 
+		"Paralyzed",
+		ParalyzeStatus->Image,
+		ParalyzeStatus->Description,
 		ParalyzeStatus->MaximumTurns,
 		ParalyzeStatus->TurnsRemaining)
 	);
@@ -142,8 +143,8 @@ void AActor_AttackEffectsLibrary::Attack_AddBurn_Implementation(ACharacter_Pathf
 
 	FAvatar_StatusEffect* BurnStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Burned", ContextString);
 	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
-		"Burned", 
-		BurnStatus->Image, 
+		"Burned",
+		BurnStatus->Image,
 		BurnStatus->Description,
 		BurnStatus->MaximumTurns,
 		BurnStatus->TurnsRemaining)
@@ -157,7 +158,7 @@ void AActor_AttackEffectsLibrary::Attack_AddDrowning_Implementation(ACharacter_P
 
 	FAvatar_StatusEffect* DrowningStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Drowning", ContextString);
 	Defender->CurrentStatusEffectsArray.Add(FAvatar_StatusEffect(
-		"Drowning", 
+		"Drowning",
 		DrowningStatus->Image,
 		DrowningStatus->Description,
 		DrowningStatus->MaximumTurns,
@@ -246,8 +247,8 @@ void AActor_AttackEffectsLibrary::Attack_RefundMana_Implementation(ACharacter_Pa
 
 	Attacker->AvatarData.CurrentManaPoints += RefundAmount;
 
-	if (Attacker->AvatarData.CurrentManaPoints > Attacker->AvatarData.BaseStats.MaximumManaPoints)
-		Attacker->AvatarData.CurrentManaPoints = Attacker->AvatarData.BaseStats.MaximumManaPoints;
+	if (Attacker->AvatarData.CurrentManaPoints > Attacker->AvatarData.BattleStats.MaximumManaPoints)
+		Attacker->AvatarData.CurrentManaPoints = Attacker->AvatarData.BattleStats.MaximumManaPoints;
 }
 
 
@@ -276,7 +277,7 @@ void AActor_AttackEffectsLibrary::Spawn_Hurricane_Implementation(AActor_GridTile
 {
 	FVector Location = FVector(TargetTile->GetActorLocation().X, TargetTile->GetActorLocation().Y, TargetTile->GetActorLocation().Z + 50);
 
-	ACharacter_NonAvatarEntity* NewHurricaneActor = GetWorld()->SpawnActor<ACharacter_NonAvatarEntity>(NonAvatarEntity_Class, Location, FRotator::ZeroRotator, SpawnInfo);
+	ACharacter_NonAvatarEntity* NewHurricaneActor = GetWorld()->SpawnActor<ACharacter_NonAvatarEntity>(NonEntityCharacter_Class, Location, FRotator::ZeroRotator, SpawnInfo);
 	NewHurricaneActor->HurricaneOnSpawn();
 }
 

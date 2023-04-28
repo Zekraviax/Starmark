@@ -11,7 +11,7 @@
 
 // Forward Declarations
 class ACharacter_Pathfinder;
-class APlayerController_Base;
+class APlayerController_Battle;
 
 
 UCLASS()
@@ -32,7 +32,7 @@ public:
 
 // ------------------------- References
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	APlayerController_Base* PlayerControllerReference;
+	APlayerController_Battle* PlayerControllerReference;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int AvatarAttackIndex;

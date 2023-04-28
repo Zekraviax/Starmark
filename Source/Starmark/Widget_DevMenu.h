@@ -98,6 +98,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Face Customizer")
 	UMaterial* RoundEyes_Material;
 
+	
 // Function
 // --------------------------------------------------
 
@@ -111,10 +112,6 @@ public:
 // ------------------------- Dye-Changing
 	UFUNCTION(BlueprintCallable)
 	void OnColourDropdownChanged(E_DevMenu_ColourChangeDropdowns Dropdown);
-
-// ------------------------- Type Calculator
-	UFUNCTION(BlueprintCallable)
-	void CalculateTypeStrengthsAndWeaknesses();
 
 // ------------------------- Face Customizer
 	UFUNCTION(BlueprintCallable)

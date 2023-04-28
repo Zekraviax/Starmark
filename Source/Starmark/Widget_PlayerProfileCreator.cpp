@@ -35,6 +35,10 @@ void UWidget_PlayerProfileCreator::OnWidgetOpened()
 			PlayerProfileWidgetComponent_Reference->ProfileName = ProfilesList->PlayerProfileNames[i];
 			PlayerProfileWidgetComponent_Reference->ProfileNameText->SetText(FText::FromString(ProfilesList->PlayerProfileNames[i]));
 
+			//PlayerProfileWidgetComponent_Reference->ProfileName = ProfilesList->PlayerProfileNames[i];
+			//const TCHAR* ProfileNameChar = *;
+			//PlayerProfileWidgetComponent_Reference->ProfileNameWithStars = PlayerProfileWidgetComponent_Reference->ProfileNameWithStars.Replace(TEXT("[ProfileName]"), *PlayerProfileWidgetComponent_Reference->ProfileName);
+
 			// Bind delegate
 			PlayerProfileWidgetComponent_Reference->OnPlayerProfileLoadedDelegate.AddDynamic(this, &UWidget_PlayerProfileCreator::OnPlayerProfileLoadedDelegateBroadcast);
 
@@ -72,6 +76,10 @@ void UWidget_PlayerProfileCreator::OnSaveGameButtonPressed()
 		ProfilesList->PlayerProfileNames.AddUnique(NewProfileNameEntryField->GetText().ToString());
 		UGameplayStatics::SaveGameToSlot(ProfilesList, "PlayerProfilesList", 0);
 	}
+
+	// Set the newly created profile to be the player's active profile
+	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
+	PlayerStateReference->PlayerProfileReference = PlayerProfileData;
 
 	OnWidgetOpened();
 }
@@ -123,6 +131,5 @@ void UWidget_PlayerProfileCreator::OnAvatarLibraryButtonPressed()
 void UWidget_PlayerProfileCreator::OnPlayerProfileLoadedDelegateBroadcast()
 {
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
-
 	AvatarLibraryButton->SetIsEnabled(PlayerStateReference->PlayerProfileReference->IsValidLowLevel());
 }

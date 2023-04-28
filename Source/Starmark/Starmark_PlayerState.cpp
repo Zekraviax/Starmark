@@ -2,7 +2,7 @@
 
 
 #include "Character_Pathfinder.h"
-#include "PlayerController_Base.h"
+#include "PlayerController_Battle.h"
 #include "Player_SaveData.h"
 #include "Starmark_GameMode.h"
 #include "Starmark_GameInstance.h"
@@ -57,25 +57,94 @@ void AStarmark_PlayerState::Server_UpdatePlayerData_Implementation()
 	//if (!GameInstanceReference)
 	if (GetWorld()) {
 		if (UGameplayStatics::GetGameInstance(GetWorld())) {
-			if (!GameInstanceReference)
+			if (!GameInstanceReference) {
 				GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+			}
 
 			ReplicatedPlayerName = GameInstanceReference->PlayerName;
 			PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
 			PlayerState_PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
 
-			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
-			UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *ReplicatedPlayerName);
-			
-			// Update player controller
-			Cast<APlayerController_Base>(GetPawn()->GetController())->PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
-			Cast<APlayerController_Base>(GetPawn()->GetController())->PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+			/*
+			if (!GameInstanceReference->CurrentProfileReference->IsValidLowLevel()) {
+				// If the player doesn't have a profile loaded, attempt to load a default profile.
+				GameInstanceReference->CurrentProfileReference = Cast<UPlayer_SaveData>(UGameplayStatics::LoadGameFromSlot("DefaultProfile", 0));
+				UGameplayStatics::DeleteGameInSlot("DefaultProfile", 0);
 
-			SetPlayerName(GameInstanceReference->PlayerName);
-			SendUpdateToMultiplayerLobby();
+				// Check if a default profile exists. If not, create one.
+				if (!GameInstanceReference->CurrentProfileReference->IsValidLowLevel()) {
+					UPlayer_SaveData* DefaultProfile = Cast<UPlayer_SaveData>(UGameplayStatics::CreateSaveGameObject(UPlayer_SaveData::StaticClass()));
+
+					// Add all available explorers to the default profile
+					if (ExplorersDataTableRowNames.Num() == 0) {
+						ExplorersDataTableRowNames = ExplorersDataTable->GetRowNames();
+					}
+
+					for (const FName ExplorerRowName : ExplorersDataTableRowNames) {
+						FNetscapeExplorer_Struct* ExplorerDataTableRow = ExplorersDataTable->FindRow<FNetscapeExplorer_Struct>(ExplorerRowName, PlayerStateContextString);
+						FNetscapeExplorer_Struct Explorer = *ExplorerDataTableRow;
+
+						DefaultProfile->Explorers.Add(*ExplorerDataTableRow);
+
+						if (DefaultProfile->CurrentExplorerTeam.Num() < 4) {
+							Explorer.IndexInPlayerLibrary = DefaultProfile->CurrentExplorerTeam.Num();
+
+							// Apply formulae to stats
+							// Battle Stats
+							// Total Battle Stat = Base Battle Stat x (Social Stat/Number) + Level
+							Explorer.BattleStats.Strength = (ExplorersDataTable->FindRow<FNetscapeExplorer_Struct>(ExplorerRowName, PlayerStateContextString)->BattleStats.Strength * (Explorer.SocialStats.Courage / 2)) + 1;
+							Explorer.BattleStats.Endurance = (ExplorersDataTable->FindRow<FNetscapeExplorer_Struct>(ExplorerRowName, PlayerStateContextString)->BattleStats.Endurance * (Explorer.SocialStats.Diligence / 2)) + 1;
+							Explorer.BattleStats.Agility = (ExplorersDataTable->FindRow<FNetscapeExplorer_Struct>(ExplorerRowName, PlayerStateContextString)->BattleStats.Agility * (Explorer.SocialStats.Empathy / 2)) + 1;
+							Explorer.BattleStats.Magic = (ExplorersDataTable->FindRow<FNetscapeExplorer_Struct>(ExplorerRowName, PlayerStateContextString)->BattleStats.Magic * (Explorer.SocialStats.Insight / 2)) + 1;
+							Explorer.BattleStats.Luck = (ExplorersDataTable->FindRow<FNetscapeExplorer_Struct>(ExplorerRowName, PlayerStateContextString)->BattleStats.Luck * (Explorer.SocialStats.Wit / 2)) + 1;
+
+							// Health Points
+							Explorer.BattleStats.MaximumHealthPoints += Explorer.BattleStats.Endurance;
+
+							// Mana Points
+							Explorer.BattleStats.MaximumManaPoints += Explorer.BattleStats.Magic;
+
+							// Tile Moves
+							Explorer.MaximumTileMoves = 2 + FMath::RoundToInt(Explorer.BattleStats.Agility / 5);
+
+							DefaultProfile->CurrentExplorerTeam.Add(Explorer);
+						}
+					}
+
+					// Set other variables
+					DefaultProfile->Name = "DefaultProfile";
+					DefaultProfile->ProfileName = "DefaultProfile";
+
+					// Save the default slot
+					UGameplayStatics::SaveGameToSlot(DefaultProfile, "DefaultProfile", 0);
+					GameInstanceReference->CurrentProfileReference = DefaultProfile;
+				}
+				*/
+			}
+
+		PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+		PlayerState_PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
+
+		UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
+		UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *ReplicatedPlayerName);
+			
+		/*
+		const APawn* Pawn = GetPawn();
+		while (Pawn == nullptr) {
+			Pawn = GetPawn();
 		}
+		AController* Controller = Pawn->GetController();
+		Cast<APlayerController_Battle>(Controller)->PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentExplorerTeam;
+		*/
+		// Update player controller with team
+		UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *GetNetOwningPlayer()->GetPlayerController(GetWorld())->GetName());
+		Cast<APlayerController_Battle>(GetNetOwningPlayer()->GetPlayerController(GetWorld()))->PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+
+		SetPlayerName(GameInstanceReference->PlayerName);
+		SendUpdateToMultiplayerLobby();
 	}
 }
+
 
 
 void AStarmark_PlayerState::SaveToCurrentProfile()
@@ -149,8 +218,8 @@ void AStarmark_PlayerState::Server_AddHealth_Implementation(ACharacter_Pathfinde
 		Avatar->AvatarData.CurrentHealthPoints += Healing;
 		Avatar->UpdateAvatarDataInPlayerParty();
 
-		if (Avatar->AvatarData.CurrentHealthPoints > Avatar->AvatarData.BaseStats.MaximumHealthPoints)
-			Avatar->AvatarData.CurrentHealthPoints = Avatar->AvatarData.BaseStats.MaximumHealthPoints;
+		if (Avatar->AvatarData.CurrentHealthPoints > Avatar->AvatarData.BattleStats.MaximumHealthPoints)
+			Avatar->AvatarData.CurrentHealthPoints = Avatar->AvatarData.BattleStats.MaximumHealthPoints;
 	}
 }
 
@@ -158,7 +227,7 @@ void AStarmark_PlayerState::Server_AddHealth_Implementation(ACharacter_Pathfinde
 void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Pathfinder* Avatar)
 {
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
-	APlayerController_Base* PlayerControllerReference = Avatar->PlayerControllerReference;
+	APlayerController_Battle* PlayerControllerReference = Avatar->PlayerControllerReference;
 
 	if (IsValid(Avatar->PlayerControllerReference)) {
 		if (Avatar->PlayerControllerReference->PlayerParty.IsValidIndex(Avatar->IndexInPlayerParty)) {

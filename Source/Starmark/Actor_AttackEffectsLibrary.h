@@ -11,8 +11,9 @@
 
 // Forward Declarations
 class AActor_GridTile;
-class ACharacter_HatTrick;
+class AActor_RangedAttackProjectile;
 class AActor_StatusEffectsLibrary;
+class ACharacter_HatTrick;
 class ACharacter_NonAvatarEntity;
 class ACharacter_Pathfinder;
 
@@ -45,13 +46,22 @@ public:
 	AActor_StatusEffectsLibrary* StatusEffectsLibrary_Reference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<ACharacter_HatTrick> HatTrick_Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<ACharacter_NonAvatarEntity> NonEntityCharacter_Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ACharacter_NonAvatarEntity> RockWall_Class;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<ACharacter_HatTrick> HatTrick_Class;	
+	UPROPERTY()
+	ACharacter_NonAvatarEntity* NonEntityCharacter_Reference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<ACharacter_NonAvatarEntity> NonAvatarEntity_Class;
+	TSubclassOf<AActor_RangedAttackProjectile> RangedProjectileActor_Class;
+
+	UPROPERTY()
+	AActor_RangedAttackProjectile* RangedProjectileActor_Reference;
 
 // ------------------------- Data Tables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -63,6 +73,9 @@ public:
 
 // ------------------------- Other
 	const FActorSpawnParameters SpawnInfo;
+
+	UPROPERTY()
+	FString AttackEffectsLibraryContextString;
 
 // Functions
 // --------------------------------------------------

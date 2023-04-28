@@ -7,7 +7,7 @@
 #include "Character_Pathfinder.h"
 #include "Engine.h"
 
-#include "PlayerController_Base.generated.h"
+#include "PlayerController_Battle.generated.h"
 
 
 // Forward Declarations
@@ -37,7 +37,7 @@ enum class E_PlayerCharacter_HighlightModes : uint8
 
 
 UCLASS()
-class STARMARK_API APlayerController_Base : public APlayerController
+class STARMARK_API APlayerController_Battle : public APlayerController
 {
 	GENERATED_BODY()
 
@@ -50,7 +50,7 @@ protected:
 	virtual void SetupInputComponent() override;
 
 public:
-	APlayerController_Base();
+	APlayerController_Battle();
 
 // Variables
 // --------------------------------------------------
@@ -123,7 +123,7 @@ public:
 	void Client_GetTurnOrderText(const FString& NewTurnOrderText);
 
 	UFUNCTION()
-	void Local_GetTurnOrderText(const FString & NewTurnOrderText);
+	void Local_GetTurnOrderText(const FString& NewTurnOrderText) const;
 
 	UFUNCTION()
 	void Local_GetEntitiesInTurnOrder(TArray<ACharacter_Pathfinder*> TurnOrderArray, int IndexOfCurrentlyActingEntity);

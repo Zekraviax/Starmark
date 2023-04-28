@@ -66,7 +66,7 @@ public:
 	TArray<UMaterialInterface*> RandomlyChosenMaterialsArray;
 
 	// Occupying Actor
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AActor* OccupyingActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -91,9 +91,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnMouseBeginHover(ACharacter_Pathfinder* CurrentAvatar);
-
-	UFUNCTION(BlueprintCallable)
-	void UpdateTileColour(E_GridTile_ColourChangeContext ColourChangeContext);
 
 	UFUNCTION(BlueprintCallable)
 	void SetTileHighlightProperties(bool IsVisible, bool ShouldChangeColourOnMouseOver, E_GridTile_ColourChangeContext ColourChangeContext);

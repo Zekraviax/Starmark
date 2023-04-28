@@ -1,8 +1,6 @@
 #include "WidgetComponent_Avatar.h"
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "Components/CanvasPanelSlot.h"
-#include "PlayerController_Lobby.h"
 #include "Widget_AvatarCreation.h"
 #include "Widget_AvatarLibrary.h"
 #include "WidgetComponent_RightClickMenu.h"
@@ -25,6 +23,9 @@ void UWidgetComponent_Avatar::OnInteractButtonPressed()
 					Cast<UWidget_AvatarLibrary>(PairedWidget)->BindAvatarCreatedDelegate(this);
 			}
 			break;
+		//case (E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot):
+		//	Cast<APlayerController_Lobby>(GetWorld()->GetFirstPlayerController())->OnAvatarWidgetComponentClicked(this);
+		//	break;
 		case (E_AvatarWidgetComponent_Function::E_Nothing):
 			break;
 		default:
@@ -96,7 +97,7 @@ void UWidgetComponent_Avatar::RightClickMenuFunction_EditAvatar()
 	if (AvatarCreationWidget_Class) {
 		AvatarCreationWidget_Reference = CreateWidget<UWidget_AvatarCreation>(this, AvatarCreationWidget_Class);
 		AvatarCreationWidget_Reference->IsEditingExistingAvatar = true;
-		AvatarCreationWidget_Reference->PopulateDropDownsWithAvatarData(AvatarData, IndexInPlayerTeam);
+		AvatarCreationWidget_Reference->PopulateDropDownsWithAvatarData(AvatarData);
 		AvatarCreationWidget_Reference->AddToViewport();
 
 		// Bind delegate in the AvatarLibrary

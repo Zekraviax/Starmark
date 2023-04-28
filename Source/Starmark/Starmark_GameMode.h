@@ -12,10 +12,10 @@
 // Forward Declarations
 class AActor_AttackEffectsLibrary;
 class ACharacter_Pathfinder;
-class APlayerController_Base;
+class AStarmark_GameState;
+class APlayerController_Battle;
 class APlayerPawn_Static;
 class APlayerPawn_Flying;
-class AStarmark_GameState;
 
 
 UCLASS()
@@ -36,14 +36,17 @@ public:
 	UDataTable* AvatarDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* AttacksDataTable;
+
+// ------------------------- Battle
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarSimpleAttacksDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarComplexAttacksDataTable;
 
-// ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<APlayerController_Base*> PlayerControllerReferences;
+	TArray<APlayerController_Battle*> PlayerControllerReferences;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<APlayerPawn_Flying> PlayerPawnBlueprintClass;
@@ -55,7 +58,7 @@ public:
 	UDataTable* UltimateTypeChartDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int ExpectedPlayers = 2;
+	int ExpectedPlayers = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor_AttackEffectsLibrary> AttackEffectsLibrary_Class;
@@ -85,13 +88,13 @@ public:
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)
-	void OnPlayerPostLogin(APlayerController_Base* NewPlayerController);
+	void OnPlayerPostLogin(APlayerController_Battle* NewPlayerController);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_BeginMultiplayerBattle();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void Server_SinglePlayerBeginMultiplayerBattle(APlayerController_Base* PlayerControllerReference);
+	void Server_SinglePlayerBeginMultiplayerBattle(APlayerController_Battle* PlayerControllerReference);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_MultiplayerBattleCheckAllPlayersReady();
@@ -100,7 +103,7 @@ public:
 	void Server_AssembleTurnOrderText();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void Server_SpawnAvatar(APlayerController_Base* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData);
+	void Server_SpawnAvatar(APlayerController_Battle* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable)
 	void Server_UpdateAllAvatarDecals();

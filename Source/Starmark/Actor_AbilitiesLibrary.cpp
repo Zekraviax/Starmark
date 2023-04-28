@@ -1,7 +1,7 @@
 #include "Actor_AbilitiesLibrary.h"
 
 #include "Character_Pathfinder.h"
-#include "PlayerController_Base.h"
+#include "PlayerController_Battle.h"
 #include "Starmark_PlayerState.h"
 
 
@@ -36,7 +36,7 @@ void AActor_AbilitiesLibrary::SwitchOnAbilityEffect_Implementation(E_Ability_Fun
 	{
 		case(E_Ability_Functions::Regenerate):
 		{
-			const int Healing = FMath::CeilToInt(Avatar->AvatarData.BaseStats.MaximumHealthPoints * 0.15);
+			const int Healing = FMath::CeilToInt(Avatar->AvatarData.BattleStats.MaximumHealthPoints * 0.15);
 			AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(Avatar->PlayerControllerReference->PlayerState);
 
 			PlayerStateReference->Server_AddHealth(Avatar, Healing);

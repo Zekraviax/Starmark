@@ -4,7 +4,7 @@
 #include "Engine/World.h"
 #include "NavigationData.h"
 #include "Actor_GridTile.h"
-#include "PlayerController_Base.h"
+#include "PlayerController_Battle.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 
@@ -39,9 +39,7 @@ FPathFindingResult ARecastNavMesh_CustomAStar::FindPath(const FNavAgentPropertie
 
 	FNavigationPath* NavPath = Query.PathInstanceToFill.Get();
 
-	//const FNavigationQueryFilter* NavFilter = Query.QueryFilter.Get();
-	if (NavPath != nullptr)
-	{
+	if (NavPath != nullptr) {
 		if (Query.QueryFilter.IsValid()) {
 			// Array of neighbours of the tile that is currently being checked
 			TArray<AActor_GridTile*> TileNeighbours;
@@ -143,7 +141,7 @@ FPathFindingResult ARecastNavMesh_CustomAStar::FindPath(const FNavAgentPropertie
 			Result.Result = ENavigationQueryResult::Success;
 		}
 	} else {
-	 // Handle errors here
+		// Handle errors here
 
 	}
 

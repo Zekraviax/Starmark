@@ -3,10 +3,9 @@
 #include "Actor_AttackEffectsLibrary.h"
 #include "Actor_GridTile.h"
 #include "Character_Pathfinder.h"
-#include "PlayerController_Base.h"
-#include "PlayerPawn_Static.h"
+#include "Kismet/GameplayStatics.h"
+#include "PlayerController_Battle.h"
 #include "PlayerPawn_Flying.h"
-#include "Player_SaveData.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
@@ -16,7 +15,7 @@
 
 
 // ------------------------- Battle
-void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Base* NewPlayerController)
+void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerController)
 {
 	// Spawn and posses player pawn
 	TArray<AActor*> FoundPlayerStartActors;
@@ -88,7 +87,7 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 }
 
 
-void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementation(APlayerController_Base* PlayerControllerReference)
+void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementation(APlayerController_Battle* PlayerControllerReference)
 {
 	TArray<FAvatar_Struct> CurrentPlayerTeam = Cast<UStarmark_GameInstance>(PlayerControllerReferences[0]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam;
 	int SpawnedAvatarCount = 0;
@@ -129,7 +128,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 	if (ReadyStatuses.Contains(false) || ReadyStatuses.Num() < ExpectedPlayers) {
 		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady, 0.5f, false);
 	} else {
-		// Only set the turn order once all Avatars are spawned
+		// Only set the turn order once all entities are spawned
 		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 			GameStateReference->SetTurnOrder(PlayerControllerReferences);
 		}
@@ -170,8 +169,7 @@ void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 
 			// To-Do: Differentiate between player controlled entities and enemy entities in the turn order list.
 			NewTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.Nickname + "\n");
-		}
-		else {
+		} else {
 			NewTurnOrderText.Append(GameStateReference->AvatarTurnOrder[i]->AvatarData.Nickname + " / ?\n");
 		}
 	}
@@ -185,7 +183,7 @@ void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 }
 
 
-void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Base* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData)
+void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Battle* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData)
 {
 	FString ContextString;
 	const FActorSpawnParameters SpawnInfo;
@@ -210,8 +208,8 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bas
 	NewAvatarActor->AvatarData = AvatarData;
 
 	// Avatar Stats
-	NewAvatarActor->AvatarData.CurrentHealthPoints = NewAvatarActor->AvatarData.BaseStats.MaximumHealthPoints;
-	NewAvatarActor->AvatarData.CurrentManaPoints = NewAvatarActor->AvatarData.BaseStats.MaximumManaPoints;
+	NewAvatarActor->AvatarData.CurrentHealthPoints = NewAvatarActor->AvatarData.BattleStats.MaximumHealthPoints;
+	NewAvatarActor->AvatarData.CurrentManaPoints = NewAvatarActor->AvatarData.BattleStats.MaximumManaPoints;
 	NewAvatarActor->AvatarData.CurrentTileMoves = NewAvatarActor->AvatarData.MaximumTileMoves;
 
 	// MultiplayerUniqueID

@@ -4,7 +4,7 @@
 #include "Engine/World.h"
 #include "NavigationData.h"
 #include "Actor_GridTile.h"
-#include "PlayerController_Base.h"
+#include "PlayerController_Battle.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 
@@ -117,15 +117,12 @@ FPathFindingResult ARecastNavMesh_GraphAStar::FindPath(const FNavAgentProperties
 	FNavigationPath* NavPath = Query.PathInstanceToFill.Get();
 	FNavMeshPath* NavMeshPath = NavPath ? NavPath->CastPath<FNavMeshPath>() : nullptr;
 
-	ACharacter_Pathfinder* AvatarReference = Cast<APlayerController_Base>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar;
+	ACharacter_Pathfinder* AvatarReference = Cast<APlayerController_Battle>(RecastNavMesh->GetWorld()->GetFirstPlayerController())->CurrentSelectedAvatar;
 
-	if (NavMeshPath)
-	{
+	if (NavMeshPath) {
 		Result.Path = Query.PathInstanceToFill;
 		NavMeshPath->ResetForRepath();
-	}
-	else
-	{
+	} else {
 		Result.Path = Self->CreatePathInstance<FNavMeshPath>(Query);
 		NavPath = Result.Path.Get();
 		NavMeshPath = NavPath ? NavPath->CastPath<FNavMeshPath>() : nullptr;

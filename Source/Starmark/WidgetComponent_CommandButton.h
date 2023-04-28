@@ -9,7 +9,7 @@ UCLASS()
 class STARMARK_API UWidgetComponent_CommandButton : public UUserWidget
 {
 	GENERATED_BODY()
-
+	
 public:
 // Functions
 // --------------------------------------------------

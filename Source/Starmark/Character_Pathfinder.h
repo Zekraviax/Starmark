@@ -16,9 +16,19 @@
 
 // Forward Declarations
 class AActor_GridTile;
-class APlayerController_Base;
+class APlayerController_Battle;
 class UWidget_HUD_Battle;
 class UWidgetComponent_AvatarBattleData;
+
+
+UENUM(BlueprintType)
+enum class ECharacter_FacingDirections : uint8
+{
+	TopRight,
+	TopLeft,
+	BottomRight,
+	BottomLeft
+};
 
 
 UCLASS()
@@ -37,16 +47,25 @@ public:
 
 // ------------------------- Components
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UDecalComponent* ActorSelected;
+	UDecalComponent* ActorHighlightedDecal;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	UMaterialInstanceDynamic* ActorSelected_DynamicMaterial;
+	UMaterialInterface* ActorHighlightMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UMaterialInstanceDynamic* ActorHighlightedDecalDynamicMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ActorSelectedPlane;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UBoxComponent* BoxComponent;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	//UStaticMeshComponent* ActorSelectedPlane;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	//UBoxComponent* BoxComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	FLinearColor ActorSelected_DynamicMaterial_Colour;
@@ -60,18 +79,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataComponent_Reference;
 
-// ------------------------- Avatar
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Avatar")
+// ------------------------- Entity
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Entity")
 	FAvatar_Struct AvatarData;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
-	FAvatar_ElementalEssences ElementalEssences;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Avatar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Entity")
 	bool RotateAvatarTowardsMouse = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Entity")
-	FDataTableRowHandle AvatarDataTableRow;
+	FDataTableRowHandle EntityDataTableRow;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Entity")
 	bool FetchDataFromDataTable;
@@ -112,7 +128,10 @@ public:
 
 // ------------------------- Other
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	APlayerController_Base* PlayerControllerReference;
+	APlayerController_Battle* PlayerControllerReference;
+
+	UPROPERTY()
+	FString CharacterContextString;
 
 // Functions
 // --------------------------------------------------
@@ -138,6 +157,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ShowAttackRange();
 
+	UFUNCTION(BlueprintCallable)
+	void SetActorHighlightProperties(bool IsVisible, E_GridTile_ColourChangeContext ColourChangeContext);
+
+	// Used to highlight valid actors when an attack is selected but not confirmed
+	// Used to get valid targets when confirming an attack
+	// Returns an array of actors
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void GetValidActorsForAttack(FAvatar_AttackStruct Attack, AActor* CurrentlyHoveredActor);
+
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void LaunchAttack(AActor* Target);
 
@@ -162,4 +190,7 @@ public:
 
 	UFUNCTION()
 	void Local_GetAvatarData(FAvatar_Struct NewAvatarData);
+
+	UFUNCTION(BlueprintCallable)
+	ECharacter_FacingDirections GetCharacterFacingDirection();
 };

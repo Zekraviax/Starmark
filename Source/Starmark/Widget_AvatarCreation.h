@@ -143,7 +143,7 @@ public:
 	void PopulateDropDowns();
 
 	UFUNCTION()
-	void PopulateDropDownsWithAvatarData(FAvatar_Struct Avatar, int SlotNumber);
+	void PopulateDropDownsWithAvatarData(FAvatar_Struct Avatar);
 
 	UFUNCTION(BlueprintCallable)
 	void OnAvatarNicknameTextChanged(FText NewNickname);

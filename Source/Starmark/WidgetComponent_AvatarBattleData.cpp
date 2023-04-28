@@ -14,11 +14,11 @@ void UWidgetComponent_AvatarBattleData::NativeTick(const FGeometry & MyGeometry,
 {
 	Super::NativeTick(MyGeometry, DeltaTime);
 
-	HealthBar->SetPercent(float(LinkedAvatar.CurrentHealthPoints) / float(LinkedAvatar.BaseStats.MaximumHealthPoints));
-	ManaBar->SetPercent(float(LinkedAvatar.CurrentManaPoints) / float(LinkedAvatar.BaseStats.MaximumManaPoints));
+	HealthBar->SetPercent(float(LinkedAvatar.CurrentHealthPoints) / float(LinkedAvatar.BattleStats.MaximumHealthPoints));
+	ManaBar->SetPercent(float(LinkedAvatar.CurrentManaPoints) / float(LinkedAvatar.BattleStats.MaximumManaPoints));	
 
-	HealthDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(float(LinkedAvatar.CurrentHealthPoints))) + " / " + FString::FromInt(LinkedAvatar.BaseStats.MaximumHealthPoints)));
-	ManaDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(float(LinkedAvatar.CurrentManaPoints))) + " / " + FString::FromInt(LinkedAvatar.BaseStats.MaximumManaPoints)));
+	HealthDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(float(LinkedAvatar.CurrentHealthPoints))) + " / " + FString::FromInt(LinkedAvatar.BattleStats.MaximumHealthPoints)));
+	ManaDisplayText->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(float(LinkedAvatar.CurrentManaPoints))) + " / " + FString::FromInt(LinkedAvatar.BattleStats.MaximumManaPoints)));
 }
 
 
@@ -37,19 +37,19 @@ void UWidgetComponent_AvatarBattleData::UpdateAvatarData(FAvatar_Struct NewLinke
 	//TypesText->SetText(FText::FromString(UEnum::GetDisplayValueAsText<EAvatar_Types>(LinkedAvatar.PrimaryType).ToString()));
 
 	// Progress Bar variables
-	float HealthDivision = float(LinkedAvatar.CurrentHealthPoints) / float(LinkedAvatar.BaseStats.MaximumHealthPoints);
+	float HealthDivision = float(LinkedAvatar.CurrentHealthPoints) / float(LinkedAvatar.BattleStats.MaximumHealthPoints);
 	HealthBar->SetPercent(HealthDivision);
-	float ManaDivision = float(LinkedAvatar.CurrentManaPoints) / float(LinkedAvatar.BaseStats.MaximumManaPoints);
+	float ManaDivision = float(LinkedAvatar.CurrentManaPoints) / float(LinkedAvatar.BattleStats.MaximumManaPoints);
 	ManaBar->SetPercent(ManaDivision);
 	float TileMovesDivision = float(LinkedAvatar.CurrentTileMoves) / float(LinkedAvatar.MaximumTileMoves);
 	TileMovesBar->SetPercent(TileMovesDivision);
 
 	// Text
 	if (HealthDisplayText->IsValidLowLevel())
-		HealthDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.CurrentHealthPoints) + " / " + FString::FromInt(LinkedAvatar.BaseStats.MaximumHealthPoints)));
+		HealthDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.CurrentHealthPoints) + " / " + FString::FromInt(LinkedAvatar.BattleStats.MaximumHealthPoints)));
 
 	if (ManaDisplayText->IsValidLowLevel())
-		ManaDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.CurrentManaPoints) + " / " + FString::FromInt(LinkedAvatar.BaseStats.MaximumManaPoints)));
+		ManaDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.CurrentManaPoints) + " / " + FString::FromInt(LinkedAvatar.BattleStats.MaximumManaPoints)));
 
 	if (TileMovesDisplayText->IsValidLowLevel())
 		TileMovesDisplayText->SetText(FText::FromString(FString::FromInt(LinkedAvatar.CurrentTileMoves) + " / " + FString::FromInt(LinkedAvatar.MaximumTileMoves)));

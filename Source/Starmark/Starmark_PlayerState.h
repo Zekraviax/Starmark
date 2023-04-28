@@ -56,7 +56,6 @@ public:
 	UPROPERTY()
 	FString PlayerStateContextString;
 
-
 // Functions
 // --------------------------------------------------
 

@@ -127,7 +127,7 @@ enum class E_GridTile_Properties : uint8
 
 //------------------------- Battle
 UENUM(BlueprintType)
-enum class EEntity_Factions : uint8
+enum class EEntity_Factions : uint8 
 {
 	Player1,
 	Enemy1,
@@ -144,9 +144,7 @@ enum class EBattle_AttackPatterns : uint8
 	AOE_Circle,
 	SingleTile,
 	Ring,
-	// Special patterns for single attacks
-	WideWall,
-	TwoTiles,
+	Special,		// The pattern is based on the attack itself, not the pattern
 };
 
 
@@ -523,6 +521,7 @@ struct STARMARK_API FAvatar_StatusEffect : public FTableRowBase
 		Description = InDescription;
 		MaximumTurns = InMaxinumTurns;
 		TurnsRemaining = InTurnsRemaining;
+		//SpecialFunctionsActor = InSpecialFunctionsActor;
 	}
 
 	bool operator==(const FAvatar_StatusEffect& OtherStatusEffect) const
@@ -568,9 +567,6 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EBattle_AttackTargetsInRange AttackTargetsInRange;
 
-	// Effect: On attack launch
-	// Effect: On Self
-	// Effect: On Target(s)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<EBattle_AttackEffects> AttackEffectsOnTarget;
 
@@ -592,8 +588,6 @@ struct STARMARK_API FAvatar_AttackStruct : public FTableRowBase
 		ManaCost = 1;
 		Description = "Default.";
 		AttackPattern = EBattle_AttackPatterns::Circle;
-		//AttackCategory =
-		//AttackTargetsInRange = 
 		AttachAttackTraceActorToMouse = false;
 		RotateAvatarTowardsMouse = true;
 		EndAvatarTurnOnUse = true;
@@ -643,8 +637,6 @@ struct STARMARK_API FAvatar_ItemStruct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;
 
-	//TArray<FAvatar_ItemFunctions> ItemFunctions
-
 	FAvatar_ItemStruct()
 	{
 		Name = "Default";
@@ -678,7 +670,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	// Instinct Abilities
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	FAvatar_BaseStats BaseStats;
+	FAvatar_BaseStats BattleStats;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int CurrentHealthPoints;
@@ -748,10 +740,10 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 
 // ------------------------- Other Data Tables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other DataTables")
-	TArray<FDataTableRowHandle> SimpleAttacks;
+	TArray<FDataTableRowHandle> Attacks;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other DataTables")
-	TArray<FDataTableRowHandle> AttacksLearnedByBuyingWithEssence;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other DataTables")
+	//TArray<FDataTableRowHandle> AttacksLearnedByBuyingWithEssence;
 
 // ------------------------- Encyclopedia
 	// Number

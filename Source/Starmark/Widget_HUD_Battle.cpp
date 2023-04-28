@@ -2,8 +2,10 @@
 
 
 #include "Blueprint/WidgetTree.h"
+#include "Character_Pathfinder.h"
+#include "Containers/UnrealString.h"
 #include "Kismet/GameplayStatics.h"
-#include "PlayerController_Base.h"
+#include "PlayerController_Battle.h"
 #include "WidgetComponent_AvatarAttack.h"
 
 
@@ -63,6 +65,7 @@ void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<ACharacter_Pathfinder*> Tu
 
 	for (int i = 1; i < TurnOrderArray.Num(); i++) {
 		ACharacter_Pathfinder* Character = TurnOrderArray[i];
+		
 		if (Character->AvatarData.UiImages.Num() > 0) {
 			UImage* CharacterIcon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
 			CharacterIcon->SetBrushFromTexture(Character->AvatarData.UiImages[0]);
@@ -70,6 +73,7 @@ void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<ACharacter_Pathfinder*> Tu
 			CharacterIcon->SetBrushTintColor(FSlateColor(FLinearColor(1.f, 1.f, 1.f, (1 - (i * 0.15)))));
 			EntityIconsInTurnOrder->AddChild(CharacterIcon);
 		}
+
 		// To-Do: If no UI images are found, get the default image
 	}
 
@@ -80,23 +84,19 @@ void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<ACharacter_Pathfinder*> Tu
 void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity)
 {
 	// To-Do: If no UI images are found, get the default image
+	
 	if (CurrentActingEntity->AvatarData.UiImages.Num() > 0) {
 		CurrentEntityIcon->SetBrushFromTexture(CurrentActingEntity->AvatarData.UiImages[0]);
 	}
 
 	if (CurrentActingEntity->AvatarData.Factions.Contains(EEntity_Factions::Player1)) {
-		HealthText->SetText(FText::FromString(FString::FromInt(CurrentActingEntity->AvatarData.CurrentHealthPoints) + " / " + FString::FromInt(CurrentActingEntity->AvatarData.BaseStats.MaximumHealthPoints)));
-		ManaText->SetText(FText::FromString(FString::FromInt(CurrentActingEntity->AvatarData.CurrentManaPoints) + " / " + FString::FromInt(CurrentActingEntity->AvatarData.BaseStats.MaximumManaPoints)));
+		HealthText->SetText(FText::FromString(FString::FromInt(CurrentActingEntity->AvatarData.CurrentHealthPoints) + " / " + FString::FromInt(CurrentActingEntity->AvatarData.BattleStats.MaximumHealthPoints)));
+		ManaText->SetText(FText::FromString(FString::FromInt(CurrentActingEntity->AvatarData.CurrentManaPoints) + " / " + FString::FromInt(CurrentActingEntity->AvatarData.BattleStats.MaximumManaPoints)));
 
-		HealthBar->SetPercent(float(CurrentActingEntity->AvatarData.CurrentHealthPoints) / float(CurrentActingEntity->AvatarData.BaseStats.MaximumHealthPoints));
-		ManaBar->SetPercent(float(CurrentActingEntity->AvatarData.CurrentManaPoints) / float(CurrentActingEntity->AvatarData.BaseStats.MaximumManaPoints));
+		HealthBar->SetPercent(float(CurrentActingEntity->AvatarData.CurrentHealthPoints) / float(CurrentActingEntity->AvatarData.BattleStats.MaximumHealthPoints));
+		ManaBar->SetPercent(float(CurrentActingEntity->AvatarData.CurrentManaPoints) / float(CurrentActingEntity->AvatarData.BattleStats.MaximumManaPoints));
 
-		if (!CurrentActingEntity->AvatarData.Nickname.IsEmpty()) {
-			CurrentEntityNameText->SetText(FText::FromString(CurrentActingEntity->AvatarData.Nickname.ToUpper() + "'S TURN"));
-		} else {
-			CurrentEntityNameText->SetText(FText::FromString(CurrentActingEntity->AvatarData.AvatarName.ToUpper() + "'S TURN"));
-		}
-
+		CurrentEntityNameText->SetText(FText::FromString(CurrentActingEntity->AvatarData.Nickname.ToUpper() + "'S TURN"));
 	} else {
 		// To-Do: Don't let the player interact with the HUD when an enemy is acting.
 	}
@@ -105,8 +105,8 @@ void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* Curre
 
 void UWidget_HUD_Battle::ResetBattleHud()
 {
-	CommandsBox->SetVisibility(ESlateVisibility::Collapsed);
-	AvatarAttacksBox->SetVisibility(ESlateVisibility::Visible);
+	CommandsBox->SetVisibility(ESlateVisibility::Visible);
+	AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
 
 	UpdateAvatarAttacksComponents();
 }

@@ -5,7 +5,7 @@
 #include "Actor_GridTile.h"
 #include "Character_Pathfinder.h"
 #include "Kismet/GameplayStatics.h"
-#include "PlayerController_Base.h"
+#include "PlayerController_Battle.h"
 #include "Starmark_GameInstance.h"
 
 

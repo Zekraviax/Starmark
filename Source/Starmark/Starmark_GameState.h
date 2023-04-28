@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
 
-#include "Engine/Datatable.h"
+#include "Engine/DataTable.h"
 #include "Starmark_Variables.h"
 
 #include "Starmark_GameState.generated.h"
@@ -11,8 +11,8 @@
 
 // Forward Declarations
 class ACharacter_Pathfinder;
-class APlayerController_Base;
 class AStarmark_GameMode;
+class APlayerController_Battle;
 class UWidgetComponent_LobbyPlayerVals;
 class UWidget_HUD_Battle;
 
@@ -66,13 +66,12 @@ public:
 	UPROPERTY()
 	FTimerHandle StunTimerHandle;
 
-
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void SetTurnOrder(const TArray<APlayerController_Base*>& PlayerControllers);
+	void SetTurnOrder(const TArray<APlayerController_Battle*>& PlayerControllers);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void AvatarBeginTurn();

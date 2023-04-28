@@ -3,6 +3,7 @@
 #include "Actor_AbilitiesLibrary.h"
 #include "Actor_GridTile.h"
 #include "Actor_StatusEffectsLibrary.h"
+#include "AIController_EnemyEntity.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Character_NonAvatarEntity.h"
 #include "Character_Pathfinder.h"
@@ -10,7 +11,7 @@
 #include "Starmark_PlayerState.h"
 #include "Starmark_GameMode.h"
 #include "Kismet/GameplayStatics.h"
-#include "PlayerController_Base.h"
+#include "PlayerController_Battle.h"
 #include "Widget_HUD_Battle.h"
 
 
@@ -25,7 +26,7 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 
 // ------------------------- Battle
-void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerController_Base*>& PlayerControllers)
+void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerController_Battle*>& PlayerControllers)
 {
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundActors);
@@ -51,7 +52,7 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 					for (int j = 0; j < AvatarTurnOrder.Num(); j++) {
 						ACharacter_Pathfinder* AvatarInTurnOrder = Cast<ACharacter_Pathfinder>(AvatarTurnOrder[j]);
 
-						if (CurrentAvatar->AvatarData.BaseStats.Speed >= AvatarInTurnOrder->AvatarData.BaseStats.Speed &&
+						if (CurrentAvatar->AvatarData.BattleStats.Speed >= AvatarInTurnOrder->AvatarData.BattleStats.Speed &&
 							!AvatarTurnOrder.Contains(CurrentAvatar)) {
 							AvatarTurnOrder.Insert(CurrentAvatar, j);
 							break;
@@ -76,7 +77,7 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 				for (int j = 0; j < SlowedAvatarsInTurnOrder.Num(); j++) {
 					ACharacter_Pathfinder* AvatarInTurnOrder = Cast<ACharacter_Pathfinder>(SlowedAvatarsInTurnOrder[j]);
 
-					if (CurrentAvatar->AvatarData.BaseStats.Speed >= AvatarInTurnOrder->AvatarData.BaseStats.Speed &&
+					if (CurrentAvatar->AvatarData.BattleStats.Speed >= AvatarInTurnOrder->AvatarData.BattleStats.Speed &&
 						!SlowedAvatarsInTurnOrder.Contains(CurrentAvatar)) {
 						SlowedAvatarsInTurnOrder.Insert(CurrentAvatar, j);
 						break;
@@ -110,15 +111,14 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 		//	Avatar->CurrentStatusEffectsArray[i].TurnsRemaining--;
 
 		//	if (Avatar->CurrentStatusEffectsArray[i].TurnsRemaining <= 0) {
-		//		if (IsValid(Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor))
+		//		if (IsValid(Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor)) {
 		//			Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectRemoved(Avatar, Avatar->CurrentStatusEffectsArray[i]);
-		//		else
+		//		} else
 		//			Avatar->CurrentStatusEffectsArray.RemoveAt(i);
 		//	} else {
 		//		// On Status Effect Start-of-turn effects
-		//		if (Avatar->CurrentStatusEffectsArray[i].Name == "Paralyzed") {
-		//			Avatar->AvatarData.CurrentTileMoves = Avatar->AvatarData.MaximumTileMoves / 2;
-		//			break;
+		//		if (Avatar->CurrentStatusEffectsArray[i].Name == "Stunned") {
+		//			// Do nothing yet
 		//		} else if (IsValid(Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor)) {
 		//			Avatar->CurrentStatusEffectsArray[i].SpecialFunctionsActor->OnStatusEffectStartOfTurn(Avatar, Avatar->CurrentStatusEffectsArray[i]);
 		//		}
@@ -156,21 +156,21 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 
 		if (!Avatar->CurrentStatusEffectsArray.Contains(StunStatus)) {
 			// If the currently acting entity is an enemy, activate their AI functions
-			//if (Avatar->AvatarData.Factions.Contains(EEntity_Factions::Enemy1)) {
-			//	AAIController_EnemyEntity* EnemyController = Cast<AAIController_EnemyEntity>(Avatar->GetController());
+			if (Avatar->AvatarData.Factions.Contains(EEntity_Factions::Enemy1)) {
+				AAIController_EnemyEntity* EnemyController = Cast<AAIController_EnemyEntity>(Avatar->GetController());
 
-			//	if (EnemyController->SelfEntityReference != Avatar) {
-			//		EnemyController->SelfEntityReference = Avatar;
-			//		EnemyController->Possess(Avatar);
-			//	}
+				if (EnemyController->SelfEntityReference != Avatar) {
+					EnemyController->SelfEntityReference = Avatar;
+					EnemyController->Possess(Avatar);
+				}
 
-			//	EnemyController->StepOne_ChooseTarget();
-			//}
+				EnemyController->StepOne_ChooseTarget();
+			}
 		}
 	}
 
 	for (int j = 0; j < PlayerArray.Num(); j++) {
-		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
+		APlayerController_Battle* PlayerController = Cast<APlayerController_Battle>(PlayerArray[j]->GetPawn()->GetController());
 		PlayerController->Player_OnAvatarTurnChanged();
 	}
 
@@ -179,7 +179,7 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 		GameModeReference = Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode());
 	}
 
-	for (APlayerController_Base* Controller : GameModeReference->PlayerControllerReferences) {
+	for (APlayerController_Battle* Controller : GameModeReference->PlayerControllerReferences) {
 		Controller->Local_GetEntitiesInTurnOrder(DynamicAvatarTurnOrder, CurrentAvatarTurnIndex);
 	}
 }
@@ -203,7 +203,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	UE_LOG(LogTemp, Warning, TEXT("AvatarEndTurn / CurrentAvatarTurnIndex is: %d"), CurrentAvatarTurnIndex);
 
 	for (int j = 0; j < PlayerArray.Num(); j++) {
-		APlayerController_Base* PlayerController = Cast<APlayerController_Base>(PlayerArray[j]->GetPawn()->GetController());
+		APlayerController_Battle* PlayerController = Cast<APlayerController_Battle>(PlayerArray[j]->GetPawn()->GetController());
 
 		if (PlayerController) {
 			if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex)) {
@@ -224,7 +224,6 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	for (int j = 0; j < GridTilesArray.Num(); j++) {
 		Cast<AActor_GridTile>(GridTilesArray[j])->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
 	}
-
 
 	// Update the dynamic turn order
 	if (DynamicAvatarTurnOrder.Num() > 0) {
@@ -247,8 +246,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 				// Clean up entities' controllers
 				DynamicAvatarTurnOrder[i]->PlayerControllerReference->TileHighlightMode = E_PlayerCharacter_HighlightModes::E_MovePath;
-			}
-			else {
+			} else {
 				UE_LOG(LogTemp, Warning, TEXT("AvatarEndTurn / Next entity in turn order does not have a player controller."));
 			}
 

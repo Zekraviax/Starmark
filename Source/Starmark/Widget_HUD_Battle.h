@@ -16,7 +16,7 @@
 
 
 // Forward Declarations
-class APlayerController_Base;
+class APlayerController_Battle;
 class UWidgetComponent_AvatarBattleData;
 
 
@@ -77,7 +77,7 @@ public:
 
 // ------------------------- References
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	APlayerController_Base* PlayerControllerReference;
+	APlayerController_Battle* PlayerControllerReference;
 
 // Functions
 // --------------------------------------------------

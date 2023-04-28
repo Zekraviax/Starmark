@@ -105,4 +105,7 @@ public:
 // ------------------------- Right Click Menu
 	UFUNCTION()
 	void RightClickMenuFunction_EditAvatar();
+
+	//UFUNCTION()
+	//void RightClickMenuFunction_EquipAvatar();
 };

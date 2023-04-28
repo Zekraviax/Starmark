@@ -9,6 +9,7 @@
 
 // Forward Declarations
 class AActor_GridTile;
+class ACharacter_Pathfinder;
 
 
 UCLASS()
@@ -44,6 +45,9 @@ public:
 	bool ConvertWorldTileToGridCoordinates(const FVector& WorldPos, FIntPoint& GridPos) const;
 
 	UFUNCTION(BlueprintCallable)
+	FIntPoint ConvertGridTileLocationToCoordinates(FVector ActorLocation) const;
+
+	UFUNCTION(BlueprintCallable)
 	FVector ConvertGridCoordinatesToWorldTile(const FIntPoint& GridCoordinates) const;
 
 	UFUNCTION(BlueprintCallable)
@@ -51,4 +55,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	AActor_GridTile* GetWorldTileActorAtGridCoordinates(const FIntPoint& GridCoordinates) const;
+
+	UFUNCTION(BlueprintCallable)
+	AActor_GridTile* FindGridTileAtCoordinates(FIntPoint GridCoordinates);
+
+	UFUNCTION(BlueprintCallable)
+	ACharacter_Pathfinder* FindCharacterAtCoordinates(FIntPoint GridCoordinates);
 };

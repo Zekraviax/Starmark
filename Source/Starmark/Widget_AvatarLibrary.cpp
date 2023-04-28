@@ -5,10 +5,7 @@
 #include "Components/PanelWidget.h"
 #include "Components/UniformGridSlot.h"
 #include "Kismet/GameplayStatics.h"
-#include "Materials/Material.h"
-#include "Materials/MaterialInstanceDynamic.h"
 #include "PlayerController_Lobby.h"
-#include "Styling/SlateBrush.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_PlayerState.h"
 #include "Widget_AvatarCreation.h"
@@ -52,7 +49,7 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 							AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::UnequipAvatar);
 							AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::DeleteAvatar);
 						}
-
+						
 						AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
 
 						break;
