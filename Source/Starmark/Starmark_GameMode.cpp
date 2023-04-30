@@ -274,6 +274,7 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	FString ContextString, MoveTypeAsString, TargetTypeAsString;
 	TArray<FName> ComplexAttackRowNames = AvatarComplexAttacksDataTable->GetRowNames();
 	ACharacter_Pathfinder* TargetAsCharacter = Cast<ACharacter_Pathfinder>(Target);
+	float CurrentDamage = 1.f;
 
 	UE_LOG(LogTemp, Warning, TEXT("Server_LaunchAttack / Attack chosen: %s"), *AttackName);
 	for (int i = 0; i < ComplexAttackRowNames.Num(); i++) {
@@ -282,6 +283,23 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 			break;
 		}
 	}
+
+	if (Attacker->CurrentSelectedAttack.AttackCategory == EBattle_AttackCategories::Offensive && Attacker->CurrentSelectedAttack.BasePower > 0) {
+		// Calculate Damage
+		CurrentDamage += ((Attacker->AvatarData.BattleStats.Attack * Attacker->CurrentSelectedAttack.BasePower) / Cast<ACharacter_Pathfinder>(Target)->AvatarData.BattleStats.Defence) / 2;
+
+		if (CurrentDamage < 1.f) {
+			CurrentDamage = 1.f;
+		}
+
+		FMath::FloorToFloat(CurrentDamage);
+
+		// Subtract Health
+		AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(Attacker->PlayerControllerReference->PlayerState);
+		PlayerStateReference->Server_SubtractHealth_Implementation(TargetAsCharacter, CurrentDamage);
+	}
+
+	// To-do: Subtract Mana
 
 	// Apply move effects after the damage has been dealt
 	if (!AttackEffectsLibrary_Reference && AttackEffectsLibrary_Class) {

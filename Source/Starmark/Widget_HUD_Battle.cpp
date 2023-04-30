@@ -99,15 +99,17 @@ void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* Curre
 
 		CurrentEntityNameText->SetText(FText::FromString(CurrentActingEntity->AvatarData.Nickname.ToUpper() + "'S TURN"));
 	} else {
-
+		// Show limited UI elements:
+		// Name
+		// Portrair
 	}
 }
 
 
 void UWidget_HUD_Battle::ResetBattleHud()
 {
-	CommandsBox->SetVisibility(ESlateVisibility::Visible);
-	AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
+	//CommandsBox->SetVisibility(ESlateVisibility::Visible);
+	//AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
 
 	UpdateAvatarAttacksComponents();
 }
