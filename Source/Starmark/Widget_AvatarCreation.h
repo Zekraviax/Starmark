@@ -113,6 +113,9 @@ public:
 	TArray<FName> ComplexAttacksRowNames;
 
 	UPROPERTY()
+	TArray<FName> ComplexAttacksDisplayNames;
+
+	UPROPERTY()
 	TArray<FName> AbilityRowNames;
 
 	UPROPERTY()

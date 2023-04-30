@@ -149,11 +149,13 @@ void AStarmark_PlayerState::Server_UpdatePlayerData_Implementation()
 
 void AStarmark_PlayerState::SaveToCurrentProfile()
 {
-	if (!GameInstanceReference)
+	if (!GameInstanceReference) {
 		GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	}
 
-	if (!PlayerProfileReference)
+	if (!PlayerProfileReference) {
 		PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+	}
 
 	if (PlayerProfileReference) {
 		PlayerProfileReference->Name = GameInstanceReference->PlayerName;

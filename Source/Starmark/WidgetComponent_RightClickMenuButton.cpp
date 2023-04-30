@@ -121,6 +121,15 @@ void UWidgetComponent_RightClickMenuButton::DeleteAvatar()
 
 	AvatarSlot->AvatarData = FAvatar_Struct();
 
+	// Re-assign all indices in the players' library and team
+	for (int i = 0; i < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
+		PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].IndexInPlayerLibrary = i;
+	}
+
+	for (int i = 0; i < PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num(); i++) {
+		PlayerStateReference->PlayerProfileReference->AvatarLibrary[i].IndexInPlayerLibrary = (i * -1) - 1;
+	}
+
 	// Update all Avatar widgets
 	for (int i = 0; i < FoundAvatarLibraryWidgets.Num(); i++) {
 		Cast<UWidget_AvatarLibrary>(FoundAvatarLibraryWidgets[i])->OnWidgetOpened();
