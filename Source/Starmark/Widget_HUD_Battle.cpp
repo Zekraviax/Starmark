@@ -84,7 +84,8 @@ void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<ACharacter_Pathfinder*> Tu
 void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity)
 {
 	// To-Do: If no UI images are found, get the default image
-	
+	// To-Do: Don't let the player interact with the HUD when an enemy is acting.
+
 	if (CurrentActingEntity->AvatarData.UiImages.Num() > 0) {
 		CurrentEntityIcon->SetBrushFromTexture(CurrentActingEntity->AvatarData.UiImages[0]);
 	}
@@ -98,7 +99,7 @@ void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* Curre
 
 		CurrentEntityNameText->SetText(FText::FromString(CurrentActingEntity->AvatarData.Nickname.ToUpper() + "'S TURN"));
 	} else {
-		// To-Do: Don't let the player interact with the HUD when an enemy is acting.
+
 	}
 }
 

@@ -343,6 +343,11 @@ void UWidget_AvatarCreation::OnSaveButtonPressed()
 		}
 	}
 
+	// If the avatar has no nickname, set its nickname to be its default name
+	if (CurrentAvatar.Nickname.IsEmpty()) {
+		CurrentAvatar.Nickname = CurrentAvatar.AvatarName;
+	}
+
 	if (!IsEditingExistingAvatar) {
 		CurrentAvatar.IndexInPlayerLibrary = (PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num() * -1) - 1;
 		PlayerStateReference->PlayerProfileReference->AvatarLibrary.Add(CurrentAvatar);
