@@ -70,6 +70,10 @@ void AActor_AttackEffectsLibrary::SwitchOnAttackEffect_Implementation(EBattle_At
 		if (Cast<ACharacter_Pathfinder>(Target))
 			Attack_AddSpellbound(Attacker, Cast<ACharacter_Pathfinder>(Target));
 		break;
+	case (EBattle_AttackEffects::AddMarkedStatus):
+		if (Cast<ACharacter_Pathfinder>(Target))
+			Attack_AddMarked(Attacker, Cast<ACharacter_Pathfinder>(Target));
+		break;
 	case (EBattle_AttackEffects::KnockbackTarget):
 		if (Cast<ACharacter_Pathfinder>(Target))
 			Attack_KnockbackTarget(Attacker, Cast<ACharacter_Pathfinder>(Target));
@@ -213,15 +217,32 @@ void AActor_AttackEffectsLibrary::Attack_AddSpellbound_Implementation(ACharacter
 	FString ContextString;
 	FAvatar_StatusEffect* SpellboundStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Spellbound", ContextString);
 
-	if (IsValid(StatusEffectsLibrary_Class)) {
+	if (IsValid(StatusEffectsLibrary_Class) && !StatusEffectsLibrary_Reference) {
 		FActorSpawnParameters SpawnInfo;
 		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
-
-		StatusEffectsLibrary_Reference->RememberedAvatarOne = Attacker;
-		StatusEffectsLibrary_Reference->RememberedAvatarTwo = Defender;
-
-		StatusEffectsLibrary_Reference->OnStatusEffectApplied(Defender, *SpellboundStatus);
 	}
+
+	//StatusEffectsLibrary_Reference->RememberedAvatarOne = Attacker;
+	//StatusEffectsLibrary_Reference->RememberedAvatarTwo = Defender;
+
+	StatusEffectsLibrary_Reference->OnStatusEffectApplied(Defender, *SpellboundStatus);
+}
+
+
+void AActor_AttackEffectsLibrary::Attack_AddMarked_Implementation(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender)
+{
+	FString ContextString;
+	FAvatar_StatusEffect* MarkedStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Marked", ContextString);
+
+	if (IsValid(StatusEffectsLibrary_Class) && !StatusEffectsLibrary_Reference) {
+		FActorSpawnParameters SpawnInfo;
+		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
+	}
+
+	//StatusEffectsLibrary_Reference->RememberedAvatarOne = Attacker;
+	//StatusEffectsLibrary_Reference->RememberedAvatarTwo = Defender;
+
+	StatusEffectsLibrary_Reference->OnStatusEffectApplied(Defender, *MarkedStatus);
 }
 
 

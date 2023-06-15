@@ -61,12 +61,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UBoxComponent* BoxComponent;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	//UStaticMeshComponent* ActorSelectedPlane;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	//UBoxComponent* BoxComponent;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	FLinearColor ActorSelected_DynamicMaterial_Colour;
 
@@ -150,13 +144,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnAvatarClicked();
 
-	UFUNCTION()
-	void SetAttackTraceActorLocationSnappedToGrid();
-
 // ------------------------- Battle
-	UFUNCTION(BlueprintCallable)
-	void ShowAttackRange();
-
 	UFUNCTION(BlueprintCallable)
 	void SetActorHighlightProperties(bool IsVisible, E_GridTile_ColourChangeContext ColourChangeContext);
 

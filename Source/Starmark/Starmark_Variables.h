@@ -181,6 +181,7 @@ enum class EBattle_AttackEffects : uint8
 	AddSoakStatus,
 	AddSpellboundStatus,
 	AddVampirismStatus,
+	AddMarkedStatus,
 	// Other
 	KnockbackTarget,
 	NoFriendlyFire,

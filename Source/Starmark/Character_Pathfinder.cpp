@@ -168,89 +168,7 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 }
 
 
-void ACharacter_Pathfinder::SetAttackTraceActorLocationSnappedToGrid()
-{
-	//// Get all tiles and overlapping tiles
-	//TArray<AActor*> GridTilesArray;
-	//TArray<UPrimitiveComponent*> OverlappingActors;
-	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
-
-	//// Check for tiles that overlap the AttackTraceActor
-	//for (int i = 0; i < GridTilesArray.Num(); i++) {
-	//	AActor_GridTile* GridTile = Cast<AActor_GridTile>(GridTilesArray[i]);
-
-	//	GridTile->GetOverlappingComponents(OverlappingActors);
-	//	if (OverlappingActors.Contains(AttackTraceActor)) {
-	//		GridTile->ChangeColourOnMouseHover = false;
-	//		GridTile->DynamicMaterial->SetVectorParameterValue(FName("Colour"), FLinearColor(1.f, 0.2f, 0.0f));
-	//	} else {
-	//		GridTile->ChangeColourOnMouseHover = true;
-	//		GridTile->DynamicMaterial->SetVectorParameterValue(FName("Colour"), FLinearColor(1.f, 1.f, 1.f));
-	//	}
-	//}
-}
-
 // ------------------------- Battle
-void ACharacter_Pathfinder::ShowAttackRange()
-{
-	//AttackTraceActor->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
-	//AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	//AttackTraceActor->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-
-	//// Turn off all highlights
-	//TArray<AActor*> GridTilesArray;
-	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
-	//for (AActor* GridTileInArray : GridTilesArray) {
-	//	AActor_GridTile* Tile = Cast<AActor_GridTile>(GridTileInArray);
-	//	Tile->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
-	//}
-
-	//AttackTraceActor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	//AttackTraceActor->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-
-	//if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::WideWall) {
-	//	// Set the StaticMesh
-	//	for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
-	//		if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
-	//			AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
-	//			break;
-	//		}
-	//	}
-
-	//	FVector WideWallLocation = FVector(150, 0, -100);
-	//	FVector WideWallScale = FVector(0.5f, 2.f, 0.2f);
-
-	//	AttackTraceActor->SetRelativeLocation(WideWallLocation);
-	//	AttackTraceActor->SetRelativeScale3D(WideWallScale);
-	//}		
-	//// Four-Way and Eight-Way Line Traces
-	//else if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::FourWayCross || CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross) {
-	//	// Set the StaticMesh
-	//	for (int i = 0; i < AttackTraceStaticMeshes.Num(); i++) {
-	//		if (AttackTraceStaticMeshes[i]->GetName().Contains("Rectangle")) {
-	//			AttackTraceActor->SetStaticMesh(AttackTraceStaticMeshes[i]);
-	//			break;
-	//		}
-	//	}
-
-	//	// Adjust the Rotation Snap degree
-	//	if (CurrentSelectedAttack.AttackPattern == EBattle_AttackPatterns::EightWayCross)
-	//		AttackRotationSnapToDegrees = 45;
-	//	else
-	//		AttackRotationSnapToDegrees = 90;
-
-	//	int DefaultRectangleLocationX = 350; // Add 100 for every tile range
-	//	int DefaultRectangleScale = CurrentSelectedAttack.BaseRange - 1;
-
-	//	FVector RectangleLocation = FVector(200, 0, -100);
-	//	FVector RectangleScale = FVector(1, 0.1, DefaultRectangleScale);
-
-	//	AttackTraceActor->SetRelativeLocation(RectangleLocation);
-	//	AttackTraceActor->SetRelativeScale3D(RectangleScale);
-	//}
-}
-
-
 void ACharacter_Pathfinder::SetActorHighlightProperties(bool IsVisible, E_GridTile_ColourChangeContext ColourChangeContext)
 {
 	if (ActorHighlightedDecal->IsValidLowLevel() && ActorHighlightedDecalDynamicMaterial->IsValidLowLevel()) {
@@ -299,7 +217,7 @@ void ACharacter_Pathfinder::GetValidActorsForAttack_Implementation(FAvatar_Attac
 				}
 				break;
 			case(EBattle_AttackPatterns::FourWayCross):
-				ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y));
+				//ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y));
 
 				for (int i = 1; i <= Attack.BaseRange; i++) {
 					ValidVectors.Add(FVector2D(this->GetActorLocation().X + (200 * i), this->GetActorLocation().Y));

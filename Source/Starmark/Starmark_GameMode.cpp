@@ -300,6 +300,7 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	}
 
 	// To-do: Subtract Mana
+	//Attacker->AvatarData.CurrentManaPoints -= Attacker->CurrentSelectedAttack.ManaCost;
 
 	// Apply move effects after the damage has been dealt
 	if (!AttackEffectsLibrary_Reference && AttackEffectsLibrary_Class) {

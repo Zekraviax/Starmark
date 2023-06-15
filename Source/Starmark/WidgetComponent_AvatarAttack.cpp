@@ -19,9 +19,6 @@ void UWidgetComponent_AvatarAttack::OnButtonPressed()
 		// Set selected Attack
 		PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack = PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[AvatarAttackIndex];
 
-		// Get new valid targets
-		PlayerControllerReference->CurrentSelectedAvatar->ShowAttackRange();
-
 		// Enable rotation towards mouse cursor
 		PlayerControllerReference->CurrentSelectedAvatar->RotateAvatarTowardsMouse = true;
 	}

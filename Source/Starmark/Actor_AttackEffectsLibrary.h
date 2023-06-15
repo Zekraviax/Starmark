@@ -108,6 +108,9 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_AddSpellbound(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
 
+	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	void Attack_AddMarked(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
+
 // ------------------------- Other
 	UFUNCTION(BlueprintCallable, Server, Unreliable)
 	void Attack_KnockbackTarget(ACharacter_Pathfinder* Attacker, ACharacter_Pathfinder* Defender);
