@@ -136,9 +136,16 @@ void AStarmark_PlayerState::Server_UpdatePlayerData_Implementation()
 		AController* Controller = Pawn->GetController();
 		Cast<APlayerController_Battle>(Controller)->PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentExplorerTeam;
 		*/
+
 		// Update player controller with team
-		UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *GetNetOwningPlayer()->GetPlayerController(GetWorld())->GetName());
-		Cast<APlayerController_Battle>(GetNetOwningPlayer()->GetPlayerController(GetWorld()))->PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+		// GetNetOwningPlayer doesn't work on local clients (?)
+		//UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / Pawn is valid: %s"), IsValid(GetPawn()) ? TEXT("true") : TEXT("false"));
+		//UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / PlayerProfileReference is valid: %s"), IsValid(Cast<APlayerController_Battle>(GetWorld()->GetFirstLocalPlayerFromController())->PlayerProfileReference) ? TEXT("true") : TEXT("false"));
+		//UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / GameInstanceReference is valid: %s"), IsValid(GameInstanceReference) ? TEXT("true") : TEXT("false"));
+		//UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / Current Profile is: %s"), *GameInstanceReference->CurrentProfileReference->ProfileName);
+		//UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *GetNetOwningPlayer()->GetPlayerController(GetWorld())->GetName());
+
+		//Cast<APlayerController_Battle>(GetWorld()->GetFirstLocalPlayerFromController())->PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
 
 		SetPlayerName(GameInstanceReference->PlayerName);
 		SendUpdateToMultiplayerLobby();

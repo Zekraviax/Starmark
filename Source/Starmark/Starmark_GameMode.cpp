@@ -38,6 +38,7 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / MultiplayerUniqueIDCounter is: %d"), MultiplayerUniqueIDCounter);
 
 	// Load player data
+	UPlayer_SaveData* PlayerData = Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->GameInstanceReference->CurrentProfileReference;
 	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Server_UpdatePlayerData();
 	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Client_UpdateReplicatedPlayerName();
 

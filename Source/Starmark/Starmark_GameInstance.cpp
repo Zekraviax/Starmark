@@ -88,13 +88,11 @@ bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, 
 	// Get the Online Subsystem to work with
 	IOnlineSubsystem* const OnlineSub = IOnlineSubsystem::Get();
 
-	if (OnlineSub)
-	{
+	if (OnlineSub) {
 		// Get the Session Interface, so we can call the "CreateSession" function on it
 		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
 
-		if (Sessions.IsValid() && UserId.IsValid())
-		{
+		if (Sessions.IsValid() && UserId.IsValid()) {
 			/*
 			Fill in all the Session Settings that we want to use.
 
@@ -125,9 +123,7 @@ bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, 
 			// Our delegate should get called when this is complete (doesn't need to be successful!)
 			return Sessions->CreateSession(*UserId, SessionName, *SessionSettings);
 		}
-	}
-	else
-	{
+	} else {
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("No OnlineSubsytem found!"));
 	}
 
@@ -170,20 +166,17 @@ void UStarmark_GameInstance::OnStartOnlineGameComplete(FName SessionName, bool b
 
 	// Get the Online Subsystem so we can get the Session Interface
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
-	if (OnlineSub)
-	{
+	if (OnlineSub) {
 		// Get the Session Interface to clear the Delegate
 		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
-		if (Sessions.IsValid())
-		{
+		if (Sessions.IsValid()) {
 			// Clear the delegate, since we are done with this call
 			Sessions->ClearOnStartSessionCompleteDelegate_Handle(OnStartSessionCompleteDelegateHandle);
 		}
 	}
 
 	// If the start was successful, we can open a NewMap if we want. Make sure to use "listen" as a parameter!
-	if (bWasSuccessful)
-	{
+	if (bWasSuccessful) {
 		UGameplayStatics::OpenLevel(GetWorld(), "MultiplayerLobby", true, "listen");
 		//GetWorld()->ServerTravel("/Game/Levels/MultiplayerLobby.MultiplayerLobby?listen");
 		//World'/Game/Levels/MultiplayerLobby.MultiplayerLobby'
@@ -196,18 +189,21 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 	// Get the OnlineSubsystem we want to work with
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
 
-	UE_LOG(LogTemp, Warning, TEXT("FindSessions / if (OnlineSub) returns: %s"), OnlineSub ? TEXT("true") : TEXT("false"));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / FindSessions /  if (OnlineSub) returns: %s"), OnlineSub ? TEXT("true") : TEXT("false")));
+	UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / FindSessions / if (OnlineSub) returns: %s"), OnlineSub ? TEXT("true") : TEXT("false"));
 
 	if (OnlineSub)
 	{
 		// Get the SessionInterface from our OnlineSubsystem
 		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
 
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / FindSessions / Sessions.IsValid returns: %s"), Sessions.IsValid() ? TEXT("true") : TEXT("false")));
 		UE_LOG(LogTemp, Warning, TEXT("FindSessions / Sessions.IsValid returns: %s"), Sessions.IsValid() ? TEXT("true") : TEXT("false"));
+
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / FindSessions / UserId.IsValid returns: %s"), UserId.IsValid() ? TEXT("true") : TEXT("false")));
 		UE_LOG(LogTemp, Warning, TEXT("FindSessions / UserId.IsValid returns: %s"), UserId.IsValid() ? TEXT("true") : TEXT("false"));
 
-		if (Sessions.IsValid() && UserId.IsValid())
-		{
+		if (Sessions.IsValid() && UserId.IsValid()) {
 			/*
 			Fill in all the SearchSettings, like if we are searching for a LAN game and how many results we want to have!
 			*/
@@ -216,18 +212,21 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 			// Steam setting?
 			bIsPresence = true;
 
-			UE_LOG(LogTemp, Warning, TEXT("FindSessions / bIsLAN is: %s"), bIsLAN ? TEXT("true") : TEXT("false"));
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / FindSessions / bIsLAN is: %s"), bIsLAN ? TEXT("true") : TEXT("false")));
+			UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / FindSessions / bIsLAN is: %s"), bIsLAN ? TEXT("true") : TEXT("false"));
 
 			SessionSearch->bIsLanQuery = bIsLAN;
 			SessionSearch->MaxSearchResults = 100;
 			SessionSearch->PingBucketSize = 50;
 			//SessionSearch->TimeoutInSeconds = 30.f;
 
-			UE_LOG(LogTemp, Warning, TEXT("FindSessions / bIsPresence is: %s"), bIsPresence ? TEXT("true") : TEXT("false"));
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / FindSessions / bIsPresence is: %s"), bIsPresence ? TEXT("true") : TEXT("false")));
+			UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / FindSessions / bIsPresence is: %s"), bIsPresence ? TEXT("true") : TEXT("false"));
 
 			// We only want to set this Query Setting if "bIsPresence" is true
-			if (bIsPresence)
+			if (bIsPresence) {
 				SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, bIsPresence, EOnlineComparisonOp::Equals);
+			}
 
 			TSharedRef<FOnlineSessionSearch> SearchSettingsRef = SessionSearch.ToSharedRef();
 
@@ -237,9 +236,7 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 			// Finally call the SessionInterface function. The Delegate gets called once this is finished
 			Sessions->FindSessions(*UserId, SearchSettingsRef);
 		}
-	}
-	else
-	{
+	} else {
 		// If something goes wrong, just call the Delegate Function directly with "false".
 		OnFindSessionsComplete(false);
 	}
@@ -248,20 +245,23 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 
 void UStarmark_GameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OFindSessionsComplete bSuccess: %d"), bWasSuccessful));
-	UE_LOG(LogTemp, Warning, TEXT("OnFindSessionsComplete / bWasSuccessfull is: %s"), bWasSuccessful ? TEXT("true") : TEXT("false"));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / OnFindSessionsComplete / bWasSuccessfull: %d"), bWasSuccessful));
+	UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / OnFindSessionsComplete / bWasSuccessfull is: %s"), bWasSuccessful ? TEXT("true") : TEXT("false"));
 
 	// Get OnlineSubsystem we want to work with
 	IOnlineSubsystem* const OnlineSub = IOnlineSubsystem::Get();
-	UE_LOG(LogTemp, Warning, TEXT("OnFindSessionsComplete / if (OnlineSub) returns: %s"), OnlineSub ? TEXT("true") : TEXT("false"));
 
-	if (OnlineSub)
-	{
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / OnFindSessionsComplete / if (OnlineSub) returns: %s"), OnlineSub ? TEXT("true") : TEXT("false")));
+	UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / OnFindSessionsComplete / if (OnlineSub) returns: %s"), OnlineSub ? TEXT("true") : TEXT("false"));
+
+	if (OnlineSub) {
 		// Get SessionInterface of the OnlineSubsystem
 		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
-		UE_LOG(LogTemp, Warning, TEXT("OnFindSessionsComplete / Sessions.IsValid returns: %s"), Sessions.IsValid() ? TEXT("true") : TEXT("false"));
-		if (Sessions.IsValid())
-		{
+
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / OnFindSessionsComplete / Sessions.IsValid returns: %s"), Sessions.IsValid() ? TEXT("true") : TEXT("false")));
+		UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / OnFindSessionsComplete / Sessions.IsValid returns: %s"), Sessions.IsValid() ? TEXT("true") : TEXT("false"));
+
+		if (Sessions.IsValid()) {
 			// Clear the Delegate handle, since we finished this call
 			Sessions->ClearOnFindSessionsCompleteDelegate_Handle(OnFindSessionsCompleteDelegateHandle);
 
@@ -269,7 +269,10 @@ void UStarmark_GameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Num Search Results: %d"), SessionSearch->SearchResults.Num()));
 
 			// If we have found at least 1 session, we just going to debug them. You could add them to a list of UMG Widgets, like it is done in the BP version!
-			UE_LOG(LogTemp, Warning, TEXT("OnFindSessionsComplete / Sessions found: %d"), SessionSearch->SearchResults.Num());
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / OnFindSessionsComplete / Sessions found: %d"), SessionSearch->SearchResults.Num()));
+			UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / OnFindSessionsComplete / Sessions found: %d"), SessionSearch->SearchResults.Num());
+
+
 			if (SessionSearch->SearchResults.Num() > 0)
 			{
 				FString ServerName;
@@ -367,7 +370,7 @@ void UStarmark_GameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSes
 
 void UStarmark_GameInstance::OnDestroySessionComplete(FName SessionName, bool bWasSuccessful)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnDestroySessionComplete %s, %d"), *SessionName.ToString(), bWasSuccessful));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / OnDestroySessionComplete / Destroy session complete? %s, %d"), *SessionName.ToString(), bWasSuccessful));
 
 	// Get the OnlineSubsystem we want to work with
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
