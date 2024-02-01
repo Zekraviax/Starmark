@@ -16,6 +16,7 @@ class AStarmark_GameState;
 class APlayerController_Battle;
 class APlayerPawn_Static;
 class APlayerPawn_Flying;
+class AStarmark_PlayerState;
 
 
 UCLASS()
@@ -82,6 +83,9 @@ public:
 // ------------------------- Other
 	UPROPERTY()
 	FString GameModeContextString;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AStarmark_PlayerState> StarmarkPlayerStateBlueprintClass;
 
 // Functions
 // --------------------------------------------------

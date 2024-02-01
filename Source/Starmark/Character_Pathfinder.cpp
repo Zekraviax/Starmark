@@ -199,50 +199,46 @@ void ACharacter_Pathfinder::SetActorHighlightProperties(bool IsVisible, E_GridTi
 
 void ACharacter_Pathfinder::GetValidActorsForAttack_Implementation(FAvatar_AttackStruct Attack, AActor* CurrentlyHoveredActor)
 {
-	if (Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrder.Num() > 0) {
-		if (this == Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrder[0]) {
-			TArray<FVector2D> ValidVectors;
-			TArray<AActor*> GridTilesArray, EntitiesArray;
+	TArray<FVector2D> ValidVectors;
+	TArray<AActor*> GridTilesArray, EntitiesArray;
 
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), EntitiesArray);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), EntitiesArray);
 
-			ValidAttackTargetsArray.Empty();
+	ValidAttackTargetsArray.Empty();
 
-			switch (Attack.AttackPattern)
-			{
-			case(EBattle_AttackPatterns::SingleTile):
-				if (Cast<AActor_GridTile>(CurrentlyHoveredActor) || Cast<ACharacter_Pathfinder>(CurrentlyHoveredActor)) {
-					ValidAttackTargetsArray.Add(CurrentlyHoveredActor);
-				}
-				break;
-			case(EBattle_AttackPatterns::FourWayCross):
-				//ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y));
+	switch (Attack.AttackPattern)
+	{
+	case(EBattle_AttackPatterns::SingleTile):
+		if (Cast<AActor_GridTile>(CurrentlyHoveredActor) || Cast<ACharacter_Pathfinder>(CurrentlyHoveredActor)) {
+			ValidAttackTargetsArray.Add(CurrentlyHoveredActor);
+		}
+		break;
+	case(EBattle_AttackPatterns::FourWayCross):
+		//ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y));
 
-				for (int i = 1; i <= Attack.BaseRange; i++) {
-					ValidVectors.Add(FVector2D(this->GetActorLocation().X + (200 * i), this->GetActorLocation().Y));
-					ValidVectors.Add(FVector2D(this->GetActorLocation().X - (200 * i), this->GetActorLocation().Y));
-					ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y + (200 * i)));
-					ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y - (200 * i)));
-				}
+		for (int i = 1; i <= Attack.BaseRange; i++) {
+			ValidVectors.Add(FVector2D(this->GetActorLocation().X + (200 * i), this->GetActorLocation().Y));
+			ValidVectors.Add(FVector2D(this->GetActorLocation().X - (200 * i), this->GetActorLocation().Y));
+			ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y + (200 * i)));
+			ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y - (200 * i)));
+		}
 
-				for (AActor* GridTile : GridTilesArray) {
-					if (ValidVectors.Contains(FVector2D(GridTile->GetActorLocation().X, GridTile->GetActorLocation().Y))) {
-						ValidAttackTargetsArray.Add(GridTile);
-					}
-				}
-
-				for (AActor* Entity : EntitiesArray) {
-					if (ValidVectors.Contains(FVector2D(Entity->GetActorLocation().X, Entity->GetActorLocation().Y))) {
-						ValidAttackTargetsArray.Add(Entity);
-					}
-				}
-
-				break;
-			default:
-				break;
+		for (AActor* GridTile : GridTilesArray) {
+			if (ValidVectors.Contains(FVector2D(GridTile->GetActorLocation().X, GridTile->GetActorLocation().Y))) {
+				ValidAttackTargetsArray.Add(GridTile);
 			}
 		}
+
+		for (AActor* Entity : EntitiesArray) {
+			if (ValidVectors.Contains(FVector2D(Entity->GetActorLocation().X, Entity->GetActorLocation().Y))) {
+				ValidAttackTargetsArray.Add(Entity);
+			}
+		}
+
+		break;
+	default:
+		break;
 	}
 }
 

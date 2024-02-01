@@ -125,8 +125,11 @@ public:
 	UFUNCTION()
 	void Local_GetTurnOrderText(const FString& NewTurnOrderText) const;
 
+	UFUNCTION(Client, Unreliable)
+	void Server_GetEntitiesInTurnOrder(const int& IndexOfCurrentlyActingEntity);
+
 	UFUNCTION()
-	void Local_GetEntitiesInTurnOrder(TArray<ACharacter_Pathfinder*> TurnOrderArray, int IndexOfCurrentlyActingEntity);
+	void Local_GetEntitiesInTurnOrder(int IndexOfCurrentlyActingEntity);
 
 // ------------------------- Avatar
 	UFUNCTION(BlueprintCallable, Client, Reliable)
@@ -157,6 +160,9 @@ public:
 	// Called at the end of a turn, before the currently acting Avatar changes
 	UFUNCTION(Server, Unreliable)
 	void Player_OnAvatarTurnChanged();
+
+	UFUNCTION(Client, Unreliable)
+	void Client_UpdateAttacksInHud();
 
 // ------------------------- Multiplayer Battle
 	UFUNCTION(Client, Reliable)

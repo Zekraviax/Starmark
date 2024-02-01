@@ -180,7 +180,7 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 	}
 
 	for (APlayerController_Battle* Controller : GameModeReference->PlayerControllerReferences) {
-		Controller->Local_GetEntitiesInTurnOrder(DynamicAvatarTurnOrder, CurrentAvatarTurnIndex);
+		Controller->Local_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
 	}
 }
 
@@ -227,44 +227,49 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 	// Update the dynamic turn order
 	if (DynamicAvatarTurnOrder.Num() > 0) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn_Implementation / Some avatars in the DynamicAvatarTurnOrder array"));
+
 		ACharacter_Pathfinder* FirstAvatarInDynamicTurnOrder = DynamicAvatarTurnOrder[0];
 		DynamicAvatarTurnOrder.RemoveAt(0);
 		DynamicAvatarTurnOrder.Insert(FirstAvatarInDynamicTurnOrder, DynamicAvatarTurnOrder.Num());
-	}
 
-	// Assign currently controlled avatars based on the dynamic turn order
-	for (int i = DynamicAvatarTurnOrder.Num() - 1; i >= 0; i--) {
-		if (IsValid(DynamicAvatarTurnOrder[i])) {
-			if (DynamicAvatarTurnOrder[i]->PlayerControllerReference->IsValidLowLevel()) {
+		// Assign currently controlled avatars based on the dynamic turn order
+		for (int i = DynamicAvatarTurnOrder.Num() - 1; i >= 0; i--) {
+			if (IsValid(DynamicAvatarTurnOrder[i])) {
+				if (DynamicAvatarTurnOrder[i]->PlayerControllerReference->IsValidLowLevel()) {
 
-				for (int x = DynamicAvatarTurnOrder[i]->CurrentStatusEffectsArray.Num() - 1; x >= 0; x--) {
-					if (DynamicAvatarTurnOrder[i]->CurrentStatusEffectsArray[x].Name == "Stunned") {
-						GetWorldTimerManager().SetTimer(StunTimerHandle, this, &AStarmark_GameState::StunDelayedSkipTurn, 1.f);
-						DynamicAvatarTurnOrder[i]->CurrentStatusEffectsArray.RemoveAt(x);
+					for (int x = DynamicAvatarTurnOrder[i]->CurrentStatusEffectsArray.Num() - 1; x >= 0; x--) {
+						if (DynamicAvatarTurnOrder[i]->CurrentStatusEffectsArray[x].Name == "Stunned") {
+							GetWorldTimerManager().SetTimer(StunTimerHandle, this, &AStarmark_GameState::StunDelayedSkipTurn, 1.f);
+							DynamicAvatarTurnOrder[i]->CurrentStatusEffectsArray.RemoveAt(x);
+						}
 					}
+
+					// Clean up entities' controllers
+					DynamicAvatarTurnOrder[i]->PlayerControllerReference->TileHighlightMode = E_PlayerCharacter_HighlightModes::E_MovePath;
+				}
+				else {
+					UE_LOG(LogTemp, Warning, TEXT("AvatarEndTurn / Next entity in turn order does not have a player controller."));
 				}
 
-				// Clean up entities' controllers
-				DynamicAvatarTurnOrder[i]->PlayerControllerReference->TileHighlightMode = E_PlayerCharacter_HighlightModes::E_MovePath;
-			} else {
-				UE_LOG(LogTemp, Warning, TEXT("AvatarEndTurn / Next entity in turn order does not have a player controller."));
-			}
+				// Clean up all entities
+				DynamicAvatarTurnOrder[i]->CurrentSelectedAttack.Name = "None";
+				DynamicAvatarTurnOrder[i]->CurrentSelectedAttack.AttachAttackTraceActorToMouse = false;
+				DynamicAvatarTurnOrder[i]->ValidAttackTargetsArray.Empty();
+				DynamicAvatarTurnOrder[i]->AttackTraceActor->SetVisibility(false);
+				DynamicAvatarTurnOrder[i]->AttackTraceActor->SetHiddenInGame(true);
 
-			// Clean up all entities
-			DynamicAvatarTurnOrder[i]->CurrentSelectedAttack.Name = "None";
-			DynamicAvatarTurnOrder[i]->CurrentSelectedAttack.AttachAttackTraceActorToMouse = false;
-			DynamicAvatarTurnOrder[i]->ValidAttackTargetsArray.Empty();
-			DynamicAvatarTurnOrder[i]->AttackTraceActor->SetVisibility(false);
-			DynamicAvatarTurnOrder[i]->AttackTraceActor->SetHiddenInGame(true);
-
-			// Reset the players' hud
-			TArray<UUserWidget*> FoundBattleHudWidgets;
-			UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundBattleHudWidgets, UWidget_HUD_Battle::StaticClass(), true);
-			for (UUserWidget* FoundWidget : FoundBattleHudWidgets) {
-				UWidget_HUD_Battle* HUD = Cast<UWidget_HUD_Battle>(FoundWidget);
-				HUD->ResetBattleHud();
+				// Reset the players' hud
+				TArray<UUserWidget*> FoundBattleHudWidgets;
+				UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundBattleHudWidgets, UWidget_HUD_Battle::StaticClass(), true);
+				for (UUserWidget* FoundWidget : FoundBattleHudWidgets) {
+					UWidget_HUD_Battle* HUD = Cast<UWidget_HUD_Battle>(FoundWidget);
+					HUD->ResetBattleHud();
+				}
 			}
 		}
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn_Implementation / No avatars in the DynamicAvatarTurnOrder array"))
 	}
 
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_UpdateAllAvatarDecals();

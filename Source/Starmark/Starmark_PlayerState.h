@@ -21,6 +21,8 @@ class STARMARK_API AStarmark_PlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
+	virtual void CopyProperties(class APlayerState* PlayerState) override;
+
 public:
 	AStarmark_PlayerState();
 

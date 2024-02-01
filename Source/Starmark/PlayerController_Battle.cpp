@@ -95,14 +95,21 @@ void APlayerController_Battle::Client_GetTurnOrderText_Implementation(const FStr
 }
 
 
-void APlayerController_Battle::Local_GetTurnOrderText(const FString & NewTurnOrderText) const
+void APlayerController_Battle::Local_GetTurnOrderText(const FString& NewTurnOrderText) const
 {
 	BattleWidgetReference->UpdateTurnOrderText(NewTurnOrderText);
 }
 
 
-void APlayerController_Battle::Local_GetEntitiesInTurnOrder(TArray<ACharacter_Pathfinder*> TurnOrderArray, int IndexOfCurrentlyActingEntity)
+void APlayerController_Battle::Server_GetEntitiesInTurnOrder_Implementation(const int& IndexOfCurrentlyActingEntity)
 {
+	Local_GetEntitiesInTurnOrder(IndexOfCurrentlyActingEntity);
+}
+
+
+void APlayerController_Battle::Local_GetEntitiesInTurnOrder(int IndexOfCurrentlyActingEntity)
+{
+	TArray<ACharacter_Pathfinder*> TurnOrderArray = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrder;
 	BattleWidgetReference->SetUiIconsInTurnOrder(TurnOrderArray, IndexOfCurrentlyActingEntity);
 }
 
@@ -268,6 +275,17 @@ void APlayerController_Battle::Player_OnAvatarTurnChanged_Implementation()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
 	for (int j = 0; j < GridTilesArray.Num(); j++) {
 		Cast<AActor_GridTile>(GridTilesArray[j])->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
+	}
+}
+
+
+void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation()
+{
+	if (BattleWidgetReference) {
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Initializing HUD"));
+		BattleWidgetReference->UpdateAvatarAttacksComponents();
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Error: HUD is not valid"));
 	}
 }
 

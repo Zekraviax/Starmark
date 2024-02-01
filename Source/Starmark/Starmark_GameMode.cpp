@@ -37,8 +37,11 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	NewPlayerController->MultiplayerUniqueID = MultiplayerUniqueIDCounter;
 	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / MultiplayerUniqueIDCounter is: %d"), MultiplayerUniqueIDCounter);
 
-	// Load player data
-	UPlayer_SaveData* PlayerData = Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->GameInstanceReference->CurrentProfileReference;
+	AStarmark_GameState* GameStateRef = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+	UPlayer_SaveData* PlayerData = Cast<AStarmark_PlayerState>(GameStateRef->PlayerArray.Last())->PlayerProfileReference;
+	//UPlayer_SaveData* PlayerData = Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->PlayerProfileReference;
+	NewPlayerController->PlayerProfileReference = PlayerData;
+
 	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Server_UpdatePlayerData();
 	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Client_UpdateReplicatedPlayerName();
 
@@ -121,14 +124,18 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 	TArray<AActor*> GridTilesArray;
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Check each PlayerController is get ready for the battle"));
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		ReadyStatuses.Add(PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle);
 	}
 
 	// Assemble turn order text
 	if (ReadyStatuses.Contains(false) || ReadyStatuses.Num() < ExpectedPlayers) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Can't assemble turn order text because not all players are ready"));
 		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady, 0.5f, false);
 	} else {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Assemble the turn order text"));
+
 		// Only set the turn order once all entities are spawned
 		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 			GameStateReference->SetTurnOrder(PlayerControllerReferences);
@@ -136,6 +143,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 		Server_AssembleTurnOrderText();
 
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Assign UniqueIDs and CurrentSelectedAvatars"));
 		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 			for (int j = 0; j < GameStateReference->AvatarTurnOrder.Num(); j++) {
 				if (PlayerControllerReferences[i]->MultiplayerUniqueID == GameStateReference->AvatarTurnOrder[j]->MultiplayerControllerUniqueID) {
@@ -147,11 +155,13 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 			PlayerControllerReferences[i]->SetBattleWidgetVariables();
 		}
 
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Update all avatar decals"));
 		Server_UpdateAllAvatarDecals();
 		
 		// Set first Avatar's controller as the currently acting player
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Set the currently acting player and update their hud"));
 		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
-		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->BattleWidgetReference->UpdateAvatarAttacksComponents();
+		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->Client_UpdateAttacksInHud();
 	}
 }
 
@@ -179,7 +189,7 @@ void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		PlayerControllerReferences[i]->Client_GetTurnOrderText(GameStateReference->CurrentTurnOrderText);
-		PlayerControllerReferences[i]->Local_GetEntitiesInTurnOrder(GameStateReference->DynamicAvatarTurnOrder, GameStateReference->CurrentAvatarTurnIndex);
+		PlayerControllerReferences[i]->Server_GetEntitiesInTurnOrder(GameStateReference->CurrentAvatarTurnIndex);
 	}
 }
 
@@ -229,8 +239,9 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 	PlayerController->OnRepNotify_CurrentSelectedAvatar();
 
 	// Set spawn tile to be occupied
-	if (Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Contains(E_GridTile_Properties::E_None))
+	if (Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Contains(E_GridTile_Properties::E_None)) {
 		Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Remove(E_GridTile_Properties::E_None);
+	}
 
 	Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Add(E_GridTile_Properties::E_Occupied);
 	Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->OccupyingActor = NewAvatarActor;

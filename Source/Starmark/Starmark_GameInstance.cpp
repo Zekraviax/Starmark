@@ -7,6 +7,7 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "SaveData_PlayerProfilesList.h"
+#include "Starmark_PlayerState.h"
 #include "WidgetComponent_FoundServer.h"
 #include "Widget_ServerBrowser.h"
 
@@ -40,8 +41,8 @@ void UStarmark_GameInstance::LoadProfile(FString ProfileName)
 			PlayerName = CurrentProfileReference->Name;
 			CurrentProfileName = ProfileName;
 
-			// Set data in the players' controller
-			//GetPlayer
+			// To-Do: Set data in the players' PlayerState (?)
+			//Cast<AStarmark_PlayerState>(GetFirstLocalPlayerController()->GetPawn()->GetPlayerState())->PlayerProfileReference = CurrentProfileReference;
 			break;
 		}
 	}

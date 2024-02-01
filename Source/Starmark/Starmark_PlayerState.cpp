@@ -10,6 +10,17 @@
 #include "Widget_HUD_Battle.h"
 
 
+void AStarmark_PlayerState::CopyProperties(APlayerState* PlayerState)
+{
+	Super::CopyProperties(PlayerState);
+
+	AStarmark_PlayerState* Player = Cast<AStarmark_PlayerState>(PlayerState);
+	if (Player) {
+		Player->PlayerProfileReference = PlayerProfileReference;
+	}
+}
+
+
 AStarmark_PlayerState::AStarmark_PlayerState()
 {
 	bReplicates = true;
@@ -176,6 +187,9 @@ void AStarmark_PlayerState::SaveToCurrentProfile()
 void AStarmark_PlayerState::SendUpdateToMultiplayerLobby_Implementation()
 {
 	// Implemented in Blueprints
+
+	// What is done here?:
+	// Retrieve the profile data locally and send it to the player's new controller
 }
 
 
