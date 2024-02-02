@@ -103,16 +103,16 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_MultiplayerBattleCheckAllPlayersReady();
 
-	UFUNCTION(BlueprintCallable, Server, Unreliable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_AssembleTurnOrderText();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_SpawnAvatar(APlayerController_Battle* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData);
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_UpdateAllAvatarDecals();
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_LaunchAttack(ACharacter_Pathfinder* Attacker, AActor* Target, const FString& AttackName);
 
 	UFUNCTION(BlueprintNativeEvent)

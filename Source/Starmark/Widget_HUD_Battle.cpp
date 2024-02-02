@@ -13,12 +13,14 @@
 // ------------------------- Widget
 void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 {
+	// To-Do: This function needs to be able to check who's turn it is,
+	// so we can disable the buttons appropriately
 	TArray<UWidgetComponent_AvatarAttack*> AttackButtonsArray;
 
 	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox is valid? %s"), IsValid(AvatarAttacksBox) ? TEXT("true") : TEXT("false"));
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox is valid? %s"), IsValid(AvatarAttacksBox) ? TEXT("true") : TEXT("false")));
 
-	if (AvatarAttackButtonsHorizontalBox) {
+	if (AvatarAttacksBox) {
 		UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox child count: %d"), AvatarAttacksBox->GetChildrenCount());
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox child count: %d"), AvatarAttacksBox->GetChildrenCount()));
 
@@ -53,6 +55,8 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 				}
 			}
 		}
+	} else {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox is not valid!?")));
 	}
 }
 
@@ -69,47 +73,64 @@ void UWidget_HUD_Battle::UpdateTurnOrderText(FString NewText)
 }
 
 
-void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<ACharacter_Pathfinder*> OldTurnOrderArray, int IndexOfCurrentlyActingEntity)
+void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages)
 {
-	TArray<ACharacter_Pathfinder*> TurnOrderArray;
+	// We can't fetch the DynamicAvatarTurnOrder from here?
+	//TArray<ACharacter_Pathfinder*> TurnOrderArray;
 
-	if (Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrder.Num() > 0) {
-		UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Retrieving DynamicAvatarTurnOrder array"))
-		TurnOrderArray = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrder;
-	} else {
-		UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / No avatars in the DynamicAvatarTurnOrder array"))
-	}
+	if (InDynamicAvatarTurnOrderImages.Num() > 0) {
+		if (EntityIconsInTurnOrder) {
+			//UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Retrieving DynamicAvatarTurnOrder array"))
+			//TurnOrderArray = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrder;
 
-	EntityIconsInTurnOrder->ClearChildren();
+			//EntityIconsInTurnOrder->ClearChildren();
 
-	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Cleared EntityIconsInTurnOrder children"))
-	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / TurnOrderArray child count: %d"), TurnOrderArray.Num());
+			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Cleared EntityIconsInTurnOrder children"))
+			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / InDynamicAvatarTurnOrderImages child count: %d"), InDynamicAvatarTurnOrderImages.Num());
 
-	for (int i = 1; i < TurnOrderArray.Num(); i++) {
-		UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Validating TurnOrderArray child at index: %d"), i);
+			for (int i = 1; i < InDynamicAvatarTurnOrderImages.Num(); i++) {
+				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Validating InDynamicAvatarTurnOrderImages child at index: %d"), i);
+				int EntityIconIndex = i - 1;
 
-		if (TurnOrderArray.IsValidIndex(i)) {
-			ACharacter_Pathfinder* Character = TurnOrderArray[i];
+				if (InDynamicAvatarTurnOrderImages.IsValidIndex(i)) {
+					if (EntityIconsInTurnOrder->GetChildAt(EntityIconIndex)) {
+						if (Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))) {
+							Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetBrushFromTexture(InDynamicAvatarTurnOrderImages[i]);
+							UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Apply avatar image to EntityIconsInTurnOrder child at index %d"), EntityIconIndex)
+						} else {
+							UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder child at index %d is not a UImage"), EntityIconIndex)
+						}
+					} else {
+						UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder child at index %d is not valid"), EntityIconIndex)
+					}
+					//ACharacter_Pathfinder* Character = TurnOrderArray[i];
 
-			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / AvatarData UiImages count: %d"), Character->AvatarData.UiImages.Num());
-			if (Character->AvatarData.UiImages.Num() > 0) {
-				UImage* CharacterIcon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-				CharacterIcon->SetBrushFromTexture(Character->AvatarData.UiImages[0]);
-				CharacterIcon->SetBrushSize(FVector2D(125.f, 125.f));
-				CharacterIcon->SetBrushTintColor(FSlateColor(FLinearColor(1.f, 1.f, 1.f, (1 - (i * 0.15)))));
-				EntityIconsInTurnOrder->AddChild(CharacterIcon);
-			} else {
+					//UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / AvatarData UiImages count: %d"), Character->AvatarData.UiImages.Num());
+					//if (Character->AvatarData.UiImages.Num() > 0) {
+						/*
+						UImage* CharacterIcon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+						CharacterIcon->SetBrushFromTexture(Character->AvatarData.UiImages[0]);
+						CharacterIcon->SetBrushSize(FVector2D(125.f, 125.f));
+						CharacterIcon->SetBrushTintColor(FSlateColor(FLinearColor(1.f, 1.f, 1.f, (1 - (i * 0.15)))));
+						EntityIconsInTurnOrder->AddChild(CharacterIcon);
+						*/
+						//} else {}
 
+						// To-Do: If no UI images are found, get the default image
+				}
+				else {
+					UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / InDynamicAvatarTurnOrderImages index %d is not valid."), i);
+				}
 			}
 
-			// To-Do: If no UI images are found, get the default image
-		}  else {
-			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / TurnOrderArray index %d is not valid."), i);
+			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Get and Set current acting entity info"));
+			//SetCurrentActingEntityInfo(TurnOrderArray[0]);
+		} else {
+			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder is not valid"))
 		}
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / No images in the InDynamicAvatarTurnOrderImages array"))
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Get and Set current acting entity info"));
-	SetCurrentActingEntityInfo(TurnOrderArray[0]);
 }
 
 
@@ -118,8 +139,13 @@ void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* Curre
 	// To-Do: If no UI images are found, get the default image
 	// To-Do: Don't let the player interact with the HUD when an enemy is acting.
 
+	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCurrentActingEntityInfo / IsValid(CurrentActingEntity) returns: %s"), IsValid(CurrentActingEntity) ? TEXT("true") : TEXT("false"));
+
 	if (CurrentActingEntity->AvatarData.UiImages.Num() > 0) {
 		CurrentEntityIcon->SetBrushFromTexture(CurrentActingEntity->AvatarData.UiImages[0]);
+		UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCurrentActingEntityInfo / Grabbing the avatar's first UiImage"));
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCurrentActingEntityInfo / This avatar doesn't have any UiImages!"));
 	}
 
 	if (CurrentActingEntity->AvatarData.Factions.Contains(EEntity_Factions::Player1)) {
@@ -133,7 +159,7 @@ void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* Curre
 	} else {
 		// Show limited UI elements:
 		// Name
-		// Portrair
+		// Portrait
 	}
 }
 

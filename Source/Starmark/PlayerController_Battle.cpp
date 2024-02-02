@@ -83,6 +83,7 @@ void APlayerController_Battle::SetBattleWidgetVariables()
 		}
 
 		// To-Do: Fix these
+		// Also To-Do: Figure out how and why these are broken before we fix them
 		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
 		BattleWidgetReference->AvatarBattleDataWidget->GetAvatarStatusEffects(CurrentSelectedAvatar->CurrentStatusEffectsArray);
 	}
@@ -103,14 +104,26 @@ void APlayerController_Battle::Local_GetTurnOrderText(const FString& NewTurnOrde
 
 void APlayerController_Battle::Server_GetEntitiesInTurnOrder_Implementation(const int& IndexOfCurrentlyActingEntity)
 {
-	Local_GetEntitiesInTurnOrder(IndexOfCurrentlyActingEntity);
+	TArray<ACharacter_Pathfinder*> TurnOrderArray = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrder;
+
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetEntitiesInTurnOrder_Implementation / TurnOrderArray length: %d"), TurnOrderArray.Num());
+	Local_GetEntitiesInTurnOrder(TurnOrderArray);
 }
 
 
-void APlayerController_Battle::Local_GetEntitiesInTurnOrder(int IndexOfCurrentlyActingEntity)
+void APlayerController_Battle::Local_GetEntitiesInTurnOrder(TArray<ACharacter_Pathfinder*> TurnOrderArray)
 {
-	TArray<ACharacter_Pathfinder*> TurnOrderArray = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrder;
-	BattleWidgetReference->SetUiIconsInTurnOrder(TurnOrderArray, IndexOfCurrentlyActingEntity);
+	//BattleWidgetReference->SetUiIconsInTurnOrder(TurnOrderArray);
+	//Client_GetAvatarImagesInDynamicTurnOrder();
+}
+
+
+void APlayerController_Battle::Client_GetAvatarImagesInDynamicTurnOrder_Implementation()
+{
+	TArray<UTexture2D*> InDynamicAvatarTurnOrderImages = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrderImages;
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_GetAvatarImagesInDynamicTurnOrder / InDynamicAvatarTurnOrderImages child count: %d"), InDynamicAvatarTurnOrderImages.Num());
+
+	BattleWidgetReference->SetUiIconsInTurnOrder(InDynamicAvatarTurnOrderImages);
 }
 
 
@@ -285,7 +298,7 @@ void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation()
 		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Initializing HUD"));
 		BattleWidgetReference->UpdateAvatarAttacksComponents();
 	} else {
-		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Error: HUD is not valid"));
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Error: HUD reference is not valid"));
 	}
 }
 

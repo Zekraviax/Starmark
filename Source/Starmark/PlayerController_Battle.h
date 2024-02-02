@@ -125,11 +125,14 @@ public:
 	UFUNCTION()
 	void Local_GetTurnOrderText(const FString& NewTurnOrderText) const;
 
-	UFUNCTION(Client, Unreliable)
+	UFUNCTION(Server, Reliable)
 	void Server_GetEntitiesInTurnOrder(const int& IndexOfCurrentlyActingEntity);
 
 	UFUNCTION()
-	void Local_GetEntitiesInTurnOrder(int IndexOfCurrentlyActingEntity);
+	void Local_GetEntitiesInTurnOrder(TArray<ACharacter_Pathfinder*> TurnOrderArray);
+
+	UFUNCTION(Client, Reliable)
+	void Client_GetAvatarImagesInDynamicTurnOrder();
 
 // ------------------------- Avatar
 	UFUNCTION(BlueprintCallable, Client, Reliable)
@@ -161,7 +164,7 @@ public:
 	UFUNCTION(Server, Unreliable)
 	void Player_OnAvatarTurnChanged();
 
-	UFUNCTION(Client, Unreliable)
+	UFUNCTION(Client, Reliable)
 	void Client_UpdateAttacksInHud();
 
 // ------------------------- Multiplayer Battle

@@ -44,6 +44,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
 	TArray<ACharacter_Pathfinder*> DynamicAvatarTurnOrder;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRepNotify_DynamicAvatarTurnOrderUpdated)
+	TArray<UTexture2D*> DynamicAvatarTurnOrderImages;
+
 	// The Index of the Avatar whose turn it is, in the AvatarTurnOrder Array.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int CurrentAvatarTurnIndex;
@@ -72,6 +75,9 @@ public:
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SetTurnOrder(const TArray<APlayerController_Battle*>& PlayerControllers);
+
+	UFUNCTION()
+	void OnRepNotify_DynamicAvatarTurnOrderUpdated();
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void AvatarBeginTurn();

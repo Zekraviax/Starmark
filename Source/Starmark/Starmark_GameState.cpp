@@ -21,6 +21,7 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	DOREPLIFETIME(AStarmark_GameState, AvatarTurnOrder);
 	DOREPLIFETIME(AStarmark_GameState, DynamicAvatarTurnOrder);
+	DOREPLIFETIME(AStarmark_GameState, DynamicAvatarTurnOrderImages);
 	DOREPLIFETIME(AStarmark_GameState, CurrentTurnOrderText);
 }
 
@@ -32,6 +33,7 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundActors);
 	TArray<ACharacter_Pathfinder*> SlowedAvatars, SlowedAvatarsInTurnOrder;
 
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Empty the AvatarTurnOrder array"));
 	AvatarTurnOrder.Empty();
 
 	// Use Nested Loops to compare Avatars' Speeds.
@@ -95,7 +97,47 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 		AvatarTurnOrder.Add(SlowedAvatarsInTurnOrder[i]);
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Fill the DynamicAvatarTurnOrder array"));
 	DynamicAvatarTurnOrder = AvatarTurnOrder;
+
+	DynamicAvatarTurnOrderImages.Empty();
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Fill the DynamicAvatarTurnOrderImages array"));
+	// Put together a TArray of the avatar's images in order
+	for (int i = 0; i < DynamicAvatarTurnOrder.Num(); i++) {
+		DynamicAvatarTurnOrderImages.Add(DynamicAvatarTurnOrder[i]->AvatarData.UiImages[0]);
+	}
+
+	OnRepNotify_DynamicAvatarTurnOrderUpdated();
+}
+
+
+void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
+{
+	// Tell each player controller to update their HUDs
+	TArray<AActor*> ActorsArray;
+
+	// To-Do: See if this works and is more effecient
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / This function is being multicast to all clients."));
+	
+	//if (Cast<APlayerController_Battle>(GetNetOwningPlayer()->GetPlayerController(GetWorld()))->BattleWidgetReference) {
+		//Cast<APlayerController_Battle>(GetNetOwningPlayer()->GetPlayerController(GetWorld()))->BattleWidgetReference->SetUiIconsInTurnOrder(DynamicAvatarTurnOrderImages);
+	//}
+
+	//Cast<APlayerController_Battle>(GetNetOwningPlayer()->GetPlayerController(GetWorld()))->Client_GetAvatarImagesInDynamicTurnOrder();
+	
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), ActorsArray);
+	for (int i = 0; i < ActorsArray.Num(); i++) {
+		if (Cast<APlayerController_Battle>(ActorsArray[i])) {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Set UI Icons for the player controller at index %d"), i);
+
+			if (Cast<APlayerController_Battle>(ActorsArray[i])->BattleWidgetReference) {
+
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Sending %d UI Icons"), DynamicAvatarTurnOrderImages.Num());
+				Cast<APlayerController_Battle>(ActorsArray[i])->BattleWidgetReference->SetUiIconsInTurnOrder(DynamicAvatarTurnOrderImages);
+			}
+		}
+	}
 }
 
 
@@ -180,7 +222,7 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 	}
 
 	for (APlayerController_Battle* Controller : GameModeReference->PlayerControllerReferences) {
-		Controller->Local_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
+		Controller->Server_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
 	}
 }
 

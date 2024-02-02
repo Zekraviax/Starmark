@@ -49,8 +49,9 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	UE_LOG(LogTemp, Warning, TEXT("OnPlayerPostLogin / PlayerControllerReferences found: %d"), PlayerControllerReferences.Num());
 
 	// Clear Combat Log
-	if (CombatLogTextArray.Num() > 0)
+	if (CombatLogTextArray.Num() > 0) {
 		CombatLogTextArray.Empty();
+	}
 
 	// When all players have joined, begin running the functions needed to start the battle
 	if (ExpectedPlayers >= 2 && PlayerControllerReferences.Num() >= ExpectedPlayers) {
@@ -144,10 +145,12 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		Server_AssembleTurnOrderText();
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Assign UniqueIDs and CurrentSelectedAvatars"));
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Update each player's attacks in the HUD"));
 		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 			for (int j = 0; j < GameStateReference->AvatarTurnOrder.Num(); j++) {
 				if (PlayerControllerReferences[i]->MultiplayerUniqueID == GameStateReference->AvatarTurnOrder[j]->MultiplayerControllerUniqueID) {
 					PlayerControllerReferences[i]->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[j];
+					PlayerControllerReferences[i]->Client_UpdateAttacksInHud();
 					break;
 				}
 			}
@@ -159,15 +162,19 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		Server_UpdateAllAvatarDecals();
 		
 		// Set first Avatar's controller as the currently acting player
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Set the currently acting player and update their hud"));
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Set the currently acting player"));
 		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
-		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->Client_UpdateAttacksInHud();
+		//GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->Client_UpdateAttacksInHud();
+
+		//for (int i = 0; i < PlayerControllerReferences.Num(); i++) {}
 	}
 }
 
 
 void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 {
+	// The AssembleTurnOrderText should only handle the text, and not images in the hud
+	// But whenever the text is updated, shouldn't the images be update to match?
 	FString NewTurnOrderText;
 
 	if (GameStateReference == nullptr) {

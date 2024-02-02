@@ -43,9 +43,6 @@ public:
 	UGridPanel* AvatarAttacksBox;
 
 	UPROPERTY(meta = (BindWidget))
-	UHorizontalBox* AvatarAttackButtonsHorizontalBox;
-
-	UPROPERTY(meta = (BindWidget))
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataWidget;
 
 	UPROPERTY(meta = (BindWidget))
@@ -93,7 +90,7 @@ public:
 	void UpdateTurnOrderText(FString NewText);
 
 	UFUNCTION()
-	void SetUiIconsInTurnOrder(TArray<ACharacter_Pathfinder*> OldTurnOrderArray, int IndexOfCurrentlyActingEntity);
+	void SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages);
 
 	UFUNCTION()
 	void SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity);

@@ -196,7 +196,6 @@ void AStarmark_PlayerState::SendUpdateToMultiplayerLobby_Implementation()
 // ------------------------- Battle
 void AStarmark_PlayerState::Client_UpdateReplicatedPlayerName_Implementation()
 {
-
 	Server_UpdateReplicatedPlayerName(ReplicatedPlayerName);
 	Server_UpdatePlayerStateVariables(PlayerState_PlayerParty);
 }
