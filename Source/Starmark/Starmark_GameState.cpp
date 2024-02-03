@@ -116,25 +116,20 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 {
 	// Tell each player controller to update their HUDs
 	TArray<AActor*> ActorsArray;
-
-	// To-Do: See if this works and is more effecient
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / This function is being multicast to all clients."));
-	
-	//if (Cast<APlayerController_Battle>(GetNetOwningPlayer()->GetPlayerController(GetWorld()))->BattleWidgetReference) {
-		//Cast<APlayerController_Battle>(GetNetOwningPlayer()->GetPlayerController(GetWorld()))->BattleWidgetReference->SetUiIconsInTurnOrder(DynamicAvatarTurnOrderImages);
-	//}
 
-	//Cast<APlayerController_Battle>(GetNetOwningPlayer()->GetPlayerController(GetWorld()))->Client_GetAvatarImagesInDynamicTurnOrder();
-	
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), ActorsArray);
 	for (int i = 0; i < ActorsArray.Num(); i++) {
 		if (Cast<APlayerController_Battle>(ActorsArray[i])) {
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Set UI Icons for the player controller at index %d"), i);
 
 			if (Cast<APlayerController_Battle>(ActorsArray[i])->BattleWidgetReference) {
-
 				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Sending %d UI Icons"), DynamicAvatarTurnOrderImages.Num());
 				Cast<APlayerController_Battle>(ActorsArray[i])->BattleWidgetReference->SetUiIconsInTurnOrder(DynamicAvatarTurnOrderImages);
+
+				// Also update the current acting avatar in the hud
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Update the currently acting entity information."));
+				Cast<APlayerController_Battle>(ActorsArray[i])->BattleWidgetReference->SetCurrentActingEntityInfo(DynamicAvatarTurnOrder[0]);
 			}
 		}
 	}

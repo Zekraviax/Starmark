@@ -4,6 +4,7 @@
 #include "GameFramework/GameMode.h"
 
 #include "Engine/DataTable.h"
+#include "Player_SaveData.h"
 #include "Starmark_Variables.h"
 
 #include "Starmark_GameMode.generated.h"
@@ -12,10 +13,10 @@
 // Forward Declarations
 class AActor_AttackEffectsLibrary;
 class ACharacter_Pathfinder;
-class AStarmark_GameState;
 class APlayerController_Battle;
-class APlayerPawn_Static;
 class APlayerPawn_Flying;
+class APlayerPawn_Static;
+class AStarmark_GameState;
 class AStarmark_PlayerState;
 
 
@@ -39,15 +40,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AttacksDataTable;
 
-// ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarSimpleAttacksDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarComplexAttacksDataTable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+// ------------------------- Battle
 	TArray<APlayerController_Battle*> PlayerControllerReferences;
+	TArray<UPlayer_SaveData*> PlayerProfileReferences;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<APlayerPawn_Flying> PlayerPawnBlueprintClass;
@@ -63,25 +64,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor_AttackEffectsLibrary> AttackEffectsLibrary_Class;
-
-	UPROPERTY()
 	AActor_AttackEffectsLibrary* AttackEffectsLibrary_Reference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* StatusEffectsDataTable;
-
-	UPROPERTY()
 	TArray<FString> CombatLogTextArray;
 
 // ------------------------- Multiplayer
-	UPROPERTY()
 	FTimerHandle PlayerReadyCheckTimerHandle;
-
-	UPROPERTY()
 	int MultiplayerUniqueIDCounter;
 
 // ------------------------- Other
-	UPROPERTY()
 	FString GameModeContextString;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

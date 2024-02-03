@@ -111,7 +111,7 @@ void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvat
 						UImage* CharacterIcon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
 						CharacterIcon->SetBrushFromTexture(Character->AvatarData.UiImages[0]);
 						CharacterIcon->SetBrushSize(FVector2D(125.f, 125.f));
-						CharacterIcon->SetBrushTintColor(FSlateColor(FLinearColor(1.f, 1.f, 1.f, (1 - (i * 0.15)))));
+						CharacterIcon->SetBrushTintColor(FSlateColor(FLinearColor(1.f, 1.f, 1.f, (1 - (i * 0. 15)))));
 						EntityIconsInTurnOrder->AddChild(CharacterIcon);
 						*/
 						//} else {}
