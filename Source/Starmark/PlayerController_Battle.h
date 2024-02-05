@@ -113,8 +113,14 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Widgets
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Client, Reliable)
+	void Client_ClearLobbyFromScreen();
+
+	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void CreateBattleWidget();
+
+	UFUNCTION()
+	void Local_BattleWidget_AddToScreen();
 
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetVariables();

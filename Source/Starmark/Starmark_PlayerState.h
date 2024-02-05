@@ -21,7 +21,7 @@ class STARMARK_API AStarmark_PlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
-	virtual void CopyProperties(class APlayerState* PlayerState) override;
+	//virtual void CopyProperties(class APlayerState* PlayerState) override;
 
 public:
 	AStarmark_PlayerState();
@@ -44,7 +44,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<FAvatar_Struct> PlayerState_PlayerParty;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_PlayerProfileReferenceUpdated)
 	UPlayer_SaveData* PlayerProfileReference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
@@ -68,6 +68,9 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_UpdatePlayerData();
 
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void Client_UpdatePlayerData();
+
 	UFUNCTION(BlueprintCallable)
 	void SaveToCurrentProfile();
 
@@ -76,6 +79,9 @@ public:
 	void SendUpdateToMultiplayerLobby();
 
 // ------------------------- Battle
+	UFUNCTION()
+	void OnRepNotify_PlayerProfileReferenceUpdated();
+
 	UFUNCTION(Client, Reliable)
 	void Client_UpdateReplicatedPlayerName();
 

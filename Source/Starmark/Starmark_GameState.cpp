@@ -130,6 +130,8 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 				// Also update the current acting avatar in the hud
 				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Update the currently acting entity information."));
 				Cast<APlayerController_Battle>(ActorsArray[i])->BattleWidgetReference->SetCurrentActingEntityInfo(DynamicAvatarTurnOrder[0]);
+			} else {
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / This player doesn't have a valid BattleWidgetReference."));
 			}
 		}
 	}

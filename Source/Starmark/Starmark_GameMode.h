@@ -47,6 +47,7 @@ public:
 	UDataTable* AvatarComplexAttacksDataTable;
 
 // ------------------------- Battle
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<APlayerController_Battle*> PlayerControllerReferences;
 	TArray<UPlayer_SaveData*> PlayerProfileReferences;
 
@@ -60,7 +61,7 @@ public:
 	UDataTable* UltimateTypeChartDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int ExpectedPlayers = 1;
+	int ExpectedPlayers = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor_AttackEffectsLibrary> AttackEffectsLibrary_Class;
@@ -84,6 +85,9 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Battle
+	UFUNCTION()
+	virtual void HandleSeamlessTravelPlayer(AController*& C);
+
 	UFUNCTION(BlueprintCallable)
 	void OnPlayerPostLogin(APlayerController_Battle* NewPlayerController);
 

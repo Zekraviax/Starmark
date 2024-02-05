@@ -15,7 +15,7 @@ void UWidget_ServerHost::OnWidgetOpened()
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	GameInstanceReference->LoadProfile(GameInstanceReference->CurrentProfileName);
 
-	UE_LOG(LogTemp, Warning, TEXT("OnWidgetOpened / GetOwningPlayerState returns: %s"), GetOwningPlayerState()->IsValidLowLevel() ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("UWidget_ServerHost / OnWidgetOpened / GetOwningPlayerState returns: %s"), GetOwningPlayerState()->IsValidLowLevel() ? TEXT("true") : TEXT("false"));
 
 	if (GetOwningPlayerState()->IsValidLowLevel())
 		Cast<AStarmark_PlayerState>(GetOwningPlayerState())->UpdatePlayerData();
@@ -26,7 +26,7 @@ void UWidget_ServerHost::OnWidgetOpened()
 
 void UWidget_ServerHost::DelayedGetPlayerData()
 {
-	UE_LOG(LogTemp, Warning, TEXT("DelayedGetPlayerData / GetOwningPlayerState returns: %s"), GetOwningPlayerState()->IsValidLowLevel() ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("UWidget_ServerHost / DelayedGetPlayerData / GetOwningPlayerState returns: %s"), GetOwningPlayerState()->IsValidLowLevel() ? TEXT("true") : TEXT("false"));
 
 	if (GetOwningPlayerState()->IsValidLowLevel())
 		Cast<AStarmark_PlayerState>(GetOwningPlayerState())->UpdatePlayerData();

@@ -5,6 +5,7 @@
 #include "Actor_GridTile.h"
 #include "Actor_WorldGrid.h"
 #include "AIController.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Character_HatTrick.h"
 #include "Engine/World.h"
 #include "Starmark_GameInstance.h"
@@ -16,6 +17,7 @@
 #include "NavigationSystem.h"
 #include "Player_SaveData.h"
 #include "Widget_HUD_Battle.h"
+#include "Widget_ServerHost.h"
 #include "WidgetComponent_AvatarBattleData.h"
 
 
@@ -63,15 +65,39 @@ void APlayerController_Battle::PlayerTick(float DeltaTime)
 
 
 // ------------------------- Widgets
-void APlayerController_Battle::CreateBattleWidget()
+void APlayerController_Battle::Client_ClearLobbyFromScreen_Implementation()
 {
-	if (BattleWidgetChildClass && IsLocalPlayerController() && !BattleWidgetReference) {
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ClearLobbyFromScreen / Clear widgets on screen"));
+
+	TArray<UUserWidget*> FoundServerHostWidgets;
+	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundServerHostWidgets, UWidget_ServerHost::StaticClass(), true);
+
+	for (int i = 0; i < FoundServerHostWidgets.Num(); i++) {
+		FoundServerHostWidgets[i]->RemoveFromParent();
+	}
+}
+
+
+void APlayerController_Battle::CreateBattleWidget_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / CreateBattleWidget / IsValid(BattleWidgetChildClass) returns: %s"), IsValid(BattleWidgetChildClass) ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / CreateBattleWidget / IsValid(BattleWidgetReference) returns: %s"), IsValid(BattleWidgetReference) ? TEXT("true") : TEXT("false"));
+
+	if (BattleWidgetChildClass && !BattleWidgetReference) {
 		BattleWidgetReference = CreateWidget<UWidget_HUD_Battle>(this, BattleWidgetChildClass);
 
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / CreateBattleWidget / Created BattleWidgetReference. IsValid(BattleWidgetReference) returns: %s"), IsValid(BattleWidgetReference) ? TEXT("true") : TEXT("false"));
+
 		if (IsValid(BattleWidgetReference)) {
-			BattleWidgetReference->AddToViewport();
+			Local_BattleWidget_AddToScreen();
 		}
 	}
+}
+
+
+void APlayerController_Battle::Local_BattleWidget_AddToScreen()
+{
+	BattleWidgetReference->AddToViewport();
 }
 
 
@@ -134,7 +160,7 @@ void APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar_Implementation(
 
 	// (Default) Player party initialization
 	if (PlayerStateReference) {
-		PlayerStateReference->PlayerState_BeginBattle();
+		//PlayerStateReference->PlayerState_BeginBattle();
 
 		// Avatar initialization
 		if (CurrentSelectedAvatar) {

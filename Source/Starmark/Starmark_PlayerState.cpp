@@ -10,15 +10,22 @@
 #include "Widget_HUD_Battle.h"
 
 
+/*
 void AStarmark_PlayerState::CopyProperties(APlayerState* PlayerState)
 {
 	Super::CopyProperties(PlayerState);
 
 	AStarmark_PlayerState* Player = Cast<AStarmark_PlayerState>(PlayerState);
+
 	if (Player) {
 		Player->PlayerProfileReference = PlayerProfileReference;
+
+		if (PlayerProfileReference) {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / CopyProperties / Kept the player %s ProfileReference travelling between levels (?)"), *PlayerProfileReference->ProfileName);
+		}
 	}
 }
+*/
 
 
 AStarmark_PlayerState::AStarmark_PlayerState()
@@ -41,9 +48,9 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 // ------------------------- Player
 void AStarmark_PlayerState::UpdatePlayerData()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UpdatePlayerData / IsValid(GetWorld()) returns: %s"), IsValid(GetWorld()) ? TEXT("true") : TEXT("false"));
-	UE_LOG(LogTemp, Warning, TEXT("UpdatePlayerData / IsValid(GetGameInstance) returns: %s"), IsValid(UGameplayStatics::GetGameInstance(GetWorld())) ? TEXT("true") : TEXT("false"));
-	
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / UpdatePlayerData / IsValid(GetWorld()) returns: %s"), IsValid(GetWorld()) ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / UpdatePlayerData / IsValid(GetGameInstance) returns: %s"), IsValid(UGameplayStatics::GetGameInstance(GetWorld())) ? TEXT("true") : TEXT("false"));
+
 	if (GetWorld()) {
 		if (UGameplayStatics::GetGameInstance(GetWorld())) {
 			GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
@@ -51,7 +58,7 @@ void AStarmark_PlayerState::UpdatePlayerData()
 			ReplicatedPlayerName = GameInstanceReference->PlayerName;
 			PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
 
-			UE_LOG(LogTemp, Warning, TEXT("UpdatePlayerData / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / UpdatePlayerData / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
 
 			SetPlayerName(GameInstanceReference->PlayerName);
 			SendUpdateToMultiplayerLobby();
@@ -62,11 +69,26 @@ void AStarmark_PlayerState::UpdatePlayerData()
 
 void AStarmark_PlayerState::Server_UpdatePlayerData_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / IsValid(GetWorld()) returns: %s"), IsValid(GetWorld()) ? TEXT("true") : TEXT("false"));
-	UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / IsValid(GetGameInstance) returns: %s"), IsValid(UGameplayStatics::GetGameInstance(GetWorld())) ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / IsValid(GetWorld()) returns: %s"), IsValid(GetWorld()) ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / IsValid(GetGameInstance) returns: %s"), IsValid(UGameplayStatics::GetGameInstance(GetWorld())) ? TEXT("true") : TEXT("false"));
+
+	// Get the player's unique multiplayer ID
+	if (Cast<APlayerController_Battle>(GetPawn()->GetController())) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / Found this player's controller"));
+		APlayerController_Battle* FoundPlayerController = Cast<APlayerController_Battle>(GetPawn()->GetController());
+
+		/*
+		for (int i = 0; i < PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / Assigned this player's unique ID to one of their avatars"));
+			PlayerProfileReference->CurrentAvatarTeam[i].OwnerMultiplayerUniqueID = FoundPlayerController->MultiplayerUniqueID;
+		}
+		*/
+	}
+
 
 	//if (!GameInstanceReference)
-	if (GetWorld()) {
+	//if (GetWorld()) {
+		/*
 		if (UGameplayStatics::GetGameInstance(GetWorld())) {
 			if (!GameInstanceReference) {
 				GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
@@ -76,93 +98,37 @@ void AStarmark_PlayerState::Server_UpdatePlayerData_Implementation()
 			PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
 			PlayerState_PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
 
-			/*
-			if (!GameInstanceReference->CurrentProfileReference->IsValidLowLevel()) {
-				// If the player doesn't have a profile loaded, attempt to load a default profile.
-				GameInstanceReference->CurrentProfileReference = Cast<UPlayer_SaveData>(UGameplayStatics::LoadGameFromSlot("DefaultProfile", 0));
-				UGameplayStatics::DeleteGameInSlot("DefaultProfile", 0);
+		}
 
-				// Check if a default profile exists. If not, create one.
-				if (!GameInstanceReference->CurrentProfileReference->IsValidLowLevel()) {
-					UPlayer_SaveData* DefaultProfile = Cast<UPlayer_SaveData>(UGameplayStatics::CreateSaveGameObject(UPlayer_SaveData::StaticClass()));
-
-					// Add all available explorers to the default profile
-					if (ExplorersDataTableRowNames.Num() == 0) {
-						ExplorersDataTableRowNames = ExplorersDataTable->GetRowNames();
-					}
-
-					for (const FName ExplorerRowName : ExplorersDataTableRowNames) {
-						FNetscapeExplorer_Struct* ExplorerDataTableRow = ExplorersDataTable->FindRow<FNetscapeExplorer_Struct>(ExplorerRowName, PlayerStateContextString);
-						FNetscapeExplorer_Struct Explorer = *ExplorerDataTableRow;
-
-						DefaultProfile->Explorers.Add(*ExplorerDataTableRow);
-
-						if (DefaultProfile->CurrentExplorerTeam.Num() < 4) {
-							Explorer.IndexInPlayerLibrary = DefaultProfile->CurrentExplorerTeam.Num();
-
-							// Apply formulae to stats
-							// Battle Stats
-							// Total Battle Stat = Base Battle Stat x (Social Stat/Number) + Level
-							Explorer.BattleStats.Strength = (ExplorersDataTable->FindRow<FNetscapeExplorer_Struct>(ExplorerRowName, PlayerStateContextString)->BattleStats.Strength * (Explorer.SocialStats.Courage / 2)) + 1;
-							Explorer.BattleStats.Endurance = (ExplorersDataTable->FindRow<FNetscapeExplorer_Struct>(ExplorerRowName, PlayerStateContextString)->BattleStats.Endurance * (Explorer.SocialStats.Diligence / 2)) + 1;
-							Explorer.BattleStats.Agility = (ExplorersDataTable->FindRow<FNetscapeExplorer_Struct>(ExplorerRowName, PlayerStateContextString)->BattleStats.Agility * (Explorer.SocialStats.Empathy / 2)) + 1;
-							Explorer.BattleStats.Magic = (ExplorersDataTable->FindRow<FNetscapeExplorer_Struct>(ExplorerRowName, PlayerStateContextString)->BattleStats.Magic * (Explorer.SocialStats.Insight / 2)) + 1;
-							Explorer.BattleStats.Luck = (ExplorersDataTable->FindRow<FNetscapeExplorer_Struct>(ExplorerRowName, PlayerStateContextString)->BattleStats.Luck * (Explorer.SocialStats.Wit / 2)) + 1;
-
-							// Health Points
-							Explorer.BattleStats.MaximumHealthPoints += Explorer.BattleStats.Endurance;
-
-							// Mana Points
-							Explorer.BattleStats.MaximumManaPoints += Explorer.BattleStats.Magic;
-
-							// Tile Moves
-							Explorer.MaximumTileMoves = 2 + FMath::RoundToInt(Explorer.BattleStats.Agility / 5);
-
-							DefaultProfile->CurrentExplorerTeam.Add(Explorer);
-						}
-					}
-
-					// Set other variables
-					DefaultProfile->Name = "DefaultProfile";
-					DefaultProfile->ProfileName = "DefaultProfile";
-
-					// Save the default slot
-					UGameplayStatics::SaveGameToSlot(DefaultProfile, "DefaultProfile", 0);
-					GameInstanceReference->CurrentProfileReference = DefaultProfile;
-				}
-				*/
-			}
-
-		PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
-		PlayerState_PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
+		//PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+		//PlayerState_PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
 
 		UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
 		UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *ReplicatedPlayerName);
 			
-		/*
-		const APawn* Pawn = GetPawn();
-		while (Pawn == nullptr) {
-			Pawn = GetPawn();
-		}
-		AController* Controller = Pawn->GetController();
-		Cast<APlayerController_Battle>(Controller)->PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentExplorerTeam;
 		*/
-
-		// Update player controller with team
-		// GetNetOwningPlayer doesn't work on local clients (?)
-		//UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / Pawn is valid: %s"), IsValid(GetPawn()) ? TEXT("true") : TEXT("false"));
-		//UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / PlayerProfileReference is valid: %s"), IsValid(Cast<APlayerController_Battle>(GetWorld()->GetFirstLocalPlayerFromController())->PlayerProfileReference) ? TEXT("true") : TEXT("false"));
-		//UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / GameInstanceReference is valid: %s"), IsValid(GameInstanceReference) ? TEXT("true") : TEXT("false"));
-		//UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / Current Profile is: %s"), *GameInstanceReference->CurrentProfileReference->ProfileName);
-		//UE_LOG(LogTemp, Warning, TEXT("Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *GetNetOwningPlayer()->GetPlayerController(GetWorld())->GetName());
-
-		//Cast<APlayerController_Battle>(GetWorld()->GetFirstLocalPlayerFromController())->PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
-
-		SetPlayerName(GameInstanceReference->PlayerName);
-		SendUpdateToMultiplayerLobby();
-	}
+		//SetPlayerName(GameInstanceReference->PlayerName);
+	SendUpdateToMultiplayerLobby();
+	//}
 }
 
+
+
+void AStarmark_PlayerState::Client_UpdatePlayerData_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Client_UpdatePlayerData / Retrieve the player's data in the blueprints"));
+
+	// To-Do: Figure out if the ProfileReference is valid after this point
+	SendUpdateToMultiplayerLobby();
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Client_UpdatePlayerData / Finished retrieving this player's data?"));
+
+	//PlayerState_PlayerParty = PlayerProfileReference->CurrentAvatarTeam;
+	//SetPlayerName(PlayerProfileReference->ProfileName);
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Client_UpdatePlayerData / ReplicatedPlayerName is: %s"), *ReplicatedPlayerName);
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Client_UpdatePlayerData / Applied the player's party data?"));
+}
 
 
 void AStarmark_PlayerState::SaveToCurrentProfile()
@@ -180,6 +146,12 @@ void AStarmark_PlayerState::SaveToCurrentProfile()
 
 		UGameplayStatics::SaveGameToSlot(PlayerProfileReference, GameInstanceReference->CurrentProfileName, 0);
 	}
+}
+
+
+void AStarmark_PlayerState::OnRepNotify_PlayerProfileReferenceUpdated()
+{
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / OnRepNotify_PlayerProfileReferenceUpdated / PlayerProfileReference changed"));
 }
 
 
@@ -211,7 +183,7 @@ void AStarmark_PlayerState::Server_UpdateReplicatedPlayerName_Implementation(con
 void AStarmark_PlayerState::PlayerState_BeginBattle_Implementation()
 {
 	// Retrieve player profile
-	Server_UpdatePlayerData();
+	Client_UpdatePlayerData();
 }
 
 

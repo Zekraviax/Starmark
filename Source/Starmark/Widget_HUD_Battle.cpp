@@ -141,25 +141,29 @@ void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* Curre
 
 	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCurrentActingEntityInfo / IsValid(CurrentActingEntity) returns: %s"), IsValid(CurrentActingEntity) ? TEXT("true") : TEXT("false"));
 
-	if (CurrentActingEntity->AvatarData.UiImages.Num() > 0) {
-		CurrentEntityIcon->SetBrushFromTexture(CurrentActingEntity->AvatarData.UiImages[0]);
-		UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCurrentActingEntityInfo / Grabbing the avatar's first UiImage"));
-	} else {
-		UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCurrentActingEntityInfo / This avatar doesn't have any UiImages!"));
-	}
+	if (CurrentActingEntity) {
+		if (CurrentActingEntity->AvatarData.UiImages.Num() > 0) {
+			CurrentEntityIcon->SetBrushFromTexture(CurrentActingEntity->AvatarData.UiImages[0]);
+			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCurrentActingEntityInfo / Grabbing the avatar's first UiImage"));
+		} else {
+			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCurrentActingEntityInfo / This avatar doesn't have any UiImages!"));
+		}
 
-	if (CurrentActingEntity->AvatarData.Factions.Contains(EEntity_Factions::Player1)) {
-		HealthText->SetText(FText::FromString(FString::FromInt(CurrentActingEntity->AvatarData.CurrentHealthPoints) + " / " + FString::FromInt(CurrentActingEntity->AvatarData.BattleStats.MaximumHealthPoints)));
-		ManaText->SetText(FText::FromString(FString::FromInt(CurrentActingEntity->AvatarData.CurrentManaPoints) + " / " + FString::FromInt(CurrentActingEntity->AvatarData.BattleStats.MaximumManaPoints)));
+		if (CurrentActingEntity->AvatarData.Factions.Contains(EEntity_Factions::Player1)) {
+			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCurrentActingEntityInfo / This avatar has the faction Player1"));
+			HealthText->SetText(FText::FromString(FString::FromInt(CurrentActingEntity->AvatarData.CurrentHealthPoints) + " / " + FString::FromInt(CurrentActingEntity->AvatarData.BattleStats.MaximumHealthPoints)));
+			ManaText->SetText(FText::FromString(FString::FromInt(CurrentActingEntity->AvatarData.CurrentManaPoints) + " / " + FString::FromInt(CurrentActingEntity->AvatarData.BattleStats.MaximumManaPoints)));
 
-		HealthBar->SetPercent(float(CurrentActingEntity->AvatarData.CurrentHealthPoints) / float(CurrentActingEntity->AvatarData.BattleStats.MaximumHealthPoints));
-		ManaBar->SetPercent(float(CurrentActingEntity->AvatarData.CurrentManaPoints) / float(CurrentActingEntity->AvatarData.BattleStats.MaximumManaPoints));
+			HealthBar->SetPercent(float(CurrentActingEntity->AvatarData.CurrentHealthPoints) / float(CurrentActingEntity->AvatarData.BattleStats.MaximumHealthPoints));
+			ManaBar->SetPercent(float(CurrentActingEntity->AvatarData.CurrentManaPoints) / float(CurrentActingEntity->AvatarData.BattleStats.MaximumManaPoints));
 
-		CurrentEntityNameText->SetText(FText::FromString(CurrentActingEntity->AvatarData.Nickname.ToUpper() + "'S TURN"));
-	} else {
-		// Show limited UI elements:
-		// Name
-		// Portrait
+			CurrentEntityNameText->SetText(FText::FromString(CurrentActingEntity->AvatarData.Nickname.ToUpper() + "'S TURN"));
+		} else {
+			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCurrentActingEntityInfo / This avatar doesn't have the faction Player1. Limited UI elements should be shown"));
+			// Show limited UI elements:
+			// Name
+			// Portrait
+		}
 	}
 }
 

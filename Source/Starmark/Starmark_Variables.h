@@ -706,6 +706,9 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<EEntity_Factions> Factions;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int OwnerMultiplayerUniqueID;
+
 // ------------------------- Appearance
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
 	UMaterial* DefaultImage;
@@ -795,6 +798,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		CurrentActionPoints = 1;
 		SameTypeAttackBonusMultiplier = 150;
 		Factions.AddUnique(EEntity_Factions::Player1);
+		OwnerMultiplayerUniqueID = 0;
 		DefaultImage = nullptr;
 		SkeletalMesh = nullptr;
 		DyableMaterial = nullptr;
