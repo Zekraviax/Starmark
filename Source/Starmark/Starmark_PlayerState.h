@@ -21,7 +21,7 @@ class STARMARK_API AStarmark_PlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
-	//virtual void CopyProperties(class APlayerState* PlayerState) override;
+	virtual void CopyProperties(class APlayerState* PlayerState) override;
 
 public:
 	AStarmark_PlayerState();
@@ -81,6 +81,8 @@ public:
 // ------------------------- Battle
 	UFUNCTION()
 	void OnRepNotify_PlayerProfileReferenceUpdated();
+
+	UPlayer_SaveData* ReturnPlayerData();
 
 	UFUNCTION(Client, Reliable)
 	void Client_UpdateReplicatedPlayerName();

@@ -43,9 +43,6 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	FRotator Rotation;
 	FActorSpawnParameters SpawnInfo;
 
-	SpawnInfo.bNoFail = true;
-	//SpawnInfo.
-
 	if (FoundPlayerStartActors.IsValidIndex(0)) {
 		if (FoundPlayerStartActors[0]->IsValidLowLevel()) {
 			Location = FoundPlayerStartActors[0]->GetActorLocation();
@@ -61,39 +58,12 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 
 	NewPlayerController->Possess(GetWorld()->SpawnActor<APlayerPawn_Flying>(PlayerPawnBlueprintClass, Location, Rotation, SpawnInfo));
 	NewPlayerController->ClientSetRotation(Rotation, true);
-	NewPlayerController->GetPawn()->SetActorRotation(Rotation);
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Player controller possessed pawn: %s"), *NewPlayerController->GetPawn()->GetName());
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Player pawn rotation: %s"), *Rotation.ToString());
 
 	MultiplayerUniqueIDCounter++;
 	NewPlayerController->MultiplayerUniqueID = MultiplayerUniqueIDCounter;
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / MultiplayerUniqueIDCounter is: %d"), MultiplayerUniqueIDCounter);
-
-	// This function tells the client to get their player data
-	//Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Client_UpdatePlayerData();
-
-
-	//AStarmark_GameState* GameStateRef = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
-	//UPlayer_SaveData* PlayerData = Cast<AStarmark_PlayerState>(GameStateRef->PlayerArray.Last())->PlayerProfileReference;
-	//UPlayer_SaveData* PlayerData = Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->PlayerProfileReference;
-
-	//for (int i = 0; i < PlayerData->CurrentAvatarTeam.Num(); i++) {
-		//PlayerData->CurrentAvatarTeam[i].OwnerMultiplayerUniqueID = MultiplayerUniqueIDCounter;
-	//}
-
-	//NewPlayerController->PlayerProfileReference = PlayerData;
-
-	//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Retrieved player profile"));
-
-	// To-Do: Figure out why UE doesn't like me using the PlayerData/PlayerName like this
-	//NewPlayerController->Nickname = PlayerData->ProfileName;
-
-	//Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Server_UpdatePlayerData();
-	//Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Client_UpdateReplicatedPlayerName();
-
-
-	// To-Do: Assign the player's unique ID to each of their Avatars
-	//PlayerControllerReferences.Add(NewPlayerController);
 
 	// Clear Combat Log
 	if (CombatLogTextArray.Num() > 0) {
@@ -102,6 +72,9 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 
 	// Clear the Server Lobby menu from the players' display
 	NewPlayerController->Client_ClearLobbyFromScreen();
+
+	// Retrieve the player's profile from the player state?
+	PlayerProfileReferences.Add(Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->ReturnPlayerData());
 
 	// When all players have joined, begin running the functions needed to start the battle
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Total PlayerControllerReferences in array: %d"), PlayerControllerReferences.Num());
@@ -133,33 +106,15 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 {
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
-	//for (int p = 0; p < PlayerControllerReferences.Num(); p++) {
-		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Found player controller %s at index: %d"), *PlayerControllerReferences[p]->PlayerProfileReference->ProfileName, p);
-	//}
-
-	for (int u = 0; u <= MultiplayerUniqueIDCounter; u++) {
-		TArray<FAvatar_Struct> CurrentPlayerTeam;
-		APlayerController_Battle* FoundPlayerController;
-		//UPlayer_SaveData* FoundPlayerData;
-
-		// Get the player controller with the same unique ID
-		// Get all avatars with the MultiplayerUniqueID equalling 'i'
-		for (int p = 0; p < PlayerControllerReferences.Num(); p++) {
-			if (PlayerControllerReferences[p]->MultiplayerUniqueID == u) {
-				FoundPlayerController = PlayerControllerReferences[p];
-				//FoundPlayerData = FoundPlayerController->PlayerProfileReference;
-
-				//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Found player controller %s with UniqueID %d"), *PlayerControllerReferences[p]->PlayerProfileReference->ProfileName, u);
-			}
-		}
+	for (int p = 0; p < PlayerControllerReferences.Num(); p++) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Found player profile %s at index: %d"), *(Cast<AStarmark_PlayerState>(PlayerControllerReferences[p]->PlayerState))->ReplicatedPlayerName, p);
 	}
-
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		PlayerControllerReferences[i]->Server_GetDataFromProfile();
-		TArray<FAvatar_Struct> CurrentPlayerTeam = PlayerControllerReferences[i]->PlayerParty;
+		TArray<FAvatar_Struct> CurrentPlayerTeam = PlayerControllerReferences[i]->PlayerProfileReference->CurrentAvatarTeam;
 
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Found player %s, with %d avatars"), *PlayerControllerReferences[i]->PlayerName, CurrentPlayerTeam.Num());
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Found player %s, with %d avatar(s)"), *PlayerControllerReferences[i]->PlayerName, CurrentPlayerTeam.Num());
 
 		int SpawnedAvatarCount = 0;
 
@@ -167,11 +122,10 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 			if (CurrentPlayerTeam[j].AvatarName != "Default") {
 				if (SpawnedAvatarCount < 4) {
 					Server_SpawnAvatar(PlayerControllerReferences[i], (j + 1), CurrentPlayerTeam[j]);
-					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn Avatar %s for Player %s"), *CurrentPlayerTeam[j].AvatarName, *PlayerControllerReferences[i]->PlayerName);
+					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn Avatar %s for player %s"), *CurrentPlayerTeam[j].AvatarName, *PlayerControllerReferences[i]->PlayerName);
 					SpawnedAvatarCount++;
 				}
-			}
-			else {
+			} else {
 				Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam.RemoveAt(j);
 				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Remove invalid member %d from PlayerState_PlayerParty"), j);
 			}

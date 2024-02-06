@@ -45,6 +45,10 @@ public:
 	UPROPERTY()
 	FAvatarChangedSlot OnAvatarChangedSlotDelegate;
 
+// ------------------------- Player Data
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPlayer_SaveData* PlayerProfile;
+
 // Functions
 // --------------------------------------------------
 

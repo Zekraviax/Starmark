@@ -33,7 +33,10 @@ bool AActor_WorldGrid::IsGridCellWalkable(const FIntPoint& Location) const
 // ConvertGridTileLocationToCoordinates
 bool AActor_WorldGrid::ConvertWorldTileToGridCoordinates(const FVector& WorldPos, FIntPoint& GridPos) const
 {
-	FVector MyLocation = GetActorLocation();
+	//GetActorLocation() is probably causing both clients and servers to crash in multiplayer
+	// The ZeroVector is a temporary solution
+	// To-Do: Make this function work in all game modes (singleplayer/multiplayer)
+	FVector MyLocation = FVector::ZeroVector;
 
 	GridPos.X = (WorldPos.X - MyLocation.X) / GridTileSize.X;
 	GridPos.Y = (WorldPos.Y - MyLocation.Y) / GridTileSize.Y;

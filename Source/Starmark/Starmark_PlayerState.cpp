@@ -10,7 +10,6 @@
 #include "Widget_HUD_Battle.h"
 
 
-/*
 void AStarmark_PlayerState::CopyProperties(APlayerState* PlayerState)
 {
 	Super::CopyProperties(PlayerState);
@@ -25,7 +24,6 @@ void AStarmark_PlayerState::CopyProperties(APlayerState* PlayerState)
 		}
 	}
 }
-*/
 
 
 AStarmark_PlayerState::AStarmark_PlayerState()
@@ -121,11 +119,7 @@ void AStarmark_PlayerState::Client_UpdatePlayerData_Implementation()
 	// To-Do: Figure out if the ProfileReference is valid after this point
 	SendUpdateToMultiplayerLobby();
 
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Client_UpdatePlayerData / Finished retrieving this player's data?"));
-
-	//PlayerState_PlayerParty = PlayerProfileReference->CurrentAvatarTeam;
-	//SetPlayerName(PlayerProfileReference->ProfileName);
-
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Client_UpdatePlayerData / Finished retrieving this players' data"));
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Client_UpdatePlayerData / ReplicatedPlayerName is: %s"), *ReplicatedPlayerName);
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Client_UpdatePlayerData / Applied the player's party data?"));
 }
@@ -152,6 +146,16 @@ void AStarmark_PlayerState::SaveToCurrentProfile()
 void AStarmark_PlayerState::OnRepNotify_PlayerProfileReferenceUpdated()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / OnRepNotify_PlayerProfileReferenceUpdated / PlayerProfileReference changed"));
+}
+
+
+UPlayer_SaveData* AStarmark_PlayerState::ReturnPlayerData()
+{
+	// Set the profile data in the players' controller
+	//Cast<APlayerController_Battle>(GetPawn()->Controller)->PlayerParty = PlayerProfileReference->CurrentAvatarTeam;
+	//Cast<APlayerController_Battle>(GetPawn()->Controller)->PlayerName = PlayerProfileReference->ProfileName;
+
+	return PlayerProfileReference;
 }
 
 

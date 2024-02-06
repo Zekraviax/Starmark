@@ -49,6 +49,7 @@ public:
 // ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<APlayerController_Battle*> PlayerControllerReferences;
+	
 	TArray<UPlayer_SaveData*> PlayerProfileReferences;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -69,6 +70,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* StatusEffectsDataTable;
+
 	TArray<FString> CombatLogTextArray;
 
 // ------------------------- Multiplayer
