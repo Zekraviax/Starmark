@@ -139,6 +139,8 @@ void AStarmark_PlayerState::SaveToCurrentProfile()
 		PlayerProfileReference->Name = GameInstanceReference->PlayerName;
 
 		UGameplayStatics::SaveGameToSlot(PlayerProfileReference, GameInstanceReference->CurrentProfileName, 0);
+
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / SaveToCurrentProfile / Saved the players' profile"));
 	}
 }
 
@@ -155,6 +157,8 @@ UPlayer_SaveData* AStarmark_PlayerState::ReturnPlayerData()
 	//Cast<APlayerController_Battle>(GetPawn()->Controller)->PlayerParty = PlayerProfileReference->CurrentAvatarTeam;
 	//Cast<APlayerController_Battle>(GetPawn()->Controller)->PlayerName = PlayerProfileReference->ProfileName;
 
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / ReturnPlayerData / Players' data returned"));
+	
 	return PlayerProfileReference;
 }
 
@@ -191,6 +195,7 @@ void AStarmark_PlayerState::PlayerState_BeginBattle_Implementation()
 }
 
 
+// To-Do: Move this to the GameMode
 void AStarmark_PlayerState::Server_SubtractHealth_Implementation(ACharacter_Pathfinder* Defender, int DamageDealt)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Server_SubtractHealth / IsValid(Defender) returns: %s"), IsValid(Defender) ? TEXT("true") : TEXT("false"));
@@ -208,6 +213,7 @@ void AStarmark_PlayerState::Server_SubtractHealth_Implementation(ACharacter_Path
 }
 
 
+// To-Do: Move this to the GameMode
 void AStarmark_PlayerState::Server_AddHealth_Implementation(ACharacter_Pathfinder* Avatar, int Healing)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Server_AddHealth / IsValid(Defender) returns: %s"), IsValid(Avatar) ? TEXT("true") : TEXT("false"));
@@ -222,6 +228,7 @@ void AStarmark_PlayerState::Server_AddHealth_Implementation(ACharacter_Pathfinde
 }
 
 
+// To-Do: Move this to the GameMode
 void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Pathfinder* Avatar)
 {
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
