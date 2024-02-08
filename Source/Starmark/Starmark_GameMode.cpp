@@ -5,6 +5,7 @@
 #include "Character_Pathfinder.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerController_Battle.h"
+#include "PlayerController_Lobby.h"
 #include "PlayerPawn_Flying.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_GameState.h"
@@ -18,9 +19,12 @@ void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / Player has finished loading"));
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / AController type: %s"), *C->GetName());
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / Attempting to swap player controllers"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / PlayerController has data with ProfileName: %s"), *Cast<APlayerController_Lobby>(C)->PlayerDataStruct.ProfileName);
 
 	APlayerController_Battle* NewController = Cast<APlayerController_Battle>(SpawnPlayerController(ROLE_Authority, FVector(0, 0, 0), FRotator(0, 0, 0)));
+	NewController->PlayerDataStruct = Cast<APlayerController_Lobby>(C)->PlayerDataStruct;
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / Attempting to swap player controllers"));
 	SwapPlayerControllers(Cast<APlayerController>(C), NewController);
 
 	// Set-up for the new controller
@@ -112,7 +116,7 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		PlayerControllerReferences[i]->Server_GetDataFromProfile();
-		TArray<FAvatar_Struct> CurrentPlayerTeam = PlayerControllerReferences[i]->PlayerProfileReference->CurrentAvatarTeam;
+		TArray<FAvatar_Struct> CurrentPlayerTeam = PlayerControllerReferences[i]->PlayerDataStruct.CurrentAvatarTeam;
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Found player %s, with %d avatar(s)"), *PlayerControllerReferences[i]->PlayerName, CurrentPlayerTeam.Num());
 

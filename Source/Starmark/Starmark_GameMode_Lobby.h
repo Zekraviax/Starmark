@@ -10,4 +10,11 @@ class STARMARK_API AStarmark_GameMode_Lobby : public AGameMode
 {
 	GENERATED_BODY()
 	
+public:
+// Functions
+// --------------------------------------------------
+
+// ------------------------- Lobby
+	UFUNCTION()
+	virtual void HandleSeamlessTravelPlayer(AController*& C);
 };

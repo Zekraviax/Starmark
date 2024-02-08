@@ -235,49 +235,6 @@ enum class E_RightClickMenu_Commands : uint8
 // Structs
 // --------------------------------------------------
 
-//------------------------- Player
-USTRUCT(BlueprintType)
-struct STARMARK_API FPlayer_Data
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
-	int Birthday_Day;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
-	int Birthday_Month;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
-	int Birthday_Year;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
-	EPlayer_Horoscopes Horoscope;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
-	EAvatar_Marks Mark;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hemisphere")
-	EPlayer_Hemispheres Hemisphere;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
-	FString Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
-	EPlayer_Pronouns Pronouns;
-
-	FPlayer_Data()
-	{
-		Birthday_Day = 1;
-		Birthday_Month = 1;
-		Birthday_Year = 2021;
-		Horoscope = EPlayer_Horoscopes::E_Capricorn;
-		Mark = EAvatar_Marks::E_Romp;
-		Hemisphere = EPlayer_Hemispheres::E_Southern;
-		Name = "Default";
-		Pronouns = EPlayer_Pronouns::E_Neutral;
-	}
-};
-
 
 //------------------------- Avatar
 USTRUCT(BlueprintType)
@@ -815,6 +772,57 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	{
 		return (AvatarName == OtherAvatar.AvatarName &&
 			Nickname == OtherAvatar.Nickname);
+	}
+};
+
+
+//------------------------- Player
+USTRUCT(BlueprintType)
+struct STARMARK_API FPlayer_Data
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
+	int Birthday_Day;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
+	int Birthday_Month;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
+	int Birthday_Year;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
+	EPlayer_Horoscopes Horoscope;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Birthday")
+	EAvatar_Marks Mark;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hemisphere")
+	EPlayer_Hemispheres Hemisphere;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
+	FString PlayerName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
+	FString ProfileName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Other")
+	EPlayer_Pronouns Pronouns;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	TArray<FAvatar_Struct> CurrentAvatarTeam;
+
+	FPlayer_Data()
+	{
+		Birthday_Day = 1;
+		Birthday_Month = 1;
+		Birthday_Year = 2021;
+		Horoscope = EPlayer_Horoscopes::E_Capricorn;
+		Mark = EAvatar_Marks::E_Romp;
+		Hemisphere = EPlayer_Hemispheres::E_Southern;
+		PlayerName = "None";
+		ProfileName = "None";
+		Pronouns = EPlayer_Pronouns::E_Neutral;
 	}
 };
 

@@ -9,6 +9,14 @@
 #include "Widget_ServerHost.h"
 
 
+void APlayerController_Lobby::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlayerController_Lobby, PlayerDataStruct);
+}
+
+
 // ------------------------- Lobby
 void APlayerController_Lobby::OnRep_PlayerState()
 {
@@ -33,7 +41,17 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 			Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerReadyStatus = "Host";
 		}
 
+		// Get the player's data from their PlayerState
+		// To-Do: Figure out why this crashes clients
+		// Can't get the PlayerState here?
+		//PlayerDataStruct = Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerDataStruct;
+		//Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->UpdatePlayerData();
+
 		LobbyWidget_Reference->AddToViewport();
+
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Lobby / PlayerJoinedMultiplayerLobby / Player joined: %s"), *PlayerDataStruct.PlayerName);
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Lobby / PlayerJoinedMultiplayerLobby / Error when player attempted to join the lobby."));
 	}
 
 	SetInputMode(FInputModeGameAndUI());

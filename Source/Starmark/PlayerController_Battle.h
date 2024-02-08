@@ -87,7 +87,7 @@ public:
 	bool IsCurrentlyActingPlayer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
-	UPlayer_SaveData* PlayerProfileReference;
+	FPlayer_Data PlayerDataStruct;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	FString PlayerName;

@@ -42,7 +42,7 @@ void APlayerController_Battle::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	DOREPLIFETIME(APlayerController_Battle, IsCurrentlyActingPlayer);
 	DOREPLIFETIME(APlayerController_Battle, PlayerClickMode);
 	DOREPLIFETIME(APlayerController_Battle, PlayerParty);
-	DOREPLIFETIME(APlayerController_Battle, PlayerProfileReference);
+	DOREPLIFETIME(APlayerController_Battle, PlayerDataStruct);
 	DOREPLIFETIME(APlayerController_Battle, IsReadyToStartMultiplayerBattle);
 	DOREPLIFETIME(APlayerController_Battle, MultiplayerUniqueID);
 	DOREPLIFETIME(APlayerController_Battle, PlayerName);
@@ -196,11 +196,11 @@ void APlayerController_Battle::Server_GetDataFromProfile_Implementation()
 	// ReSharper disable once CppLocalVariableMayBeConst
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+//	PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
 	PlayerName = GameInstanceReference->PlayerName;
 	PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
 
-	UE_LOG(LogTemp, Warning, TEXT("Server_GetDataFromProfile / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
+	//UE_LOG(LogTemp, Warning, TEXT("Server_GetDataFromProfile / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
 	UE_LOG(LogTemp, Warning, TEXT("Server_GetDataFromProfile / PlayerName is: %s"), *PlayerName);
 }
 

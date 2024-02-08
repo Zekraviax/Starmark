@@ -21,7 +21,7 @@ class STARMARK_API AStarmark_PlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
-	virtual void CopyProperties(class APlayerState* PlayerState) override;
+	//virtual void CopyProperties(class APlayerState* PlayerState) override;
 
 public:
 	AStarmark_PlayerState();
@@ -46,6 +46,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_PlayerProfileReferenceUpdated)
 	UPlayer_SaveData* PlayerProfileReference;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	FPlayer_Data PlayerDataStruct;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString ReplicatedPlayerName = "Default";

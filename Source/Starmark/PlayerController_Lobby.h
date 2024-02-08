@@ -1,7 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "GameFramework/PlayerController.h"
+#include "Starmark_Variables.h"
+
 #include "PlayerController_Lobby.generated.h"
 
 
@@ -46,8 +49,8 @@ public:
 	FAvatarChangedSlot OnAvatarChangedSlotDelegate;
 
 // ------------------------- Player Data
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UPlayer_SaveData* PlayerProfile;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	FPlayer_Data PlayerDataStruct;
 
 // Functions
 // --------------------------------------------------
