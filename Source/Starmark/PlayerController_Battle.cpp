@@ -33,6 +33,8 @@ APlayerController_Battle::APlayerController_Battle()
 }
 
 
+// To-Do: Figure out if any of these can be cleaned up
+// (not replicated)
 void APlayerController_Battle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
@@ -60,6 +62,7 @@ void APlayerController_Battle::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
+	// To-Do: Optimize this by taking it out of the Tick() function
 	SetBattleWidgetVariables();
 }
 
@@ -67,7 +70,7 @@ void APlayerController_Battle::PlayerTick(float DeltaTime)
 // ------------------------- Widgets
 void APlayerController_Battle::Client_ClearLobbyFromScreen_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ClearLobbyFromScreen / Clear widgets on screen"));
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ClearLobbyFromScreen / Clear lobby widgets on screen"));
 
 	TArray<UUserWidget*> FoundServerHostWidgets;
 	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundServerHostWidgets, UWidget_ServerHost::StaticClass(), true);
@@ -97,6 +100,8 @@ void APlayerController_Battle::CreateBattleWidget_Implementation()
 
 void APlayerController_Battle::Local_BattleWidget_AddToScreen()
 {
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Local_BattleWidget_AddToScreen / Battle widget added to viewport"));
+	
 	BattleWidgetReference->AddToViewport();
 }
 
@@ -108,6 +113,8 @@ void APlayerController_Battle::SetBattleWidgetVariables()
 			BattleWidgetReference->PlayerControllerReference = this;
 		}
 
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / SetBattleWidgetVariables / Set variables in the battle widget"));
+
 		// To-Do: Fix these
 		// Also To-Do: Figure out how and why these are broken before we fix them
 		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
@@ -118,12 +125,16 @@ void APlayerController_Battle::SetBattleWidgetVariables()
 
 void APlayerController_Battle::Client_GetTurnOrderText_Implementation(const FString& NewTurnOrderText)
 {
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_GetTurnOrderText / Client has received turn order text"));
+	
 	Local_GetTurnOrderText(NewTurnOrderText);
 }
 
 
 void APlayerController_Battle::Local_GetTurnOrderText(const FString& NewTurnOrderText) const
 {
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Local_GetTurnOrderText / Update the turn order text in the battle widget"));
+	
 	BattleWidgetReference->UpdateTurnOrderText(NewTurnOrderText);
 }
 
@@ -139,6 +150,8 @@ void APlayerController_Battle::Server_GetEntitiesInTurnOrder_Implementation(cons
 
 void APlayerController_Battle::Local_GetEntitiesInTurnOrder(TArray<ACharacter_Pathfinder*> TurnOrderArray)
 {
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Local_GetEntitiesInTurnOrder / Locally received entities in turn order"));
+	
 	//BattleWidgetReference->SetUiIconsInTurnOrder(TurnOrderArray);
 	//Client_GetAvatarImagesInDynamicTurnOrder();
 }
@@ -156,6 +169,8 @@ void APlayerController_Battle::Client_GetAvatarImagesInDynamicTurnOrder_Implemen
 // ------------------------- Avatar
 void APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / OnRepNotify_CurrentSelectedAvatar / Player has selected an avatar"));
+	
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
 
 	// (Default) Player party initialization
@@ -186,6 +201,8 @@ void APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar_Implementation(
 
 void APlayerController_Battle::Server_SetReadyToStartMultiplayerBattle_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_SetReadyToStartMultiplayerBattle / Player is ready to start the multiplayer battle"));
+	
 	IsReadyToStartMultiplayerBattle = true;
 }
 
@@ -193,10 +210,12 @@ void APlayerController_Battle::Server_SetReadyToStartMultiplayerBattle_Implement
 // ------------------------- Battle
 void APlayerController_Battle::Server_GetDataFromProfile_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetDataFromProfile / Server is attempting to get the player's data from their profile"));
+	
 	// ReSharper disable once CppLocalVariableMayBeConst
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-//	PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
+	//PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
 	PlayerName = GameInstanceReference->PlayerName;
 	PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
 
