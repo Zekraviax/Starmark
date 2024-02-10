@@ -14,6 +14,9 @@
 class AActor_GridTile;
 
 
+// The GameInstance persists from level to level, regardless of travel type (Seamless vs. Hard)
+// That means this is a good place to store data that needs to be persistent
+// The GameInstance is not replicated at all.
 UCLASS()
 class STARMARK_API UStarmark_GameInstance : public UGameInstance
 {

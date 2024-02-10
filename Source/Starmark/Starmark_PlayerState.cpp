@@ -56,19 +56,19 @@ void AStarmark_PlayerState::UpdatePlayerData()
 
 	if (GetWorld()) {
 		if (UGameplayStatics::GetGameInstance(GetWorld())) {
+			
 			GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-
-			ReplicatedPlayerName = GameInstanceReference->PlayerName;
 			PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
 
 			// Player Data Struct
-			//PlayerDataStruct.PlayerName = GameInstanceReference->PlayerName;
-			//PlayerDataStruct.CurrentAvatarTeam = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
+			ReplicatedPlayerName = PlayerProfileReference->Name;
+			PlayerDataStruct.PlayerName = ReplicatedPlayerName;
+			PlayerDataStruct.ProfileName = PlayerProfileReference->ProfileName;
+			PlayerDataStruct.CurrentAvatarTeam = PlayerProfileReference->CurrentAvatarTeam;
 
 			if (Cast<APlayerController_Lobby>(GetPawn()->Controller)) {
 				Cast<APlayerController_Lobby>(GetPawn()->Controller)->PlayerDataStruct = PlayerDataStruct;
 			}
-
 
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / UpdatePlayerData / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
 
@@ -93,8 +93,12 @@ void AStarmark_PlayerState::Client_UpdatePlayerData_Implementation()
 	// To-Do: Figure out if the ProfileReference is valid after this point
 	SendUpdateToMultiplayerLobby();
 
+	GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	PlayerDataStruct = GameInstanceReference->PlayerData;
+
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Client_UpdatePlayerData / Finished retrieving this players' data"));
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Client_UpdatePlayerData / ReplicatedPlayerName is: %s"), *ReplicatedPlayerName);
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Client_UpdatePlayerData / Player has %d avatars"), PlayerDataStruct.CurrentAvatarTeam.Num());
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Client_UpdatePlayerData / Applied the player's party data?"));
 }
 

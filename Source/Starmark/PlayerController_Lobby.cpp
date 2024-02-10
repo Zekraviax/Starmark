@@ -1,6 +1,7 @@
 #include "PlayerController_Lobby.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Starmark_GameInstance.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
 #include "Player_SaveData.h"
@@ -41,7 +42,10 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 			Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerReadyStatus = "Host";
 		}
 
-		// Get the player's data from their PlayerState
+		// Get the player's data from their GameInstance
+		UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+		PlayerDataStruct = GameInstanceReference->PlayerData;
+
 		// To-Do: Figure out why this crashes clients
 		// Can't get the PlayerState here?
 		//PlayerDataStruct = Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerDataStruct;
@@ -78,7 +82,7 @@ void APlayerController_Lobby::UpdatePlayersInLobby(TArray<FString> PlayerNames, 
 			if (PlayerNames.IsValidIndex(i)) 
 				LobbyPlayerVals_Reference->PlayerNameText->SetText(FText::FromString(PlayerNames[i]));
 			else
-				LobbyPlayerVals_Reference->PlayerNameText->SetText(FText::FromString("Default"));
+				LobbyPlayerVals_Reference->PlayerNameText->SetText(FText::FromString("None"));
 
 			LobbyWidget_Reference->PlayerListVerticalBox->AddChild(LobbyPlayerVals_Reference);
 		}

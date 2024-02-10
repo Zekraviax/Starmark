@@ -19,11 +19,11 @@ void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / Player has finished loading"));
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / AController type: %s"), *C->GetName());
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / PlayerController has data with ProfileName: %s"), *Cast<APlayerController_Lobby>(C)->PlayerDataStruct.ProfileName);
-
 	APlayerController_Battle* NewController = Cast<APlayerController_Battle>(SpawnPlayerController(ROLE_Authority, FVector(0, 0, 0), FRotator(0, 0, 0)));
-	NewController->PlayerDataStruct = Cast<APlayerController_Lobby>(C)->PlayerDataStruct;
-
+	
+	//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / PlayerController has data with ProfileName: %s"), *Cast<APlayerController_Lobby>(C)->PlayerDataStruct.ProfileName);
+	//NewController->PlayerDataStruct = Cast<APlayerController_Lobby>(C)->PlayerDataStruct;
+	
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / Attempting to swap player controllers"));
 	SwapPlayerControllers(Cast<APlayerController>(C), NewController);
 
@@ -78,7 +78,14 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	NewPlayerController->Client_ClearLobbyFromScreen();
 
 	// Retrieve the player's profile from the player state?
-	PlayerProfileReferences.Add(Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->ReturnPlayerData());
+	//PlayerProfileReferences.Add(Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->ReturnPlayerData());
+	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Client_UpdatePlayerData();
+	//NewPlayerController->Client_ReturnPlayerData();
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / PlayerController has data with ProfileName: %s"), *NewPlayerController->PlayerDataStruct.ProfileName);
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / PlayerState has data with ProfileName: %s"), *Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->PlayerDataStruct.ProfileName);
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / PlayerController has %d avatars"), NewPlayerController->PlayerDataStruct.CurrentAvatarTeam.Num());
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / PlayerState has %d avatars"), Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->PlayerDataStruct.CurrentAvatarTeam.Num());
 
 	// When all players have joined, begin running the functions needed to start the battle
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Total PlayerControllerReferences in array: %d"), PlayerControllerReferences.Num());
@@ -110,15 +117,29 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 {
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
-	for (int p = 0; p < PlayerControllerReferences.Num(); p++) {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Found player profile %s at index: %d"), *(Cast<AStarmark_PlayerState>(PlayerControllerReferences[p]->PlayerState))->ReplicatedPlayerName, p);
+	for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
+		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerController has data with ProfileName: %s"), *PlayerControllerReferences[i]->PlayerDataStruct.ProfileName);
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerState has data with ProfileName: %s"), *Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerDataStruct.ProfileName);
+		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerController has %d avatars"), PlayerControllerReferences[i]->PlayerDataStruct.CurrentAvatarTeam.Num());
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerState has %d avatars"), Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerDataStruct.CurrentAvatarTeam.Num());
 	}
 
-	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		PlayerControllerReferences[i]->Server_GetDataFromProfile();
-		TArray<FAvatar_Struct> CurrentPlayerTeam = PlayerControllerReferences[i]->PlayerDataStruct.CurrentAvatarTeam;
+	//for (int p = 0; p < PlayerControllerReferences.Num(); p++) {
+		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Found player profile %s at index: %d"), *(Cast<AStarmark_PlayerState>(PlayerControllerReferences[p]->PlayerState))->ReplicatedPlayerName, p);
+	//}
 
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Found player %s, with %d avatar(s)"), *PlayerControllerReferences[i]->PlayerName, CurrentPlayerTeam.Num());
+	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerController has data with ProfileName: %s"), *PlayerControllerReferences[i]->PlayerDataStruct.ProfileName);
+		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerState has data with ProfileName: %s"), *Cast<AStarmark_PlayerState>(PlayerControllerReferences[i]->PlayerState)->PlayerDataStruct.ProfileName);
+		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerController has %d avatars"), PlayerControllerReferences[i]->PlayerDataStruct.CurrentAvatarTeam.Num());
+		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerState has %d avatars"), Cast<AStarmark_PlayerState>(PlayerControllerReferences[i]->PlayerState)->PlayerDataStruct.CurrentAvatarTeam.Num());
+
+		//PlayerControllerReferences[i]->Client_ReturnPlayerData();
+
+		FPlayer_Data PlayerData = PlayerControllerReferences[i]->PlayerDataStruct;
+		TArray<FAvatar_Struct> CurrentPlayerTeam = PlayerData.CurrentAvatarTeam;
+
+		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Found player %s, with %d avatar(s)"), *PlayerControllerReferences[i]->PlayerName, CurrentPlayerTeam.Num());
 
 		int SpawnedAvatarCount = 0;
 

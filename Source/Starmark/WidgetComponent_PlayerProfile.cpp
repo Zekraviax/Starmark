@@ -3,6 +3,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Player_SaveData.h"
 #include "PlayerController_Lobby.h"
+#include "Starmark_GameInstance.h"
 #include "SaveData_PlayerProfilesList.h"
 #include "Starmark_PlayerState.h"
 #include "Widget_PlayerProfileCreator.h"
@@ -29,6 +30,9 @@ void UWidgetComponent_PlayerProfile::OnSelectProfileButtonPressed()
 			PlayerStateReference->PlayerDataStruct.ProfileName = PlayerProfilesList->PlayerProfileNames[i];
 			PlayerStateReference->PlayerDataStruct.PlayerName = FoundProfile->Name;
 			PlayerStateReference->PlayerDataStruct.CurrentAvatarTeam = FoundProfile->CurrentAvatarTeam;
+
+			// Set the player data in the game instance as well as the player state
+			Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->PlayerData = PlayerStateReference->PlayerDataStruct;
 
 			UE_LOG(LogTemp, Warning, TEXT("UWidgetComponent_PlayerProfile / OnSelectProfileButtonPressed / Player name: %s"), *PlayerStateReference->PlayerDataStruct.PlayerName);
 			UE_LOG(LogTemp, Warning, TEXT("UWidgetComponent_PlayerProfile / OnSelectProfileButtonPressed / Avatars in team: %d"), PlayerStateReference->PlayerDataStruct.CurrentAvatarTeam.Num());

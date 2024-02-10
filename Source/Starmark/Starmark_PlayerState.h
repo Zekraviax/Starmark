@@ -16,6 +16,10 @@ class UStarmark_GameInstance;
 class UWidget_HUD_Battle;
 
 
+// Delegates
+//DECLARE_DELEGATE(FJoinedMultiplayerLobby);
+
+
 UCLASS()
 class STARMARK_API AStarmark_PlayerState : public APlayerState
 {
@@ -51,11 +55,15 @@ public:
 	FPlayer_Data PlayerDataStruct;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	FString ReplicatedPlayerName = "Default";
+	FString ReplicatedPlayerName = "None";
 
 // ------------------------- Lobby
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString PlayerReadyStatus = "Not Ready";
+
+// ------------------------- Delegates
+	//UPROPERTY()
+	//FJoinedMultiplayerLobby OnJoinedMultiplayerLobbyDelegate;
 
 // ------------------------- Other
 	UPROPERTY()

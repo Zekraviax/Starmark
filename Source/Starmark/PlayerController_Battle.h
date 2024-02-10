@@ -148,6 +148,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_GetDataFromProfile();
 
+	UFUNCTION(Client, Reliable)
+	void Client_ReturnPlayerData();
+
 	UFUNCTION(Server, Reliable)
 	void Server_SetReadyToStartMultiplayerBattle();
 

@@ -113,7 +113,7 @@ void APlayerController_Battle::SetBattleWidgetVariables()
 			BattleWidgetReference->PlayerControllerReference = this;
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / SetBattleWidgetVariables / Set variables in the battle widget"));
+		//UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / SetBattleWidgetVariables / Set variables in the battle widget"));
 
 		// To-Do: Fix these
 		// Also To-Do: Figure out how and why these are broken before we fix them
@@ -216,11 +216,27 @@ void APlayerController_Battle::Server_GetDataFromProfile_Implementation()
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
 	//PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
-	PlayerName = GameInstanceReference->PlayerName;
-	PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
+	//PlayerName = GameInstanceReference->PlayerName;
+	//PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
+	PlayerDataStruct = GameInstanceReference->PlayerData;
+
+	//PlayerDataStruct = Cast<AStarmark_PlayerState>(PlayerState)->PlayerDataStruct;
 
 	//UE_LOG(LogTemp, Warning, TEXT("Server_GetDataFromProfile / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
-	UE_LOG(LogTemp, Warning, TEXT("Server_GetDataFromProfile / PlayerName is: %s"), *PlayerName);
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetDataFromProfile / PlayerName is: %s"), *PlayerDataStruct.PlayerName);
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetDataFromProfile / PlayerName has %d avatars"), PlayerDataStruct.CurrentAvatarTeam.Num());
+}
+
+
+void APlayerController_Battle::Client_ReturnPlayerData_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ReturnPlayerData / Server is attempting to get the player's data"));
+
+	PlayerDataStruct = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->PlayerData;
+	//Cast<AStarmark_PlayerState>(PlayerState)->PlayerDataStruct = PlayerDataStruct;
+
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ReturnPlayerData / PlayerName is: %s"), *PlayerDataStruct.PlayerName);
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ReturnPlayerData / PlayerName has %d avatars"), PlayerDataStruct.CurrentAvatarTeam.Num());
 }
 
 
