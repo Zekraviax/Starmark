@@ -48,7 +48,7 @@ public:
 
 // ------------------------- Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	TArray<FAvatar_Struct> PlayerState_PlayerParty;
+	TArray<FAvatar_Struct> PlayerTeam;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_PlayerProfileReferenceUpdated)
 	UPlayer_SaveData* PlayerProfileReference;

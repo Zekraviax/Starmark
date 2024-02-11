@@ -33,6 +33,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FPlayer_Data PlayerData;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FAvatar_Struct> PlayerTeam;
+
 	UPROPERTY()
 	FString PlayerName;
 

@@ -165,6 +165,7 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 		//}
 
 		// Check for any abilities that trigger at the start of the turn
+		/*
 		if (Avatar->AvatarData.Ability.TriggerCondition == E_Ability_TriggerConditions::OnAvatarStartOfTurn) {
 			// Ensure that there is only one AbilityActor because there only needs to be one that all Avatars can use
 			if (Avatar->AvatarData.Ability.AbilityLibraryActor == nullptr) {
@@ -187,6 +188,7 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 			// Call the ability function
 			Avatar->AvatarData.Ability.AbilityLibraryActor->SwitchOnAbilityEffect(Avatar->AvatarData.Ability.Function, Avatar, Avatar);
 		}
+		*/
 
 		// Check that the currently acting entity isn't stunned
 		if (StunStatus.Name != "Stunned") {

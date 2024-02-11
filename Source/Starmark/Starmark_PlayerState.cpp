@@ -32,7 +32,7 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerReadyStatus);
 	DOREPLIFETIME(AStarmark_PlayerState, ReplicatedPlayerName);
-	DOREPLIFETIME(AStarmark_PlayerState, PlayerState_PlayerParty);
+	DOREPLIFETIME(AStarmark_PlayerState, PlayerTeam);
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerProfileReference);
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerDataStruct);
 }
@@ -83,14 +83,17 @@ void AStarmark_PlayerState::UpdatePlayerData()
 
 void AStarmark_PlayerState::Server_UpdatePlayerData_Implementation(FPlayer_Data InPlayerData)
 {
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / Function called"));
 
-	//PlayerDataStruct = InPlayerData;
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / Receiving the players' data"));
 
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / Finished retrieving this players' data"));
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *InPlayerData.PlayerName);
+	PlayerDataStruct = InPlayerData;
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / ReplicatedPlayerName is: %s"), *PlayerDataStruct.PlayerName);
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / Player has %d avatars"), PlayerDataStruct.CurrentAvatarTeam.Num());
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / Applied the player's party data?"));
+
+	// We can add one entry to the PreBattleCheck array here (?)
+	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->PreBattleChecks.Add(true);
 }
 
 
@@ -165,7 +168,7 @@ void AStarmark_PlayerState::SendUpdateToMultiplayerLobby_Implementation()
 void AStarmark_PlayerState::Client_UpdateReplicatedPlayerName_Implementation()
 {
 	Server_UpdateReplicatedPlayerName(ReplicatedPlayerName);
-	Server_UpdatePlayerStateVariables(PlayerState_PlayerParty);
+	//Server_UpdatePlayerStateVariables(PlayerState_PlayerParty);
 }
 
 
@@ -266,7 +269,7 @@ void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Path
 
 void AStarmark_PlayerState::Server_UpdatePlayerStateVariables_Implementation(const TArray<FAvatar_Struct>& UpdatedPlayerParty)
 {
-	PlayerState_PlayerParty = UpdatedPlayerParty;
+	PlayerTeam = UpdatedPlayerParty;
 
 	for (int i = 0; i < UpdatedPlayerParty.Num(); i++) {
 		if (UpdatedPlayerParty[i].AvatarName != "Default") {

@@ -125,6 +125,7 @@ void UWidget_AvatarCreation::PopulateDropDownsWithAvatarData(FAvatar_Struct Avat
 	}
 
 	// Ability
+	/*
 	for (int c = 0; c < AbilityDropDown->GetOptionCount(); c++) {
 		if (Avatar.Ability.Name == AbilityDropDown->GetOptionAtIndex(c)) {
 			AbilityDropDown->SetSelectedIndex(c);
@@ -132,6 +133,7 @@ void UWidget_AvatarCreation::PopulateDropDownsWithAvatarData(FAvatar_Struct Avat
 			break;
 		}
 	}
+	*/
 	
 	// To-Do: Item
 
@@ -173,6 +175,7 @@ void UWidget_AvatarCreation::OnSpeciesDropDownChanged(FString Option)
 
 void UWidget_AvatarCreation::OnAbilityDropDownChanged(FString Option)
 {
+	/*
 	if (Option.Len() == 0 || Option == "")
 		AbilityText->SetText(FText::FromString("Ability: None"));
 	else {
@@ -185,6 +188,7 @@ void UWidget_AvatarCreation::OnAbilityDropDownChanged(FString Option)
 			}
 		}
 	}
+	*/
 }
 
 void UWidget_AvatarCreation::OnAccessoryDropDownChanged(FString Option)
@@ -204,8 +208,10 @@ void UWidget_AvatarCreation::OnMoveOneDropDownChanged(FString Option)
 		FString ContextString;
 
 		if (Option == "None") {
+			/*
 			if (CurrentAvatar.CurrentAttacks.IsValidIndex(0))
 				CurrentAvatar.CurrentAttacks.RemoveAt(0);
+			*/
 			
 			MoveOneNameText->SetText(FText::FromString("None"));
 		} else {

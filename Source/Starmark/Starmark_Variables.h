@@ -604,7 +604,7 @@ struct STARMARK_API FAvatar_ItemStruct : public FTableRowBase
 
 
 USTRUCT(BlueprintType)
-struct STARMARK_API FAvatar_Struct : public FTableRowBase
+struct STARMARK_API FAvatar_Struct : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
@@ -654,11 +654,11 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<FAvatar_AttackStruct> CurrentAttacks;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	FAvatar_AbilityStruct Ability;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	//FAvatar_AbilityStruct Ability;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	FAvatar_ItemStruct HeldItem;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	//FAvatar_ItemStruct HeldItem;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<EEntity_Factions> Factions;
@@ -675,8 +675,8 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
 	TArray<UTexture2D*> UiImages;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
-	FAvatar_Size Size;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
+	//FAvatar_Size Size;
 
 	// 3D Model
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
@@ -754,7 +754,7 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 		MaximumActionPoints = 1;
 		CurrentActionPoints = 1;
 		SameTypeAttackBonusMultiplier = 150;
-		Factions.AddUnique(EEntity_Factions::Player1);
+		//Factions.AddUnique(EEntity_Factions::Player1);
 		OwnerMultiplayerUniqueID = 0;
 		DefaultImage = nullptr;
 		SkeletalMesh = nullptr;
@@ -776,9 +776,34 @@ struct STARMARK_API FAvatar_Struct : public FTableRowBase
 };
 
 
+USTRUCT()
+struct FWrappedAvatarData : public FFastArraySerializer
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY()
+	TArray<FAvatar_Struct> Items;
+
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo & DeltaParms)
+	{
+		return FFastArraySerializer::FastArrayDeltaSerialize<FAvatar_Struct, FWrappedAvatarData>(Items, DeltaParms, *this);
+	}
+};
+
+
+template<>
+struct TStructOpsTypeTraits< FWrappedAvatarData > : public TStructOpsTypeTraitsBase2< FWrappedAvatarData >
+{
+	enum
+	{
+		WithNetDeltaSerializer = true,
+	};
+};
+
+
 //------------------------- Player
 USTRUCT(BlueprintType)
-struct STARMARK_API FPlayer_Data
+struct STARMARK_API FPlayer_Data : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
@@ -825,6 +850,32 @@ struct STARMARK_API FPlayer_Data
 		Pronouns = EPlayer_Pronouns::E_Neutral;
 	}
 };
+
+
+USTRUCT()
+struct FWrappedPlayerData : public FFastArraySerializer
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY()
+	TArray<FPlayer_Data> Items;
+
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo & DeltaParms)
+	{
+		return FFastArraySerializer::FastArrayDeltaSerialize<FPlayer_Data, FWrappedPlayerData>(Items, DeltaParms, *this);
+	}
+};
+
+
+template<>
+struct TStructOpsTypeTraits< FWrappedPlayerData > : public TStructOpsTypeTraitsBase2< FWrappedPlayerData >
+{
+	enum
+	{
+		WithNetDeltaSerializer = true,
+	};
+};
+
 
 
 class STARMARK_API Starmark_Variables

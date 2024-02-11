@@ -124,7 +124,7 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Call Server_BeginMultiplayerBattle()"));
 		Server_BeginMultiplayerBattle();
 	} else {
-		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::CheckPreBattleChecksArray, 1.f, false);
+		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::CheckPreBattleChecksArray, 5.f, false);
 	}
 
 
@@ -148,12 +148,12 @@ void AStarmark_GameMode::CheckPreBattleChecksArray()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / CheckPreBattleChecksArray / Checking if all players have readied up"));
 
-	if (PreBattleChecks.Num() >= 2) {
+	//if (PreBattleChecks.Num() >= 2) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Call Server_BeginMultiplayerBattle()"));
 		Server_BeginMultiplayerBattle();
-	} else {
-		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::CheckPreBattleChecksArray, 1.f, false);
-	}
+	//} else {
+		//GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::CheckPreBattleChecksArray, 1.f, false);
+	//}
 }
 
 
@@ -215,9 +215,9 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 		if (CurrentPlayerTeam[j].AvatarName != "Default") {
 			if (SpawnedAvatarCount < 4) {
 				// Make sure each character can use all of their attacks
-				//for (int x = 0; x < CurrentPlayerTeam[j].Attacks.Num(); x++) {
-				//	CurrentPlayerTeam[j].CurrentAttacks.Add(*AttacksDataTable->FindRow<FAvatar_AttackStruct>((CurrentPlayerTeam[j].Attacks[x].RowName), GameModeContextString));
-				//}
+				for (int x = 0; x < CurrentPlayerTeam[j].Attacks.Num(); x++) {
+					CurrentPlayerTeam[j].CurrentAttacks.Add(*AttacksDataTable->FindRow<FAvatar_AttackStruct>((CurrentPlayerTeam[j].Attacks[x].RowName), GameModeContextString));
+				}
 
 				// Spawn the actor
 				Server_SpawnAvatar(PlayerControllerReferences[0], j + 1, CurrentPlayerTeam[j]);
