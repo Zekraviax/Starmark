@@ -77,6 +77,15 @@ public:
 	FTimerHandle PlayerReadyCheckTimerHandle;
 	int MultiplayerUniqueIDCounter;
 
+	// This should have a number of 'true' bools
+	// Equal to the number of players present.
+	// When a Client successfully loads its player data,
+	// it will add one 'true to this array
+	// The Server will add one as soon as the OnPostLogin function
+	// is finished for it
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<bool> PreBattleChecks;
+
 // ------------------------- Other
 	FString GameModeContextString;
 
@@ -90,8 +99,14 @@ public:
 	UFUNCTION()
 	virtual void HandleSeamlessTravelPlayer(AController*& C);
 
+	UFUNCTION(BlueprintNativeEvent)
+	void HandleSeamlessTravelBp(APlayerController_Battle* InBattlePlayerController);
+
 	UFUNCTION(BlueprintCallable)
 	void OnPlayerPostLogin(APlayerController_Battle* NewPlayerController);
+
+	UFUNCTION()
+	void CheckPreBattleChecksArray();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_BeginMultiplayerBattle();

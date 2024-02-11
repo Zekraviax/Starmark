@@ -28,10 +28,11 @@ void UWidget_ServerHost::DelayedGetPlayerData()
 {
 	UE_LOG(LogTemp, Warning, TEXT("UWidget_ServerHost / DelayedGetPlayerData / GetOwningPlayerState returns: %s"), GetOwningPlayerState()->IsValidLowLevel() ? TEXT("true") : TEXT("false"));
 
-	if (GetOwningPlayerState()->IsValidLowLevel())
+	if (GetOwningPlayerState()->IsValidLowLevel()) {
 		Cast<AStarmark_PlayerState>(GetOwningPlayerState())->UpdatePlayerData();
-	else
+	} else {
 		GetWorld()->GetTimerManager().SetTimer(GetPlayerDataTimerHandle, this, &UWidget_ServerHost::DelayedGetPlayerData, 0.2f, false);
+	}
 }
 
 

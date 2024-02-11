@@ -116,6 +116,9 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_ClearLobbyFromScreen();
 
+	UFUNCTION(Client, Reliable)
+	void Client_SendDataFromPlayerState();
+
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void CreateBattleWidget();
 

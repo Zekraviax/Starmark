@@ -30,7 +30,7 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Player
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FPlayer_Data PlayerData;
 
 	UPROPERTY()

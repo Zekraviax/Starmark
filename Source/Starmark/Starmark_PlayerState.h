@@ -28,6 +28,8 @@ class STARMARK_API AStarmark_PlayerState : public APlayerState
 	//virtual void CopyProperties(class APlayerState* PlayerState) override;
 
 public:
+	virtual void Tick(float DeltaSeconds) override;
+
 	AStarmark_PlayerState();
 
 // Variables
@@ -77,7 +79,7 @@ public:
 	void UpdatePlayerData();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void Server_UpdatePlayerData();
+	void Server_UpdatePlayerData(FPlayer_Data InPlayerData);
 
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void Client_UpdatePlayerData();
