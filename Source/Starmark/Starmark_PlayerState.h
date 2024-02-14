@@ -63,9 +63,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString PlayerReadyStatus = "Not Ready";
 
-// ------------------------- Delegates
-	//UPROPERTY()
-	//FJoinedMultiplayerLobby OnJoinedMultiplayerLobbyDelegate;
+// ------------------------- Battle
+	UPROPERTY()
+	bool PreBattleCheck = false;
 
 // ------------------------- Other
 	UPROPERTY()

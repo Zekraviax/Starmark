@@ -121,8 +121,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void CreateBattleWidget();
-
-	UFUNCTION()
 	void Local_BattleWidget_AddToScreen();
 
 	UFUNCTION(BlueprintCallable)
@@ -130,14 +128,10 @@ public:
 
 	UFUNCTION(Client, Unreliable)
 	void Client_GetTurnOrderText(const FString& NewTurnOrderText);
-
-	UFUNCTION()
 	void Local_GetTurnOrderText(const FString& NewTurnOrderText) const;
 
 	UFUNCTION(Server, Reliable)
 	void Server_GetEntitiesInTurnOrder(const int& IndexOfCurrentlyActingEntity);
-
-	UFUNCTION()
 	void Local_GetEntitiesInTurnOrder(TArray<ACharacter_Pathfinder*> TurnOrderArray);
 
 	UFUNCTION(Client, Reliable)
@@ -150,9 +144,6 @@ public:
 // ------------------------- Battle
 	UFUNCTION(Server, Reliable)
 	void Server_GetDataFromProfile();
-
-	UFUNCTION(Client, Reliable)
-	void Client_ReturnPlayerData();
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetReadyToStartMultiplayerBattle();

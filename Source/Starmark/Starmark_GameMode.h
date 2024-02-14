@@ -49,17 +49,12 @@ public:
 // ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<APlayerController_Battle*> PlayerControllerReferences;
-	
-	TArray<UPlayer_SaveData*> PlayerProfileReferences;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<APlayerPawn_Flying> PlayerPawnBlueprintClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ACharacter_Pathfinder> AvatarBlueprintClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UDataTable* UltimateTypeChartDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int ExpectedPlayers = 2;
@@ -71,10 +66,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* StatusEffectsDataTable;
 
+	UPROPERTY()
 	TArray<FString> CombatLogTextArray;
 
 // ------------------------- Multiplayer
+	UPROPERTY()
 	FTimerHandle PlayerReadyCheckTimerHandle;
+
+	UPROPERTY()
 	int MultiplayerUniqueIDCounter;
 
 	// This should have a number of 'true' bools
@@ -83,30 +82,23 @@ public:
 	// it will add one 'true to this array
 	// The Server will add one as soon as the OnPostLogin function
 	// is finished for it
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<bool> PreBattleChecks;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//TArray<bool> PreBattleChecks;
 
 // ------------------------- Other
+	UPROPERTY()
 	FString GameModeContextString;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AStarmark_PlayerState> StarmarkPlayerStateBlueprintClass;
 
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Battle
-	UFUNCTION()
+	// Pre-Battle Setup Functions
 	virtual void HandleSeamlessTravelPlayer(AController*& C);
-
-	UFUNCTION(BlueprintNativeEvent)
-	void HandleSeamlessTravelBp(APlayerController_Battle* InBattlePlayerController);
-
-	UFUNCTION(BlueprintCallable)
 	void OnPlayerPostLogin(APlayerController_Battle* NewPlayerController);
 
-	UFUNCTION()
-	void CheckPreBattleChecksArray();
+	UFUNCTION(Server, Reliable)
+	void GetPreBattleChecks();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_BeginMultiplayerBattle();
@@ -117,6 +109,7 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_MultiplayerBattleCheckAllPlayersReady();
 
+	// Battle Functions
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_AssembleTurnOrderText();
 
@@ -125,6 +118,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_UpdateAllAvatarDecals();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void Server_AvatarBeginTurn(int CurrentAvatarTurnIndex);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_LaunchAttack(ACharacter_Pathfinder* Attacker, AActor* Target, const FString& AttackName);

@@ -93,7 +93,8 @@ void AStarmark_PlayerState::Server_UpdatePlayerData_Implementation(FPlayer_Data 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / Applied the player's party data?"));
 
 	// We can add one entry to the PreBattleCheck array here (?)
-	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->PreBattleChecks.Add(true);
+	//Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->PreBattleChecks.Add(true);
+	PreBattleCheck = true;
 }
 
 

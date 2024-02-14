@@ -78,8 +78,6 @@ void APlayerController_Battle::Client_ClearLobbyFromScreen_Implementation()
 	for (int i = 0; i < FoundServerHostWidgets.Num(); i++) {
 		FoundServerHostWidgets[i]->RemoveFromParent();
 	}
-
-	//Cast<AStarmark_PlayerState>(PlayerState)->UpdatePlayerData();
 }
 
 
@@ -222,30 +220,10 @@ void APlayerController_Battle::Server_GetDataFromProfile_Implementation()
 	
 	// ReSharper disable once CppLocalVariableMayBeConst
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-
-	//PlayerProfileReference = GameInstanceReference->CurrentProfileReference;
-	//PlayerName = GameInstanceReference->PlayerName;
-	//PlayerParty = GameInstanceReference->CurrentProfileReference->CurrentAvatarTeam;
 	PlayerDataStruct = GameInstanceReference->PlayerData;
 
-	//PlayerDataStruct = Cast<AStarmark_PlayerState>(PlayerState)->PlayerDataStruct;
-
-	//UE_LOG(LogTemp, Warning, TEXT("Server_GetDataFromProfile / IsValid(PlayerProfileReference) returns: %s"), IsValid(PlayerProfileReference) ? TEXT("true") : TEXT("false"));
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetDataFromProfile / PlayerName is: %s"), *PlayerDataStruct.PlayerName);
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetDataFromProfile / PlayerName has %d avatars"), PlayerDataStruct.CurrentAvatarTeam.Num());
-}
-
-
-void APlayerController_Battle::Client_ReturnPlayerData_Implementation()
-{
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ReturnPlayerData / Server is attempting to get the player's data"));
-
-	//PlayerDataStruct = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->PlayerData;
-	//Cast<AStarmark_PlayerState>(PlayerState)->PlayerDataStruct = PlayerDataStruct;
-	//PlayerDataStruct = Cast<AStarmark_PlayerState>(PlayerState)->PlayerDataStruct;
-
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ReturnPlayerData / PlayerName is: %s"), *PlayerDataStruct.PlayerName);
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ReturnPlayerData / PlayerName has %d avatars"), PlayerDataStruct.CurrentAvatarTeam.Num());
 }
 
 

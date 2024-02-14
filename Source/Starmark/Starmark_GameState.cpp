@@ -100,11 +100,15 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Fill the DynamicAvatarTurnOrder array"));
 	DynamicAvatarTurnOrder = AvatarTurnOrder;
 
+	// To-Do: Shift the avatars around in the dynamic array, so that they are in dynamic order
+	// and the first avatar is the acting one
+
 	DynamicAvatarTurnOrderImages.Empty();
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Fill the DynamicAvatarTurnOrderImages array"));
 	// Put together a TArray of the avatar's images in order
 	for (int i = 0; i < DynamicAvatarTurnOrder.Num(); i++) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Add avatar %s's image to the DynamicAvatarTurnOrderImages array at index %d"), *DynamicAvatarTurnOrder[i]->AvatarData.Nickname, i);
 		DynamicAvatarTurnOrderImages.Add(DynamicAvatarTurnOrder[i]->AvatarData.UiImages[0]);
 	}
 
@@ -141,8 +145,9 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 void AStarmark_GameState::AvatarBeginTurn_Implementation()
 {
 	if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex)) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / Begin a new turn"));
+
 		ACharacter_Pathfinder* Avatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
-		
 		Avatar->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves;
 
 		// Reduce durations of all statuses
@@ -210,18 +215,26 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 		}
 	}
 
+	/*
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Battle* PlayerController = Cast<APlayerController_Battle>(PlayerArray[j]->GetPawn()->GetController());
 		PlayerController->Player_OnAvatarTurnChanged();
 	}
+
+	for (APlayerController_Battle* Controller : GameModeReference->PlayerControllerReferences) {
+		Controller->Server_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
+	}
+	*/
 
 	// Update HUD
 	if (GameModeReference == nullptr) {
 		GameModeReference = Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode());
 	}
 
-	for (APlayerController_Battle* Controller : GameModeReference->PlayerControllerReferences) {
-		Controller->Server_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
+	if (HasAuthority()) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / This game state has authority"));
+
+		GameModeReference->Server_AvatarBeginTurn(CurrentAvatarTurnIndex);
 	}
 }
 
