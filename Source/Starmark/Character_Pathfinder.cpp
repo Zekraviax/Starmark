@@ -193,6 +193,8 @@ void ACharacter_Pathfinder::SetActorHighlightProperties(bool IsVisible, E_GridTi
 		default:
 			break;
 		}
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / SetActorHighlightProperties / ActorHighlightDecal is not valid."));
 	}
 }
 
@@ -296,9 +298,15 @@ void ACharacter_Pathfinder::SetTilesOccupiedBySize(bool ClearTiles)
 
 void ACharacter_Pathfinder::UpdateAvatarDataInPlayerParty()
 {
-	if (PlayerControllerReference)
-		if (PlayerControllerReference->PlayerParty.IsValidIndex(IndexInPlayerParty))
+	if (PlayerControllerReference) {
+		if (PlayerControllerReference->PlayerParty.IsValidIndex(IndexInPlayerParty)) {
 			PlayerControllerReference->PlayerParty[IndexInPlayerParty] = AvatarData;
+		} else {
+			UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / UpdateAvatarDataInPlayerParty / Index in player party %d is not valid"), IndexInPlayerParty);
+		}
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / UpdateAvatarDataInPlayerParty / PlayerControllerReference is not valid"));
+	}
 }
 
 

@@ -7,7 +7,7 @@
 
 bool AActor_WorldGrid::IsValidGridCell(const FIntPoint& Location) const
 {
-	bool FoundATile = GetWorldTileActorAtGridCoordinates(Location);
+	AActor_GridTile* FoundATile = GetWorldTileActorAtGridCoordinates(Location);
 
 	return (Location.X < MapSize.X && Location.Y < MapSize.Y) && FoundATile;
 }
@@ -18,12 +18,16 @@ bool AActor_WorldGrid::IsGridCellWalkable(const FIntPoint& Location) const
 	// Check if the tile has any properties that make it un-traversable
 	AActor_GridTile* GridTile = GetWorldTileActorAtGridCoordinates(Location);
 	
-	if (!IsValid(GridTile))
+	if (!IsValid(GridTile)) {
+		UE_LOG(LogTemp, Warning, TEXT("AActor_WorldGrid / IsGridCellWalkable / GridTile is not valid"));
+
 		return false;
+	}
 
 	if (GridTile->Properties.Contains(E_GridTile_Properties::E_Occupied) ||
-		GridTile->Properties.Contains(E_GridTile_Properties::E_Wall))
+		GridTile->Properties.Contains(E_GridTile_Properties::E_Wall)) {
 		return false;
+	}
 
 	return true;
 }

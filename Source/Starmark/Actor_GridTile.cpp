@@ -143,5 +143,7 @@ void AActor_GridTile::SetTileHighlightProperties(bool IsVisible, bool ShouldChan
 		default:
 			break;
 		}
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("AActor_GridTile / SetTileHighlightProperties / TileHighlightPlane is not valid"));
 	}
 }

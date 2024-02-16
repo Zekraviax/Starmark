@@ -30,10 +30,13 @@ float WorldGridGraphQueryFiler::GetTraversalCost(FIntPoint StartLocation, FIntPo
 	TileReference = WorldGridReference->GetWorldTileActorAtGridCoordinates(StartLocation);
 
 	if (TileReference->IsValidLowLevel()) {
-		if (TileReference->Properties.Contains(E_GridTile_Properties::E_StoneRoad))
+		if (TileReference->Properties.Contains(E_GridTile_Properties::E_StoneRoad)) {
 			TraversalCost = 0.f;
-		else
+		} else {
 			TraversalCost = TileReference->MovementCost;
+		}
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("WorldGridGraphQueryFilter / GetTraversalCost / Tile is not valid"));
 	}
 
 	return TraversalCost;
