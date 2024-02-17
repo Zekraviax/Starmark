@@ -254,7 +254,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num())
 		CurrentAvatarTurnIndex = 0;
 
-	UE_LOG(LogTemp, Warning, TEXT("AvatarEndTurn / CurrentAvatarTurnIndex is: %d"), CurrentAvatarTurnIndex);
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / CurrentAvatarTurnIndex is: %d"), CurrentAvatarTurnIndex);
 
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Battle* PlayerController = Cast<APlayerController_Battle>(PlayerArray[j]->GetPawn()->GetController());
@@ -266,8 +266,13 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 					PlayerController->IsCurrentlyActingPlayer = true;
 					PlayerController->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
+
+					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / It's player %s's turn"), *PlayerController->PlayerDataStruct.PlayerName);
 				} else {
 					PlayerController->IsCurrentlyActingPlayer = false;
+					PlayerController->CurrentSelectedAvatar = nullptr;
+
+					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Player %s is not acting now"), *PlayerController->PlayerDataStruct.PlayerName);
 				}
 			}
 		}
@@ -303,7 +308,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 					DynamicAvatarTurnOrder[i]->PlayerControllerReference->TileHighlightMode = E_PlayerCharacter_HighlightModes::E_MovePath;
 				}
 				else {
-					UE_LOG(LogTemp, Warning, TEXT("AvatarEndTurn / Next entity in turn order does not have a player controller."));
+					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Next entity in turn order does not have a player controller."));
 				}
 
 				// Clean up all entities
@@ -334,7 +339,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 void AStarmark_GameState::EndOfBattle_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("EndOfBattle / Return each player to the Main Menu"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / EndOfBattle / Return each player to the Main Menu"));
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("End Of Battle. Returning to Main Menu...")));
 
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->EndOfBattle();

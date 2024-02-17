@@ -312,7 +312,7 @@ void APlayerController_Battle::SendMoveCommandToServer_Implementation(FVector Mo
 
 void APlayerController_Battle::Client_SendEndOfTurnCommandToServer_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Client_SendEndOfTurnCommandToServer / Call SendEndOfTurnCommandToServer()"));
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_SendEndOfTurnCommandToServer / Call SendEndOfTurnCommandToServer()"));
 
 	CurrentSelectedAvatar->CurrentSelectedAttack.Name = "Default";
 	CurrentSelectedAvatar->CurrentSelectedAttack.AttackPattern = EBattle_AttackPatterns::Circle;
@@ -323,7 +323,7 @@ void APlayerController_Battle::Client_SendEndOfTurnCommandToServer_Implementatio
 
 void APlayerController_Battle::SendEndOfTurnCommandToServer_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("SendEndOfTurnCommandToServer / Call AvatarEndTurn_Implementation()"));
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / SendEndOfTurnCommandToServer / Call AvatarEndTurn_Implementation()"));
 	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn_Implementation();
 }
 
