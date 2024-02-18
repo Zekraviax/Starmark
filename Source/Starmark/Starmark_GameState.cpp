@@ -251,11 +251,14 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	// If true, check for reserve Avatars before ending the turn
 
 	// Reset Round if all Avatars have acted
-	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num())
+	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num()) {
 		CurrentAvatarTurnIndex = 0;
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / CurrentAvatarTurnIndex is: %d"), CurrentAvatarTurnIndex);
 
+	// To-Do: Move this functionality somewhere else, since it doesn't work here
+	/*
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Battle* PlayerController = Cast<APlayerController_Battle>(PlayerArray[j]->GetPawn()->GetController());
 
@@ -274,11 +277,17 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Player %s is not acting now"), *PlayerController->PlayerDataStruct.PlayerName);
 				}
+			} else {
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Avatar in turn order at index %d is not valid"), CurrentAvatarTurnIndex);
 			}
+		} else {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Player controller is not valid"));
 		}
 	}
+	*/
 
 	// Set all GridTiles to default colours and visibility
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Reset all tile highlights"));
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
 	for (int j = 0; j < GridTilesArray.Num(); j++) {
 		Cast<AActor_GridTile>(GridTilesArray[j])->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
@@ -286,7 +295,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 	// Update the dynamic turn order
 	if (DynamicAvatarTurnOrder.Num() > 0) {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn_Implementation / Some avatars in the DynamicAvatarTurnOrder array"));
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn_AAAAA / Some avatars in the DynamicAvatarTurnOrder array"));
 
 		ACharacter_Pathfinder* FirstAvatarInDynamicTurnOrder = DynamicAvatarTurnOrder[0];
 		DynamicAvatarTurnOrder.RemoveAt(0);
@@ -306,8 +315,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 					// Clean up entities' controllers
 					DynamicAvatarTurnOrder[i]->PlayerControllerReference->TileHighlightMode = E_PlayerCharacter_HighlightModes::E_MovePath;
-				}
-				else {
+				} else {
 					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Next entity in turn order does not have a player controller."));
 				}
 
@@ -328,7 +336,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 			}
 		}
 	} else {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn_Implementation / No avatars in the DynamicAvatarTurnOrder array"))
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / No avatars in the DynamicAvatarTurnOrder array"))
 	}
 
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_UpdateAllAvatarDecals();

@@ -472,7 +472,10 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
 		PlayerControllerReferences[j]->Server_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
 		PlayerControllerReferences[j]->Player_OnAvatarTurnChanged();
+		PlayerControllerReferences[j]->CurrentSelectedAvatar = nullptr;
 	}
+
+	//Cast<APlayerController_Battle>(GameStateReference->AvatarTurnOrder[0]->Controller)->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[0];
 
 	// Update all the avatar icons in turn order
 	GameStateReference->SetTurnOrder(PlayerControllerReferences);
