@@ -262,7 +262,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		Server_AssembleTurnOrderText();
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Assign UniqueIDs and CurrentSelectedAvatars"));
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Update each player's attacks in the HUD"));
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Update each avatars' attacks in their controllers' HUD"));
 		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 			for (int j = 0; j < GameStateReference->AvatarTurnOrder.Num(); j++) {
 				if (PlayerControllerReferences[i]->MultiplayerUniqueID == GameStateReference->AvatarTurnOrder[j]->MultiplayerControllerUniqueID) {
@@ -370,7 +370,8 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 	// To-Do: Consider sending avatar data to the GameState? Maybe because all players will want to see all avatar data
 	NewAvatarActor->Client_GetAvatarData(NewAvatarActor->AvatarData);
 
-	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
+	// To-Do: Check if this is redundant, considering it's set in the MultiplayerBeginBattle function
+	//PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 	PlayerController->OnRepNotify_CurrentSelectedAvatar();
 
 	// Set spawn tile to be occupied
@@ -473,6 +474,8 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 		PlayerControllerReferences[j]->Server_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
 		PlayerControllerReferences[j]->Player_OnAvatarTurnChanged();
 		PlayerControllerReferences[j]->CurrentSelectedAvatar = nullptr;
+
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin new turn for player: %s"), *PlayerControllerReferences[j]->PlayerDataStruct.PlayerName);
 	}
 
 	//Cast<APlayerController_Battle>(GameStateReference->AvatarTurnOrder[0]->Controller)->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[0];

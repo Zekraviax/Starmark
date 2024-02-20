@@ -150,8 +150,9 @@ void ACharacter_Pathfinder::OnAvatarCursorOverEnd()
 
 void ACharacter_Pathfinder::OnAvatarClicked()
 {
-	if (!PlayerControllerReference)
+	if (!PlayerControllerReference) {
 		PlayerControllerReference = Cast<APlayerController_Battle>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	}
 
 	PlayerControllerReference->CurrentSelectedAvatar = this;
 
@@ -161,8 +162,9 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 		for (TObjectIterator<ACharacter_Pathfinder> Itr; Itr; ++Itr) {
 			ACharacter_Pathfinder* FoundActor = *Itr;
 
-			if (PlayerControllerReference->CurrentSelectedAvatar != FoundActor)
+			if (PlayerControllerReference->CurrentSelectedAvatar != FoundActor) {
 				FoundActor->ActorSelectedPlane->SetHiddenInGame(false);
+			}
 		}
 	}
 }

@@ -188,14 +188,17 @@ void APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar_Implementation(
 			CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(BattleWidgetReference);
 
 			// Widget initialization
-			if (!IsValid(BattleWidgetReference))
+			if (!IsValid(BattleWidgetReference)) {
 				CreateBattleWidget();
+			}
 
-			if (IsValid(BattleWidgetReference))
+			if (IsValid(BattleWidgetReference)) {
 				SetBattleWidgetVariables();
+			}
 
-			if (!IsReadyToStartMultiplayerBattle)
+			if (!IsReadyToStartMultiplayerBattle) {
 				Server_SetReadyToStartMultiplayerBattle();
+			}
 		} else {
 			GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar, 0.2f, false);
 		}
