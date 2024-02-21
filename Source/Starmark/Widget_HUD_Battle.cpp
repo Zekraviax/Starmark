@@ -40,7 +40,7 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 			}
 		}
 
-		if (IsValid(this)) {
+		if (IsValid(this) && IsValid(PlayerControllerReference->CurrentSelectedAvatar)) {
 			for (int j = 0; j < PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.Num(); j++) {
 				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Create UI button for current avatar's attack at index: %d"), j);
 				

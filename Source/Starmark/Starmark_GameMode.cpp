@@ -371,7 +371,7 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 	NewAvatarActor->Client_GetAvatarData(NewAvatarActor->AvatarData);
 
 	// To-Do: Check if this is redundant, considering it's set in the MultiplayerBeginBattle function
-	//PlayerController->CurrentSelectedAvatar = NewAvatarActor;
+	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 	PlayerController->OnRepNotify_CurrentSelectedAvatar();
 
 	// Set spawn tile to be occupied
@@ -473,11 +473,19 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
 		PlayerControllerReferences[j]->Server_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
 		PlayerControllerReferences[j]->Player_OnAvatarTurnChanged();
+
+		/*
+		if (Cast<APlayerController_Battle>(GameStateReference->AvatarTurnOrder[0]->Controller) == PlayerControllerReferences[j]) {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Yaaaaay"));
+		}
+		*/
+
 		PlayerControllerReferences[j]->CurrentSelectedAvatar = nullptr;
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin new turn for player: %s"), *PlayerControllerReferences[j]->PlayerDataStruct.PlayerName);
 	}
 
+	// To-Do: Confirm this doesn't work?
 	//Cast<APlayerController_Battle>(GameStateReference->AvatarTurnOrder[0]->Controller)->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[0];
 
 	// Update all the avatar icons in turn order
