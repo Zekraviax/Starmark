@@ -129,8 +129,6 @@ void AStarmark_GameMode::GetPreBattleChecks_Implementation()
 	}
 	*/
 
-
-
 	// Can't fetch the GameState here, it just crashes
 	if (!GameStateReference) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / GameStateReference is not valid. Attempting to fetch now."));
@@ -332,13 +330,13 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 	for (int i = 0; i < FoundGridTileActors.Num(); i++) {
 		const AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(FoundGridTileActors[i]);
 
-		if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_PlayerAvatarSpawn) && 
-			GridTileReference->AvatarSlotNumber == IndexInPlayerParty && 
+		if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_PlayerAvatarSpawn) &&
+			GridTileReference->AvatarSlotNumber == IndexInPlayerParty &&
 			GridTileReference->AssignedMultiplayerUniqueID == PlayerController->MultiplayerUniqueID) {
 			ValidMultiplayerSpawnTiles.Add(FoundGridTileActors[i]);
 
-			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Found valid spawn tile at location: x %d, y %d"), 
-				FMath::RoundToInt(FoundGridTileActors[i]->GetActorLocation().X), 
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Found valid spawn tile at location: x %d, y %d"),
+				FMath::RoundToInt(FoundGridTileActors[i]->GetActorLocation().X),
 				FMath::RoundToInt(FoundGridTileActors[i]->GetActorLocation().Y));
 		}
 	}
@@ -364,27 +362,27 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 	// Get attacks
 	for (int i = 0; i < AvatarData.CurrentAttacks.Num(); i++) {
 		NewAvatarActor->CurrentKnownAttacks.Add(AvatarData.CurrentAttacks[i]);
+
+
+		// Sent data to Clients
+		// To-Do: Consider sending avatar data to the GameState? Maybe because all players will want to see all avatar data
+		NewAvatarActor->Client_GetAvatarData(NewAvatarActor->AvatarData);
+
+		// To-Do: Check if this is redundant, considering it's set in the MultiplayerBeginBattle function
+		PlayerController->CurrentSelectedAvatar = NewAvatarActor;
+		PlayerController->OnRepNotify_CurrentSelectedAvatar();
+
+		// Set spawn tile to be occupied
+		if (Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Contains(E_GridTile_Properties::E_None)) {
+			Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Remove(E_GridTile_Properties::E_None);
+		}
+
+		Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Add(E_GridTile_Properties::E_Occupied);
+		Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->OccupyingActor = NewAvatarActor;
+
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Avatar spawned"));
 	}
-
-	// Sent data to Clients
-	// To-Do: Consider sending avatar data to the GameState? Maybe because all players will want to see all avatar data
-	NewAvatarActor->Client_GetAvatarData(NewAvatarActor->AvatarData);
-
-	// To-Do: Check if this is redundant, considering it's set in the MultiplayerBeginBattle function
-	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
-	PlayerController->OnRepNotify_CurrentSelectedAvatar();
-
-	// Set spawn tile to be occupied
-	if (Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Contains(E_GridTile_Properties::E_None)) {
-		Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Remove(E_GridTile_Properties::E_None);
-	}
-
-	Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Add(E_GridTile_Properties::E_Occupied);
-	Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->OccupyingActor = NewAvatarActor;
-
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Avatar spawned"));
 }
-
 
 void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 {
@@ -474,14 +472,17 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 		PlayerControllerReferences[j]->Server_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
 		PlayerControllerReferences[j]->Player_OnAvatarTurnChanged();
 
-		/*
-		if (Cast<APlayerController_Battle>(GameStateReference->AvatarTurnOrder[0]->Controller) == PlayerControllerReferences[j]) {
+		if (Cast<APlayerController_Battle>(GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference) == PlayerControllerReferences[j]) {
+			PlayerControllerReferences[j]->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[0];
+
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Yaaaaay"));
+		} else {
+			PlayerControllerReferences[j]->CurrentSelectedAvatar = nullptr;
+
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Boooooo"));
 		}
-		*/
 
-		PlayerControllerReferences[j]->CurrentSelectedAvatar = nullptr;
-
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / First avatar's controller: %s"), *GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->GetName());
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin new turn for player: %s"), *PlayerControllerReferences[j]->PlayerDataStruct.PlayerName);
 	}
 
