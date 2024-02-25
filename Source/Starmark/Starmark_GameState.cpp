@@ -68,6 +68,7 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 			}
 		}
 	}
+
 	// Compare slowed Actors' speed
 	for (int i = 0; i < SlowedAvatars.Num(); i++) {
 		ACharacter_Pathfinder* CurrentAvatar = Cast<ACharacter_Pathfinder>(SlowedAvatars[i]);
@@ -97,22 +98,13 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 		AvatarTurnOrder.Add(SlowedAvatarsInTurnOrder[i]);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Fill the DynamicAvatarTurnOrder array"));
-	DynamicAvatarTurnOrder = AvatarTurnOrder;
+	//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Fill the DynamicAvatarTurnOrder array"));
+	//DynamicAvatarTurnOrder = AvatarTurnOrder;
 
 	// To-Do: Shift the avatars around in the dynamic array, so that they are in dynamic order
 	// and the first avatar is the acting one
 
-	DynamicAvatarTurnOrderImages.Empty();
-
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Fill the DynamicAvatarTurnOrderImages array"));
-	// Put together a TArray of the avatar's images in order
-	for (int i = 0; i < DynamicAvatarTurnOrder.Num(); i++) {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Add avatar %s's image to the DynamicAvatarTurnOrderImages array at index %d"), *DynamicAvatarTurnOrder[i]->AvatarData.Nickname, i);
-		DynamicAvatarTurnOrderImages.Add(DynamicAvatarTurnOrder[i]->AvatarData.UiImages[0]);
-	}
-
-	OnRepNotify_DynamicAvatarTurnOrderUpdated();
+	//OnRepNotify_DynamicAvatarTurnOrderUpdated();
 }
 
 
@@ -121,6 +113,15 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 	// Tell each player controller to update their HUDs
 	TArray<AActor*> ActorsArray;
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / This function is being multicast to all clients."));
+
+	DynamicAvatarTurnOrderImages.Empty();
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Fill the DynamicAvatarTurnOrderImages array"));
+	// Put together a TArray of the avatar's images in order
+	for (int i = 0; i < DynamicAvatarTurnOrder.Num(); i++) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Add avatar %s's image to the DynamicAvatarTurnOrderImages array at index %d"), *DynamicAvatarTurnOrder[i]->AvatarData.Nickname, i);
+		DynamicAvatarTurnOrderImages.Add(DynamicAvatarTurnOrder[i]->AvatarData.UiImages[0]);
+	}
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), ActorsArray);
 	for (int i = 0; i < ActorsArray.Num(); i++) {
@@ -215,17 +216,6 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 		}
 	}
 
-	/*
-	for (int j = 0; j < PlayerArray.Num(); j++) {
-		APlayerController_Battle* PlayerController = Cast<APlayerController_Battle>(PlayerArray[j]->GetPawn()->GetController());
-		PlayerController->Player_OnAvatarTurnChanged();
-	}
-
-	for (APlayerController_Battle* Controller : GameModeReference->PlayerControllerReferences) {
-		Controller->Server_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
-	}
-	*/
-
 	// Update HUD
 	if (GameModeReference == nullptr) {
 		GameModeReference = Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode());
@@ -295,11 +285,20 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 	// Update the dynamic turn order
 	if (DynamicAvatarTurnOrder.Num() > 0) {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn_AAAAA / Some avatars in the DynamicAvatarTurnOrder array"));
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Update the DynamicAvatarTurnOrder array"));
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Some avatars in the DynamicAvatarTurnOrder array"));
 
 		ACharacter_Pathfinder* FirstAvatarInDynamicTurnOrder = DynamicAvatarTurnOrder[0];
 		DynamicAvatarTurnOrder.RemoveAt(0);
-		DynamicAvatarTurnOrder.Insert(FirstAvatarInDynamicTurnOrder, DynamicAvatarTurnOrder.Num());
+		//DynamicAvatarTurnOrder.Add(FirstAvatarInDynamicTurnOrder);
+
+		if (DynamicAvatarTurnOrder.Num() < 1) {
+			DynamicAvatarTurnOrder = AvatarTurnOrder;
+
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Every avatar has had a turn. Start a new round here."));
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Avatar %s is up next"), *DynamicAvatarTurnOrder[0]->AvatarData.Nickname);
 
 		// Assign currently controlled avatars based on the dynamic turn order
 		for (int i = DynamicAvatarTurnOrder.Num() - 1; i >= 0; i--) {

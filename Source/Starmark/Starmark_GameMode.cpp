@@ -256,6 +256,10 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 			GameStateReference->SetTurnOrder(PlayerControllerReferences);
 		}
 
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Fill the DynamicAvatarTurnOrder array"));
+		GameStateReference->DynamicAvatarTurnOrder = GameStateReference->AvatarTurnOrder;
+		GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
+
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Assemble the turn order text"));
 		Server_AssembleTurnOrderText();
 
@@ -280,6 +284,11 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady_Implementation / Set the currently acting player"));
 		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
 		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->Client_UpdateAttacksInHud();
+
+
+
+		// testing this
+		GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
 	}
 }
 
@@ -310,7 +319,7 @@ void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		PlayerControllerReferences[i]->Client_GetTurnOrderText(GameStateReference->CurrentTurnOrderText);
-		PlayerControllerReferences[i]->Server_GetEntitiesInTurnOrder(GameStateReference->CurrentAvatarTurnIndex);
+		//PlayerControllerReferences[i]->Server_GetEntitiesInTurnOrder(GameStateReference->CurrentAvatarTurnIndex);
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Turn order text assembled"));
@@ -469,11 +478,8 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatarTurnIndex)
 {
 	for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
-		PlayerControllerReferences[j]->Server_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
-		PlayerControllerReferences[j]->Player_OnAvatarTurnChanged();
-
-		if (Cast<APlayerController_Battle>(GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference) == PlayerControllerReferences[j]) {
-			PlayerControllerReferences[j]->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[0];
+		if (Cast<APlayerController_Battle>(GameStateReference->DynamicAvatarTurnOrder[0]->PlayerControllerReference) == PlayerControllerReferences[j]) {
+			PlayerControllerReferences[j]->CurrentSelectedAvatar = GameStateReference->DynamicAvatarTurnOrder[0];
 
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Yaaaaay"));
 		} else {
@@ -482,12 +488,15 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Boooooo"));
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / First avatar's controller: %s"), *GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->GetName());
+		//PlayerControllerReferences[j]->Server_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
+		PlayerControllerReferences[j]->Player_OnAvatarTurnChanged();
+
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / First avatar: %s"), *GameStateReference->DynamicAvatarTurnOrder[0]->AvatarData.Nickname);
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin new turn for player: %s"), *PlayerControllerReferences[j]->PlayerDataStruct.PlayerName);
 	}
 
 	// To-Do: Confirm this doesn't work?
-	//Cast<APlayerController_Battle>(GameStateReference->AvatarTurnOrder[0]->Controller)->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[0];
+	//Cast<APlayerController_Battle>(GameStateReference->DynamicAvatarTurnOrder[0]->Controller)->CurrentSelectedAvatar = GameStateReference->DynamicAvatarTurnOrder[0];
 
 	// Update all the avatar icons in turn order
 	GameStateReference->SetTurnOrder(PlayerControllerReferences);
