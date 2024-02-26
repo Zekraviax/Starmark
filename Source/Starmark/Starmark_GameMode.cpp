@@ -17,6 +17,7 @@
 
 void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / Begin function"));
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / Player has finished loading"));
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / AController type: %s"), *C->GetName());
 	APlayerController_Battle* NewController = Cast<APlayerController_Battle>(SpawnPlayerController(ROLE_Authority, FVector(0, 0, 0), FRotator(0, 0, 0)));
@@ -30,6 +31,8 @@ void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 
 	// Set-up for the battle
 	OnPlayerPostLogin(NewController);
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / End function"));
 }
 
 
@@ -37,6 +40,8 @@ void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 // OnPlayerPostLogin isn't called when seamlessly travelling, because the clients aren't disconnected
 void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerController)
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Begin function"));
+	
 	// Spawn and posses player pawn
 	TArray<AActor*> FoundPlayerStartActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), FoundPlayerStartActors);
@@ -91,7 +96,6 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::GetPreBattleChecks, 1.f, false);
 	}
 
-
 	/*
 	ExpectedPlayers = 2;
 
@@ -105,11 +109,15 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / The battle can't begin because something doesn't add up"));
 	}
 	*/
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / End function"));
 }
 
 
 void AStarmark_GameMode::GetPreBattleChecks_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Begin function"));
+	
 	bool AreAllPlayersReady = true;
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Checking if all players have readied up"));
@@ -164,11 +172,15 @@ void AStarmark_GameMode::GetPreBattleChecks_Implementation()
 	} else {
 		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::GetPreBattleChecks, 1.f, false);
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / End function"));
 }
 
 
 void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Begin function"));
+	
 	if (!GameStateReference) {
 		AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 	}
@@ -200,11 +212,16 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 	}
 
 	Server_MultiplayerBattleCheckAllPlayersReady();
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / End function"));
 }
 
 
 void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementation(APlayerController_Battle* PlayerControllerReference)
 {
+	// To-Do: rename this function to something that makes more sense
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Begin function"));
+	
 	TArray<FAvatar_Struct> CurrentPlayerTeam = Cast<UStarmark_GameInstance>(PlayerControllerReferences[0]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam;
 	int SpawnedAvatarCount = 0;
 
@@ -229,11 +246,15 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 	}
 
 	Server_MultiplayerBattleCheckAllPlayersReady();
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / End function"));
 }
 
 
 void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Begin function"));
+	
 	TArray<bool> ReadyStatuses;
 	TArray<AActor*> GridTilesArray;
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
@@ -290,11 +311,15 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		// testing this
 		GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / End function"));
 }
 
 
 void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Begin function"));
+	
 	// The AssembleTurnOrderText should only handle the text, and not images in the hud
 	// But whenever the text is updated, shouldn't the images be update to match?
 	FString NewTurnOrderText;
@@ -323,11 +348,14 @@ void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Turn order text assembled"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / End function"));
 }
 
 
 void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Battle* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData)
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Begin function"));
+	
 	FString ContextString;
 	const FActorSpawnParameters SpawnInfo;
 	TArray<AActor*> FoundGridTileActors, ValidMultiplayerSpawnTiles;
@@ -391,10 +419,13 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Avatar spawned"));
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / End function"));
 }
 
 void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_UpdateAllAvatarDecals / Begin function"));
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_UpdateAllAvatarDecals / Updating all avatar decals"));
 	
 	TArray<AActor*> Avatars;
@@ -425,11 +456,15 @@ void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 			}
 		}
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_UpdateAllAvatarDecals / End function"));
 }
 
 
 void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinder* Attacker, AActor* Target, const FString& AttackName)
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Begin function"));
+	
 	FAvatar_AttackStruct AttackData;
 	FActorSpawnParameters SpawnInfo;
 	FString ContextString, MoveTypeAsString, TargetTypeAsString;
@@ -472,11 +507,15 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	for (int i = 0; i < AttackData.AttackEffectsOnTarget.Num(); i++) {
 		AttackEffectsLibrary_Reference->SwitchOnAttackEffect(AttackData.AttackEffectsOnTarget[i], Attacker, Target);
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / End function"));
 }
 
 
 void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatarTurnIndex)
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin function"));
+	
 	for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
 		if (Cast<APlayerController_Battle>(GameStateReference->DynamicAvatarTurnOrder[0]->PlayerControllerReference) == PlayerControllerReferences[j]) {
 			PlayerControllerReferences[j]->CurrentSelectedAvatar = GameStateReference->DynamicAvatarTurnOrder[0];
@@ -500,6 +539,8 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 
 	// Update all the avatar icons in turn order
 	GameStateReference->SetTurnOrder(PlayerControllerReferences);
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / End function"));
 }
 
 
