@@ -29,6 +29,8 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 // ------------------------- Battle
 void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerController_Battle*>& PlayerControllers)
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Begin function"));
+	
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundActors);
 	TArray<ACharacter_Pathfinder*> SlowedAvatars, SlowedAvatarsInTurnOrder;
@@ -105,11 +107,16 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	// and the first avatar is the acting one
 
 	//OnRepNotify_DynamicAvatarTurnOrderUpdated();
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / End function"));
 }
 
 
 void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 {
+	// To-Do: Update this function with a better name
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Begin function"));
+	
 	// Tell each player controller to update their HUDs
 	TArray<AActor*> ActorsArray;
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / This function is being multicast to all clients."));
@@ -140,11 +147,15 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 			}
 		}
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / End function"));
 }
 
 
 void AStarmark_GameState::AvatarBeginTurn_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / Begin function"));
+	
 	if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex)) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / Begin a new turn"));
 
@@ -226,11 +237,15 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 
 		GameModeReference->Server_AvatarBeginTurn(CurrentAvatarTurnIndex);
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / End function"));
 }
 
 
 void AStarmark_GameState::AvatarEndTurn_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Begin function"));
+	
 	TArray<ACharacter_Pathfinder*> AvatarArray;
 	TArray<bool> IsPlayerActingArray;
 	TArray<AActor*> GridTilesArray;
@@ -341,19 +356,29 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_UpdateAllAvatarDecals();
 
 	AvatarBeginTurn();
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / End function"));
 }
 
 
 void AStarmark_GameState::EndOfBattle_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / EndOfBattle / Begin function"));
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / EndOfBattle / Return each player to the Main Menu"));
+	
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("End Of Battle. Returning to Main Menu...")));
 
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->EndOfBattle();
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / EndOfBattle / End function"));
 }
 
 
 void AStarmark_GameState::StunDelayedSkipTurn_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / StunDelayedSkipTurn / Begin function"));
+	
 	AvatarEndTurn();
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / StunDelayedSkipTurn / Begin function"));
 }
