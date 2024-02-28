@@ -74,4 +74,4 @@ Plugins/*/Intermediate/*
 DerivedDataCache/*
 
 # Include the saves for my convenience
-!Saved/SaveGame/*
+!Saved/SaveGames
