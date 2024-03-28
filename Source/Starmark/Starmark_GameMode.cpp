@@ -309,7 +309,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 
 		// testing this
-		GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
+		//GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / End function"));
@@ -539,6 +539,14 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 
 	// Update all the avatar icons in turn order
 	GameStateReference->SetTurnOrder(PlayerControllerReferences);
+
+	// testing this
+	GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
+
+	// Set first Avatar's controller as the currently acting player
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Set the currently acting player"));
+	GameStateReference->DynamicAvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
+	GameStateReference->DynamicAvatarTurnOrder[0]->PlayerControllerReference->Client_UpdateAttacksInHud();
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / End function"));
 }

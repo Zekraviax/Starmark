@@ -98,6 +98,7 @@ void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvat
 							Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetBrushFromTexture(InDynamicAvatarTurnOrderImages[i]);
 							UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Apply avatar image to EntityIconsInTurnOrder child at index %d"), EntityIconIndex)
 						} else {
+							Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetBrushFromTexture(nullptr);
 							UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder child at index %d is not a UImage"), EntityIconIndex)
 						}
 					} else {
@@ -120,10 +121,18 @@ void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvat
 				}
 				else {
 					UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / InDynamicAvatarTurnOrderImages index %d is not valid."), i);
+
+					//To-Do: Set images to be blank here
+					if (Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))) {
+						Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetBrushFromTexture(nullptr);
+						UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Apply blank image to EntityIconsInTurnOrder child at index %d"), EntityIconIndex)
+					} else {
+						UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder child at index %d is not a UImage"), EntityIconIndex)
+					}
 				}
 			}
 
-			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Get and Set current acting entity info"));
+			//UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Get and Set current acting entity info"));
 			//SetCurrentActingEntityInfo(TurnOrderArray[0]);
 		} else {
 			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder is not valid"))
