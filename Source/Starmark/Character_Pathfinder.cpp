@@ -217,6 +217,7 @@ void ACharacter_Pathfinder::GetValidActorsForAttack_Implementation(FAvatar_Attac
 		if (Cast<AActor_GridTile>(CurrentlyHoveredActor) || Cast<ACharacter_Pathfinder>(CurrentlyHoveredActor)) {
 			ValidAttackTargetsArray.Add(CurrentlyHoveredActor);
 		}
+
 		break;
 	case(EBattle_AttackPatterns::FourWayCross):
 		//ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y));

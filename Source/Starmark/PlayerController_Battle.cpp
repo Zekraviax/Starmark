@@ -345,11 +345,16 @@ void APlayerController_Battle::Player_OnAvatarTurnChanged_Implementation()
 
 void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation()
 {
-	if (BattleWidgetReference) {
-		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Initializing HUD"));
-		BattleWidgetReference->UpdateAvatarAttacksComponents();
+	if (true) {
+		if (BattleWidgetReference) {
+			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Initializing HUD"));
+			BattleWidgetReference->UpdateAvatarAttacksComponents();
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Error: HUD reference is not valid"));
+		}
 	} else {
-		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Error: HUD reference is not valid"));
+
 	}
 }
 
