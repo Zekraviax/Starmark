@@ -211,11 +211,14 @@ void ACharacter_Pathfinder::GetValidActorsForAttack_Implementation(FAvatar_Attac
 
 	ValidAttackTargetsArray.Empty();
 
+	UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / GetValidActorsForAttack / Attack pattern: %s"), *UEnum::GetDisplayValueAsText(Attack.AttackPattern).ToString());
 	switch (Attack.AttackPattern)
 	{
 	case(EBattle_AttackPatterns::SingleTile):
 		if (Cast<AActor_GridTile>(CurrentlyHoveredActor) || Cast<ACharacter_Pathfinder>(CurrentlyHoveredActor)) {
 			ValidAttackTargetsArray.Add(CurrentlyHoveredActor);
+		} else {
+			UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / GetValidActorsForAttack / Error when getting valid targets for SingleTarget attack."));
 		}
 
 		break;
@@ -363,7 +366,7 @@ ECharacter_FacingDirections ACharacter_Pathfinder::GetCharacterFacingDirection()
 		// Top Right
 		ReturnDirection = ECharacter_FacingDirections::TopRight;
 	} else {
-		UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder  /  GetCharacterFacingDirection()  /  Error: Character Yaw Value Too High Or Low"));
+		UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / GetCharacterFacingDirection() / Error: Character Yaw Value Too High Or Low"));
 	}
 
 	return ReturnDirection;
