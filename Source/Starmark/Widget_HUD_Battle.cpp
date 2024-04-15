@@ -41,6 +41,8 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 		}
 
 		if (IsValid(this) && IsValid(PlayerControllerReference->CurrentSelectedAvatar)) {
+			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Player's current avatar: %s"), *PlayerControllerReference->CurrentSelectedAvatar->AvatarData.Nickname);
+
 			for (int j = 0; j < PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.Num(); j++) {
 				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Create UI button for current avatar's attack %s at index: %d"), *PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[j].Name, j);
 				
@@ -63,14 +65,17 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 
 void UWidget_HUD_Battle::UpdateTurnOrderText(FString NewText)
 {
+	/*
 	if (IsValid(this)) {
 		if (TurnOrderTextBlock->IsValidLowLevel()) {
 			TurnOrderTextBlock->SetText(FText::FromString("Turn Order:\n" + NewText));
 		}
 
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateTurnOrderText / Turn order text updated")));
 		UpdateAvatarAttacksComponents();
 	}
+	*/
+
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateTurnOrderText / Turn order text updated")));
 }
 
 
@@ -180,6 +185,8 @@ void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* Curre
 			// Show limited UI elements:
 			// Name
 			// Portrait
+
+			ShowHideActingPlayerHudElements(false);
 		}
 	}
 }
@@ -190,8 +197,33 @@ void UWidget_HUD_Battle::ResetBattleHud()
 	//CommandsBox->SetVisibility(ESlateVisibility::Visible);
 	//AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
 
-	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ResetBattleHud / Players' HUD is being reset."));
+	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ResetBattleHud / Player's HUD is being reset."));
 	UpdateAvatarAttacksComponents();
+}
+
+
+// Show or hide all the HUD elements that are only relevent to the player whose turn it is
+void UWidget_HUD_Battle::ShowHideActingPlayerHudElements(bool ShowElements)
+{
+	if (ShowElements) {
+		AvatarAttacksBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		//EndTurnButton
+
+		HealthBar->SetVisibility(ESlateVisibility::Visible);
+		HealthText->SetVisibility(ESlateVisibility::Visible);
+
+		ManaBar->SetVisibility(ESlateVisibility::Visible);
+		ManaText->SetVisibility(ESlateVisibility::Visible);
+	} else {
+		AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
+		//EndTurnButton
+
+		HealthBar->SetVisibility(ESlateVisibility::Collapsed);
+		HealthText->SetVisibility(ESlateVisibility::Collapsed);
+
+		ManaBar->SetVisibility(ESlateVisibility::Collapsed);
+		ManaText->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 
