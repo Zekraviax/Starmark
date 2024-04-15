@@ -126,14 +126,33 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Fill the DynamicAvatarTurnOrderImages array"));
 	// Put together a TArray of the avatar's images in order
 	for (int i = 0; i < DynamicAvatarTurnOrder.Num(); i++) {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Add avatar %s's image to the DynamicAvatarTurnOrderImages array at index %d"), *DynamicAvatarTurnOrder[i]->AvatarData.Nickname, i);
-		DynamicAvatarTurnOrderImages.Add(DynamicAvatarTurnOrder[i]->AvatarData.UiImages[0]);
+		if (DynamicAvatarTurnOrder.IsValidIndex(i)) {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Add avatar %s's image to the DynamicAvatarTurnOrderImages array at index %d"), *DynamicAvatarTurnOrder[i]->AvatarData.Nickname, i);
+			DynamicAvatarTurnOrderImages.Add(DynamicAvatarTurnOrder[i]->AvatarData.UiImages[0]);
+		} else {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated /DynamicAvatarTurnOrde index %d is not valid"), i);
+		}
 	}
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), ActorsArray);
 	for (int i = 0; i < ActorsArray.Num(); i++) {
 		if (Cast<APlayerController_Battle>(ActorsArray[i])) {
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Set UI Icons for the player controller at index %d"), i);
+
+			if (!Cast<APlayerController_Battle>(ActorsArray[i])->BattleWidgetReference) {
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / This player doesn't have a valid BattleWidgetReference. Attempting to find one..."));
+
+				TArray<UUserWidget*> FoundBattleHudWidgets;
+				UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundBattleHudWidgets, UWidget_HUD_Battle::StaticClass(), true);
+
+				if (FoundBattleHudWidgets.Num() > 0) {
+					Cast<APlayerController_Battle>(ActorsArray[i])->BattleWidgetReference = Cast<UWidget_HUD_Battle>(FoundBattleHudWidgets[0]);
+
+					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Found a battle widget"));
+				} else {
+					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Could not find a battle widget!"));
+				}
+			}
 
 			if (Cast<APlayerController_Battle>(ActorsArray[i])->BattleWidgetReference) {
 				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Sending %d UI Icons"), DynamicAvatarTurnOrderImages.Num());
@@ -142,8 +161,6 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 				// Also update the current acting avatar in the hud
 				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Update the currently acting entity information."));
 				Cast<APlayerController_Battle>(ActorsArray[i])->BattleWidgetReference->SetCurrentActingEntityInfo(DynamicAvatarTurnOrder[0]);
-			} else {
-				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / This player doesn't have a valid BattleWidgetReference."));
 			}
 		}
 	}

@@ -69,6 +69,10 @@ public:
 	UPROPERTY()
 	FTimerHandle StunTimerHandle;
 
+// ------------------------- Game
+	UPROPERTY()
+	int ExpectedPlayersForNextLevel = 1;
+
 // Functions
 // --------------------------------------------------
 

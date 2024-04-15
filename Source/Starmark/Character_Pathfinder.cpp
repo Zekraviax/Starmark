@@ -196,7 +196,7 @@ void ACharacter_Pathfinder::SetActorHighlightProperties(bool IsVisible, E_GridTi
 			break;
 		}
 	} else {
-		UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / SetActorHighlightProperties / ActorHighlightDecal is not valid."));
+		//UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / SetActorHighlightProperties / ActorHighlightDecal is not valid."));
 	}
 }
 
@@ -211,7 +211,7 @@ void ACharacter_Pathfinder::GetValidActorsForAttack_Implementation(FAvatar_Attac
 
 	ValidAttackTargetsArray.Empty();
 
-	UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / GetValidActorsForAttack / Attack pattern: %s"), *UEnum::GetDisplayValueAsText(Attack.AttackPattern).ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / GetValidActorsForAttack / Attack pattern: %s"), *UEnum::GetDisplayValueAsText(Attack.AttackPattern).ToString());
 	switch (Attack.AttackPattern)
 	{
 	case(EBattle_AttackPatterns::SingleTile):
@@ -245,7 +245,28 @@ void ACharacter_Pathfinder::GetValidActorsForAttack_Implementation(FAvatar_Attac
 		}
 
 		break;
+	case(EBattle_AttackPatterns::Circle):
+		for (int i = 1; i <= Attack.BaseRange; i++) {
+			ValidVectors.Add(FVector2D(this->GetActorLocation().X + (200 * i), this->GetActorLocation().Y));
+			ValidVectors.Add(FVector2D(this->GetActorLocation().X - (200 * i), this->GetActorLocation().Y));
+			ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y + (200 * i)));
+			ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y - (200 * i)));
+		}
+
+		for (AActor* GridTile : GridTilesArray) {
+			if (ValidVectors.Contains(FVector2D(GridTile->GetActorLocation().X, GridTile->GetActorLocation().Y))) {
+				ValidAttackTargetsArray.Add(GridTile);
+			}
+		}
+
+		for (AActor* Entity : EntitiesArray) {
+			if (ValidVectors.Contains(FVector2D(Entity->GetActorLocation().X, Entity->GetActorLocation().Y))) {
+				ValidAttackTargetsArray.Add(Entity);
+			}
+		}
+		break;
 	default:
+		UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / GetValidActorsForAttack / This attack does not have an implemented Pattern!"));
 		break;
 	}
 }
