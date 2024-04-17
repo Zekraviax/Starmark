@@ -26,7 +26,13 @@ public:
 // Variables
 // --------------------------------------------------
 
-// ------------------------- References
+// ------------------------- Helper Variables
+	UPROPERTY()
+	ACharacter_Pathfinder* CurrentlyActingAvatar;
+
+	UPROPERTY()
+	APlayerController_Battle* CurrentlyActingPlayer;
+
 	UPROPERTY()
 	AStarmark_GameMode* GameModeReference;
 
@@ -75,6 +81,8 @@ public:
 
 // Functions
 // --------------------------------------------------
+
+// ------------------------- Helper Functions
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)

@@ -179,6 +179,13 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 		ACharacter_Pathfinder* Avatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
 		Avatar->AvatarData.CurrentTileMoves = AvatarTurnOrder[CurrentAvatarTurnIndex]->AvatarData.MaximumTileMoves;
 
+		// Assign helper variables
+		CurrentlyActingAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
+		CurrentlyActingPlayer = Cast<APlayerController_Battle>(CurrentlyActingAvatar->GetController());
+
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / Currently acting avatar: %s"), *CurrentlyActingAvatar->AvatarData.Nickname);
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / Currently acting player: %s"), *CurrentlyActingPlayer->PlayerDataStruct.PlayerName);
+
 		// Reduce durations of all statuses
 		//for (int i = Avatar->CurrentStatusEffectsArray.Num() - 1; i >= 0; i--) {
 		//	Avatar->CurrentStatusEffectsArray[i].TurnsRemaining--;
