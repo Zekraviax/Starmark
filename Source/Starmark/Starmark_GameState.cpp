@@ -249,6 +249,8 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 				EnemyController->StepOne_ChooseTarget();
 			}
 		}
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / CurrentAvatarTurnIndex isn't valid?"));
 	}
 
 	// Update HUD
