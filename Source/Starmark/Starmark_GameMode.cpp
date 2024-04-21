@@ -199,7 +199,7 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 				if (CurrentPlayerTeam[j].AvatarName != "Default") {
 					if (SpawnedAvatarCount < 4) {
 						Server_SpawnAvatar(PlayerControllerReferences[i], (j + 1), CurrentPlayerTeam[j]);
-						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn Avatar %s for player %s"), *CurrentPlayerTeam[j].AvatarName, *PlayerControllerReferences[i]->PlayerName);
+						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn avatar %s for player %s"), *CurrentPlayerTeam[j].AvatarName, *PlayerControllerReferences[i]->PlayerName);
 						
 						SpawnedAvatarCount++;
 					}
@@ -311,7 +311,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		GameStateReference->CurrentlyActingPlayer = Cast<APlayerController_Battle>(GameStateReference->CurrentlyActingAvatar->GetController());
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting avatar: %s"), *GameStateReference->CurrentlyActingAvatar->AvatarData.Nickname);
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting player: %s"), *GameStateReference->CurrentlyActingPlayer->PlayerDataStruct.PlayerName);
+		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting player: %s"), *GameStateReference->CurrentlyActingPlayer->GetName());
 		
 		// testing this
 		//GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
@@ -397,14 +397,17 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 	NewAvatarActor->AvatarData.CurrentManaPoints = NewAvatarActor->AvatarData.BattleStats.MaximumManaPoints;
 	NewAvatarActor->AvatarData.CurrentTileMoves = NewAvatarActor->AvatarData.MaximumTileMoves;
 
-	// MultiplayerUniqueID
+	// To-Do: Figure out a way for each avatar to have a reference to their players' data
+	// without cloning the data for each avatar
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Give the avatar a copy of its players' data"));
+
+	NewAvatarActor->ControllingPlayerDataCopy = PlayerController->PlayerDataStruct;
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 	NewAvatarActor->MultiplayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
 
 	// Get attacks
 	for (int i = 0; i < AvatarData.CurrentAttacks.Num(); i++) {
 		NewAvatarActor->CurrentKnownAttacks.Add(AvatarData.CurrentAttacks[i]);
-
 
 		// Sent data to Clients
 		// To-Do: Consider sending avatar data to the GameState? Maybe because all players will want to see all avatar data

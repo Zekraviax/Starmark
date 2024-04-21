@@ -26,6 +26,12 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 }
 
 
+APlayerController* AStarmark_GameState::ReturnCurrentlyActingPlayer(int AvatarMultiplayerUniqueID)
+{
+	return nullptr;
+}
+
+
 // ------------------------- Battle
 void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerController_Battle*>& PlayerControllers)
 {
@@ -181,7 +187,7 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 
 		// Assign helper variables
 		CurrentlyActingAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
-		CurrentlyActingPlayer = Cast<APlayerController_Battle>(CurrentlyActingAvatar->GetController());
+		CurrentlyActingPlayer = Cast<APlayerController_Battle>(CurrentlyActingAvatar->PlayerControllerReference);
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / Currently acting avatar: %s"), *CurrentlyActingAvatar->AvatarData.Nickname);
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / Currently acting player: %s"), *CurrentlyActingPlayer->PlayerDataStruct.PlayerName);

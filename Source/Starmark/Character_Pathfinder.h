@@ -124,6 +124,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	APlayerController_Battle* PlayerControllerReference;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	FPlayer_Data ControllingPlayerDataCopy;
+
 	UPROPERTY()
 	FString CharacterContextString;
 

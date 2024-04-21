@@ -83,6 +83,8 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Helper Functions
+	UFUNCTION()
+	APlayerController* ReturnCurrentlyActingPlayer(int AvatarMultiplayerUniqueID);
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)
