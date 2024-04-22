@@ -112,6 +112,10 @@ public:
 // Functions
 // --------------------------------------------------
 
+// ------------------------- Helper Functions
+	FPlayer_Data ReturnPlayerData() { return PlayerDataStruct; }
+
+
 // ------------------------- Widgets
 	UFUNCTION(Client, Reliable)
 	void Client_ClearLobbyFromScreen();

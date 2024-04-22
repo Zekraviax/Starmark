@@ -190,6 +190,7 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerState has %d avatars"), Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerDataStruct.CurrentAvatarTeam.Num());
 
 		FPlayer_Data PlayerData = Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerDataStruct;
+		PlayerControllerReferences[i]->PlayerDataStruct = PlayerData;
 		TArray<FAvatar_Struct> CurrentPlayerTeam = PlayerData.CurrentAvatarTeam;
 
 		int SpawnedAvatarCount = 0;
@@ -311,7 +312,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		GameStateReference->CurrentlyActingPlayer = Cast<APlayerController_Battle>(GameStateReference->CurrentlyActingAvatar->GetController());
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting avatar: %s"), *GameStateReference->CurrentlyActingAvatar->AvatarData.Nickname);
-		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting player: %s"), *GameStateReference->CurrentlyActingPlayer->GetName());
+		//(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting player: %s"), *GameStateReference->CurrentlyActingPlayer->GetName());
 		
 		// testing this
 		//GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
@@ -399,7 +400,7 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 
 	// To-Do: Figure out a way for each avatar to have a reference to their players' data
 	// without cloning the data for each avatar
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Give the avatar a copy of its players' data"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Give the avatar a copy of the player %s's data"), *PlayerController->PlayerDataStruct.ProfileName);
 
 	NewAvatarActor->ControllingPlayerDataCopy = PlayerController->PlayerDataStruct;
 	NewAvatarActor->PlayerControllerReference = PlayerController;
