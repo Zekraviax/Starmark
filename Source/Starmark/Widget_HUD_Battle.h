@@ -48,7 +48,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UButton* SwitchCommandButton;
 
-	//UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	UButton* EndTurnCommand;
 
 	UPROPERTY(meta = (BindWidget))
@@ -74,6 +74,9 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* CurrentEntityNameText;
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* CommandsBackgroundImage;
 
 // ------------------------- References
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -198,7 +198,13 @@ void UWidget_HUD_Battle::ResetBattleHud()
 	//AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
 
 	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ResetBattleHud / Player's HUD is being reset."));
-	UpdateAvatarAttacksComponents();
+
+	if (Cast<AStarmark_GameState>(GetWorld()->GetGameState())->CurrentlyActingPlayer->MultiplayerUniqueID == PlayerControllerReference->MultiplayerUniqueID) {
+		UpdateAvatarAttacksComponents();
+		ShowHideActingPlayerHudElements(true);
+	} else {
+		ShowHideActingPlayerHudElements(false);
+	}
 }
 
 
@@ -207,7 +213,8 @@ void UWidget_HUD_Battle::ShowHideActingPlayerHudElements(bool ShowElements)
 {
 	if (ShowElements) {
 		AvatarAttacksBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		//EndTurnButton
+		EndTurnCommand->SetVisibility(ESlateVisibility::Visible);
+		CommandsBackgroundImage->SetVisibility(ESlateVisibility::Visible);
 
 		HealthBar->SetVisibility(ESlateVisibility::Visible);
 		HealthText->SetVisibility(ESlateVisibility::Visible);
@@ -216,7 +223,8 @@ void UWidget_HUD_Battle::ShowHideActingPlayerHudElements(bool ShowElements)
 		ManaText->SetVisibility(ESlateVisibility::Visible);
 	} else {
 		AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
-		//EndTurnButton
+		EndTurnCommand->SetVisibility(ESlateVisibility::Collapsed);
+		CommandsBackgroundImage->SetVisibility(ESlateVisibility::Collapsed);
 
 		HealthBar->SetVisibility(ESlateVisibility::Collapsed);
 		HealthText->SetVisibility(ESlateVisibility::Collapsed);

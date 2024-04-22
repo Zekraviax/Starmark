@@ -259,6 +259,17 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / CurrentAvatarTurnIndex isn't valid?"));
 	}
 
+	// Reset the players' hud
+	TArray<UUserWidget*> FoundBattleHudWidgets;
+	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundBattleHudWidgets, UWidget_HUD_Battle::StaticClass(), true);
+	for (UUserWidget* FoundWidget : FoundBattleHudWidgets) {
+		UWidget_HUD_Battle* HUD = Cast<UWidget_HUD_Battle>(FoundWidget);
+
+		// If the player is acting, reset their HUD
+		// otherwise, hide most of their hud
+		HUD->ResetBattleHud();
+	}
+
 	// Update HUD
 	if (GameModeReference == nullptr) {
 		GameModeReference = Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode());
@@ -372,17 +383,6 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 				DynamicAvatarTurnOrder[i]->AttackTraceActor->SetVisibility(false);
 				DynamicAvatarTurnOrder[i]->AttackTraceActor->SetHiddenInGame(true);
 			}
-		}
-
-		// Reset the players' hud
-		TArray<UUserWidget*> FoundBattleHudWidgets;
-		UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundBattleHudWidgets, UWidget_HUD_Battle::StaticClass(), true);
-		for (UUserWidget* FoundWidget : FoundBattleHudWidgets) {
-			UWidget_HUD_Battle* HUD = Cast<UWidget_HUD_Battle>(FoundWidget);
-
-			// If the player is acting, reset their HUD
-			// otherwise, hide most of their hud
-			HUD->ResetBattleHud();
 		}
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / No avatars in the DynamicAvatarTurnOrder array"))
