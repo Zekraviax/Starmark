@@ -95,6 +95,8 @@ public:
 // ------------------------- Battle
 	// Pre-Battle Setup Functions
 	virtual void HandleSeamlessTravelPlayer(AController*& C);
+
+	UFUNCTION(BlueprintCallable)
 	void OnPlayerPostLogin(APlayerController_Battle* NewPlayerController);
 
 	UFUNCTION(Server, Reliable)
