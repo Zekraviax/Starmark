@@ -154,7 +154,7 @@ void AStarmark_GameMode::GetPreBattleChecks_Implementation()
 			Server_BeginMultiplayerBattle();
 		} else {
 			TArray<AActor*> FoundPlayerControllers;
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundPlayerControllers);
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), FoundPlayerControllers);
 
 			Server_SinglePlayerBeginMultiplayerBattle(Cast<APlayerController_Battle>(FoundPlayerControllers[0]));
 		}
@@ -212,6 +212,8 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 {
 	// To-Do: rename this function to something that makes more sense
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Begin function"));
+
+	PlayerControllerReferences.Add(PlayerControllerReference);
 
 	if (!GameStateReference) {
 		AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
