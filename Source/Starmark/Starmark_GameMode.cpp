@@ -261,9 +261,11 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 	TArray<AActor*> GridTilesArray;
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Check each PlayerController is get ready for the battle"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Check all %d PlayerControllers are ready for the battle"), PlayerControllerReferences.Num());
 	
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Is %s ready to start the battle? %s"), *PlayerControllerReferences[i]->PlayerDataStruct.PlayerName, PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle ? TEXT("true") : TEXT("false"));
+
 		ReadyStatuses.Add(PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle);
 	}
 

@@ -175,7 +175,7 @@ void APlayerController_Battle::Client_GetAvatarImagesInDynamicTurnOrder_Implemen
 // ------------------------- Avatar
 void APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / OnRepNotify_CurrentSelectedAvatar / Player has selected an avatar"));
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / OnRepNotify_CurrentSelectedAvatar / Player %s has selected an avatar"), *PlayerDataStruct.PlayerName);
 	
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
 
@@ -185,6 +185,7 @@ void APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar_Implementation(
 
 		// Avatar initialization
 		if (CurrentSelectedAvatar) {
+			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / OnRepNotify_CurrentSelectedAvatar / Run the CurrentSelectedAvatar begin play function"));
 			CurrentSelectedAvatar->BeginPlayWorkaroundFunction_Implementation(BattleWidgetReference);
 
 			// Widget initialization
@@ -196,21 +197,27 @@ void APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar_Implementation(
 				SetBattleWidgetVariables();
 			}
 
+			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / OnRepNotify_CurrentSelectedAvatar / Is %s ready to start the battle? %s"), *PlayerDataStruct.PlayerName, IsReadyToStartMultiplayerBattle ? TEXT("true") : TEXT("false"));
+
 			if (!IsReadyToStartMultiplayerBattle) {
 				Server_SetReadyToStartMultiplayerBattle();
 			}
 		} else {
-			GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar, 0.2f, false);
+			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / OnRepNotify_CurrentSelectedAvatar / CurrentSelectedAvatar not found, trying again..."));
+
+			GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar, 0.5f, false);
 		}
 	} else {
-		GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar, 0.2f, false);
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / OnRepNotify_CurrentSelectedAvatar / PlayerStateReference not found, trying again..."));
+
+		GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar, 0.5f, false);
 	}
 }
 
 
 void APlayerController_Battle::Server_SetReadyToStartMultiplayerBattle_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_SetReadyToStartMultiplayerBattle / Player is ready to start the multiplayer battle"));
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_SetReadyToStartMultiplayerBattle / Player %s is ready to start the multiplayer battle"), *PlayerDataStruct.PlayerName);
 	
 	IsReadyToStartMultiplayerBattle = true;
 }
