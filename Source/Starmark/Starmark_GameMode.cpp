@@ -149,10 +149,14 @@ void AStarmark_GameMode::GetPreBattleChecks_Implementation()
 	}
 
 	if (AreAllPlayersReady) {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Call Server_BeginMultiplayerBattle()"));
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Checking whether or not all players have traveled. Expected players: %d"), ExpectedPlayers);
 		if (ExpectedPlayers >= 2) {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Starting a multiplayer battle"));
+
 			Server_BeginMultiplayerBattle();
 		} else {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Starting a single player battle"));
+
 			TArray<AActor*> FoundPlayerControllers;
 			UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), FoundPlayerControllers);
 
@@ -213,7 +217,7 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 	// To-Do: rename this function to something that makes more sense
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Begin function"));
 
-	PlayerControllerReferences.Add(PlayerControllerReference);
+	//PlayerControllerReferences.Add(PlayerControllerReference);
 
 	if (!GameStateReference) {
 		AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
@@ -263,7 +267,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Check all %d PlayerControllers are ready for the battle"), PlayerControllerReferences.Num());
 	
-	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+	for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Is %s ready to start the battle? %s"), *PlayerControllerReferences[i]->PlayerDataStruct.PlayerName, PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle ? TEXT("true") : TEXT("false"));
 
 		ReadyStatuses.Add(PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle);
@@ -315,7 +319,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		GameStateReference->CurrentlyActingPlayer = Cast<APlayerController_Battle>(GameStateReference->CurrentlyActingAvatar->GetController());
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting avatar: %s"), *GameStateReference->CurrentlyActingAvatar->AvatarData.Nickname);
-		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting player: %s"), *GameStateReference->CurrentlyActingPlayer->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting player: %s"), *GameStateReference->CurrentlyActingPlayer->PlayerDataStruct.PlayerName);
 		
 		// testing this
 		//GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
