@@ -40,6 +40,8 @@ void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 // OnPlayerPostLogin isn't called when seamlessly travelling, because the clients aren't disconnected
 void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerController)
 {
+	ExpectedPlayers = 2;
+
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Begin function"));
 	
 	// Spawn and posses player pawn
@@ -319,10 +321,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		GameStateReference->CurrentlyActingPlayer = Cast<APlayerController_Battle>(GameStateReference->CurrentlyActingAvatar->GetController());
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting avatar: %s"), *GameStateReference->CurrentlyActingAvatar->AvatarData.Nickname);
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting player: %s"), *GameStateReference->CurrentlyActingPlayer->PlayerDataStruct.PlayerName);
-		
-		// testing this
-		//GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
+		//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting player: %s"), *GameStateReference->CurrentlyActingPlayer->PlayerDataStruct.PlayerName);
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / End function"));
@@ -540,11 +539,13 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 			PlayerControllerReferences[j]->CurrentSelectedAvatar = GameStateReference->DynamicAvatarTurnOrder[0];
 			PlayerControllerReferences[j]->IsCurrentlyActingPlayer = true;
 			PlayerControllerReferences[j]->Client_UpdateAttacksInHud();
+			PlayerControllerReferences[j]->Client_ShowHideHud(true);
 
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Yaaaaay"));
 		} else {
 			PlayerControllerReferences[j]->CurrentSelectedAvatar = nullptr;
 			PlayerControllerReferences[j]->IsCurrentlyActingPlayer = false;
+			PlayerControllerReferences[j]->Client_ShowHideHud(false);
 
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Boooooo"));
 		}
@@ -559,6 +560,7 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	// To-Do: Confirm this doesn't work?
 	//Cast<APlayerController_Battle>(GameStateReference->DynamicAvatarTurnOrder[0]->Controller)->CurrentSelectedAvatar = GameStateReference->DynamicAvatarTurnOrder[0];
 
+	// Update all the players' HUDs here
 	// Update all the avatar icons in turn order
 	GameStateReference->SetTurnOrder(PlayerControllerReferences);
 

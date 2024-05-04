@@ -133,7 +133,8 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 	// Put together a TArray of the avatar's images in order
 	for (int i = 0; i < DynamicAvatarTurnOrder.Num(); i++) {
 		if (DynamicAvatarTurnOrder.IsValidIndex(i)) {
-			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Add avatar %s's image to the DynamicAvatarTurnOrderImages array at index %d"), *DynamicAvatarTurnOrder[i]->AvatarData.Nickname, i);
+			// To-Do: Fix this then un-comment it out
+			//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Add avatar %s's image to the DynamicAvatarTurnOrderImages array at index %d"), *DynamicAvatarTurnOrder[i]->AvatarData.Nickname, i);
 			DynamicAvatarTurnOrderImages.Add(DynamicAvatarTurnOrder[i]->AvatarData.UiImages[0]);
 		} else {
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated /DynamicAvatarTurnOrde index %d is not valid"), i);
@@ -259,6 +260,8 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / CurrentAvatarTurnIndex isn't valid?"));
 	}
 
+	// All players' HUDs should be checked at the end of every turn, not just their own
+	/*
 	// Reset the players' hud
 	TArray<UUserWidget*> FoundBattleHudWidgets;
 	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundBattleHudWidgets, UWidget_HUD_Battle::StaticClass(), true);
@@ -267,10 +270,12 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 
 		// If the player is acting, reset their HUD
 		// otherwise, hide most of their hud
+
+		
 		HUD->ResetBattleHud();
 	}
+	*/
 
-	// Update HUD
 	if (GameModeReference == nullptr) {
 		GameModeReference = Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode());
 	}

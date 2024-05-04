@@ -174,6 +174,9 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_UpdateAttacksInHud();
 
+	UFUNCTION(Client, Reliable)
+	void Client_ShowHideHud(bool ShowHud);
+
 // ------------------------- Multiplayer Battle
 	UFUNCTION(Client, Reliable)
 	void GetAvatarUpdateFromServer(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar);

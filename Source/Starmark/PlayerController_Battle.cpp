@@ -356,12 +356,22 @@ void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation()
 		if (BattleWidgetReference) {
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Initializing HUD"));
 			BattleWidgetReference->UpdateAvatarAttacksComponents();
-		}
-		else {
+		} else {
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Error: HUD reference is not valid"));
 		}
 	} else {
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / false!?"));
+	}
+}
 
+
+void APlayerController_Battle::Client_ShowHideHud_Implementation(bool ShowHud)
+{
+	if (BattleWidgetReference) {
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ShowHideHud / Showing/Hiding HUD"));
+		BattleWidgetReference->ShowHideActingPlayerHudElements(ShowHud);
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ShowHideHud / Error: HUD reference is not valid"));
 	}
 }
 

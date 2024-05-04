@@ -194,10 +194,10 @@ void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* Curre
 
 void UWidget_HUD_Battle::ResetBattleHud()
 {
-	//CommandsBox->SetVisibility(ESlateVisibility::Visible);
-	//AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
-
 	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ResetBattleHud / Player's HUD is being reset."));
+	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ResetBattleHud / Currently acting player's Multiplayer ID: %d"), Cast<AStarmark_GameState>(GetWorld()->GetGameState())->CurrentlyActingPlayer->MultiplayerUniqueID);
+	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ResetBattleHud / This player's Multiplayer ID: %d"), PlayerControllerReference->MultiplayerUniqueID);
+	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ResetBattleHud / This player's Name: %s"), *PlayerControllerReference->PlayerDataStruct.PlayerName);
 
 	if (Cast<AStarmark_GameState>(GetWorld()->GetGameState())->CurrentlyActingPlayer->MultiplayerUniqueID == PlayerControllerReference->MultiplayerUniqueID) {
 		UpdateAvatarAttacksComponents();
