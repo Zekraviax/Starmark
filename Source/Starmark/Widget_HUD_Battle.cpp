@@ -56,6 +56,8 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 					}
 				}
 			}
+		} else {
+			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Players current avatar isn't valid!"));
 		}
 	} else {
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox is not valid!?")));

@@ -300,7 +300,9 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 			for (int j = 0; j < GameStateReference->AvatarTurnOrder.Num(); j++) {
 				if (PlayerControllerReferences[i]->MultiplayerUniqueID == GameStateReference->AvatarTurnOrder[j]->MultiplayerControllerUniqueID) {
 					PlayerControllerReferences[i]->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[j];
-					PlayerControllerReferences[i]->Client_UpdateAttacksInHud();
+					//PlayerControllerReferences[i]->Client_UpdateAttacksInHud();
+
+					// To-Do: Show and Hide the UI here
 					break;
 				}
 			}
@@ -532,11 +534,12 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin function"));
 	
 	for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
-		if (Cast<APlayerController_Battle>(GameStateReference->DynamicAvatarTurnOrder[0]->PlayerControllerReference) == PlayerControllerReferences[j]) {
+		PlayerControllerReferences[j]->CurrentSelectedAvatar = GameStateReference->CurrentlyActingAvatar;
+
+		if (Cast<APlayerController_Battle>(GameStateReference->CurrentlyActingPlayer) == PlayerControllerReferences[j]) {
 			// Set first Avatar's controller as the currently acting player
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Set the currently acting player"));
 
-			PlayerControllerReferences[j]->CurrentSelectedAvatar = GameStateReference->DynamicAvatarTurnOrder[0];
 			PlayerControllerReferences[j]->IsCurrentlyActingPlayer = true;
 			PlayerControllerReferences[j]->Client_UpdateAttacksInHud();
 			PlayerControllerReferences[j]->Client_ShowHideHud(true);
