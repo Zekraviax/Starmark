@@ -87,7 +87,7 @@ public:
 
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
-	void UpdateAvatarAttacksComponents();
+	void UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStruct> Attacks);
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateTurnOrderText(FString NewText);

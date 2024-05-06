@@ -11,7 +11,7 @@
 
 
 // ------------------------- Widget
-void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
+void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStruct> Attacks)
 {
 	// To-Do: This function needs to be able to check who's turn it is,
 	// so we can disable the buttons appropriately
@@ -40,15 +40,15 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents()
 			}
 		}
 
-		if (IsValid(this) && IsValid(PlayerControllerReference->CurrentSelectedAvatar)) {
+		if (IsValid(this)) {
 			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Player's current avatar: %s"), *PlayerControllerReference->CurrentSelectedAvatar->AvatarData.Nickname);
 
-			for (int j = 0; j < PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.Num(); j++) {
+			for (int j = 0; j < Attacks.Num(); j++) {
 				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Create UI button for current avatar's attack %s at index: %d"), *PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[j].Name, j);
 				
 				for (int i = 0; i < AttackButtonsArray.Num(); i++) {
 					if (AttackButtonsArray[i]->SlotNumber == j) {
-						AttackButtonsArray[i]->AttackNameText->SetText(FText::FromString(PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[j].Name.ToUpper()));
+						AttackButtonsArray[i]->AttackNameText->SetText(FText::FromString(Attacks[j].Name.ToUpper()));
 						AttackButtonsArray[i]->PlayerControllerReference = PlayerControllerReference;
 						AttackButtonsArray[i]->AvatarAttackIndex = j;
 
@@ -202,7 +202,7 @@ void UWidget_HUD_Battle::ResetBattleHud()
 	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ResetBattleHud / This player's Name: %s"), *PlayerControllerReference->PlayerDataStruct.PlayerName);
 
 	if (Cast<AStarmark_GameState>(GetWorld()->GetGameState())->CurrentlyActingPlayer->MultiplayerUniqueID == PlayerControllerReference->MultiplayerUniqueID) {
-		UpdateAvatarAttacksComponents();
+		UpdateAvatarAttacksComponents(Cast<AStarmark_GameState>(GetWorld()->GetGameState())->CurrentlyActingAvatar->CurrentKnownAttacks);
 		ShowHideActingPlayerHudElements(true);
 	} else {
 		ShowHideActingPlayerHudElements(false);

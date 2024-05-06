@@ -355,7 +355,7 @@ void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation()
 	if (true) {
 		if (BattleWidgetReference) {
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Initializing HUD"));
-			BattleWidgetReference->UpdateAvatarAttacksComponents();
+			BattleWidgetReference->UpdateAvatarAttacksComponents(CurrentSelectedAvatar->CurrentKnownAttacks);
 		} else {
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Error: HUD reference is not valid"));
 		}

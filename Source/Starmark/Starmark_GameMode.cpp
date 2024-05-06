@@ -440,6 +440,7 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / End function"));
 }
 
+
 void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_UpdateAllAvatarDecals / Begin function"));
@@ -535,13 +536,14 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	
 	for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
 		PlayerControllerReferences[j]->CurrentSelectedAvatar = GameStateReference->CurrentlyActingAvatar;
+		PlayerControllerReferences[j]->Client_UpdateAttacksInHud();
 
 		if (Cast<APlayerController_Battle>(GameStateReference->CurrentlyActingPlayer) == PlayerControllerReferences[j]) {
 			// Set first Avatar's controller as the currently acting player
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Set the currently acting player"));
 
 			PlayerControllerReferences[j]->IsCurrentlyActingPlayer = true;
-			PlayerControllerReferences[j]->Client_UpdateAttacksInHud();
+			//PlayerControllerReferences[j]->Client_UpdateAttacksInHud();
 			PlayerControllerReferences[j]->Client_ShowHideHud(true);
 
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Yaaaaay"));
