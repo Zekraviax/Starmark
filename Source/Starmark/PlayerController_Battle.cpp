@@ -182,7 +182,6 @@ void APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar_Implementation(
 	// (Default) Player party initialization
 	if (PlayerStateReference) {
 		//PlayerStateReference->PlayerState_BeginBattle();
-
 		// Avatar initialization
 		if (CurrentSelectedAvatar) {
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / OnRepNotify_CurrentSelectedAvatar / Run the CurrentSelectedAvatar begin play function"));

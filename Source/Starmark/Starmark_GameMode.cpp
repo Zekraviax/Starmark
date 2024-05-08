@@ -536,7 +536,7 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	
 	for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
 		PlayerControllerReferences[j]->CurrentSelectedAvatar = GameStateReference->CurrentlyActingAvatar;
-		PlayerControllerReferences[j]->Client_UpdateAttacksInHud();
+
 
 		if (Cast<APlayerController_Battle>(GameStateReference->CurrentlyActingPlayer) == PlayerControllerReferences[j]) {
 			// Set first Avatar's controller as the currently acting player
@@ -548,7 +548,7 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Yaaaaay"));
 		} else {
-			PlayerControllerReferences[j]->CurrentSelectedAvatar = nullptr;
+			//PlayerControllerReferences[j]->CurrentSelectedAvatar = nullptr;
 			PlayerControllerReferences[j]->IsCurrentlyActingPlayer = false;
 			PlayerControllerReferences[j]->Client_ShowHideHud(false);
 
@@ -557,6 +557,7 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 
 		//PlayerControllerReferences[j]->Server_GetEntitiesInTurnOrder(CurrentAvatarTurnIndex);
 		PlayerControllerReferences[j]->Player_OnAvatarTurnChanged();
+		PlayerControllerReferences[j]->Client_UpdateAttacksInHud();
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / First avatar: %s"), *GameStateReference->DynamicAvatarTurnOrder[0]->AvatarData.Nickname);
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin new turn for player: %s"), *PlayerControllerReferences[j]->PlayerDataStruct.PlayerName);

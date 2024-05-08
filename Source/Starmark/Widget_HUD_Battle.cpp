@@ -41,7 +41,8 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 		}
 
 		if (IsValid(this)) {
-			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Player's current avatar: %s"), *PlayerControllerReference->CurrentSelectedAvatar->AvatarData.Nickname);
+			//UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Player's current avatar: %s"), *PlayerControllerReference->CurrentSelectedAvatar->AvatarData.Nickname);
+			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Number of attacks passed: %d"), Attacks.Num());
 
 			for (int j = 0; j < Attacks.Num(); j++) {
 				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Create UI button for current avatar's attack %s at index: %d"), *PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[j].Name, j);
