@@ -349,18 +349,18 @@ void APlayerController_Battle::Player_OnAvatarTurnChanged_Implementation()
 }
 
 
-void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation(TArray<FAvatar_AttackStruct> Attacks)
+void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation(const ACharacter_Pathfinder* ActingAvatar)
 {
-	if (Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar()) {
-		CurrentSelectedAvatar = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar();
-	}
+	//if (Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar()) {
+		//CurrentSelectedAvatar = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar();
+	//}
 
 	if (CurrentSelectedAvatar) {
-		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Current avatar: %s"), *CurrentSelectedAvatar->AvatarData.Nickname);
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Passed avatar: %s"), *ActingAvatar->AvatarData.Nickname);
 
 		if (BattleWidgetReference) {
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Initializing HUD"));
-			BattleWidgetReference->UpdateAvatarAttacksComponents(CurrentSelectedAvatar->CurrentKnownAttacks);
+			BattleWidgetReference->UpdateAvatarAttacksComponents(ActingAvatar->CurrentKnownAttacks);
 		} else {
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Error: HUD reference is not valid"));
 		}

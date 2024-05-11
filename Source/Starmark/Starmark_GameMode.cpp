@@ -300,7 +300,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 			for (int j = 0; j < GameStateReference->AvatarTurnOrder.Num(); j++) {
 				if (PlayerControllerReferences[i]->MultiplayerUniqueID == GameStateReference->AvatarTurnOrder[j]->MultiplayerControllerUniqueID) {
 					PlayerControllerReferences[i]->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[j];
-					PlayerControllerReferences[i]->Client_UpdateAttacksInHud();
+					PlayerControllerReferences[i]->Client_UpdateAttacksInHud(GameStateReference->AvatarTurnOrder[j]);
 
 					// To-Do: Show and Hide the UI here
 					break;
@@ -556,7 +556,7 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 		}
 
 		PlayerControllerReferences[j]->Player_OnAvatarTurnChanged();
-		PlayerControllerReferences[j]->Client_UpdateAttacksInHud();
+		PlayerControllerReferences[j]->Client_UpdateAttacksInHud(GameStateReference->CurrentlyActingAvatar);
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / First avatar: %s"), *GameStateReference->DynamicAvatarTurnOrder[0]->AvatarData.Nickname);
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin new turn for player: %s"), *PlayerControllerReferences[j]->PlayerDataStruct.PlayerName);

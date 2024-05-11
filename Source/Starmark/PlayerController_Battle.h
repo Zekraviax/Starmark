@@ -172,7 +172,7 @@ public:
 	void Player_OnAvatarTurnChanged();
 
 	UFUNCTION(Client, Reliable)
-	void Client_UpdateAttacksInHud(TArray<FAvatar_AttackStruct> Attacks);
+	void Client_UpdateAttacksInHud(const ACharacter_Pathfinder* ActingAvatar);
 
 	UFUNCTION(Client, Reliable)
 	void Client_ShowHideHud(bool ShowHud);
