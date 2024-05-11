@@ -26,9 +26,53 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 }
 
 
-APlayerController* AStarmark_GameState::ReturnCurrentlyActingPlayer(int AvatarMultiplayerUniqueID)
+ACharacter_Pathfinder * AStarmark_GameState::ReturnCurrentlyActingAvatar()
 {
-	return nullptr;
+	if (DynamicAvatarTurnOrder.Num() > 0) {
+		CurrentlyActingAvatar = DynamicAvatarTurnOrder[0];
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / ReturnCurrentlyActingAvatar / Currently acting avatar: %s"), *CurrentlyActingAvatar->AvatarData.Nickname);
+	}
+
+	return CurrentlyActingAvatar;
+}
+
+
+APlayerController_Battle* AStarmark_GameState::ReturnCurrentlyActingPlayer()
+{
+	CurrentlyActingPlayer = AvatarTurnOrder[0]->PlayerControllerReference;
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / ReturnCurrentlyActingPlayer / Currently acting player: %s"), *CurrentlyActingPlayer->PlayerDataStruct.PlayerName);
+
+	return CurrentlyActingPlayer;
+}
+
+
+TArray<APlayerController_Battle*> AStarmark_GameState::ReturnAllBattlePlayerControllers()
+{
+	TArray<AActor*> ActorsArray;
+	TArray<APlayerController_Battle*> ControllersArray;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), ActorsArray);
+
+	for (AActor* Actor : ActorsArray) {
+		if (Cast<APlayerController_Battle>(Actor)) {
+			ControllersArray.Add(Cast<APlayerController_Battle>(Actor));
+		}
+	}
+
+	return ControllersArray;
+}
+
+
+void AStarmark_GameState::ShowHideAllPlayerHuds()
+{
+	ReturnCurrentlyActingPlayer();
+
+	for (auto Controller : ReturnAllBattlePlayerControllers()) {
+		if (Controller == CurrentlyActingPlayer) {
+			Controller->Client_ShowHideHud(true);
+		} else {
+			Controller->Client_ShowHideHud(false);
+		}
+	}
 }
 
 

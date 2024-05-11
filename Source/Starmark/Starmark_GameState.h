@@ -84,7 +84,16 @@ public:
 
 // ------------------------- Helper Functions
 	UFUNCTION()
-	APlayerController* ReturnCurrentlyActingPlayer(int AvatarMultiplayerUniqueID);
+	ACharacter_Pathfinder* ReturnCurrentlyActingAvatar();
+
+	UFUNCTION()
+	APlayerController_Battle* ReturnCurrentlyActingPlayer();
+
+	UFUNCTION()
+	TArray<APlayerController_Battle*> ReturnAllBattlePlayerControllers();
+
+	UFUNCTION()
+	void ShowHideAllPlayerHuds();
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)

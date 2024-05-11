@@ -172,7 +172,7 @@ public:
 	void Player_OnAvatarTurnChanged();
 
 	UFUNCTION(Client, Reliable)
-	void Client_UpdateAttacksInHud();
+	void Client_UpdateAttacksInHud(TArray<FAvatar_AttackStruct> Attacks);
 
 	UFUNCTION(Client, Reliable)
 	void Client_ShowHideHud(bool ShowHud);

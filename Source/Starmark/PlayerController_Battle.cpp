@@ -349,9 +349,15 @@ void APlayerController_Battle::Player_OnAvatarTurnChanged_Implementation()
 }
 
 
-void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation()
+void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation(TArray<FAvatar_AttackStruct> Attacks)
 {
-	if (true) {
+	if (Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar()) {
+		CurrentSelectedAvatar = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar();
+	}
+
+	if (CurrentSelectedAvatar) {
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Current avatar: %s"), *CurrentSelectedAvatar->AvatarData.Nickname);
+
 		if (BattleWidgetReference) {
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Initializing HUD"));
 			BattleWidgetReference->UpdateAvatarAttacksComponents(CurrentSelectedAvatar->CurrentKnownAttacks);
@@ -359,7 +365,7 @@ void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation()
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Error: HUD reference is not valid"));
 		}
 	} else {
-		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / false!?"));
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / CurrentSelectedAvatar is not valid"));
 	}
 }
 
@@ -367,7 +373,7 @@ void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation()
 void APlayerController_Battle::Client_ShowHideHud_Implementation(bool ShowHud)
 {
 	if (BattleWidgetReference) {
-		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ShowHideHud / Showing/Hiding HUD"));
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ShowHideHud / Showing or Hiding HUD"));
 		BattleWidgetReference->ShowHideActingPlayerHudElements(ShowHud);
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ShowHideHud / Error: HUD reference is not valid"));
