@@ -287,7 +287,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 			GameStateReference->SetTurnOrder(PlayerControllerReferences);
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Fill the DynamicAvatarTurnOrder array"));
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Fill the DynamicAvatarTurnOrder array for the first time"));
 		GameStateReference->DynamicAvatarTurnOrder = GameStateReference->AvatarTurnOrder;
 		GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
 

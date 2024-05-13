@@ -407,6 +407,10 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Avatar %s is up next"), *DynamicAvatarTurnOrder[0]->AvatarData.Nickname);
 
+		// Update the helper variables here
+		CurrentlyActingAvatar = DynamicAvatarTurnOrder[0];
+		CurrentlyActingPlayer = CurrentlyActingAvatar->PlayerControllerReference;
+
 		// Assign currently controlled avatars based on the dynamic turn order
 		for (int i = DynamicAvatarTurnOrder.Num() - 1; i >= 0; i--) {
 			if (IsValid(DynamicAvatarTurnOrder[i])) {
