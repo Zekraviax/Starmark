@@ -37,12 +37,15 @@ public:
 	UPROPERTY()
 	APlayerController_Battle* CurrentlyActingPlayer;
 
-// ------------------------- Widgets
+// ------------------------- Lobbies
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UWidgetComponent_LobbyPlayerVals> LobbyPlayerVals_Class;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidgetComponent_LobbyPlayerVals* LobbyPlayerVals_Reference;
+
+	UPROPERTY()
+	int MultiplayerBattleExpectedPlayers = 1;
 
 // ------------------------- Battle
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)

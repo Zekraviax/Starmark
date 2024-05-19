@@ -49,6 +49,9 @@ public:
 // Functions
 // --------------------------------------------------
 
+// ------------------------- Global Helper Functions
+	FOnlineSessionSettings* GetCurrentSessionSettings();
+
 // ------------------------- Player
 	UFUNCTION(BlueprintCallable)
 	void LoadProfile(FString ProfileName);

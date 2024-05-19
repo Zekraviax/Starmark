@@ -51,6 +51,9 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 		//PlayerDataStruct = Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerDataStruct;
 		//Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->UpdatePlayerData();
 
+		// Send the number of expected players to the GameState
+		GameStateReference->MultiplayerBattleExpectedPlayers = 2;
+
 		LobbyWidget_Reference->AddToViewport();
 
 		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Lobby / PlayerJoinedMultiplayerLobby / Player joined: %s"), *PlayerDataStruct.PlayerName);

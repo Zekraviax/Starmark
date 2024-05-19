@@ -4,6 +4,7 @@
 #include "Actor_GridTile.h"
 #include "Character_Pathfinder.h"
 #include "Kismet/GameplayStatics.h"
+#include "OnlineSessionSettings.h"
 #include "PlayerController_Battle.h"
 #include "PlayerController_Lobby.h"
 #include "PlayerPawn_Flying.h"
@@ -101,6 +102,8 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	// When all players have joined, begin running the functions needed to start the battle
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Total PlayerControllerReferences in array: %d"), PlayerControllerReferences.Num());
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected players: %d"), ExpectedPlayers);
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected private connections: %d"), Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->GetCurrentSessionSettings()->NumPrivateConnections);
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected public connections: %d"), Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->GetCurrentSessionSettings()->NumPublicConnections);
 
 	// Tell the player to have their data passed from their GameInstance to the server
 	// by setting it on the PlayerState
