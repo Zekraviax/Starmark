@@ -76,21 +76,15 @@ public:
 	UPROPERTY()
 	int MultiplayerUniqueIDCounter;
 
-	// This should have a number of 'true' bools
-	// Equal to the number of players present.
-	// When a Client successfully loads its player data,
-	// it will add one 'true to this array
-	// The Server will add one as soon as the OnPostLogin function
-	// is finished for it
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//TArray<bool> PreBattleChecks;
-
 // ------------------------- Other
 	UPROPERTY()
 	FString GameModeContextString;
 
 // Functions
 // --------------------------------------------------
+
+// ------------------------- Local Helper Functions
+	void SetGameStateLocalReference();
 
 // ------------------------- Battle
 	// Pre-Battle Setup Functions

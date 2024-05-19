@@ -26,7 +26,11 @@ void AStarmark_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 }
 
 
-ACharacter_Pathfinder * AStarmark_GameState::ReturnCurrentlyActingAvatar()
+// ------------------------- Local Helper Functions
+
+
+// ------------------------- Global Helper Functions
+ACharacter_Pathfinder* AStarmark_GameState::ReturnCurrentlyActingAvatar()
 {
 	if (DynamicAvatarTurnOrder.Num() > 0) {
 		CurrentlyActingAvatar = DynamicAvatarTurnOrder[0];
@@ -150,9 +154,6 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 		AvatarTurnOrder.Add(SlowedAvatarsInTurnOrder[i]);
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Fill the DynamicAvatarTurnOrder array"));
-	//DynamicAvatarTurnOrder = AvatarTurnOrder;
-
 	// To-Do: Shift the avatars around in the dynamic array, so that they are in dynamic order
 	// and the first avatar is the acting one
 
@@ -169,6 +170,7 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 	
 	// Tell each player controller to update their HUDs
 	TArray<AActor*> ActorsArray;
+
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / This function is being multicast to all clients."));
 
 	DynamicAvatarTurnOrderImages.Empty();
@@ -468,5 +470,5 @@ void AStarmark_GameState::StunDelayedSkipTurn_Implementation()
 	
 	AvatarEndTurn();
 
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / StunDelayedSkipTurn / Begin function"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / StunDelayedSkipTurn / End function"));
 }

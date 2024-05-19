@@ -26,15 +26,16 @@ public:
 // Variables
 // --------------------------------------------------
 
-// ------------------------- Helper Variables
+// ------------------------- Local Helper Variables
+	UPROPERTY()
+	AStarmark_GameMode* GameModeReference;
+
+// ------------------------- Global Helper Variables
 	UPROPERTY()
 	ACharacter_Pathfinder* CurrentlyActingAvatar;
 
 	UPROPERTY()
 	APlayerController_Battle* CurrentlyActingPlayer;
-
-	UPROPERTY()
-	AStarmark_GameMode* GameModeReference;
 
 // ------------------------- Widgets
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -82,7 +83,9 @@ public:
 // Functions
 // --------------------------------------------------
 
-// ------------------------- Helper Functions
+// ------------------------- Local Helper Functions
+
+// ------------------------- Global Helper Functions
 	UFUNCTION()
 	ACharacter_Pathfinder* ReturnCurrentlyActingAvatar();
 

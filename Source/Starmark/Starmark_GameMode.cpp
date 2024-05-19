@@ -15,6 +15,21 @@
 #include "WidgetComponent_AvatarBattleData.h"
 
 
+// ------------------------- Local Helper Functions
+void AStarmark_GameMode::SetGameStateLocalReference()
+{
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / SetGameStateLocalReference / Finding a valid GameStateReference..."));
+
+	TArray<AActor*> FoundGameStates;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGameState::StaticClass(), FoundGameStates);
+	
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / SetGameStateLocalReference / Found game states: %d"), FoundGameStates.Num());
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / SetGameStateLocalReference / First game state: %s"), *FoundGameStates[0]->GetName());
+	GameStateReference = Cast<AStarmark_GameState>(FoundGameStates[0]);
+}
+
+
+// ------------------------- Battle
 void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / Begin function"));
@@ -103,35 +118,14 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 void AStarmark_GameMode::GetPreBattleChecks_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Begin function"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Checking if all players have readied up"));
 	
 	bool AreAllPlayersReady = true;
-
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Checking if all players have readied up"));
-
-	/*
-	TArray<AActor*> FoundPlayerStates;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStarmark_PlayerState::StaticClass(), FoundPlayerStates);
-
-	for (int i = 0; i < FoundPlayerStates.Num(); i++) {
-		AStarmark_PlayerState* FoundPlayerState = Cast<AStarmark_PlayerState>(FoundPlayerStates[i]);
-
-		if (FoundPlayerState) {
-			if (FoundPlayerState->PreBattleCheck == false) {
-				AreAllPlayersReady = false;
-			}
-		}
-	}
-	*/
 
 	// Can't fetch the GameState here, it just crashes
 	if (!GameStateReference) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / GameStateReference is not valid. Attempting to fetch now."));
-		
-		TArray<AActor*> FoundGameStates;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGameState::StaticClass(), FoundGameStates);
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Found game states: %d"), FoundGameStates.Num());
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / First game state: %s"), *FoundGameStates[0]->GetName());
-		GameStateReference = Cast<AStarmark_GameState>(FoundGameStates[0]);
+		SetGameStateLocalReference();
 	}
 
 	if (GameStateReference) {
@@ -178,7 +172,8 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Begin function"));
 	
 	if (!GameStateReference) {
-		AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / GameStateReference is not valid. Attempting to fetch now."));
+		SetGameStateLocalReference();
 	}
 
 	for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
@@ -219,10 +214,9 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 	// To-Do: rename this function to something that makes more sense
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Begin function"));
 
-	//PlayerControllerReferences.Add(PlayerControllerReference);
-
 	if (!GameStateReference) {
-		AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / GameStateReference is not valid. Attempting to fetch now."));
+		SetGameStateLocalReference();
 	}
 
 	for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
@@ -262,12 +256,15 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Begin function"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Check all %d PlayerControllers are ready for the battle"), PlayerControllerReferences.Num());
 	
 	TArray<bool> ReadyStatuses;
 	TArray<AActor*> GridTilesArray;
-	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Check all %d PlayerControllers are ready for the battle"), PlayerControllerReferences.Num());
+	if (!GameStateReference) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / GameStateReference is not valid. Attempting to fetch now."));
+		SetGameStateLocalReference();
+	}
 	
 	for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Is %s ready to start the battle? %s"), *PlayerControllerReferences[i]->PlayerDataStruct.PlayerName, PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle ? TEXT("true") : TEXT("false"));
@@ -275,13 +272,13 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		ReadyStatuses.Add(PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle);
 	}
 
-	// Assemble turn order text
 	if (ReadyStatuses.Contains(false) || ReadyStatuses.Num() < ExpectedPlayers) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Can't assemble turn order text because not all players are ready"));
 		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady, 1.f, false);
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / All players are ready to start"));
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Set the turn order for the avatars"));
+
 		// Only set the turn order once all entities are spawned
 		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 			GameStateReference->SetTurnOrder(PlayerControllerReferences);
@@ -301,8 +298,6 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 				if (PlayerControllerReferences[i]->MultiplayerUniqueID == GameStateReference->AvatarTurnOrder[j]->MultiplayerControllerUniqueID) {
 					PlayerControllerReferences[i]->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[j];
 					PlayerControllerReferences[i]->Client_UpdateAttacksInHud(GameStateReference->AvatarTurnOrder[j]);
-
-					// To-Do: Show and Hide the UI here
 					break;
 				}
 			}
@@ -318,13 +313,10 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
 
 		// Assign helper variables
-		GameStateReference->CurrentlyActingAvatar = GameStateReference->AvatarTurnOrder[GameStateReference->CurrentAvatarTurnIndex];
-		//GameStateReference->CurrentlyActingPlayer = Cast<APlayerController_Battle>(GameStateReference->CurrentlyActingAvatar->GetController());
-
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting avatar: %s"), *GameStateReference->CurrentlyActingAvatar->AvatarData.Nickname);
+		// To-Do: Validate this line still works
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Currently acting avatar: %s"), *GameStateReference->ReturnCurrentlyActingAvatar()->AvatarData.Nickname);
 
 		// Initial HUD set up for all players
-		//GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->Client_UpdateAttacksInHud();
 		GameStateReference->ShowHideAllPlayerHuds();
 	}
 
@@ -335,14 +327,15 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Begin function"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Assembling text"));
 	
 	// The AssembleTurnOrderText should only handle the text, and not images in the hud
 	// But whenever the text is updated, shouldn't the images be update to match?
 	FString NewTurnOrderText;
 
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Assembling text"));
-	if (GameStateReference == nullptr) {
-		GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+	if (!GameStateReference) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / GameStateReference is not valid. Attempting to fetch now."));
+		SetGameStateLocalReference();
 	}
 
 	for (int i = 0; i < GameStateReference->AvatarTurnOrder.Num(); i++) {
@@ -360,7 +353,6 @@ void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
 		PlayerControllerReferences[i]->Client_GetTurnOrderText(GameStateReference->CurrentTurnOrderText);
-		//PlayerControllerReferences[i]->Server_GetEntitiesInTurnOrder(GameStateReference->CurrentAvatarTurnIndex);
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Turn order text assembled"));
@@ -425,19 +417,23 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 		NewAvatarActor->Client_GetAvatarData(NewAvatarActor->AvatarData);
 
 		// To-Do: Check if this is redundant, considering it's set in the MultiplayerBeginBattle function
-		PlayerController->CurrentSelectedAvatar = NewAvatarActor;
-		PlayerController->OnRepNotify_CurrentSelectedAvatar();
+		// Verifying that this is redundant
+		//PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 
 		// Set spawn tile to be occupied
+		// ---- Can be refactored into a function ---- //
 		if (Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Contains(E_GridTile_Properties::E_None)) {
 			Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Remove(E_GridTile_Properties::E_None);
 		}
 
 		Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Add(E_GridTile_Properties::E_Occupied);
 		Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->OccupyingActor = NewAvatarActor;
+		// ---- End refactorable code chunk ---- //
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Avatar spawned"));
 	}
+
+	PlayerController->OnRepNotify_CurrentSelectedAvatar();
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / End function"));
 }
@@ -450,9 +446,14 @@ void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 	
 	TArray<AActor*> Avatars;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
-	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 	ACharacter_Pathfinder* CurrentlyActingAvatar;
 
+	if (!GameStateReference) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / GameStateReference is not valid. Attempting to fetch now."));
+		SetGameStateLocalReference();
+	}
+
+	// To-Do: Figure out this code chunk is here and whether or not its relevant
 	if (GameStateReference->AvatarTurnOrder.IsValidIndex(GameStateReference->CurrentAvatarTurnIndex)) {
 		CurrentlyActingAvatar = GameStateReference->AvatarTurnOrder[GameStateReference->CurrentAvatarTurnIndex];
 	} else { 
@@ -535,6 +536,11 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatarTurnIndex)
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin function"));
+
+	if (!GameStateReference) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / GameStateReference is not valid. Attempting to fetch now."));
+		SetGameStateLocalReference();
+	}
 
 	for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
 		PlayerControllerReferences[j]->CurrentSelectedAvatar = GameStateReference->CurrentlyActingAvatar;
