@@ -52,7 +52,8 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 		//Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->UpdatePlayerData();
 
 		// Send the number of expected players to the GameState
-		GameStateReference->MultiplayerBattleExpectedPlayers = 2;
+		// // To-Do: Figure out how to do this
+		//GameStateReference->MultiplayerBattleExpectedPlayers = 2;
 
 		LobbyWidget_Reference->AddToViewport();
 

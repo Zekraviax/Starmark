@@ -421,7 +421,8 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 
 		// To-Do: Check if this is redundant, considering it's set in the MultiplayerBeginBattle function
 		// Verifying that this is redundant
-		//PlayerController->CurrentSelectedAvatar = NewAvatarActor;
+		// This isn't redundant??
+		PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 
 		// Set spawn tile to be occupied
 		// ---- Can be refactored into a function ---- //
