@@ -114,7 +114,7 @@ bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, 
 
 			SessionSettings->bIsLANMatch = bIsLAN;
 			SessionSettings->bUsesPresence = bIsPresence;
-			SessionSettings->NumPublicConnections = 5;
+			SessionSettings->NumPublicConnections = MaxNumPlayers;
 			SessionSettings->NumPrivateConnections = 0;
 			SessionSettings->bAllowInvites = true;
 			SessionSettings->bAllowJoinInProgress = true;
@@ -411,7 +411,7 @@ void UStarmark_GameInstance::StartOnlineGame(FString CustomLobbyName)
 	ULocalPlayer* const Player = GetFirstGamePlayer();
 
 	// Call our custom HostSession function. GameSessionName is a GameInstance variable
-	HostSession(Player->GetPreferredUniqueNetId().GetUniqueNetId(), GameSessionName, false, true, 4, CustomLobbyName);
+	HostSession(Player->GetPreferredUniqueNetId().GetUniqueNetId(), GameSessionName, false, true, 2, CustomLobbyName);
 }
 
 

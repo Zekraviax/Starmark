@@ -56,8 +56,6 @@ void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 // OnPlayerPostLogin isn't called when seamlessly travelling, because the clients aren't disconnected
 void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerController)
 {
-	ExpectedPlayers = 2;
-
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Begin function"));
 	
 	// Spawn and posses player pawn
@@ -99,7 +97,11 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	// Clear the Server Lobby widget from the players' display
 	NewPlayerController->Client_ClearLobbyFromScreen();
 
-	// When all players have joined, begin running the functions needed to start the battle
+	// When all players have joined, begin running the setupfunctions needed to start the battle
+	// To-Do: Add a step here to check if a session even exists before trying to fetch the number of connections
+	ExpectedPlayers = Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->GetCurrentSessionSettings()->NumPrivateConnections + 
+		Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->GetCurrentSessionSettings()->NumPublicConnections;
+
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Total PlayerControllerReferences in array: %d"), PlayerControllerReferences.Num());
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected players: %d"), ExpectedPlayers);
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected private connections: %d"), Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->GetCurrentSessionSettings()->NumPrivateConnections);
