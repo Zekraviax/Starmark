@@ -30,6 +30,15 @@ UStarmark_GameInstance::UStarmark_GameInstance(const FObjectInitializer& ObjectI
 
 
 // ------------------------- Global Helper Functions
+bool UStarmark_GameInstance::DoesSessionExist()
+{
+	IOnlineSessionPtr Sessions = IOnlineSubsystem::Get()->GetSessionInterface();
+	FOnlineSessionSettings* CurrentSettings = Sessions->GetSessionSettings(GameSessionName);
+
+	return (CurrentSettings == NULL);
+}
+
+
 FOnlineSessionSettings* UStarmark_GameInstance::GetCurrentSessionSettings()
 {
 	IOnlineSessionPtr Sessions = IOnlineSubsystem::Get()->GetSessionInterface();

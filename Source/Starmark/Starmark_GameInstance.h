@@ -50,6 +50,7 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Global Helper Functions
+	bool DoesSessionExist();
 	FOnlineSessionSettings* GetCurrentSessionSettings();
 
 // ------------------------- Player
