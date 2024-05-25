@@ -103,7 +103,7 @@ public:
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void SetTurnOrder(const TArray<APlayerController_Battle*>& PlayerControllers);
+	void SetTurnOrder();
 
 	UFUNCTION()
 	void OnRepNotify_DynamicAvatarTurnOrderUpdated();

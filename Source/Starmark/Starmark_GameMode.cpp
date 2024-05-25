@@ -292,17 +292,11 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		SetGameStateLocalReference();
 	}
 	
-	if (ExpectedPlayers > 1) {
-		//for (int i = 0; i < GameStateReference->ReturnAllBattlePlayerControllers().Num(); i++) {
-		for (APlayerController_Battle* Controller : GameStateReference->ReturnAllBattlePlayerControllers()) {
-			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Is %s ready to start the battle? %s"), *Controller->PlayerDataStruct.PlayerName, Controller->IsReadyToStartMultiplayerBattle ? TEXT("true") : TEXT("false"));
+	for (APlayerController_Battle* Controller : GameStateReference->ReturnAllBattlePlayerControllers()) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Is %s ready to start the battle? %s"), *Controller->PlayerDataStruct.PlayerName, Controller->IsReadyToStartMultiplayerBattle ? TEXT("true") : TEXT("false"));
 
-			ReadyStatuses.Add(Controller->IsReadyToStartMultiplayerBattle);
-		}
-	} else {
-		ReadyStatuses.Add(true);
+		ReadyStatuses.Add(Controller->IsReadyToStartMultiplayerBattle);
 	}
-
 
 	if (ReadyStatuses.Contains(false) || ReadyStatuses.Num() < ExpectedPlayers) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Can't assemble turn order text because not all players are ready"));
@@ -312,9 +306,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Set the turn order for the avatars"));
 
 		// Only set the turn order once all entities are spawned
-		//for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		GameStateReference->SetTurnOrder(PlayerControllerReferences);
-		//}
+		GameStateReference->SetTurnOrder();
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Fill the DynamicAvatarTurnOrder array for the first time"));
 		GameStateReference->DynamicAvatarTurnOrder = GameStateReference->AvatarTurnOrder;
@@ -536,11 +528,21 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	}
 
 	if (Attacker->CurrentSelectedAttack.AttackCategory == EBattle_AttackCategories::Offensive && Attacker->CurrentSelectedAttack.BasePower > 0) {
-		// Calculate Damage
-		CurrentDamage += ((Attacker->AvatarData.BattleStats.Attack * Attacker->CurrentSelectedAttack.BasePower) / Cast<ACharacter_Pathfinder>(Target)->AvatarData.BattleStats.Defence) / 2;
+		// Calculate Damage, one step at a time
+		CurrentDamage = FMath::RandRange(1.f, 5.f);
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Damage calculation started with random float: %s"), *FString::SanitizeFloat(CurrentDamage));
+
+		CurrentDamage = CurrentDamage * Attacker->CurrentSelectedAttack.BasePower;
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Damage multiplied by attack base power: %s"), *FString::SanitizeFloat(CurrentDamage));
+
+		CurrentDamage = CurrentDamage * (Attacker->AvatarData.BattleStats.Attack / Cast<ACharacter_Pathfinder>(Target)->AvatarData.BattleStats.Defence);
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Damage factored with attackers' and defenders' stats: %s"), *FString::SanitizeFloat(CurrentDamage));
+
+		CurrentDamage = CurrentDamage / 50;
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Damage divided down: %s"), *FString::SanitizeFloat(CurrentDamage));
 
 		if (CurrentDamage < 1.f) {
-			CurrentDamage = 1.f;
+			CurrentDamage += 1.f;
 		}
 
 		FMath::FloorToFloat(CurrentDamage);
@@ -601,9 +603,8 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin new turn for player: %s"), *PlayerControllerReferences[j]->PlayerDataStruct.PlayerName);
 	}
 
-	// Update all the players' HUDs here
-	// Update all the avatar icons in turn order
-	GameStateReference->SetTurnOrder(PlayerControllerReferences);
+	// Update all the players' HUDs here and avatar icons in turn order
+	GameStateReference->SetTurnOrder();
 
 	// testing this
 	GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();

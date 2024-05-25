@@ -360,8 +360,8 @@ struct STARMARK_API FAvatar_BaseStats
 
 	FAvatar_BaseStats()
 	{
-		MaximumHealthPoints = 100;
-		MaximumManaPoints = 100;
+		MaximumHealthPoints = 10;
+		MaximumManaPoints = 10;
 		Attack = 10;
 		Defence = 10;
 		SpecialAttack = 10;

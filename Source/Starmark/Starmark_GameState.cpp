@@ -83,7 +83,7 @@ void AStarmark_GameState::ShowHideAllPlayerHuds()
 
 
 // ------------------------- Battle
-void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerController_Battle*>& PlayerControllers)
+void AStarmark_GameState::SetTurnOrder_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Begin function"));
 	
