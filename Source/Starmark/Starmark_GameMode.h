@@ -17,6 +17,7 @@ class APlayerController_Battle;
 class APlayerPawn_Flying;
 class APlayerPawn_Static;
 class AStarmark_GameState;
+class UStarmark_GameInstance;
 class AStarmark_PlayerState;
 
 
@@ -32,6 +33,9 @@ public:
 // ------------------------- References
 	UPROPERTY()
 	AStarmark_GameState* GameStateReference;
+
+	UPROPERTY()
+	UStarmark_GameInstance* HostPlayerGameInstanceReference;
 
 // ------------------------- Data Tables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -85,6 +89,7 @@ public:
 
 // ------------------------- Local Helper Functions
 	void SetGameStateLocalReference();
+	UStarmark_GameInstance* GetHostPlayerGameStateInstanceReference();
 
 // ------------------------- Battle
 	// Pre-Battle Setup Functions

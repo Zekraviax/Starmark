@@ -35,7 +35,7 @@ bool UStarmark_GameInstance::DoesSessionExist()
 	IOnlineSessionPtr Sessions = IOnlineSubsystem::Get()->GetSessionInterface();
 	FOnlineSessionSettings* CurrentSettings = Sessions->GetSessionSettings(GameSessionName);
 
-	return (CurrentSettings == NULL);
+	return (CurrentSettings != NULL);
 }
 
 

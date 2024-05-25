@@ -30,6 +30,15 @@ void AStarmark_GameMode::SetGameStateLocalReference()
 }
 
 
+UStarmark_GameInstance* AStarmark_GameMode::GetHostPlayerGameStateInstanceReference()
+{
+	// To-Do: Figure out how to always get the host player
+	//if (!HostPlayerGameInstanceReference) {}
+
+	return HostPlayerGameInstanceReference;
+}
+
+
 // ------------------------- Battle
 void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 {
@@ -99,13 +108,25 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 
 	// When all players have joined, begin running the setupfunctions needed to start the battle
 	// To-Do: Add a step here to check if a session even exists before trying to fetch the number of connections
-	ExpectedPlayers = Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->GetCurrentSessionSettings()->NumPrivateConnections + 
-		Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->GetCurrentSessionSettings()->NumPublicConnections;
+
+	if (!HostPlayerGameInstanceReference) {
+		// This should only be done once per battle
+		HostPlayerGameInstanceReference = Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance());
+	}
+
+	// We need to check if a multiplayer session exists or not here
+	// If a session does not exist, then its safe to assume the player is in a singleplayer battle
+	if (HostPlayerGameInstanceReference->DoesSessionExist()) {
+		ExpectedPlayers = HostPlayerGameInstanceReference->GetCurrentSessionSettings()->NumPrivateConnections + HostPlayerGameInstanceReference->GetCurrentSessionSettings()->NumPublicConnections;
+
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected private connections: %d"), HostPlayerGameInstanceReference->GetCurrentSessionSettings()->NumPrivateConnections);
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected public connections: %d"), HostPlayerGameInstanceReference->GetCurrentSessionSettings()->NumPublicConnections);
+	} else {
+		ExpectedPlayers = 1;
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Total PlayerControllerReferences in array: %d"), PlayerControllerReferences.Num());
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected players: %d"), ExpectedPlayers);
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected private connections: %d"), Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->GetCurrentSessionSettings()->NumPrivateConnections);
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected public connections: %d"), Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance())->GetCurrentSessionSettings()->NumPublicConnections);
 
 	// Tell the player to have their data passed from their GameInstance to the server
 	// by setting it on the PlayerState
@@ -271,11 +292,17 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		SetGameStateLocalReference();
 	}
 	
-	for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Is %s ready to start the battle? %s"), *PlayerControllerReferences[i]->PlayerDataStruct.PlayerName, PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle ? TEXT("true") : TEXT("false"));
+	if (ExpectedPlayers > 1) {
+		//for (int i = 0; i < GameStateReference->ReturnAllBattlePlayerControllers().Num(); i++) {
+		for (APlayerController_Battle* Controller : GameStateReference->ReturnAllBattlePlayerControllers()) {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Is %s ready to start the battle? %s"), *Controller->PlayerDataStruct.PlayerName, Controller->IsReadyToStartMultiplayerBattle ? TEXT("true") : TEXT("false"));
 
-		ReadyStatuses.Add(PlayerControllerReferences[i]->IsReadyToStartMultiplayerBattle);
+			ReadyStatuses.Add(Controller->IsReadyToStartMultiplayerBattle);
+		}
+	} else {
+		ReadyStatuses.Add(true);
 	}
+
 
 	if (ReadyStatuses.Contains(false) || ReadyStatuses.Num() < ExpectedPlayers) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Can't assemble turn order text because not all players are ready"));
@@ -285,9 +312,9 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Set the turn order for the avatars"));
 
 		// Only set the turn order once all entities are spawned
-		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-			GameStateReference->SetTurnOrder(PlayerControllerReferences);
-		}
+		//for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+		GameStateReference->SetTurnOrder(PlayerControllerReferences);
+		//}
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Fill the DynamicAvatarTurnOrder array for the first time"));
 		GameStateReference->DynamicAvatarTurnOrder = GameStateReference->AvatarTurnOrder;

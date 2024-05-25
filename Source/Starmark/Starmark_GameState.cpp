@@ -57,6 +57,8 @@ TArray<APlayerController_Battle*> AStarmark_GameState::ReturnAllBattlePlayerCont
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), ActorsArray);
 
 	for (AActor* Actor : ActorsArray) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / ReturnAllBattlePlayerControllers / Found actor: %s"), *Actor->GetName());
+
 		if (Cast<APlayerController_Battle>(Actor)) {
 			ControllersArray.Add(Cast<APlayerController_Battle>(Actor));
 		}
@@ -88,6 +90,8 @@ void AStarmark_GameState::SetTurnOrder_Implementation(const TArray<APlayerContro
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundActors);
 	TArray<ACharacter_Pathfinder*> SlowedAvatars, SlowedAvatarsInTurnOrder;
+
+	// To-Do: Remove the PlayerControllers variable from the function declaration
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Empty the AvatarTurnOrder array"));
 	AvatarTurnOrder.Empty();
