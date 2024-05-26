@@ -16,7 +16,9 @@ public class Starmark : ModuleRules
             "InputCore",
             "AIModule",
             "OnlineSubsystem",
-            "OnlineSubsystemUtils" });
+            "OnlineSubsystemUtils",
+            "Json",
+            "JsonUtilities"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

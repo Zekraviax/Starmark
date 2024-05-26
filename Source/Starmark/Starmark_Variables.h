@@ -627,6 +627,11 @@ struct STARMARK_API FAvatar_Struct : public FFastArraySerializerItem
 // ------------------------- Battle
 	// Instinct Abilities
 
+	// Currently used for testing combat only
+	// May or may not be deleted in the future
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	FAvatar_BaseStats SpeciesMinimumStats;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	FAvatar_BaseStats BattleStats;
 
@@ -685,11 +690,9 @@ struct STARMARK_API FAvatar_Struct : public FFastArraySerializerItem
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
 	USkeletalMesh* SkeletalMesh;
 
-	// Dyable Material
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
 	UMaterial* DyableMaterial;
 
-	// Colours
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
 	TArray<FLinearColor> DefaultColours;
 

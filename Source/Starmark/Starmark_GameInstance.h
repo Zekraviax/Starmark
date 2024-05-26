@@ -4,6 +4,7 @@
 #include "Engine/GameInstance.h"
 
 #include "Interfaces/OnlineSessionInterface.h"
+#include "SaveData_DeveloperSettings.h"
 #include "Starmark_Variables.h"
 #include "Player_SaveData.h"
 
@@ -29,6 +30,10 @@ public:
 // Variables
 // --------------------------------------------------
 
+// ------------------------- Global Helper Variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USaveData_DeveloperSettings* DevSettingsSaveFile;
+
 // ------------------------- Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FPlayer_Data PlayerData;
@@ -52,6 +57,12 @@ public:
 // ------------------------- Global Helper Functions
 	bool DoesSessionExist();
 	FOnlineSessionSettings* GetCurrentSessionSettings();
+
+	UFUNCTION(BlueprintCallable)
+	USaveData_DeveloperSettings* GetDevSettingsSaveFile();
+
+	UFUNCTION(BlueprintCallable)
+	FDeveloperSettingsAsStruct GetDevSettingsStruct();
 
 // ------------------------- Player
 	UFUNCTION(BlueprintCallable)

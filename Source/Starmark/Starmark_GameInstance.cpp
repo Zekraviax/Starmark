@@ -47,6 +47,33 @@ FOnlineSessionSettings* UStarmark_GameInstance::GetCurrentSessionSettings()
 	return CurrentSettings;
 }
 
+USaveData_DeveloperSettings* UStarmark_GameInstance::GetDevSettingsSaveFile()
+{
+	// Try to retrieve the save file
+	// If the local reference null, then try to load the save file
+	// If the save file cannot be found, create one
+	
+	if (!DevSettingsSaveFile) {
+		DevSettingsSaveFile = Cast<USaveData_DeveloperSettings>(UGameplayStatics::LoadGameFromSlot("DeveloperSettings", 0));
+
+		if (!DevSettingsSaveFile) {
+			DevSettingsSaveFile = Cast<USaveData_DeveloperSettings>(UGameplayStatics::CreateSaveGameObject(USaveData_DeveloperSettings::StaticClass()));
+			UGameplayStatics::SaveGameToSlot(DevSettingsSaveFile, "DeveloperSettings", 0);
+			DevSettingsSaveFile->SavePlayerDataToJson();
+		}
+	}
+
+	return DevSettingsSaveFile;
+}
+
+
+FDeveloperSettingsAsStruct UStarmark_GameInstance::GetDevSettingsStruct()
+{
+	GetDevSettingsSaveFile()->LoadPlayerDataFromJson();
+
+	return GetDevSettingsSaveFile()->DevSettingsStruct;
+}
+
 
 // ------------------------- Player
 void UStarmark_GameInstance::LoadProfile(FString ProfileName)

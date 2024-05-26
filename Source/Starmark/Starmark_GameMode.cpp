@@ -317,16 +317,16 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Assign UniqueIDs and CurrentSelectedAvatars"));
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Update each avatars' attacks in their controllers' HUD"));
-		for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
+		for (APlayerController_Battle* Controller : GameStateReference->ReturnAllBattlePlayerControllers()) {
 			for (int j = 0; j < GameStateReference->AvatarTurnOrder.Num(); j++) {
-				if (PlayerControllerReferences[i]->MultiplayerUniqueID == GameStateReference->AvatarTurnOrder[j]->MultiplayerControllerUniqueID) {
-					PlayerControllerReferences[i]->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[j];
-					PlayerControllerReferences[i]->Client_UpdateAttacksInHud(GameStateReference->AvatarTurnOrder[j]);
+				if (Controller->MultiplayerUniqueID == GameStateReference->AvatarTurnOrder[j]->MultiplayerControllerUniqueID) {
+					Controller->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[j];
+					Controller->Client_UpdateAttacksInHud(GameStateReference->AvatarTurnOrder[j]);
 					break;
 				}
 			}
 
-			PlayerControllerReferences[i]->SetBattleWidgetVariables();
+			Controller->SetBattleWidgetVariables();
 		}
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Update all avatar decals"));
@@ -342,6 +342,27 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 		// Initial HUD set up for all players
 		GameStateReference->ShowHideAllPlayerHuds();
+	}
+
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / End normal functionality. Begin dev tests..."));
+
+	// Currently, this function only sets an avatar's base stats to their minimum, since there is currently no way for them to scale upwards
+	if (GetHostPlayerGameStateInstanceReference()->GetDevSettingsStruct().RecalculateAvatarStatsAtStartOfBattle) {
+		TArray<AActor*> Avatars;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
+
+		for (int i = 0; i < Avatars.Num(); i++) {
+			ACharacter_Pathfinder* FoundActor = Cast<ACharacter_Pathfinder>(Avatars[i]);
+			FoundActor->AvatarData.BattleStats = FoundActor->AvatarData.SpeciesMinimumStats;
+
+			FoundActor->AvatarData.CurrentHealthPoints = FoundActor->AvatarData.SpeciesMinimumStats.MaximumHealthPoints;
+			FoundActor->AvatarData.CurrentManaPoints = FoundActor->AvatarData.SpeciesMinimumStats.MaximumManaPoints;
+		}
+	}
+
+	for (APlayerController_Battle* Controller : GameStateReference->ReturnAllBattlePlayerControllers()) {
+		Controller->SetBattleWidgetVariables();
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / End function"));
@@ -435,28 +456,28 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 	// Get attacks
 	for (int i = 0; i < AvatarData.CurrentAttacks.Num(); i++) {
 		NewAvatarActor->CurrentKnownAttacks.Add(AvatarData.CurrentAttacks[i]);
-
-		// Sent data to Clients
-		// To-Do: Consider sending avatar data to the GameState? Maybe because all players will want to see all avatar data
-		NewAvatarActor->Client_GetAvatarData(NewAvatarActor->AvatarData);
-
-		// To-Do: Check if this is redundant, considering it's set in the MultiplayerBeginBattle function
-		// Verifying that this is redundant
-		// This isn't redundant??
-		PlayerController->CurrentSelectedAvatar = NewAvatarActor;
-
-		// Set spawn tile to be occupied
-		// ---- Can be refactored into a function ---- //
-		if (Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Contains(E_GridTile_Properties::E_None)) {
-			Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Remove(E_GridTile_Properties::E_None);
-		}
-
-		Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Add(E_GridTile_Properties::E_Occupied);
-		Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->OccupyingActor = NewAvatarActor;
-		// ---- End refactorable code chunk ---- //
-
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Avatar spawned"));
 	}
+
+	// Sent data to Clients
+	// To-Do: Consider sending avatar data to the GameState? Maybe because all players will want to see all avatar data
+	NewAvatarActor->Client_GetAvatarData(NewAvatarActor->AvatarData);
+
+	// To-Do: Check if this is redundant, considering it's set in the MultiplayerBeginBattle function
+	// Verifying that this is redundant
+	// This isn't redundant??
+	PlayerController->CurrentSelectedAvatar = NewAvatarActor;
+
+	// Set spawn tile to be occupied
+	// ---- Can be refactored into a function ---- //
+	if (Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Contains(E_GridTile_Properties::E_None)) {
+		Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Remove(E_GridTile_Properties::E_None);
+	}
+
+	Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Add(E_GridTile_Properties::E_Occupied);
+	Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->OccupyingActor = NewAvatarActor;
+	// ---- End refactorable code chunk ---- //
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Avatar spawned"));
 
 	PlayerController->OnRepNotify_CurrentSelectedAvatar();
 
@@ -528,7 +549,7 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	}
 
 	if (Attacker->CurrentSelectedAttack.AttackCategory == EBattle_AttackCategories::Offensive && Attacker->CurrentSelectedAttack.BasePower > 0) {
-		// Calculate Damage, one step at a time
+		// Calculate damage, one step at a time
 		CurrentDamage = FMath::RandRange(1.f, 5.f);
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Damage calculation started with random float: %s"), *FString::SanitizeFloat(CurrentDamage));
 
