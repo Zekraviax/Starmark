@@ -223,6 +223,9 @@ void AStarmark_PlayerState::Server_AddHealth_Implementation(ACharacter_Pathfinde
 // To-Do: Move this to the GameMode
 void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Pathfinder* Avatar)
 {
+	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_AvatarDefeated(Avatar);
+
+	/*
 	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
 	APlayerController_Battle* PlayerControllerReference = Avatar->PlayerControllerReference;
 
@@ -265,6 +268,7 @@ void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Path
 	}
 
 	Avatar->Destroy();
+	*/
 }
 
 

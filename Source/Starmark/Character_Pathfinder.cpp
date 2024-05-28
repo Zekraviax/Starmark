@@ -223,8 +223,6 @@ void ACharacter_Pathfinder::GetValidActorsForAttack_Implementation(FAvatar_Attac
 
 		break;
 	case(EBattle_AttackPatterns::FourWayCross):
-		//ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y));
-
 		for (int i = 1; i <= Attack.BaseRange; i++) {
 			ValidVectors.Add(FVector2D(this->GetActorLocation().X + (200 * i), this->GetActorLocation().Y));
 			ValidVectors.Add(FVector2D(this->GetActorLocation().X - (200 * i), this->GetActorLocation().Y));

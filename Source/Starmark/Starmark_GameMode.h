@@ -39,9 +39,6 @@ public:
 
 // ------------------------- Data Tables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UDataTable* AvatarDataTable;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AttacksDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -125,6 +122,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_LaunchAttack(ACharacter_Pathfinder* Attacker, AActor* Target, const FString& AttackName);
+
+	UFUNCTION(Server, Reliable)
+	void Server_AvatarDefeated(ACharacter_Pathfinder* Avatar);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void EndOfBattle();

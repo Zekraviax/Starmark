@@ -52,7 +52,6 @@ USaveData_DeveloperSettings* UStarmark_GameInstance::GetDevSettingsSaveFile()
 	// Try to retrieve the save file
 	// If the local reference null, then try to load the save file
 	// If the save file cannot be found, create one
-	
 	if (!DevSettingsSaveFile) {
 		DevSettingsSaveFile = Cast<USaveData_DeveloperSettings>(UGameplayStatics::LoadGameFromSlot("DeveloperSettings", 0));
 

@@ -31,8 +31,19 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Global Helper Variables
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	USaveData_DeveloperSettings* DevSettingsSaveFile;
+
+	// Putting DataTables here so they're all in one place
+	// and easy to access
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* AvatarsDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* SimpleAttacksDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* ComplexAttacksDataTable;
 
 // ------------------------- Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -47,7 +58,7 @@ public:
 	UPROPERTY()
 	FString CurrentProfileName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	UPlayer_SaveData* CurrentProfileReference;
 
 
@@ -57,6 +68,7 @@ public:
 // ------------------------- Global Helper Functions
 	bool DoesSessionExist();
 	FOnlineSessionSettings* GetCurrentSessionSettings();
+	UDataTable* GetAvatarsDataTable() { return AvatarsDataTable; }
 
 	UFUNCTION(BlueprintCallable)
 	USaveData_DeveloperSettings* GetDevSettingsSaveFile();
