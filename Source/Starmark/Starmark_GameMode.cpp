@@ -569,11 +569,12 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 		CurrentDamage = CurrentDamage * Attacker->CurrentSelectedAttack.BasePower;
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Damage multiplied by attack base power: %s"), *FString::SanitizeFloat(CurrentDamage));
 
-		CurrentDamage = CurrentDamage * (Attacker->AvatarData.BattleStats.Attack / Cast<ACharacter_Pathfinder>(Target)->AvatarData.BattleStats.Defence);
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Damage factored with attackers' and defenders' stats: %s"), *FString::SanitizeFloat(CurrentDamage));
+		CurrentDamage = CurrentDamage * FMath::DivideAndRoundUp(Attacker->AvatarData.BattleStats.Attack, TargetAsCharacter->AvatarData.BattleStats.Defence);
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Attackers' divided by defenders' stats: %s"), *FString::SanitizeFloat(FMath::DivideAndRoundUp(Attacker->AvatarData.BattleStats.Attack, TargetAsCharacter->AvatarData.BattleStats.Defence)));
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Damage multiplied with attackers' divided by defenders' stats: %s"), *FString::SanitizeFloat(CurrentDamage));
 
-		CurrentDamage = CurrentDamage / 50;
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Damage divided down: %s"), *FString::SanitizeFloat(CurrentDamage));
+		CurrentDamage = FMath::CeilToFloat(CurrentDamage / 50);
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Damage divided by 50: %s"), *FString::SanitizeFloat(CurrentDamage));
 
 		if (CurrentDamage < 1.f) {
 			CurrentDamage += 1.f;
