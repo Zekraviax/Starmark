@@ -153,6 +153,9 @@ public:
 	void Server_SetReadyToStartMultiplayerBattle();
 
 	UFUNCTION(BlueprintCallable)
+	void OnMouseCursorBeginHover(ACharacter_Pathfinder* ActingAvatar, TArray<FVector> PathBetweenAvatars);
+
+	UFUNCTION(BlueprintCallable)
 	void OnPrimaryClick(AActor* ClickedActor, TArray<AActor*> ValidTargetsArray);
 
 	UFUNCTION(BlueprintNativeEvent)

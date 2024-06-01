@@ -236,6 +236,21 @@ void APlayerController_Battle::Server_GetDataFromProfile_Implementation()
 }
 
 
+void APlayerController_Battle::OnMouseCursorBeginHover(ACharacter_Pathfinder* ActingAvatar, TArray<FVector> PathBetweenAvatars)
+{
+	TArray<AActor*> FoundAvatars, FoundGridTiles;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundAvatars);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTiles);
+
+	// Step 1: Draw a path to the entity
+	// (done in blueprints)
+
+	// Step 2: Find all avatars and grid tiles that are both on the drawn path and valid targets
+	for (int i = 0; i < CurrentSelectedAvatar->ValidAttackTargetsArray.Num(); i++) {
+	}
+}
+
+
 void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActor*> ValidTargetsArray)
 {
 	TArray<AActor*> AttackEffectsLibraries;
