@@ -134,10 +134,6 @@ public:
 	void Client_GetTurnOrderText(const FString& NewTurnOrderText);
 	void Local_GetTurnOrderText(const FString& NewTurnOrderText) const;
 
-	UFUNCTION(Server, Reliable)
-	void Server_GetEntitiesInTurnOrder(const int& IndexOfCurrentlyActingEntity);
-	void Local_GetEntitiesInTurnOrder(TArray<ACharacter_Pathfinder*> TurnOrderArray);
-
 	UFUNCTION(Client, Reliable)
 	void Client_GetAvatarImagesInDynamicTurnOrder();
 

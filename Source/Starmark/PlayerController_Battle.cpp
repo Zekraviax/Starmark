@@ -145,24 +145,6 @@ void APlayerController_Battle::Local_GetTurnOrderText(const FString& NewTurnOrde
 }
 
 
-void APlayerController_Battle::Server_GetEntitiesInTurnOrder_Implementation(const int& IndexOfCurrentlyActingEntity)
-{
-	TArray<ACharacter_Pathfinder*> TurnOrderArray = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrder;
-
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetEntitiesInTurnOrder_Implementation / TurnOrderArray length: %d"), TurnOrderArray.Num());
-	Local_GetEntitiesInTurnOrder(TurnOrderArray);
-}
-
-
-void APlayerController_Battle::Local_GetEntitiesInTurnOrder(TArray<ACharacter_Pathfinder*> TurnOrderArray)
-{
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Local_GetEntitiesInTurnOrder / Locally received entities in turn order"));
-	
-	//BattleWidgetReference->SetUiIconsInTurnOrder(TurnOrderArray);
-	//Client_GetAvatarImagesInDynamicTurnOrder();
-}
-
-
 void APlayerController_Battle::Client_GetAvatarImagesInDynamicTurnOrder_Implementation()
 {
 	TArray<UTexture2D*> InDynamicAvatarTurnOrderImages = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrderImages;
@@ -181,7 +163,6 @@ void APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar_Implementation(
 
 	// (Default) Player party initialization
 	if (PlayerStateReference) {
-		//PlayerStateReference->PlayerState_BeginBattle();
 		// Avatar initialization
 		if (CurrentSelectedAvatar) {
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / OnRepNotify_CurrentSelectedAvatar / Run the CurrentSelectedAvatar begin play function"));
@@ -238,15 +219,37 @@ void APlayerController_Battle::Server_GetDataFromProfile_Implementation()
 
 void APlayerController_Battle::OnMouseCursorBeginHover(ACharacter_Pathfinder* ActingAvatar, TArray<FVector> PathBetweenAvatars)
 {
-	TArray<AActor*> FoundAvatars, FoundGridTiles;
+	TArray<AActor*> FoundAvatars, FoundGridTiles, FoundWorldGrids;
+	AActor_WorldGrid* WorldGridLocalReference;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundAvatars);
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTiles);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), FoundWorldGrids);
+
+	WorldGridLocalReference = Cast<AActor_WorldGrid>(FoundWorldGrids[0]);
 
 	// Step 1: Draw a path to the entity
 	// (done in blueprints)
 
 	// Step 2: Find all avatars and grid tiles that are both on the drawn path and valid targets
-	for (int i = 0; i < CurrentSelectedAvatar->ValidAttackTargetsArray.Num(); i++) {
+	for (int i = 0; i < PathBetweenAvatars.Num(); i++) {
+		// Get the tile at these coordinates first and set the highlight properties
+		FIntPoint GridCoordinates = WorldGridLocalReference->ConvertGridTileLocationToCoordinates(PathBetweenAvatars[i]);
+		AActor_GridTile* FoundGridTileLocalReference = WorldGridLocalReference->GetWorldTileActorAtGridCoordinates(GridCoordinates);
+
+		if (FoundGridTileLocalReference) {
+			if (ActingAvatar->ValidAttackTargetsArray.Contains(FoundGridTileLocalReference)) {
+				FoundGridTileLocalReference->SetTileHighlightProperties(true, false, E_GridTile_ColourChangeContext::WithinAttackRange);
+			} else {
+				FoundGridTileLocalReference->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
+			}
+		}
+
+		// Check if there's an avatar at these coordinates
+		ACharacter_Pathfinder* FoundAvatarLocalReference = WorldGridLocalReference->FindCharacterAtCoordinates(GridCoordinates);
+		if (FoundAvatarLocalReference) {
+			FoundAvatars.Remove(FoundAvatarLocalReference);
+			FoundAvatarLocalReference->SetActorHighlightProperties(true, E_GridTile_ColourChangeContext::WithinAttackRange);
+		}
 	}
 }
 
