@@ -258,6 +258,9 @@ void APlayerController_Battle::OnMouseCursorBeginHover(ACharacter_Pathfinder* Ac
 
 	// To-Do: Step 3
 	// De-highlight all avatars that aren't on the path
+	for (int a = 0; a < FoundAvatars.Num(); a++) {
+		Cast<ACharacter_Pathfinder>(FoundAvatars[a])->SetActorHighlightProperties(false, E_GridTile_ColourChangeContext::Normal);
+	}
 }
 
 

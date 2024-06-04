@@ -65,7 +65,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UMaterialInterface*> RandomlyChosenMaterialsArray;
 
-	// Occupying Actor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AActor* OccupyingActor;
 
