@@ -3,6 +3,7 @@
 #include "Actor_GridTile.h"
 #include "Character_Pathfinder.h"
 #include "Kismet/GameplayStatics.h"
+#include "PlayerController_Battle.h"
 
 
 bool AActor_WorldGrid::IsValidGridCell(const FIntPoint& Location) const
@@ -24,8 +25,16 @@ bool AActor_WorldGrid::IsGridCellWalkable(const FIntPoint& Location) const
 		return false;
 	}
 
-	if (GridTile->Properties.Contains(E_GridTile_Properties::E_Occupied) ||
-		GridTile->Properties.Contains(E_GridTile_Properties::E_Wall)) {
+	// We override this check if the player is checking for valid attack targets
+	if (GridTile->Properties.Contains(E_GridTile_Properties::E_Occupied)) {
+		if (Cast<APlayerController_Battle>(GetWorld()->GetFirstPlayerController())->PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack) {
+			return true;
+		}
+
+		return false;
+	}
+
+	if (GridTile->Properties.Contains(E_GridTile_Properties::E_Wall)) {
 		return false;
 	}
 
