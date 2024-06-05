@@ -219,48 +219,24 @@ void APlayerController_Battle::Server_GetDataFromProfile_Implementation()
 
 void APlayerController_Battle::OnMouseCursorBeginHover(ACharacter_Pathfinder* ActingAvatar, TArray<FVector> PathBetweenAvatars)
 {
-	TArray<AActor*> FoundAvatars, FoundGridTiles, FoundWorldGrids;
-	AActor_WorldGrid* WorldGridLocalReference;
+	TArray<AActor*> FoundAvatars, FoundGridTiles;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundAvatars);
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTiles);
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), FoundWorldGrids);
 
-	WorldGridLocalReference = Cast<AActor_WorldGrid>(FoundWorldGrids[0]);
-
-	// Step 1: Draw a path to the entity
-	// (done in blueprints)
-
-	// Step 2: Find all avatars and grid tiles that are both on the drawn path and valid targets
-	for (int w = 0; w < FoundGridTiles.Num(); w++) {
-		// Get the tile at these coordinates first and set the highlight properties
-		FIntPoint GridCoordinates = WorldGridLocalReference->ConvertGridTileLocationToCoordinates(FoundGridTiles[w]->GetActorLocation());
-		AActor_GridTile* FoundGridTileLocalReference = WorldGridLocalReference->GetWorldTileActorAtGridCoordinates(GridCoordinates);
-
-		if (PathBetweenAvatars.Contains(FoundGridTiles[w]->GetActorLocation())) {
-			if (ActingAvatar->ValidAttackTargetsArray.Contains(FoundGridTiles[w])) {
-				Cast<AActor_GridTile>(FoundGridTiles[w])->SetTileHighlightProperties(true, false, E_GridTile_ColourChangeContext::WithinAttackRange);
-			} 
-			//else {
-				//Cast<AActor_GridTile>(FoundGridTiles[w])->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
-			//}
-		} else {
-			Cast<AActor_GridTile>(FoundGridTiles[w])->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
-		}
-
-		// Check if there's an avatar at these coordinates
-		ACharacter_Pathfinder* FoundAvatarLocalReference = WorldGridLocalReference->FindCharacterAtCoordinates(GridCoordinates);
-		if (FoundAvatarLocalReference) {
-			FoundAvatars.Remove(FoundAvatarLocalReference);
-			FoundAvatarLocalReference->SetActorHighlightProperties(true, E_GridTile_ColourChangeContext::WithinAttackRange);
-		}
-
-		//for (int i = 0; i < PathBetweenAvatars.Num(); i++) { break; }
+	for (int x = 0; x < FoundAvatars.Num(); x++) {
+		Cast<ACharacter_Pathfinder>(FoundAvatars[x])->SetActorHighlightProperties(false, E_GridTile_ColourChangeContext::Normal);
 	}
 
-	// To-Do: Step 3
-	// De-highlight all avatars that aren't on the path
-	for (int a = 0; a < FoundAvatars.Num(); a++) {
-		Cast<ACharacter_Pathfinder>(FoundAvatars[a])->SetActorHighlightProperties(false, E_GridTile_ColourChangeContext::Normal);
+	for (int y = 0; y < FoundGridTiles.Num(); y++) {
+		Cast<AActor_GridTile>(FoundGridTiles[y])->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
+	}
+
+	for (auto Actor : ActingAvatar->ValidAttackTargetsArray) {
+		if (Cast<ACharacter_Pathfinder>(Actor)) {
+			Cast<ACharacter_Pathfinder>(Actor)->SetActorHighlightProperties(true, E_GridTile_ColourChangeContext::WithinAttackRange);
+		} else if (Cast<AActor_GridTile>(Actor)) {
+			Cast<AActor_GridTile>(Actor)->SetTileHighlightProperties(true, false, E_GridTile_ColourChangeContext::WithinAttackRange);
+		}
 	}
 }
 
