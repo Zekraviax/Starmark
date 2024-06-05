@@ -231,14 +231,20 @@ void ACharacter_Pathfinder::GetValidActorsForAttack_Implementation(FAvatar_Attac
 		}
 
 		for (AActor* GridTile : GridTilesArray) {
-			if (ValidVectors.Contains(FVector2D(GridTile->GetActorLocation().X, GridTile->GetActorLocation().Y))) {
-				ValidAttackTargetsArray.Add(GridTile);
+			for (FVector2D Vector : ValidVectors) {
+				if (FMath::IsNearlyEqual(Vector.X, GridTile->GetActorLocation().X, 2) && FMath::IsNearlyEqual(Vector.Y, GridTile->GetActorLocation().Y, 2)) {
+					ValidAttackTargetsArray.AddUnique(GridTile);
+					break;
+				}
 			}
 		}
 
 		for (AActor* Entity : EntitiesArray) {
-			if (ValidVectors.Contains(FVector2D(Entity->GetActorLocation().X, Entity->GetActorLocation().Y))) {
-				ValidAttackTargetsArray.Add(Entity);
+			for (FVector2D Vector : ValidVectors) {
+				if (FMath::IsNearlyEqual(Vector.X, Entity->GetActorLocation().X, 2) && FMath::IsNearlyEqual(Vector.Y, Entity->GetActorLocation().Y, 2)) {
+					ValidAttackTargetsArray.AddUnique(Entity);
+					break;
+				}
 			}
 		}
 
