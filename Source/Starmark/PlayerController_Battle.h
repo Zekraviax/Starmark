@@ -158,6 +158,12 @@ public:
 	void SendMoveCommandToServer(FVector MoveLocation);
 
 	UFUNCTION()
+	void BeginSelectingTileForReserveAvatar();
+
+	UFUNCTION()
+	void SummonReserveAvatarAtSelectedTile();
+
+	UFUNCTION()
 	void DelayedEndTurn();
 
 	UFUNCTION(BlueprintCallable, Client, Reliable)

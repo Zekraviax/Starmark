@@ -313,6 +313,22 @@ void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActo
 }
 
 
+void APlayerController_Battle::BeginSelectingTileForReserveAvatar()
+{
+	// Update the UI
+
+	// Highlight each valid tile that the player can summon an avatar to
+
+	// Set the players' mouse mode to select a tile
+}
+
+
+void APlayerController_Battle::SummonReserveAvatarAtSelectedTile()
+{
+	// Tell the server to physically create the avatar BP, then end the turn
+}
+
+
 void APlayerController_Battle::DelayedEndTurn()
 {
 	GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar, 1.f, false);
