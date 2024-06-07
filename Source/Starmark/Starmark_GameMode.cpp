@@ -255,18 +255,17 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 
 		int SpawnedAvatarCount = 0;
 
-		for (int j = CurrentPlayerTeam.Num() - 1; j >= 0; j--) {
+		for (int j = 0; j < CurrentPlayerTeam.Num(); j++) {
 			if (CurrentPlayerTeam.IsValidIndex(j)) {
 				if (CurrentPlayerTeam[j].AvatarName != "Default") {
 					if (SpawnedAvatarCount < 4) {
-						Server_SpawnAvatar(PlayerControllerReference, (j + 1), CurrentPlayerTeam[j]);
+						Server_SpawnAvatar(PlayerControllerReference, (SpawnedAvatarCount + 1), CurrentPlayerTeam[j]);
 						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Spawn avatar %s for player %s"), *CurrentPlayerTeam[j].AvatarName, *PlayerControllerReference->PlayerName);
 
 						SpawnedAvatarCount++;
 					}
-				}
-				else {
-					Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam.RemoveAt(j);
+				} else {
+					//Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam.RemoveAt(j);
 					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Remove invalid member %d from PlayerState_PlayerParty"), j);
 				}
 			}
@@ -428,6 +427,9 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 	// Find all tiles that can spawn avatars in multiplayer battles
 	for (int i = 0; i < FoundGridTileActors.Num(); i++) {
 		const AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(FoundGridTileActors[i]);
+
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Tile AvatarSlotNumber: %d. AssignedMultiplayerUniqueID: %d"), GridTileReference->AvatarSlotNumber, GridTileReference->AssignedMultiplayerUniqueID);
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Avatar IndexInPlayerParty: %d. PlayerController UniqueID: %d"), IndexInPlayerParty, PlayerController->MultiplayerUniqueID);
 
 		if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_PlayerAvatarSpawn) &&
 			GridTileReference->AvatarSlotNumber == IndexInPlayerParty &&
@@ -679,10 +681,10 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 			// Check for any avatars in reserve
 			bool FoundAvatarInReserve = false;
 
-			for (int i = 0; i < Avatar->PlayerControllerReference->PlayerParty.Num(); i++) {
-				FAvatar_Struct FoundAvatar = Avatar->PlayerControllerReference->PlayerParty[i];
+			for (int i = 0; i < PlayerControllerReference->PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
+				FAvatar_Struct FoundAvatar = PlayerControllerReference->PlayerDataStruct.CurrentAvatarTeam[i];
 				if (FoundAvatar.CurrentHealthPoints > 0 && FoundAvatar.IndexInPlayerLibrary >= 4) {
-					// To-Do: Allow the player to summon an Avatar from reserve as a special action.
+					// To-Do: Allow the player to summon an Avatar from reserve as a special action here.
 					FoundAvatarInReserve = true;
 
 					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackEffectsOnTarget.Empty();

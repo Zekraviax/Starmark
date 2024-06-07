@@ -292,7 +292,8 @@ void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActo
 				if (Cast<ACharacter_Pathfinder>(ClickedActor)) {
 					if (CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(ClickedActor)) {
 						CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(ClickedActor));
-						Client_SendEndOfTurnCommandToServer();
+						// Don't automatically end the turn just because someone attacked
+						//Client_SendEndOfTurnCommandToServer();
 					}
 				}
 			} else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::AttackAllTargets) {
@@ -305,7 +306,7 @@ void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActo
 					}
 				}
 
-				Client_SendEndOfTurnCommandToServer();
+				//Client_SendEndOfTurnCommandToServer();
 			}
 		}
 	}
