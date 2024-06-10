@@ -24,6 +24,7 @@ enum class E_PlayerCharacter_ClickModes : uint8
 	E_SelectCharacterToControl,
 	E_SelectCharacterToAttack,
 	E_MoveCharacter,
+	SummonAvatar
 };
 
 
@@ -160,8 +161,8 @@ public:
 	UFUNCTION()
 	void BeginSelectingTileForReserveAvatar();
 
-	UFUNCTION()
-	void SummonReserveAvatarAtSelectedTile();
+	UFUNCTION(BlueprintCallable)
+	void SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile);
 
 	UFUNCTION()
 	void DelayedEndTurn();

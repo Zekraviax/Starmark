@@ -315,17 +315,18 @@ void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActo
 
 void APlayerController_Battle::BeginSelectingTileForReserveAvatar()
 {
-	// Update the UI
+	// Update the UI (which UI?)
 
 	// Highlight each valid tile that the player can summon an avatar to
 
 	// Set the players' mouse mode to select a tile
+	PlayerClickMode = E_PlayerCharacter_ClickModes::SummonAvatar;
 }
 
 
-void APlayerController_Battle::SummonReserveAvatarAtSelectedTile()
+void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile)
 {
-	// Tell the server to physically create the avatar BP, then end the turn
+	// Tell the server to physically create the avatar actor, then end the turn
 }
 
 
