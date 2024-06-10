@@ -44,6 +44,7 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 			//UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Player's current avatar: %s"), *PlayerControllerReference->CurrentSelectedAvatar->AvatarData.Nickname);
 			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Number of attacks passed: %d"), Attacks.Num());
 
+			// Set attacks
 			for (int j = 0; j < Attacks.Num(); j++) {
 				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Create UI button for current avatar's attack %s at index: %d"), *PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[j].Name, j);
 				
@@ -52,11 +53,22 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 						AttackButtonsArray[i]->AttackNameText->SetText(FText::FromString(Attacks[j].Name.ToUpper()));
 						AttackButtonsArray[i]->PlayerControllerReference = PlayerControllerReference;
 						AttackButtonsArray[i]->AvatarAttackIndex = j;
-
 						AttackButtonsArray[i]->SetVisibility(ESlateVisibility::Visible);
 					}
 				}
 			}
+
+			// Set summon
+			if (AttackButtonsArray.IsValidIndex(5)) {
+				AttackButtonsArray[5]->AttackNameText->SetText(FText::FromString("RESERVE"));
+				AttackButtonsArray[5]->PlayerControllerReference = PlayerControllerReference;
+				AttackButtonsArray[5]->AvatarAttackIndex = -5;
+				AttackButtonsArray[5]->SetVisibility(ESlateVisibility::Visible);
+			} else {
+				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / The Summon Reserve Avatar button isn't valid?"));
+			}
+			
+
 		} else {
 			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Players current avatar isn't valid!"));
 		}

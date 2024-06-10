@@ -318,6 +318,20 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar()
 	// Update the UI (which UI?)
 
 	// Highlight each valid tile that the player can summon an avatar to
+	TArray<AActor*> GridTilesArray;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+
+	for (AActor* TileAsActor : GridTilesArray) {
+		AActor_GridTile* Tile = Cast<AActor_GridTile>(TileAsActor);
+
+		if (Tile) {
+			if (Tile->AssignedMultiplayerUniqueID == MultiplayerUniqueID) {
+				Tile->SetTileHighlightProperties(true, false, E_GridTile_ColourChangeContext::WithinAttackRange);
+			} else {
+				Tile->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
+			}
+		}
+	}
 
 	// Set the players' mouse mode to select a tile
 	PlayerClickMode = E_PlayerCharacter_ClickModes::SummonAvatar;
@@ -327,6 +341,7 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar()
 void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile)
 {
 	// Tell the server to physically create the avatar actor, then end the turn
+	// OR, swap the data of the pre-existing avatar actor with the reserve avatar
 }
 
 
