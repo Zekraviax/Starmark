@@ -347,10 +347,31 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatar
 }
 
 
-void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile)
+void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile, ACharacter_Pathfinder* SelectedAvatar)
 {
 	// Tell the server to physically create the avatar actor, then end the turn
 	// OR, swap the data of the pre-existing avatar actor with the reserve avatar
+
+	FAvatar_Struct ReserveAvatarData = PlayerDataStruct.CurrentAvatarTeam[4];
+	int ReserveAvatarIndexInParty = ReserveAvatarData.IndexInPlayerLibrary;
+	ACharacter_Pathfinder* FoundAvatar;
+
+	if (!SelectedAvatar) {
+		TArray<AActor*> WorldGridArray;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
+		AActor_WorldGrid* FoundWorldGrid = Cast<AActor_WorldGrid>(WorldGridArray[0]);
+		FIntPoint ActorCoordinates = FoundWorldGrid->ConvertGridTileLocationToCoordinates(Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar()->GetActorLocation());
+
+		FoundAvatar = FoundWorldGrid->FindCharacterAtCoordinates(ActorCoordinates);
+	} else {
+		FoundAvatar = SelectedAvatar;
+	}
+
+	// Swap indices
+	ReserveAvatarData.IndexInPlayerLibrary = FoundAvatar->AvatarData.IndexInPlayerLibrary;
+	FoundAvatar->AvatarData.IndexInPlayerLibrary = ReserveAvatarIndexInParty;
+
+	FoundAvatar->AvatarData = ReserveAvatarData;
 }
 
 

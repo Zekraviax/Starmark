@@ -162,7 +162,7 @@ public:
 	void BeginSelectingTileForReserveAvatar(bool DidAvatarDie);
 
 	UFUNCTION(BlueprintCallable)
-	void SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile);
+	void SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile, ACharacter_Pathfinder* SelectedAvatar);
 
 	UFUNCTION()
 	void DelayedEndTurn();
