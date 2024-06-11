@@ -159,7 +159,7 @@ public:
 	void SendMoveCommandToServer(FVector MoveLocation);
 
 	UFUNCTION()
-	void BeginSelectingTileForReserveAvatar();
+	void BeginSelectingTileForReserveAvatar(bool DidAvatarDie);
 
 	UFUNCTION(BlueprintCallable)
 	void SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile);

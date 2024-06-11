@@ -313,25 +313,34 @@ void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActo
 }
 
 
-void APlayerController_Battle::BeginSelectingTileForReserveAvatar()
+void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatarDie)
 {
 	// Update the UI (which UI?)
 
-	// Highlight each valid tile that the player can summon an avatar to
-	TArray<AActor*> GridTilesArray;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+	if (DidAvatarDie) {
+		// Highlight each valid tile that the player can summon an avatar to
+		TArray<AActor*> GridTilesArray;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
 
-	for (AActor* TileAsActor : GridTilesArray) {
-		AActor_GridTile* Tile = Cast<AActor_GridTile>(TileAsActor);
+		for (AActor* TileAsActor : GridTilesArray) {
+			AActor_GridTile* Tile = Cast<AActor_GridTile>(TileAsActor);
 
-		if (Tile) {
-			if (Tile->AssignedMultiplayerUniqueID == MultiplayerUniqueID) {
-				Tile->SetTileHighlightProperties(true, false, E_GridTile_ColourChangeContext::WithinAttackRange);
-			} else {
-				Tile->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
+			if (Tile) {
+				if (Tile->AssignedMultiplayerUniqueID == MultiplayerUniqueID) {
+					Tile->SetTileHighlightProperties(true, false, E_GridTile_ColourChangeContext::WithinAttackRange);
+				} else {
+					Tile->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
+				}
 			}
 		}
+	} else {
+		// Get the currently acting avatar to swap data
+		//TArray<AActor*> WorldGridArray;
+		//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
+
+		//Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar()->GetActorLocation();
 	}
+
 
 	// Set the players' mouse mode to select a tile
 	PlayerClickMode = E_PlayerCharacter_ClickModes::SummonAvatar;
