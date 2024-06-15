@@ -372,6 +372,14 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 	FoundAvatar->AvatarData.IndexInPlayerLibrary = ReserveAvatarIndexInParty;
 
 	FoundAvatar->AvatarData = ReserveAvatarData;
+	
+	// New avatar's attacks
+	FoundAvatar->CurrentKnownAttacks.Empty();
+	for (int i = 0; i < ReserveAvatarData.CurrentAttacks.Num(); i++) {
+		FoundAvatar->CurrentKnownAttacks.Add(ReserveAvatarData.CurrentAttacks[i]);
+	}
+
+	// Set health and mana
 }
 
 
