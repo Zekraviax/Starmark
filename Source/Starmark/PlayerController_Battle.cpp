@@ -344,6 +344,14 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatar
 
 	// Set the players' mouse mode to select a tile
 	PlayerClickMode = E_PlayerCharacter_ClickModes::SummonAvatar;
+
+	// testing this
+	TArray<AActor*> WorldGridArray;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
+
+	TArray<FVector> OutPositionsArray;
+	TArray<AActor_GridTile*> OutGridTilesArray;
+	Cast<AActor_WorldGrid>(WorldGridArray[0])->DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector(0, 600, 0), FVector(600, 600, 0), OutGridTilesArray, OutPositionsArray);
 }
 
 

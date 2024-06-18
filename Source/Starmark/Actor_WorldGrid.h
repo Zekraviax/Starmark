@@ -64,5 +64,5 @@ public:
 
 	// Shouldn't be used with any curving paths (yet)
 	UFUNCTION()
-	void DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector PositionOne, FVector PositionTwo, const TArray<AActor_GridTile*>& OutGridTilesInPath, const TArray<FVector>& OutPositionsInPath);
+	void DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector PositionOne, FVector PositionTwo, TArray<AActor_GridTile*> &OutGridTilesInPath, TArray<FVector> &OutPositionsInPath);
 };

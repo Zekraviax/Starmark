@@ -157,7 +157,7 @@ ACharacter_Pathfinder* AActor_WorldGrid::FindCharacterAtCoordinates(FIntPoint Gr
 }
 
 
-void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector PositionOne, FVector PositionTwo, const TArray<AActor_GridTile*>& OutGridTilesInPath, const TArray<FVector>& OutPositionsInPath)
+void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector PositionOne, FVector PositionTwo, TArray<AActor_GridTile*> &OutGridTilesInPath, TArray<FVector> &OutPositionsInPath)
 {
 	//TArray<FVector> CoordinatesOnPath;
 	//TArray<AActor_GridTile*> GridTilesOnPath;
@@ -165,19 +165,19 @@ void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVec
 
 	// Step zero, add the first co-ordinates to the returned arrays
 	OutPositionsInPath.Add(PositionOne);
-	GridTilesOnPath.Add(FindGridTileAtCoordinates(PositionOne)); // testing this
+	//GridTilesOnPath.Add(FindGridTileAtCoordinates(PositionOne)); // testing this
 
 	// First, figure out which direction to draw the path
-	if (PositionOne.X > PositionTwo.X && PositionOne.Y > PositionTwo.Y) {
+	if (PositionOne.X >= PositionTwo.X && PositionOne.Y >= PositionTwo.Y) {
 		// South
 		Direction = "South";
-	} else if (PositionOne.X < PositionTwo.X && PositionOne.Y < PositionTwo.Y) {
+	} else if (PositionOne.X <= PositionTwo.X && PositionOne.Y <= PositionTwo.Y) {
 		// North
 		Direction = "North";
-	} else if (PositionOne.X > PositionTwo.X && PositionOne.Y < PositionTwo.Y) {
+	} else if (PositionOne.X >= PositionTwo.X && PositionOne.Y <= PositionTwo.Y) {
 		// West
 		Direction = "West";
-	} else if (PositionOne.X < PositionTwo.X && PositionOne.Y > PositionTwo.Y) {
+	} else if (PositionOne.X <= PositionTwo.X && PositionOne.Y >= PositionTwo.Y) {
 		// East
 		Direction = "East";
 	}
@@ -191,26 +191,26 @@ void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVec
 
 	// Then subtract X co-ordinates from Y co-ordinates
 	// Then get the absolute value of the results
-	int XLength = (X1 - X2) * 1;
-	int YLength = (Y1 - Y2) * 1;
+	int XLength = abs(X1 - X2);
+	int YLength = abs(Y1 - Y2);
 
 	// Then add them together
-	int TotalLength = (XLength + YLength) * 1;
+	int TotalLength = XLength + YLength;
 
 	// Third, get tiles in the path one at a time
 	for (int i = 0; i < TotalLength; i++) {
 		if (Direction == "North") {
-			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X + 200, OutPositionsInPath[i].Y));
-			OutGridTilesInPath.Add(FindGridTileAtCoordinates(OutPositionsInPath[i + 1]));  // testing this
+			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X + 200, OutPositionsInPath[i].Y, 0));
+			//OutGridTilesInPath.Add(FindGridTileAtCoordinates(OutPositionsInPath[i + 1]));  // testing this
 		} else if (Direction == "South") {
-			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X - 200, OutPositionsInPath[i].Y));
+			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X - 200, OutPositionsInPath[i].Y, 0));
 		} else if (Direction == "East") {
-			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X, OutPositionsInPath[i].Y + 200));
+			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X, OutPositionsInPath[i].Y + 200, 0));
 		} else if (Direction == "West") {
-			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X, OutPositionsInPath[i].Y - 200));
+			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X, OutPositionsInPath[i].Y - 200, 0));
 		}
 	}
 
-	// Finally, add the last co-ordinate to the array
-	OutPositionsInPath.Add(PositionTwo);
+	// Finally, add the last co-ordinate to the array?
+	//OutPositionsInPath.Add(PositionTwo);
 }
