@@ -41,7 +41,7 @@ bool AActor_WorldGrid::IsGridCellWalkable(const FIntPoint& Location) const
 	return true;
 }
 
-// This function is to be used for pathing only
+// This function is to be used for pathing only (why??)
 // For other world position to tile coordinate conversions, use the other function:
 // ConvertGridTileLocationToCoordinates
 bool AActor_WorldGrid::ConvertWorldTileToGridCoordinates(const FVector& WorldPos, FIntPoint& GridPos) const
@@ -80,13 +80,15 @@ FVector AActor_WorldGrid::ConvertGridCoordinatesToWorldTile(const FIntPoint& Gri
 }
 
 
+// To-Do: Check if this function is used anywhere
+// (GitHub.dev couldn't find any references)
 FVector AActor_WorldGrid::ConvertGridCoordinatesToWorldTileCenter(const FIntPoint& GridCoordinates) const
 {
 	return ConvertGridCoordinatesToWorldTile(GridCoordinates) + (FVector(GridTileSize.Y, GridTileSize.X, 0) * 0.5f);
 }
 
 
-// This function is to be used for pathing only
+// This function is to be used for pathing only (why??)
 // For other world position to tile coordinate conversions, use the other function:
 // FindGridTileAtCoordinates
 AActor_GridTile* AActor_WorldGrid::GetWorldTileActorAtGridCoordinates(const FIntPoint& GridCoordinates) const
@@ -152,4 +154,63 @@ ACharacter_Pathfinder* AActor_WorldGrid::FindCharacterAtCoordinates(FIntPoint Gr
 	}
 
 	return ReturnCharacter;
+}
+
+
+void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector PositionOne, FVector PositionTwo, const TArray<AActor_GridTile*>& OutGridTilesInPath, const TArray<FVector>& OutPositionsInPath)
+{
+	//TArray<FVector> CoordinatesOnPath;
+	//TArray<AActor_GridTile*> GridTilesOnPath;
+	FString Direction = "";
+
+	// Step zero, add the first co-ordinates to the returned arrays
+	OutPositionsInPath.Add(PositionOne);
+	GridTilesOnPath.Add(FindGridTileAtCoordinates(PositionOne)); // testing this
+
+	// First, figure out which direction to draw the path
+	if (PositionOne.X > PositionTwo.X && PositionOne.Y > PositionTwo.Y) {
+		// South
+		Direction = "South";
+	} else if (PositionOne.X < PositionTwo.X && PositionOne.Y < PositionTwo.Y) {
+		// North
+		Direction = "North";
+	} else if (PositionOne.X > PositionTwo.X && PositionOne.Y < PositionTwo.Y) {
+		// West
+		Direction = "West";
+	} else if (PositionOne.X < PositionTwo.X && PositionOne.Y > PositionTwo.Y) {
+		// East
+		Direction = "East";
+	}
+
+	// Second, calculate the length of the path
+	// Get each co-ordinate and divide by 200
+	int X1 = FMath::RoundHalfFromZero(PositionOne.X / 200); 
+	int X2 = FMath::RoundHalfFromZero(PositionTwo.X / 200); 
+	int Y1 = FMath::RoundHalfFromZero(PositionOne.Y / 200); 
+	int Y2 = FMath::RoundHalfFromZero(PositionTwo.Y / 200); 
+
+	// Then subtract X co-ordinates from Y co-ordinates
+	// Then get the absolute value of the results
+	int XLength = (X1 - X2) * 1;
+	int YLength = (Y1 - Y2) * 1;
+
+	// Then add them together
+	int TotalLength = (XLength + YLength) * 1;
+
+	// Third, get tiles in the path one at a time
+	for (int i = 0; i < TotalLength; i++) {
+		if (Direction == "North") {
+			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X + 200, OutPositionsInPath[i].Y));
+			OutGridTilesInPath.Add(FindGridTileAtCoordinates(OutPositionsInPath[i + 1]));  // testing this
+		} else if (Direction == "South") {
+			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X - 200, OutPositionsInPath[i].Y));
+		} else if (Direction == "East") {
+			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X, OutPositionsInPath[i].Y + 200));
+		} else if (Direction == "West") {
+			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X, OutPositionsInPath[i].Y - 200));
+		}
+	}
+
+	// Finally, add the last co-ordinate to the array
+	OutPositionsInPath.Add(PositionTwo);
 }

@@ -61,4 +61,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	ACharacter_Pathfinder* FindCharacterAtCoordinates(FIntPoint GridCoordinates);
+
+	// Shouldn't be used with any curving paths (yet)
+	UFUNCTION()
+	void DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector PositionOne, FVector PositionTwo, const TArray<AActor_GridTile*>& OutGridTilesInPath, const TArray<FVector>& OutPositionsInPath);
 };
