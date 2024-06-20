@@ -345,6 +345,8 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatar
 	// Set the players' mouse mode to select a tile
 	PlayerClickMode = E_PlayerCharacter_ClickModes::SummonAvatar;
 
+	// Highlight the currently acting avatar (if it isn't the end of the turn and an avatar was defeated)
+
 	// testing this
 	TArray<AActor*> WorldGridArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);

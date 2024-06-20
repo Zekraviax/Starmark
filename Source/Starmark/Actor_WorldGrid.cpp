@@ -197,11 +197,11 @@ void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVec
 	// Then add them together
 	int TotalLength = XLength + YLength;
 
-	// Third, get tiles in the path one at a time
+	// Finally, get tiles and positions in the path one at a time
 	for (int i = 0; i < TotalLength; i++) {
 		if (Direction == "North") {
 			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X + 200, OutPositionsInPath[i].Y, 0));
-			//OutGridTilesInPath.Add(FindGridTileAtCoordinates(OutPositionsInPath[i + 1]));  // testing this
+			OutGridTilesInPath.Add(FindGridTileAtCoordinates(ConvertGridTileLocationToCoordinates(OutPositionsInPath[i + 1])));  // testing this
 		} else if (Direction == "South") {
 			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X - 200, OutPositionsInPath[i].Y, 0));
 		} else if (Direction == "East") {
@@ -210,7 +210,4 @@ void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVec
 			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X, OutPositionsInPath[i].Y - 200, 0));
 		}
 	}
-
-	// Finally, add the last co-ordinate to the array?
-	//OutPositionsInPath.Add(PositionTwo);
 }
