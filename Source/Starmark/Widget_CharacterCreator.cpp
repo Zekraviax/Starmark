@@ -21,8 +21,8 @@ void UWidget_CharacterCreator::OnWidgetOpened()
 	}
 
 	if (Birthday_Month_DropDown->IsValidLowLevel()) {
-		for (int m = 1; m <= 12; m++) {
-			Birthday_Month_DropDown->AddOption(FString::FromInt(m));
+		for (int month = 1; month <= 12; month++) {
+			Birthday_Month_DropDown->AddOption(FString::FromInt(month));
 		}
 
 		Birthday_Month_DropDown->SetSelectedOption("1");
@@ -244,8 +244,8 @@ void UWidget_CharacterCreator::CalculateMark()
 		MarkNumberAsCharArray.Add(MarkNumberAsString.LeftChop(1));
 		MarkNumberAsCharArray.Add(MarkNumberAsString.RightChop(1));
 
-		for (int n = 0; n < MarkNumberAsCharArray.Num(); n++) {
-			MarkNumberAsIntArray.Add(FCString::Atoi(*MarkNumberAsCharArray[n]));
+		for (int i = 0; i < MarkNumberAsCharArray.Num(); i++) {
+			MarkNumberAsIntArray.Add(FCString::Atoi(*MarkNumberAsCharArray[i]));
 		}
 
 		MarkNumberAsInt = 0;

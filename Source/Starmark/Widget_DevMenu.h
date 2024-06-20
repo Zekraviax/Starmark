@@ -13,6 +13,7 @@
 
 #include "Widget_DevMenu.generated.h"
 
+
 // Forward Declarations
 class AActor_CharacterTest;
 class AActor_MorphTargetTest;
@@ -97,7 +98,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Face Customizer")
 	UMaterial* RoundEyes_Material;
 
-
+	
 // Function
 // --------------------------------------------------
 
@@ -112,17 +113,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnColourDropdownChanged(E_DevMenu_ColourChangeDropdowns Dropdown);
 
-// ------------------------- Type Calculator
-	UFUNCTION(BlueprintCallable)
-	void CalculateTypeStrengthsAndWeaknesses();
-
 // ------------------------- Face Customizer
 	UFUNCTION(BlueprintCallable)
 	void OnFaceChanged(AActor_MorphTargetTest* MorphTargetTestCharacter);
 
 	UFUNCTION(BlueprintCallable)
 	void OnEyesChanged(AActor_MorphTargetTest* MorphTargetTestCharacter);
-
-	UFUNCTION(BlueprintCallable)
-	void OnEyeColourChanged(AActor_MorphTargetTest* MorphTargetTestCharacter);
 };

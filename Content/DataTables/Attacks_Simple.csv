@@ -1,0 +1,6 @@
+---,Name,Type,BasePower,BaseRange,ManaCost,AttackPattern,AttackTargetsInRange,AttackEffectsOnTarget
+Punch,"Punch","E_Fire","10","1","0","Circle","E_AttackAllTargets",""
+Kick,"Kick","E_Earth","10","1","0","Circle","E_AttackAllTargets",""
+Scratch,"Scratch","E_Water","10","1","1","Circle","E_AttackAllTargets",""
+Swipe,"Swipe","E_Dark","10","1","1","Circle","E_AttackAllTargets",""
+Peck,"Peck","E_Air","1","1","1","Circle","E_AttackAllTargets",""

@@ -3,13 +3,20 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
+#include "Components/Button.h"
+#include "Components/GridPanel.h"
+#include "Components/HorizontalBox.h"
+#include "Components/Image.h"
+#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
+#include "Components/VerticalBox.h"
 
 #include "Widget_HUD_Battle.generated.h"
 
+
 // Forward Declarations
-class APlayerController_Base;
+class APlayerController_Battle;
 class UWidgetComponent_AvatarBattleData;
 
 
@@ -27,32 +34,83 @@ public:
 	UTextBlock* TurnOrderTextBlock;
 
 	UPROPERTY(meta = (BindWidget))
-	UUniformGridPanel* AvatarAttacksBox;
+	UTextBlock* TurnAndRoundCounterTextBlock;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
+	UGridPanel* CommandsBox;
+
+	UPROPERTY(meta = (BindWidget))
+	UGridPanel* AvatarAttacksBox;
+
+	UPROPERTY(meta = (BindWidget))
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataWidget;
 
+	UPROPERTY(meta = (BindWidget))
+	UButton* SwitchCommandButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* EndTurnCommand;
+
+	UPROPERTY(meta = (BindWidget))
+	UVerticalBox* CombatLog;
+
+	UPROPERTY(meta = (BindWidget))
+	UHorizontalBox* EntityIconsInTurnOrder;
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* CurrentEntityIcon;
+
+	UPROPERTY(meta = (BindWidget))
+	UProgressBar* HealthBar;
+
+	UPROPERTY(meta = (BindWidget))
+	UProgressBar* ManaBar;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* HealthText;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* ManaText;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* CurrentEntityNameText;
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* CommandsBackgroundImage;
+
 // ------------------------- References
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	APlayerController_Base* PlayerControllerReference;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	APlayerController_Battle* PlayerControllerReference;
 
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
-	void UpdateAvatarAttacksComponents();
+	void UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStruct> Attacks);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateTurnOrderText(FString NewText);
+
+	UFUNCTION()
+	void SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages);
+
+	UFUNCTION()
+	void SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity);
+
+	UFUNCTION(BlueprintCallable)
+	void ResetBattleHud();
+	
+	UFUNCTION()
+	void ShowHideActingPlayerHudElements(bool ShowElements);
 
 // ------------------------- Commands
 	UFUNCTION(BlueprintCallable)
 	void MoveCommand();
 
 	UFUNCTION(BlueprintCallable)
-	void AttackCommand();
-
-	UFUNCTION(BlueprintCallable)
-	void SwitchCommand();
-
-	UFUNCTION(BlueprintCallable)
 	void EndCommand();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackCommand();
 };

@@ -3,18 +3,20 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
-#include "Components/StaticMeshComponent.h"
+#include "Components/BoxComponent.h"
+#include "Starmark_Variables.h"
 
 #include "Actor_GridTile.generated.h"
 
 
 // Unique Enums
 UENUM(BlueprintType)
-enum class E_GridTile_TraversalProperties : uint8
+enum class E_GridTile_ColourChangeContext : uint8
 {
-	E_None,
-	E_Wall,
-	E_Occupied,
+	Normal,
+	OnMouseHover,
+	OnMouseHoverTileUnreachable,
+	WithinAttackRange,
 };
 
 
@@ -26,6 +28,7 @@ class STARMARK_API AActor_GridTile : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AActor_GridTile();
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -39,24 +42,55 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Floor;
 
-// ------------------------- Grid Tile
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid Tile")
-	TArray<E_GridTile_TraversalProperties> TraversalProperties;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* TileHighlightPlane;
 
-	// Occupying Actor
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UBoxComponent* GridTileHitbox;
+
+// ------------------------- Tile
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<E_GridTile_Properties> Properties;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInterface* TileHighlightMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInstanceDynamic* DynamicMaterial;
+
+	// List of randomly chosen base baterials
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UMaterialInterface*> RandomlyChosenMaterialsArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AActor* OccupyingActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int MovementCost = 1;
+
+// ------------------------- Multiplayer
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AssignedMultiplayerUniqueID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AvatarSlotNumber;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool ChangeColourOnMouseHover = true;
 
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable)
-	void OnMouseBeginOver();
+	void UpdateGridTileState();
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateGridTileState();
+	void OnMouseBeginHover(ACharacter_Pathfinder* CurrentAvatar);
+
+	UFUNCTION(BlueprintCallable)
+	void SetTileHighlightProperties(bool IsVisible, bool ShouldChangeColourOnMouseOver, E_GridTile_ColourChangeContext ColourChangeContext);
 };

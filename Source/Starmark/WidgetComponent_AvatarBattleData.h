@@ -3,10 +3,14 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
+#include "Components/HorizontalBox.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Starmark_Variables.h"
+#include "WidgetComponent_StatusEffectIcon.h"
 
 #include "WidgetComponent_AvatarBattleData.generated.h"
+
 
 // Forward Declarations
 class ACharacter_Pathfinder;
@@ -28,11 +32,6 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
-	// Health Bar
-	// Mana Bar
-	// Name
-	// Types
-	// Level
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UProgressBar* HealthBar;
 
@@ -40,16 +39,13 @@ public:
 	UProgressBar* ManaBar;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UProgressBar* TileMovesBar;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* AvatarText;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UTextBlock* NicknameText;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UTextBlock* LevelText;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UTextBlock* TypesText;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	//UTextBlock* TypesText;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* HealthDisplayText;
@@ -57,14 +53,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* ManaDisplayText;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* TileMovesDisplayText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UHorizontalBox* StatusEffectIconsHorizontalBox;
+
+// ------------------------- References
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWidgetComponent_StatusEffectIcon> StatusEffectIcon_Class;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UWidgetComponent_StatusEffectIcon* StatusEffectIcon_Reference;
+
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ACharacter_Pathfinder* LinkedAvatar;
+	FAvatar_Struct LinkedAvatar;
 
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Avatar
-	UFUNCTION()
-	void SetAvatarData();
+	UFUNCTION(BlueprintCallable)
+	void UpdateAvatarData(FAvatar_Struct NewLinkedAvatar);
+
+	UFUNCTION(BlueprintCallable)
+	void GetAvatarStatusEffects(TArray<FAvatar_StatusEffect> StatusEffectsArray);
 };
