@@ -313,6 +313,30 @@ void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActo
 }
 
 
+void APlayerController_Battle::HighlightSpecificAvatarsAndTiles(TArray<ACharacter_Pathfinder*> Avatars, TArray<AActor_GridTile*> Tiles)
+{
+	TArray<AActor*> FoundAvatars, FoundGridTiles;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundAvatars);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTiles);
+
+	for (int x = 0; x < FoundAvatars.Num(); x++) {
+		if (Avatars.Contains(FoundAvatars[x])) {
+			Cast<ACharacter_Pathfinder>(FoundAvatars[x])->SetActorHighlightProperties(true, E_GridTile_ColourChangeContext::WithinAttackRange);
+		} else {
+			Cast<ACharacter_Pathfinder>(FoundAvatars[x])->SetActorHighlightProperties(false, E_GridTile_ColourChangeContext::Normal);
+		}
+	}
+
+	for (int y = 0; y < FoundGridTiles.Num(); y++) {
+		if (Tiles.Contains(FoundGridTiles[y])) {
+			Cast<AActor_GridTile>(FoundGridTiles[y])->SetTileHighlightProperties(true, false, E_GridTile_ColourChangeContext::WithinAttackRange);
+		} else {
+			Cast<AActor_GridTile>(FoundGridTiles[y])->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
+		}
+	}
+}
+
+
 void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatarDie)
 {
 	// Update the UI (which UI?)
@@ -345,15 +369,19 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatar
 	// Set the players' mouse mode to select a tile
 	PlayerClickMode = E_PlayerCharacter_ClickModes::SummonAvatar;
 
-	// Highlight the currently acting avatar (if it isn't the end of the turn and an avatar was defeated)
+	// Highlight the currently acting avatar if it isn't the end of the turn and an avatar was defeated
+	// Otherwise, highlight each valid tile that the player can summon avatars to
+	TArray<AActor*> WorldGridArray;
+	TArray<ACharacter_Pathfinder*> Avatars = { CurrentSelectedAvatar };
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
+	AActor_WorldGrid* WorldGridRef = Cast<AActor_WorldGrid>(WorldGridArray[0]);
+	TArray<AActor_GridTile*> TileAtAvatarLocation { WorldGridRef->FindGridTileAtCoordinates(WorldGridRef->ConvertGridTileLocationToCoordinates(CurrentSelectedAvatar->GetActorLocation())) };
+	HighlightSpecificAvatarsAndTiles(Avatars, TileAtAvatarLocation);
 
 	// testing this
-	TArray<AActor*> WorldGridArray;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
-
-	TArray<FVector> OutPositionsArray;
-	TArray<AActor_GridTile*> OutGridTilesArray;
-	Cast<AActor_WorldGrid>(WorldGridArray[0])->DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector(0, 600, 0), FVector(600, 600, 0), OutGridTilesArray, OutPositionsArray);
+	//TArray<FVector> OutPositionsArray;
+	//TArray<AActor_GridTile*> OutGridTilesArray;
+	//Cast<AActor_WorldGrid>(WorldGridArray[0])->DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector(0, 600, 0), FVector(600, 600, 0), OutGridTilesArray, OutPositionsArray);
 }
 
 
@@ -380,7 +408,6 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 	// Swap indices
 	ReserveAvatarData.IndexInPlayerLibrary = FoundAvatar->AvatarData.IndexInPlayerLibrary;
 	FoundAvatar->AvatarData.IndexInPlayerLibrary = ReserveAvatarIndexInParty;
-
 	FoundAvatar->AvatarData = ReserveAvatarData;
 	
 	// New avatar's attacks
@@ -389,7 +416,10 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 		FoundAvatar->CurrentKnownAttacks.Add(ReserveAvatarData.CurrentAttacks[i]);
 	}
 
-	// Set health and mana
+	// Set health and mana?
+
+	PlayerClickMode = E_PlayerCharacter_ClickModes::E_MoveCharacter;
+	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn();
 }
 
 

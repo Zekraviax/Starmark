@@ -158,6 +158,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void SendMoveCommandToServer(FVector MoveLocation);
 
+	// Use this function to un-highlight all other avatars and tiles not passed in either array
+	void HighlightSpecificAvatarsAndTiles(TArray<ACharacter_Pathfinder*> Avatars, TArray< AActor_GridTile*> Tiles);
+
 	UFUNCTION()
 	void BeginSelectingTileForReserveAvatar(bool DidAvatarDie);
 

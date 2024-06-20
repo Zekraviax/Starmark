@@ -390,10 +390,10 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	*/
 
 	// Set all GridTiles to default colours and visibility
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Reset all tile highlights"));
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
-	for (int j = 0; j < GridTilesArray.Num(); j++) {
-		Cast<AActor_GridTile>(GridTilesArray[j])->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
+	TArray<ACharacter_Pathfinder*> Avatars;
+	TArray<AActor_GridTile*> Tiles;
+	for (APlayerController_Battle* Controller : ReturnAllBattlePlayerControllers()) {
+		Controller->HighlightSpecificAvatarsAndTiles(Avatars, Tiles);
 	}
 
 	// Update the dynamic turn order
