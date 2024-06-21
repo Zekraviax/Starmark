@@ -404,7 +404,7 @@ void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 	GameStateReference->CurrentTurnOrderText = NewTurnOrderText;
 
 	for (int i = 0; i < PlayerControllerReferences.Num(); i++) {
-		PlayerControllerReferences[i]->Client_GetTurnOrderText(GameStateReference->CurrentTurnOrderText);
+		PlayerControllerReferences[i]->Local_GetTurnOrderText(GameStateReference->CurrentTurnOrderText);
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Turn order text assembled"));

@@ -75,7 +75,7 @@ void AStarmark_PlayerState::UpdatePlayerData()
 		if (Cast<APlayerController_Battle>(GetPawn()->Controller)) {
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / Server_UpdatePlayerData / Pass message to the Battle controller"));
 
-			Cast<APlayerController_Battle>(GetPawn()->Controller)->Client_SendDataFromPlayerState();
+			Client_UpdatePlayerData();
 		}
 	}
 }

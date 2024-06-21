@@ -81,6 +81,8 @@ void UWidget_PlayerProfileCreator::OnSaveGameButtonPressed()
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
 	PlayerStateReference->PlayerProfileReference = PlayerProfileData;
 
+	// To-Do: Save the player's profile data to a json file
+
 	OnWidgetOpened();
 }
 
