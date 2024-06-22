@@ -5,6 +5,7 @@
 #include "PlayerController_Battle.h"
 #include "PlayerController_Lobby.h"
 #include "Player_SaveData.h"
+#include "SaveData_PlayerProfile.h"
 #include "Starmark_GameMode.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_GameState.h"
@@ -35,6 +36,16 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerTeam);
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerProfileReference);
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerDataStruct);
+}
+
+
+USaveData_PlayerProfile* AStarmark_PlayerState::ReturnPlayerProfileInstance()
+{
+	if (!IsValid(PlayerProfileInstance)) {
+		PlayerProfileInstance = Cast<USaveData_PlayerProfile>(UGameplayStatics::CreateSaveGameObject(USaveData_PlayerProfile::StaticClass()));
+	}
+
+	return PlayerProfileInstance;
 }
 
 
@@ -135,6 +146,11 @@ void AStarmark_PlayerState::SaveToCurrentProfile()
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / SaveToCurrentProfile / Saved the players' profile"));
 	}
+
+	// Save the player profile to JSON
+	ReturnPlayerProfileInstance();
+	PlayerProfileInstance->PlayerProfileStruct.ProfileName = PlayerProfileReference->ProfileName;
+	PlayerProfileInstance->PlayerProfileStruct.PlayerName = PlayerProfileReference->Name;
 }
 
 

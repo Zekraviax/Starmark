@@ -19,7 +19,7 @@ void USaveData_PlayerProfile::SaveProfileDataToJson()
 
 	// Before we save the json file, we need to check if the player's save data folder exists
 	// If it doesn't, we make it first
-	// The directory path should be PlayerDataSaveFilePath + the player character's name
+	// The directory path should be PlayerDataSaveFilePath + the player's profile name
 	IPlatformFile& FileManager = FPlatformFileManager::Get().GetPlatformFile();
 
 	if (!FileManager.DirectoryExists(*PlayerDataSaveFilePath)) {
@@ -31,7 +31,7 @@ void USaveData_PlayerProfile::SaveProfileDataToJson()
 	}
 
 	if (FileManager.DirectoryExists(*PlayerDataSaveFilePath)) {
-		FString FileName = PlayerDataSaveFilePath.Append("ProfileName.json");
+		FString FileName = PlayerDataSaveFilePath.Append(PlayerProfileStruct.ProfileName + ".json");
 		UE_LOG(LogTemp, Warning, TEXT("FilePaths: Player's save data file name: %s"), *FileName);
 
 		if (FFileHelper::SaveStringToFile(PlayerProfileJson, *FileName)) {
