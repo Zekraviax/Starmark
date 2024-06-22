@@ -82,7 +82,6 @@ void UWidget_PlayerProfileCreator::OnSaveGameButtonPressed()
 	PlayerStateReference->PlayerProfileReference = PlayerProfileData;
 
 	// To-Do: Save the player's profile data to a json file
-
 	OnWidgetOpened();
 }
 

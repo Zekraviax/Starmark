@@ -345,10 +345,6 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatar
 		}
 	} else {
 		// Get the currently acting avatar to swap data
-		//TArray<AActor*> WorldGridArray;
-		//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
-
-		//Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar()->GetActorLocation();
 	}
 
 
@@ -357,11 +353,11 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatar
 
 	// Highlight the currently acting avatar if it isn't the end of the turn and an avatar was defeated
 	// Otherwise, highlight each valid tile that the player can summon avatars to
-	TArray<AActor*> WorldGridArray;
 	TArray<ACharacter_Pathfinder*> Avatars = { CurrentSelectedAvatar };
+	TArray<AActor*> WorldGridArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
 	AActor_WorldGrid* WorldGridRef = Cast<AActor_WorldGrid>(WorldGridArray[0]);
-	TArray<AActor_GridTile*> TileAtAvatarLocation { WorldGridRef->FindGridTileAtCoordinates(WorldGridRef->ConvertGridTileLocationToCoordinates(CurrentSelectedAvatar->GetActorLocation())) };
+	TArray<AActor_GridTile*> TileAtAvatarLocation { WorldGridRef->GetAndReturnGridTileAtLocation(WorldGridRef->ConvertGridTileLocationToCoordinates(CurrentSelectedAvatar->GetActorLocation())) };
 	HighlightSpecificAvatarsAndTiles(Avatars, TileAtAvatarLocation);
 }
 
@@ -381,7 +377,7 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 		AActor_WorldGrid* FoundWorldGrid = Cast<AActor_WorldGrid>(WorldGridArray[0]);
 		FIntPoint ActorCoordinates = FoundWorldGrid->ConvertGridTileLocationToCoordinates(Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar()->GetActorLocation());
 
-		FoundAvatar = FoundWorldGrid->FindCharacterAtCoordinates(ActorCoordinates);
+		FoundAvatar = FoundWorldGrid->GetAndReturnCharacterAtLocation(ActorCoordinates);
 	} else {
 		FoundAvatar = SelectedAvatar;
 	}

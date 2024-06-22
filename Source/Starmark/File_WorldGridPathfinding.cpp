@@ -27,7 +27,7 @@ float WorldGridGraphQueryFiler::GetTraversalCost(FIntPoint StartLocation, FIntPo
 {
 	float TraversalCost = 1.f;
 	AActor_GridTile* TileReference = nullptr;
-	TileReference = WorldGridReference->GetWorldTileActorAtGridCoordinates(StartLocation);
+	TileReference = WorldGridReference->GetAndReturnGridTileAtLocation(StartLocation);
 
 	if (TileReference->IsValidLowLevel()) {
 		if (TileReference->Properties.Contains(E_GridTile_Properties::E_StoneRoad)) {
