@@ -12,6 +12,7 @@
 // Forward Declarations
 class ACharacter_Pathfinder;
 class UPlayer_SaveData;
+class USaveData_PlayerProfile;
 class UStarmark_GameInstance;
 class UWidget_HUD_Battle;
 
@@ -35,9 +36,18 @@ public:
 // Variables
 // --------------------------------------------------
 
-// ------------------------- References
-	UPROPERTY()
+// ------------------------- Local Helper Variables
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStarmark_GameInstance* GameInstanceReference;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString PlayerStateContextString;
+
+// ------------------------- Global Helper Variables
+	// To-Do: Make the PlayerState easily accessible wherever data needs to be saved
+	// And make a function in the PlayerState to handle the PlayerProfileInstance not existing
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	USaveData_PlayerProfile* PlayerProfileInstance;
 
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -64,15 +74,16 @@ public:
 	FString PlayerReadyStatus = "Not Ready";
 
 // ------------------------- Battle
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool PreBattleCheck = false;
-
-// ------------------------- Other
-	UPROPERTY()
-	FString PlayerStateContextString;
 
 // Functions
 // --------------------------------------------------
+
+// ------------------------- Local Helper Functions
+
+// ------------------------- Global Helper Functions
+	USaveData_PlayerProfile* ReturnPlayerProfileInstance();
 
 // ------------------------- Player
 	UFUNCTION(BlueprintCallable)
@@ -92,7 +103,7 @@ public:
 	void SendUpdateToMultiplayerLobby();
 
 // ------------------------- Battle
-	UFUNCTION()
+	UFUNCTION() // this function needs the UFUNCTION tag
 	void OnRepNotify_PlayerProfileReferenceUpdated();
 
 	UPlayer_SaveData* ReturnPlayerData();

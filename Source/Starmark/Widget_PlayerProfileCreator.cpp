@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Player_SaveData.h"
 #include "SaveData_PlayerProfilesList.h"
+#include "SaveData_PlayerProfile.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_PlayerState.h"
 #include "Starmark_Variables.h"
@@ -80,6 +81,11 @@ void UWidget_PlayerProfileCreator::OnSaveGameButtonPressed()
 	// Set the newly created profile to be the player's active profile
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
 	PlayerStateReference->PlayerProfileReference = PlayerProfileData;
+
+	// To-Do: Save the player's profile data to a json file
+	PlayerStateReference->ReturnPlayerProfileInstance()->PlayerProfileStruct.PlayerName = PlayerProfileData->Name;
+	PlayerStateReference->ReturnPlayerProfileInstance()->PlayerProfileStruct.ProfileName = PlayerProfileData->ProfileName;
+	PlayerStateReference->ReturnPlayerProfileInstance()->SaveProfileDataToJson();
 
 	OnWidgetOpened();
 }

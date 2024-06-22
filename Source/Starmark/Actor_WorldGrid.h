@@ -35,34 +35,29 @@ public:
 // --------------------------------------------------
 
 // ------------------------- 
-	UFUNCTION()
+	// Why are these marked const? Because they should never modify the variables passed to them.
+	// This is enforced at compilation
 	bool IsValidGridCell(const FIntPoint& Location) const;
-
-	UFUNCTION()
 	bool IsGridCellWalkable(const FIntPoint& Location) const;
 
 	UFUNCTION(BlueprintCallable)
 	bool ConvertWorldTileToGridCoordinates(const FVector& WorldPos, FIntPoint& GridPos) const;
 
 	UFUNCTION(BlueprintCallable)
-	FIntPoint ConvertGridTileLocationToCoordinates(FVector ActorLocation) const;
+	FIntPoint ConvertGridTileLocationToCoordinates(const FVector ActorLocation) const;
 
 	UFUNCTION(BlueprintCallable)
 	FVector ConvertGridCoordinatesToWorldTile(const FIntPoint& GridCoordinates) const;
 
-	UFUNCTION(BlueprintCallable)
-	FVector ConvertGridCoordinatesToWorldTileCenter(const FIntPoint& GridCoordinates) const;
+	// The following functions are examples of overloaded functions
+	// Don't forget that they still have unique signatures, and thus require their own
+	// function definitions in the corresponding .cpp file
+	AActor_GridTile* GetAndReturnGridTileAtLocation(const FIntPoint GridCoordinates) const;
+	AActor_GridTile* GetAndReturnGridTileAtLocation(const FVector Position) const;
 
-	UFUNCTION(BlueprintCallable)
-	AActor_GridTile* GetWorldTileActorAtGridCoordinates(const FIntPoint& GridCoordinates) const;
-
-	UFUNCTION(BlueprintCallable)
-	AActor_GridTile* FindGridTileAtCoordinates(FIntPoint GridCoordinates);
-
-	UFUNCTION(BlueprintCallable)
-	ACharacter_Pathfinder* FindCharacterAtCoordinates(FIntPoint GridCoordinates);
+	ACharacter_Pathfinder* GetAndReturnCharacterAtLocation(const FIntPoint GridCoordinates) const;
+	ACharacter_Pathfinder* GetAndReturnCharacterAtLocation(const FVector Position) const;
 
 	// Shouldn't be used with any curving paths (yet)
-	UFUNCTION()
 	void DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector PositionOne, FVector PositionTwo, TArray<AActor_GridTile*> &OutGridTilesInPath, TArray<FVector> &OutPositionsInPath);
 };

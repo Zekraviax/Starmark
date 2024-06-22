@@ -98,12 +98,6 @@ void APlayerController_Battle::CreateBattleWidget_Implementation()
 }
 
 
-void APlayerController_Battle::Client_SendDataFromPlayerState_Implementation()
-{
-	Cast<AStarmark_PlayerState>(PlayerState)->Client_UpdatePlayerData();
-}
-
-
 void APlayerController_Battle::Local_BattleWidget_AddToScreen()
 {
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Local_BattleWidget_AddToScreen / Battle widget added to viewport"));
@@ -126,14 +120,6 @@ void APlayerController_Battle::SetBattleWidgetVariables()
 		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
 		BattleWidgetReference->AvatarBattleDataWidget->GetAvatarStatusEffects(CurrentSelectedAvatar->CurrentStatusEffectsArray);
 	}
-}
-
-
-void APlayerController_Battle::Client_GetTurnOrderText_Implementation(const FString& NewTurnOrderText)
-{
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_GetTurnOrderText / Client has received turn order text"));
-	
-	Local_GetTurnOrderText(NewTurnOrderText);
 }
 
 
@@ -359,10 +345,6 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatar
 		}
 	} else {
 		// Get the currently acting avatar to swap data
-		//TArray<AActor*> WorldGridArray;
-		//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
-
-		//Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar()->GetActorLocation();
 	}
 
 
@@ -371,17 +353,12 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatar
 
 	// Highlight the currently acting avatar if it isn't the end of the turn and an avatar was defeated
 	// Otherwise, highlight each valid tile that the player can summon avatars to
-	TArray<AActor*> WorldGridArray;
 	TArray<ACharacter_Pathfinder*> Avatars = { CurrentSelectedAvatar };
+	TArray<AActor*> WorldGridArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
 	AActor_WorldGrid* WorldGridRef = Cast<AActor_WorldGrid>(WorldGridArray[0]);
-	TArray<AActor_GridTile*> TileAtAvatarLocation { WorldGridRef->FindGridTileAtCoordinates(WorldGridRef->ConvertGridTileLocationToCoordinates(CurrentSelectedAvatar->GetActorLocation())) };
+	TArray<AActor_GridTile*> TileAtAvatarLocation { WorldGridRef->GetAndReturnGridTileAtLocation(WorldGridRef->ConvertGridTileLocationToCoordinates(CurrentSelectedAvatar->GetActorLocation())) };
 	HighlightSpecificAvatarsAndTiles(Avatars, TileAtAvatarLocation);
-
-	// testing this
-	//TArray<FVector> OutPositionsArray;
-	//TArray<AActor_GridTile*> OutGridTilesArray;
-	//Cast<AActor_WorldGrid>(WorldGridArray[0])->DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector(0, 600, 0), FVector(600, 600, 0), OutGridTilesArray, OutPositionsArray);
 }
 
 
@@ -400,7 +377,7 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 		AActor_WorldGrid* FoundWorldGrid = Cast<AActor_WorldGrid>(WorldGridArray[0]);
 		FIntPoint ActorCoordinates = FoundWorldGrid->ConvertGridTileLocationToCoordinates(Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar()->GetActorLocation());
 
-		FoundAvatar = FoundWorldGrid->FindCharacterAtCoordinates(ActorCoordinates);
+		FoundAvatar = FoundWorldGrid->GetAndReturnCharacterAtLocation(ActorCoordinates);
 	} else {
 		FoundAvatar = SelectedAvatar;
 	}
@@ -426,12 +403,6 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 void APlayerController_Battle::DelayedEndTurn()
 {
 	GetWorld()->GetTimerManager().SetTimer(PlayerStateTimerHandle, this, &APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar, 1.f, false);
-}
-
-
-void APlayerController_Battle::SendMoveCommandToServer_Implementation(FVector MoveLocation)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Send Move Command To Server")));
 }
 
 
@@ -467,10 +438,6 @@ void APlayerController_Battle::Player_OnAvatarTurnChanged_Implementation()
 
 void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation(const ACharacter_Pathfinder* ActingAvatar)
 {
-	//if (Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar()) {
-		//CurrentSelectedAvatar = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar();
-	//}
-
 	if (CurrentSelectedAvatar) {
 		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Passed avatar: %s"), *ActingAvatar->AvatarData.Nickname);
 
@@ -509,11 +476,6 @@ void APlayerController_Battle::GetAvatarUpdateFromServer_Implementation(ACharact
 void APlayerController_Battle::LocalAvatarUpdate(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar)
 {
 	ACharacter_Pathfinder* FoundActor = AvatarReference;
-
-	//if (AvatarUniqueID == MultiplayerUniqueID)
-	//	FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Green;
-	//else
-	//	FoundActor->ActorSelected_DynamicMaterial_Colour = FLinearColor::Red;
 
 	FoundActor->ActorSelectedPlane->SetHiddenInGame(!IsCurrentlyActing);
 	FoundActor->ActorSelectedDynamicMaterialColourUpdate();

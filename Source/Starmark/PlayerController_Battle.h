@@ -116,13 +116,9 @@ public:
 // ------------------------- Helper Functions
 	FPlayer_Data ReturnPlayerData() { return PlayerDataStruct; }
 
-
 // ------------------------- Widgets
 	UFUNCTION(Client, Reliable)
 	void Client_ClearLobbyFromScreen();
-
-	UFUNCTION(Client, Reliable)
-	void Client_SendDataFromPlayerState();
 
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void CreateBattleWidget();
@@ -131,8 +127,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetVariables();
 
-	UFUNCTION(Client, Unreliable)
-	void Client_GetTurnOrderText(const FString& NewTurnOrderText);
 	void Local_GetTurnOrderText(const FString& NewTurnOrderText) const;
 
 	UFUNCTION(Client, Reliable)
@@ -155,19 +149,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryClick(AActor* ClickedActor, TArray<AActor*> ValidTargetsArray);
 
-	UFUNCTION(BlueprintNativeEvent)
-	void SendMoveCommandToServer(FVector MoveLocation);
-
 	// Use this function to un-highlight all other avatars and tiles not passed in either array
 	void HighlightSpecificAvatarsAndTiles(TArray<ACharacter_Pathfinder*> Avatars, TArray< AActor_GridTile*> Tiles);
 
-	UFUNCTION()
 	void BeginSelectingTileForReserveAvatar(bool DidAvatarDie);
 
 	UFUNCTION(BlueprintCallable)
 	void SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile, ACharacter_Pathfinder* SelectedAvatar);
 
-	UFUNCTION()
+	// 
 	void DelayedEndTurn();
 
 	UFUNCTION(BlueprintCallable, Client, Reliable)
@@ -175,7 +165,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();
-
+	
 	// Called at the end of a turn, before the currently acting Avatar changes
 	UFUNCTION(Server, Unreliable)
 	void Player_OnAvatarTurnChanged();
@@ -189,8 +179,6 @@ public:
 // ------------------------- Multiplayer Battle
 	UFUNCTION(Client, Reliable)
 	void GetAvatarUpdateFromServer(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar);
-
-	UFUNCTION()
 	void LocalAvatarUpdate(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar);
 
 	UFUNCTION(Server, Reliable)

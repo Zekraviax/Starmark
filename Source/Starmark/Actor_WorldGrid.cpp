@@ -8,7 +8,7 @@
 
 bool AActor_WorldGrid::IsValidGridCell(const FIntPoint& Location) const
 {
-	AActor_GridTile* FoundATile = GetWorldTileActorAtGridCoordinates(Location);
+	AActor_GridTile* FoundATile = GetAndReturnGridTileAtLocation(Location);
 
 	return (Location.X < MapSize.X && Location.Y < MapSize.Y) && FoundATile;
 }
@@ -17,7 +17,7 @@ bool AActor_WorldGrid::IsValidGridCell(const FIntPoint& Location) const
 bool AActor_WorldGrid::IsGridCellWalkable(const FIntPoint& Location) const
 {
 	// Check if the tile has any properties that make it un-traversable
-	AActor_GridTile* GridTile = GetWorldTileActorAtGridCoordinates(Location);
+	AActor_GridTile* GridTile = GetAndReturnGridTileAtLocation(Location);
 	
 	if (!IsValid(GridTile)) {
 		UE_LOG(LogTemp, Warning, TEXT("AActor_WorldGrid / IsGridCellWalkable / GridTile is not valid"));
@@ -80,40 +80,7 @@ FVector AActor_WorldGrid::ConvertGridCoordinatesToWorldTile(const FIntPoint& Gri
 }
 
 
-// To-Do: Check if this function is used anywhere
-// (GitHub.dev couldn't find any references)
-FVector AActor_WorldGrid::ConvertGridCoordinatesToWorldTileCenter(const FIntPoint& GridCoordinates) const
-{
-	return ConvertGridCoordinatesToWorldTile(GridCoordinates) + (FVector(GridTileSize.Y, GridTileSize.X, 0) * 0.5f);
-}
-
-
-// This function is to be used for pathing only (why??)
-// For other world position to tile coordinate conversions, use the other function:
-// FindGridTileAtCoordinates
-AActor_GridTile* AActor_WorldGrid::GetWorldTileActorAtGridCoordinates(const FIntPoint& GridCoordinates) const
-{
-	AActor_GridTile* TileReference = nullptr;
-	TArray<AActor*> GridTilesArray;
-
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
-	for (int i = 0; i < GridTilesArray.Num(); i++) {
-		AActor_GridTile* FoundTile = Cast<AActor_GridTile>(GridTilesArray[i]);
-		FIntPoint TileGridCoordinates;
-
-		ConvertWorldTileToGridCoordinates(FoundTile->GetActorLocation(), TileGridCoordinates);
-
-		if (GridCoordinates == TileGridCoordinates) {
-			TileReference = FoundTile;
-			return TileReference;
-		}
-	}
-
-	return TileReference;
-}
-
-
-AActor_GridTile* AActor_WorldGrid::FindGridTileAtCoordinates(FIntPoint GridCoordinates)
+AActor_GridTile* AActor_WorldGrid::GetAndReturnGridTileAtLocation(const FIntPoint GridCoordinates) const
 {
 	AActor_GridTile* ReturnTileReference = nullptr;
 	FIntPoint TileGridCoordinates;
@@ -127,7 +94,7 @@ AActor_GridTile* AActor_WorldGrid::FindGridTileAtCoordinates(FIntPoint GridCoord
 
 		if (GridCoordinates == TileGridCoordinates) {
 			ReturnTileReference = FoundTile;
-			return ReturnTileReference;
+			break;
 		}
 	}
 
@@ -135,7 +102,29 @@ AActor_GridTile* AActor_WorldGrid::FindGridTileAtCoordinates(FIntPoint GridCoord
 }
 
 
-ACharacter_Pathfinder* AActor_WorldGrid::FindCharacterAtCoordinates(FIntPoint GridCoordinates)
+AActor_GridTile* AActor_WorldGrid::GetAndReturnGridTileAtLocation(const FVector Position) const
+{
+	AActor_GridTile* ReturnGridTile = nullptr;
+	FVector GridTilePosition;
+	TArray<AActor*> GridTilesArray;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+	for (int i = 0; i < GridTilesArray.Num(); i++) {
+		AActor_GridTile* FoundGridTile = Cast<AActor_GridTile>(GridTilesArray[i]);
+
+		GridTilePosition = FoundGridTile->GetActorLocation();
+
+		if (Position.Equals(GridTilePosition, 1.f)) {
+			ReturnGridTile = FoundGridTile;
+			break;
+		}
+	}
+
+	return ReturnGridTile;
+}
+
+
+ACharacter_Pathfinder* AActor_WorldGrid::GetAndReturnCharacterAtLocation(const FIntPoint GridCoordinates) const
 {
 	ACharacter_Pathfinder* ReturnCharacter = nullptr;
 	FIntPoint ActorGridCoordinates;
@@ -149,7 +138,27 @@ ACharacter_Pathfinder* AActor_WorldGrid::FindCharacterAtCoordinates(FIntPoint Gr
 
 		if (GridCoordinates == ActorGridCoordinates) {
 			ReturnCharacter = FoundCharacter;
-			return ReturnCharacter;
+			break;
+		}
+	}
+
+	return ReturnCharacter;
+}
+
+ACharacter_Pathfinder* AActor_WorldGrid::GetAndReturnCharacterAtLocation(const FVector Position) const 
+{
+	ACharacter_Pathfinder* ReturnCharacter = nullptr;
+	FVector ActorLocation;
+	TArray<AActor*> CharactersArray;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), CharactersArray);
+	for (int i = 0; i < CharactersArray.Num(); i++) {
+		ACharacter_Pathfinder* FoundCharacter = Cast<ACharacter_Pathfinder>(CharactersArray[i]);
+
+		ActorLocation = FoundCharacter->GetActorLocation();
+		if (Position.Equals(ActorLocation, 1.f)) {
+			ReturnCharacter = FoundCharacter;
+			break;
 		}
 	}
 
@@ -165,7 +174,7 @@ void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVec
 
 	// Step zero, add the first co-ordinates to the returned arrays
 	OutPositionsInPath.Add(PositionOne);
-	//GridTilesOnPath.Add(FindGridTileAtCoordinates(PositionOne)); // testing this
+	//GridTilesOnPath.Add(GetAndReturnGridTileAtLocation(PositionOne)); // testing this
 
 	// First, figure out which direction to draw the path
 	if (PositionOne.X >= PositionTwo.X && PositionOne.Y >= PositionTwo.Y) {
@@ -201,7 +210,7 @@ void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVec
 	for (int i = 0; i < TotalLength; i++) {
 		if (Direction == "North") {
 			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X + 200, OutPositionsInPath[i].Y, 0));
-			OutGridTilesInPath.Add(FindGridTileAtCoordinates(ConvertGridTileLocationToCoordinates(OutPositionsInPath[i + 1])));  // testing this
+			OutGridTilesInPath.Add(GetAndReturnGridTileAtLocation(ConvertGridTileLocationToCoordinates(OutPositionsInPath[i + 1])));  // testing this
 		} else if (Direction == "South") {
 			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X - 200, OutPositionsInPath[i].Y, 0));
 		} else if (Direction == "East") {
