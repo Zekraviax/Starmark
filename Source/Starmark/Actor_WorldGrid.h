@@ -49,12 +49,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FVector ConvertGridCoordinatesToWorldTile(const FIntPoint& GridCoordinates) const;
 
-	UFUNCTION(BlueprintCallable)
-	FVector ConvertGridCoordinatesToWorldTileCenter(const FIntPoint& GridCoordinates) const;
-
 	// The following functions are examples of overloaded functions
 	// Don't forget that they still have unique signatures, and thus require their own
-	// function definitions in the corresponding .ccp file
+	// function definitions in the corresponding .cpp file
 	AActor_GridTile* GetAndReturnGridTileAtLocation(const FIntPoint GridCoordinates) const;
 	AActor_GridTile* GetAndReturnGridTileAtLocation(const FVector Position) const;
 

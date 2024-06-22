@@ -108,7 +108,6 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 
 	// When all players have joined, begin running the setupfunctions needed to start the battle
 	// To-Do: Add a step here to check if a session even exists before trying to fetch the number of connections
-
 	if (!HostPlayerGameInstanceReference) {
 		// This should only be done once per battle
 		HostPlayerGameInstanceReference = Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance());
@@ -407,6 +406,7 @@ void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 		PlayerControllerReferences[i]->Local_GetTurnOrderText(GameStateReference->CurrentTurnOrderText);
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Full turn order text: %s"), *NewTurnOrderText);
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Turn order text assembled"));
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / End function"));
 }

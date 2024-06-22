@@ -19,9 +19,8 @@ void USaveData_DeveloperSettings::SavePlayerDataToJson()
 
 	// Before we save the json file, we need to check if the player's save data folder exists
 	// If it doesn't, we make it first
-	// The directory path should be PlayerDataSaveFilePath + the player character's name
+	// The directory path should be PlayerDataSaveFilePath + "DeveloperSettings"
 	IPlatformFile& FileManager = FPlatformFileManager::Get().GetPlatformFile();
-	bool OverwriteFile = true;
 
 	if (!FileManager.DirectoryExists(*PlayerDataSaveFilePath)) {
 		if (FileManager.CreateDirectory(*PlayerDataSaveFilePath)) {

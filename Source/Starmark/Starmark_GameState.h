@@ -89,23 +89,17 @@ public:
 // ------------------------- Local Helper Functions
 
 // ------------------------- Global Helper Functions
-	UFUNCTION()
 	ACharacter_Pathfinder* ReturnCurrentlyActingAvatar();
-
-	UFUNCTION()
 	APlayerController_Battle* ReturnCurrentlyActingPlayer();
-
-	UFUNCTION()
 	TArray<APlayerController_Battle*> ReturnAllBattlePlayerControllers();
 
-	UFUNCTION()
 	void ShowHideAllPlayerHuds();
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SetTurnOrder();
 
-	UFUNCTION()
+	UFUNCTION() // this function needs the UFUNCTION tag
 	void OnRepNotify_DynamicAvatarTurnOrderUpdated();
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)

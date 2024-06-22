@@ -80,14 +80,6 @@ FVector AActor_WorldGrid::ConvertGridCoordinatesToWorldTile(const FIntPoint& Gri
 }
 
 
-// To-Do: Check if this function is used anywhere
-// (GitHub.dev couldn't find any references)
-FVector AActor_WorldGrid::ConvertGridCoordinatesToWorldTileCenter(const FIntPoint& GridCoordinates) const
-{
-	return ConvertGridCoordinatesToWorldTile(GridCoordinates) + (FVector(GridTileSize.Y, GridTileSize.X, 0) * 0.5f);
-}
-
-
 AActor_GridTile* AActor_WorldGrid::GetAndReturnGridTileAtLocation(const FIntPoint GridCoordinates) const
 {
 	AActor_GridTile* ReturnTileReference = nullptr;
