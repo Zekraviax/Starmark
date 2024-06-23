@@ -151,6 +151,8 @@ void AStarmark_PlayerState::SaveToCurrentProfile()
 	ReturnPlayerProfileInstance();
 	PlayerProfileInstance->PlayerProfileStruct.ProfileName = PlayerProfileReference->ProfileName;
 	PlayerProfileInstance->PlayerProfileStruct.PlayerName = PlayerProfileReference->Name;
+	PlayerProfileInstance->PlayerProfileStruct.Team = PlayerProfileReference->CurrentAvatarTeam;
+	ReturnPlayerProfileInstance()->SaveProfileDataToJson();
 }
 
 

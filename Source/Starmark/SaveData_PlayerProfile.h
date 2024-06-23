@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "GameFramework/SaveGame.h"
+#include "Starmark_Variables.h"
 
 #include "SaveData_PlayerProfile.generated.h"
 
@@ -18,6 +19,9 @@ struct STARMARK_API FPlayerProfileAsStruct
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString PlayerName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FAvatar_Struct> Team;
 };
 
 
