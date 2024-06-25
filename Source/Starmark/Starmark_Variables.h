@@ -888,5 +888,8 @@ struct TStructOpsTypeTraits< FWrappedPlayerData > : public TStructOpsTypeTraitsB
 
 class STARMARK_API Starmark_Variables
 {
-
+	// To-Do: Put global variables here, like the save directiory file path
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString PlayerDataSaveFilePath = "C:\\Users\\zekra\\Documents\\UE\\Projects\\Starmark\\Saved\\SaveGames";
 };

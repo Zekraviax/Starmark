@@ -22,6 +22,9 @@ struct STARMARK_API FPlayerProfileAsStruct
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FAvatar_Struct> Team;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FAvatar_Struct> Library;
 };
 
 
