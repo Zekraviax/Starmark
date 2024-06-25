@@ -24,6 +24,7 @@ enum class E_PlayerCharacter_ClickModes : uint8
 	E_SelectCharacterToControl,
 	E_SelectCharacterToAttack,
 	E_MoveCharacter,
+	SelectReserveAvatarToSummon,
 	SummonAvatar
 };
 
@@ -115,6 +116,9 @@ public:
 
 // ------------------------- Helper Functions
 	FPlayer_Data ReturnPlayerData() { return PlayerDataStruct; }
+
+	// Handles all secondary functions when changing click modes (e.g. list of attacks vs list of reserve avatars)
+	void SetPlayerClickMode(E_PlayerCharacter_ClickModes NewClickMode);
 
 // ------------------------- Widgets
 	UFUNCTION(Client, Reliable)

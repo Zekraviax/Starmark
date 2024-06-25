@@ -11,6 +11,7 @@
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/VerticalBox.h"
+#include "Starmark_Variables.h"
 
 #include "Widget_HUD_Battle.generated.h"
 
@@ -88,20 +89,16 @@ public:
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
 	void UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStruct> Attacks);
+	void SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars);
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateTurnOrderText(FString NewText);
 
-	UFUNCTION()
 	void SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages);
-
-	UFUNCTION()
 	void SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity);
 
 	UFUNCTION(BlueprintCallable)
 	void ResetBattleHud();
-	
-	UFUNCTION()
 	void ShowHideActingPlayerHudElements(bool ShowElements);
 
 // ------------------------- Commands

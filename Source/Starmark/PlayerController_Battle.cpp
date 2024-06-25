@@ -98,6 +98,22 @@ void APlayerController_Battle::CreateBattleWidget_Implementation()
 }
 
 
+void APlayerController_Battle::SetPlayerClickMode(E_PlayerCharacter_ClickModes NewClickMode)
+{
+	// First, set the new mode
+	PlayerClickMode = NewClickMode;
+
+	// Then handle secondary functionality
+	if (PlayerClickMode == E_PlayerCharacter_ClickModes::E_Nothing || PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter ||
+		PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack || PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
+		// Make sure that the UI has the list of attack
+		BattleWidgetReference->UpdateAvatarAttacksComponents(CurrentSelectedAvatar->CurrentKnownAttacks);
+	} else if (PlayerClickMode == E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon) {
+		// Replace the list of attacks with the list of reserve avatars
+	}
+}
+
+
 void APlayerController_Battle::Local_BattleWidget_AddToScreen()
 {
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Local_BattleWidget_AddToScreen / Battle widget added to viewport"));

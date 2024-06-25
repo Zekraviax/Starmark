@@ -13,8 +13,6 @@
 // ------------------------- Widget
 void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStruct> Attacks)
 {
-	// To-Do: This function needs to be able to check who's turn it is,
-	// so we can disable the buttons appropriately
 	TArray<UWidgetComponent_AvatarAttack*> AttackButtonsArray;
 
 	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox is valid? %s"), IsValid(AvatarAttacksBox) ? TEXT("true") : TEXT("false"));
@@ -50,10 +48,17 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 				
 				for (int i = 0; i < AttackButtonsArray.Num(); i++) {
 					if (AttackButtonsArray[i]->SlotNumber == j) {
-						AttackButtonsArray[i]->AttackNameText->SetText(FText::FromString(Attacks[j].Name.ToUpper()));
-						AttackButtonsArray[i]->PlayerControllerReference = PlayerControllerReference;
-						AttackButtonsArray[i]->AvatarAttackIndex = j;
 						AttackButtonsArray[i]->SetVisibility(ESlateVisibility::Visible);
+
+						if (Attacks[j].Name != "Default") {
+							AttackButtonsArray[i]->AttackNameText->SetText(FText::FromString(Attacks[j].Name.ToUpper()));
+							AttackButtonsArray[i]->PlayerControllerReference = PlayerControllerReference;
+							AttackButtonsArray[i]->AvatarAttackIndex = j;
+							AttackButtonsArray[i]->SetIsEnabled(true);
+						} else {
+							AttackButtonsArray[i]->AttackNameText->SetText(FText::FromString("-"));
+							AttackButtonsArray[i]->SetIsEnabled(false);
+						}
 					}
 				}
 			}
@@ -67,13 +72,37 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 			} else {
 				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / The Summon Reserve Avatar button isn't valid?"));
 			}
-			
-
 		} else {
 			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Players current avatar isn't valid!"));
 		}
 	} else {
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox is not valid!?")));
+	}
+}
+
+
+void UWidget_HUD_Battle::SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars)
+{
+	//TArray<UWidgetComponent_AvatarAttack*> AttackButtonsArray;
+	
+	for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
+		if (Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))) {
+			UWidgetComponent_AvatarAttack* Button = Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i));
+
+			if (!ReserveAvatars.IsValidIndex(i)) {
+				Button->AttackNameText->SetText(FText::FromString(ReserveAvatars[i].Nickname));
+				Button->AvatarAttackIndex = i;
+			} else {
+				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetListOfReserveAvatars / Reset button at index: %d"), i);
+
+				Button->AttackNameText->SetText(FText::FromString("-"));
+				Button->PlayerControllerReference = nullptr;
+				Button->AvatarAttackIndex = -1;
+				Button->SetVisibility(ESlateVisibility::Collapsed);
+			}
+
+			//AttackButtonsArray.Add(Button);
+		}
 	}
 }
 
@@ -253,7 +282,7 @@ void UWidget_HUD_Battle::ShowHideActingPlayerHudElements(bool ShowElements)
 // ------------------------- Commands
 void UWidget_HUD_Battle::MoveCommand()
 {
-	PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_MoveCharacter;
+	PlayerControllerReference->SetPlayerClickMode(E_PlayerCharacter_ClickModes::E_MoveCharacter);
 }
 
 
