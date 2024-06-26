@@ -26,24 +26,22 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 			UWidgetComponent_AvatarAttack* Button = Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i));
 
 			if (IsValid(Button)) {
+				Button->PlayerControllerReference = PlayerControllerReference;
+				Button->SetIsEnabled(true);
+
 				if (Attacks.IsValidIndex(ValidButtonsCount) && Attacks[ValidButtonsCount].Name != "Default") {
 					UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Create UI button for current avatar's attack %s at index: %d"), *PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[ValidButtonsCount].Name, ValidButtonsCount);
 
 					Button->AttackNameText->SetText(FText::FromString(Attacks[ValidButtonsCount].Name.ToUpper()));
-					Button->PlayerControllerReference = PlayerControllerReference;
 					Button->AvatarAttackIndex = ValidButtonsCount;
-					Button->SetIsEnabled(true);
-				} else if (ValidButtonsCount == 5) {
+				} else if (ValidButtonsCount == 4) {
 					Button->AttackNameText->SetText(FText::FromString("RESERVE"));
-					Button->PlayerControllerReference = PlayerControllerReference;
 					Button->AvatarAttackIndex = -5;
-					Button->SetIsEnabled(true);
 				} else {
 					UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Reset avatar attack button at index: %d"), i);
 					//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents /  Reset avatar attack button at index: %d"), i));
 
 					Button->AttackNameText->SetText(FText::FromString("-"));
-					Button->PlayerControllerReference = nullptr;
 					Button->AvatarAttackIndex = -1;
 					Button->SetIsEnabled(false);
 				}
