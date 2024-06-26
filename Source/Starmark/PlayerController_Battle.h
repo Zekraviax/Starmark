@@ -131,8 +131,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetVariables();
 
-	void Local_GetTurnOrderText(const FString& NewTurnOrderText) const;
-
 	UFUNCTION(Client, Reliable)
 	void Client_GetAvatarImagesInDynamicTurnOrder();
 

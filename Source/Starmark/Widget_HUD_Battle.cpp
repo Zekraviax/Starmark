@@ -13,7 +13,7 @@
 // ------------------------- Widget
 void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStruct> Attacks)
 {
-	TArray<UWidgetComponent_AvatarAttack*> AttackButtonsArray;
+	int ValidButtonsCount = 0;
 
 	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox is valid? %s"), IsValid(AvatarAttacksBox) ? TEXT("true") : TEXT("false"));
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox is valid? %s"), IsValid(AvatarAttacksBox) ? TEXT("true") : TEXT("false")));
@@ -23,57 +23,33 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox child count: %d"), AvatarAttacksBox->GetChildrenCount()));
 
 		for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
-			if (Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))) {
-				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Reset avatar attack button at index: %d"), i);
-				//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents /  Reset avatar attack button at index: %d"), i));
+			UWidgetComponent_AvatarAttack* Button = Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i));
 
-				UWidgetComponent_AvatarAttack* Button = Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i));
+			if (IsValid(Button)) {
+				if (Attacks.IsValidIndex(ValidButtonsCount) && Attacks[ValidButtonsCount].Name != "Default") {
+					UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Create UI button for current avatar's attack %s at index: %d"), *PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[ValidButtonsCount].Name, ValidButtonsCount);
 
-				Button->AttackNameText->SetText(FText::FromString("ATTACK"));
-				Button->PlayerControllerReference = nullptr;
-				Button->AvatarAttackIndex = -1;
-				Button->SetVisibility(ESlateVisibility::Collapsed);
+					Button->AttackNameText->SetText(FText::FromString(Attacks[ValidButtonsCount].Name.ToUpper()));
+					Button->PlayerControllerReference = PlayerControllerReference;
+					Button->AvatarAttackIndex = ValidButtonsCount;
+					Button->SetIsEnabled(true);
+				} else if (ValidButtonsCount == 5) {
+					Button->AttackNameText->SetText(FText::FromString("RESERVE"));
+					Button->PlayerControllerReference = PlayerControllerReference;
+					Button->AvatarAttackIndex = -5;
+					Button->SetIsEnabled(true);
+				} else {
+					UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Reset avatar attack button at index: %d"), i);
+					//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents /  Reset avatar attack button at index: %d"), i));
 
-				AttackButtonsArray.Add(Button);
-			}
-		}
-
-		if (IsValid(this)) {
-			//UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Player's current avatar: %s"), *PlayerControllerReference->CurrentSelectedAvatar->AvatarData.Nickname);
-			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Number of attacks passed: %d"), Attacks.Num());
-
-			// Set attacks
-			for (int j = 0; j < Attacks.Num(); j++) {
-				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Create UI button for current avatar's attack %s at index: %d"), *PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[j].Name, j);
-				
-				for (int i = 0; i < AttackButtonsArray.Num(); i++) {
-					if (AttackButtonsArray[i]->SlotNumber == j) {
-						AttackButtonsArray[i]->SetVisibility(ESlateVisibility::Visible);
-
-						if (Attacks[j].Name != "Default") {
-							AttackButtonsArray[i]->AttackNameText->SetText(FText::FromString(Attacks[j].Name.ToUpper()));
-							AttackButtonsArray[i]->PlayerControllerReference = PlayerControllerReference;
-							AttackButtonsArray[i]->AvatarAttackIndex = j;
-							AttackButtonsArray[i]->SetIsEnabled(true);
-						} else {
-							AttackButtonsArray[i]->AttackNameText->SetText(FText::FromString("-"));
-							AttackButtonsArray[i]->SetIsEnabled(false);
-						}
-					}
+					Button->AttackNameText->SetText(FText::FromString("-"));
+					Button->PlayerControllerReference = nullptr;
+					Button->AvatarAttackIndex = -1;
+					Button->SetIsEnabled(false);
 				}
-			}
 
-			// Set summon
-			if (AttackButtonsArray.IsValidIndex(5)) {
-				AttackButtonsArray[5]->AttackNameText->SetText(FText::FromString("RESERVE"));
-				AttackButtonsArray[5]->PlayerControllerReference = PlayerControllerReference;
-				AttackButtonsArray[5]->AvatarAttackIndex = -5;
-				AttackButtonsArray[5]->SetVisibility(ESlateVisibility::Visible);
-			} else {
-				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / The Summon Reserve Avatar button isn't valid?"));
+				ValidButtonsCount++;
 			}
-		} else {
-			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Players current avatar isn't valid!"));
 		}
 	} else {
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox is not valid!?")));
@@ -83,8 +59,6 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 
 void UWidget_HUD_Battle::SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars)
 {
-	//TArray<UWidgetComponent_AvatarAttack*> AttackButtonsArray;
-	
 	for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
 		if (Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))) {
 			UWidgetComponent_AvatarAttack* Button = Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i));
@@ -100,41 +74,15 @@ void UWidget_HUD_Battle::SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveA
 				Button->AvatarAttackIndex = -1;
 				Button->SetVisibility(ESlateVisibility::Collapsed);
 			}
-
-			//AttackButtonsArray.Add(Button);
 		}
 	}
-}
-
-
-void UWidget_HUD_Battle::UpdateTurnOrderText(FString NewText)
-{
-	/*
-	if (IsValid(this)) {
-		if (TurnOrderTextBlock->IsValidLowLevel()) {
-			TurnOrderTextBlock->SetText(FText::FromString("Turn Order:\n" + NewText));
-		}
-
-		UpdateAvatarAttacksComponents();
-	}
-	*/
-
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateTurnOrderText / Turn order text updated")));
 }
 
 
 void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages)
 {
-	// We can't fetch the DynamicAvatarTurnOrder from here?
-	//TArray<ACharacter_Pathfinder*> TurnOrderArray;
-
 	if (InDynamicAvatarTurnOrderImages.Num() > 0) {
 		if (EntityIconsInTurnOrder) {
-			//UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Retrieving DynamicAvatarTurnOrder array"))
-			//TurnOrderArray = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrder;
-
-			//EntityIconsInTurnOrder->ClearChildren();
-
 			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Cleared EntityIconsInTurnOrder children"))
 			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / InDynamicAvatarTurnOrderImages child count: %d"), InDynamicAvatarTurnOrderImages.Num());
 
@@ -151,29 +99,14 @@ void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvat
 							UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Apply avatar image to EntityIconsInTurnOrder child at index %d"), EntityIconIndex)
 						} else {
 							Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetVisibility(ESlateVisibility::Collapsed);
-							//Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetBrushFromTexture(nullptr);
 							UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder child at index %d is not a UImage"), EntityIconIndex)
 						}
 					} else {
 						Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetVisibility(ESlateVisibility::Collapsed);
-						//Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetBrushFromTexture(nullptr);
 						UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder child at index %d is not valid"), EntityIconIndex)
 					}
-
-					//ACharacter_Pathfinder* Character = TurnOrderArray[i];
-
-					//UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / AvatarData UiImages count: %d"), Character->AvatarData.UiImages.Num());
-					//if (Character->AvatarData.UiImages.Num() > 0) {
-						/*
-						UImage* CharacterIcon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-						CharacterIcon->SetBrushFromTexture(Character->AvatarData.UiImages[0]);
-						CharacterIcon->SetBrushSize(FVector2D(125.f, 125.f));
-						CharacterIcon->SetBrushTintColor(FSlateColor(FLinearColor(1.f, 1.f, 1.f, (1 - (i * 0. 15)))));
-						EntityIconsInTurnOrder->AddChild(CharacterIcon);
-						*/
-						//} else {}
-
-						// To-Do: If no UI images are found, get the default image
+					
+					// To-Do: If no UI images are found, get the default image
 				}
 				else {
 					UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / InDynamicAvatarTurnOrderImages index %d is not valid."), i);
@@ -181,16 +114,12 @@ void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvat
 					//To-Do: Set images to be blank here
 					if (Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))) {
 						Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetVisibility(ESlateVisibility::Collapsed);
-						//Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetBrushFromTexture(nullptr);
 						UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Apply blank image to EntityIconsInTurnOrder child at index %d"), EntityIconIndex)
 					} else {
 						UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder child at index %d is not a UImage"), EntityIconIndex)
 					}
 				}
 			}
-
-			//UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Get and Set current acting entity info"));
-			//SetCurrentActingEntityInfo(TurnOrderArray[0]);
 		} else {
 			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder is not valid"))
 		}

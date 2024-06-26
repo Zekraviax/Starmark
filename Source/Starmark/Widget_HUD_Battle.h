@@ -91,9 +91,6 @@ public:
 	void UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStruct> Attacks);
 	void SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars);
 
-	UFUNCTION(BlueprintCallable)
-	void UpdateTurnOrderText(FString NewText);
-
 	void SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages);
 	void SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity);
 

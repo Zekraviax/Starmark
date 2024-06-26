@@ -139,14 +139,6 @@ void APlayerController_Battle::SetBattleWidgetVariables()
 }
 
 
-void APlayerController_Battle::Local_GetTurnOrderText(const FString& NewTurnOrderText) const
-{
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Local_GetTurnOrderText / Update the turn order text in the battle widget"));
-	
-	BattleWidgetReference->UpdateTurnOrderText(NewTurnOrderText);
-}
-
-
 void APlayerController_Battle::Client_GetAvatarImagesInDynamicTurnOrder_Implementation()
 {
 	TArray<UTexture2D*> InDynamicAvatarTurnOrderImages = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrderImages;
