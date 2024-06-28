@@ -12,6 +12,54 @@ class AActor_GridTile;
 class ACharacter_Pathfinder;
 
 
+
+// A* Node Struct
+USTRUCT(BlueprintType)
+struct STARMARK_API FAStarNode
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector Position;
+
+	// f = g + h
+	// f is the total cost of the node
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int TotalCost;
+
+	// g is the distance between the start node and the current node
+	// this is the G value
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int DistanceFromStartNode; 
+
+	// h is the heuristic
+	// which means the estimated distance between the current node and the end node
+	// we're going to use the pythagorean equation to get this value
+	// a²+ b² = c²
+	// a is the east/west distance to the end
+	// b is the north/south distance to the end
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int EstimatedDistanceToEndNode;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FAStarNode ParentNode	// is Unreal gonna be okay with this??
+
+	FAStarNode() {}	// default constructor
+
+	// custom constructor
+	FAStarNode(FVector inPosition, int inTotalCost = 0, int inDistanceFromStartNode = 0, int inEstimatedDistanceToEndNode = 0)
+	{
+		Position = inPosition;
+		TotalCost = inTotalCost;
+		DistanceFromStartNode = inDistanceFromStartNode;
+		EstimatedDistanceToEndNode = inEstimatedDistanceToEndNode;
+	}
+
+	// To-Do: create a comparator override function here that compares the positions
+	// maybe create a second comparator that compares all 4 values
+};
+
+
 UCLASS()
 class STARMARK_API AActor_WorldGrid : public AActor
 {
@@ -59,5 +107,10 @@ public:
 	ACharacter_Pathfinder* GetAndReturnCharacterAtLocation(const FVector Position) const;
 
 	// Shouldn't be used with any curving paths (yet)
+	int GetTotalDistanceBetweenTwoPosition(FVector PositionOne, FVector PositionTwo);
 	void DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector PositionOne, FVector PositionTwo, TArray<AActor_GridTile*> &OutGridTilesInPath, TArray<FVector> &OutPositionsInPath);
+
+	// aaaaaAAAAAAAAAAAA
+	void CalculateValuesForAStarNode(FAStarNode& Node, const FAStarNode StartNode, const FAStarNode EndNode); 	// (don't use this function for the start and end nodes)
+	void CustomAStarPathfindingAlgorithm(FVector StartPosition, FVector EndPosition);
 };

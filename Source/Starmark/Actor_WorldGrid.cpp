@@ -165,16 +165,31 @@ ACharacter_Pathfinder* AActor_WorldGrid::GetAndReturnCharacterAtLocation(const F
 	return ReturnCharacter;
 }
 
+void AActor_WorldGrid::GetTotalDistanceBetweenTwoPosition(FVector PositionOne, FVector PositionTwo)
+{
+	// Get each co-ordinate and divide by 200
+	int X1 = FMath::RoundHalfFromZero(PositionOne.X / 200); 
+	int X2 = FMath::RoundHalfFromZero(PositionTwo.X / 200); 
+	int Y1 = FMath::RoundHalfFromZero(PositionOne.Y / 200); 
+	int Y2 = FMath::RoundHalfFromZero(PositionTwo.Y / 200); 
+
+	// Then subtract X co-ordinates from Y co-ordinates
+	// Then get the absolute value of the results
+	int XLength = abs(X1 - X2);
+	int YLength = abs(Y1 - Y2);
+
+	// Then add them together
+	return (XLength + YLength);
+}
+
+
 
 void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector PositionOne, FVector PositionTwo, TArray<AActor_GridTile*> &OutGridTilesInPath, TArray<FVector> &OutPositionsInPath)
 {
-	//TArray<FVector> CoordinatesOnPath;
-	//TArray<AActor_GridTile*> GridTilesOnPath;
 	FString Direction = "";
 
 	// Step zero, add the first co-ordinates to the returned arrays
 	OutPositionsInPath.Add(PositionOne);
-	//GridTilesOnPath.Add(GetAndReturnGridTileAtLocation(PositionOne)); // testing this
 
 	// First, figure out which direction to draw the path
 	if (PositionOne.X >= PositionTwo.X && PositionOne.Y >= PositionTwo.Y) {
@@ -192,19 +207,7 @@ void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVec
 	}
 
 	// Second, calculate the length of the path
-	// Get each co-ordinate and divide by 200
-	int X1 = FMath::RoundHalfFromZero(PositionOne.X / 200); 
-	int X2 = FMath::RoundHalfFromZero(PositionTwo.X / 200); 
-	int Y1 = FMath::RoundHalfFromZero(PositionOne.Y / 200); 
-	int Y2 = FMath::RoundHalfFromZero(PositionTwo.Y / 200); 
-
-	// Then subtract X co-ordinates from Y co-ordinates
-	// Then get the absolute value of the results
-	int XLength = abs(X1 - X2);
-	int YLength = abs(Y1 - Y2);
-
-	// Then add them together
-	int TotalLength = XLength + YLength;
+	int TotalLength = GetTotalDistanceBetweenTwoPosition(PositionOne, PositionTwo);
 
 	// Finally, get tiles and positions in the path one at a time
 	for (int i = 0; i < TotalLength; i++) {
@@ -217,6 +220,108 @@ void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVec
 			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X, OutPositionsInPath[i].Y + 200, 0));
 		} else if (Direction == "West") {
 			OutPositionsInPath.Add(FVector(OutPositionsInPath[i].X, OutPositionsInPath[i].Y - 200, 0));
+		}
+	}
+}
+
+
+void AActor_WorldGrid::CalculateValuesForAStarNode(FAStarNode& Node, const FAStarNode StartNode, const FAStarNode EndNode)
+{
+	// calculate g and h first
+	// then calculate f using the pythagorean equation
+
+	// g = DistanceFromStartNode
+	Node.DistanceFromStartNode = GetTotalDistanceBetweenTwoPosition(StartNode.Position, Node.Position);
+
+	// h = EstimatedDistanceToEndNode
+	Node.EstimatedDistanceToEndNode = GetTotalDistanceBetweenTwoPosition(Node.Position, EndNode.Position);
+
+	// f = g + h
+	Node.TotalCost = Node.DistanceFromStartNode + Node.EstimatedDistanceToEndNode;
+}
+
+
+void AActor_WorldGrid::CustomAStarPathfindingAlgorithm(FVector StartPosition, FVector EndPosition)
+{
+	// Step one: add the start position to the Open List
+	FAStarNode StartNode = FAStarNode(StartPosition);
+	FAStarNode EndNode = FAStarNode(EndPosition);
+
+	// leave the start node's F value at zero
+	TArray<FAStarNode> OpenList = { StartNode };
+	TArray<FAStarNode> ClosedList;
+	FAStarNode CurrentNode;		// can this be a reference to another node?
+
+	TArray<FVector> VectorsPath;
+	TArray<FAStarNode> NodesPath;
+
+	// Loop through the next steps for as long as the end position has not been reached and the open list is not empty
+		// A. find the lowest cost node in the open list
+		// make that node the current node
+
+		// B. take that node from the open list and put it in to the closed list
+
+		// C. for each node adjacent to the current node, check the following criteria:
+			// if the node is in the closed list, ignore it
+			// if the node cannot be walked on, ignore it
+
+			// if the node isn't in the open list, add it to the open list...
+			//... and make the current node the parent of this node...
+			//... and record the F, G, and H values of this node
+
+		// D. Stop when the target node is found, or a target node cannot be found
+
+	while (OpenList.Num() > 0) {
+		CurrentNode = OpenList[0];
+
+		// find the open node with the lowest total cost (F value)
+		for (int i = 0; i < OpenList.Num(); i++) {
+			if (CurrentNode.TotalCost < OpenList[i].TotalCost) {
+				CurrentNode = OpenList[i];
+			}
+		}
+
+		// the pathfinding is complete if this is true
+		if (CurrentNode == EndNode) {
+			// here we "draw" the path, starting from the end and working backwards
+		}
+
+		// remove the current node from the open list and add it to the closed list
+		OpenList.Remove(CurrentNode);
+		ClosedList.Add(CurrentNode);
+
+		// Get all the adjacent nodes of the current node
+		// let all the children of the current node equal the adjacent nodes
+		TArray<FAStarNode> ChildrenNodes = { FAStarNode(FVector(CurrentNode.Position.X + 200, CurrentNode.Position.Y)), 
+		FAStarNode(FVector(CurrentNode.Position.X, CurrentNode.Position.Y + 200)),
+		FAStarNode(FVector(CurrentNode.Position.X - 200, CurrentNode.Position.Y)),
+		FAStarNode(FVector(CurrentNode.Position.X, CurrentNode.Position.Y - 200)), };
+
+		for (FAStarNode ChildNode : ChildrenNodes) {
+			// check if the child node is in the closed list
+			if (ClosedList.Contains(ChildNode)) {
+				// if this is true, just ignore the child
+				// it's here in this if/else statement that we can check for other conditions like whether or not the node can be traversed
+			} else {
+				ChildNode.CalculateValuesForAStarNode();
+
+				// check if the child node is in the open node list
+				if (OpenList.Contains(ChildNode)) {
+					// here we check if the child node is 'better' than the current node by comparing the two nodes' G values
+					// if the child has a lower G score than the child node, it is the better path
+					
+					if (ChildNode.DistanceFromStartNode < CurrentNode.DistanceFromStartNode) {
+						// if so, change the parent of the child node to the current node
+						// recalculate the G and F scores of the node ?? (current node?)
+						ChildNode.DistanceFromStartNode = CurrentNode.DistanceFromStartNode + 1;
+						//child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
+
+						// ...or, just ignore any children that have a higher G
+						// and add any child found with a lower G to the open list
+						OpenList.Add(ChildNode);
+					}
+				}
+			}
 		}
 	}
 }
