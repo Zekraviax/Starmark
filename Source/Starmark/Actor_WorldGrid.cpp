@@ -1,5 +1,6 @@
 #include "Actor_WorldGrid.h"
 
+#include "Algo/Reverse.h"
 #include "Actor_GridTile.h"
 #include "Character_Pathfinder.h"
 #include "Kismet/GameplayStatics.h"
@@ -241,7 +242,7 @@ void AActor_WorldGrid::CalculateValuesForAStarNode(FAStarNode& Node, const FASta
 }
 
 
-void AActor_WorldGrid::CustomAStarPathfindingAlgorithm(FVector StartPosition, FVector EndPosition)
+TArray<FVector> AActor_WorldGrid::CustomAStarPathfindingAlgorithm(FVector StartPosition, FVector EndPosition)
 {
 	// Step one: add the start position to the Open List
 	FAStarNode StartNode = FAStarNode(StartPosition);
@@ -250,10 +251,7 @@ void AActor_WorldGrid::CustomAStarPathfindingAlgorithm(FVector StartPosition, FV
 	// leave the start node's F value at zero
 	TArray<FAStarNode> OpenList = { StartNode };
 	TArray<FAStarNode> ClosedList;
-	FAStarNode CurrentNode;		// can this be a reference to another node?
-
-	TArray<FVector> VectorsPath;
-	TArray<FAStarNode> NodesPath;
+	FAStarNode CurrentNode;		// can this be a reference to another Node USTRUCT?
 
 	// Loop through the next steps for as long as the end position has not been reached and the open list is not empty
 		// A. find the lowest cost node in the open list
@@ -269,7 +267,7 @@ void AActor_WorldGrid::CustomAStarPathfindingAlgorithm(FVector StartPosition, FV
 			//... and make the current node the parent of this node...
 			//... and record the F, G, and H values of this node
 
-		// D. Stop when the target node is found, or a target node cannot be found
+		// D. Stop when the target node is found, or the target node cannot be found
 
 	while (OpenList.Num() > 0) {
 		CurrentNode = OpenList[0];
@@ -283,7 +281,16 @@ void AActor_WorldGrid::CustomAStarPathfindingAlgorithm(FVector StartPosition, FV
 
 		// the pathfinding is complete if this is true
 		if (CurrentNode == EndNode) {
+			TArray<FVector> Path;
+			
 			// here we "draw" the path, starting from the end and working backwards
+			// if a node's parent is null, that means we've fully drawn the path
+			while (CurrentNode) {
+				Path.Add(CurrentNode.Position);
+				CurrentNode = CurrentNode.ParentNode;
+			}
+
+			return Algo::Reverse(Path);
 		}
 
 		// remove the current node from the open list and add it to the closed list
@@ -297,11 +304,13 @@ void AActor_WorldGrid::CustomAStarPathfindingAlgorithm(FVector StartPosition, FV
 		FAStarNode(FVector(CurrentNode.Position.X - 200, CurrentNode.Position.Y)),
 		FAStarNode(FVector(CurrentNode.Position.X, CurrentNode.Position.Y - 200)), };
 
+		// it's here in this if/else statement that we can check for other conditions like whether or not the node can be traversed
 		for (FAStarNode ChildNode : ChildrenNodes) {
 			// check if the child node is in the closed list
 			if (ClosedList.Contains(ChildNode)) {
 				// if this is true, just ignore the child
-				// it's here in this if/else statement that we can check for other conditions like whether or not the node can be traversed
+			} else if (IsGridCellWalkable(ChildNode.Position)) {
+				// if it isn't walkable, ignore it
 			} else {
 				ChildNode.CalculateValuesForAStarNode();
 
@@ -312,12 +321,13 @@ void AActor_WorldGrid::CustomAStarPathfindingAlgorithm(FVector StartPosition, FV
 					
 					if (ChildNode.DistanceFromStartNode < CurrentNode.DistanceFromStartNode) {
 						// if so, change the parent of the child node to the current node
-						// recalculate the G and F scores of the node ?? (current node?)
+						// recalculate the G and F scores of the child node ??
+
+						ChildNode.ParentNode = CurrentNode;
 						ChildNode.DistanceFromStartNode = CurrentNode.DistanceFromStartNode + 1;
+						ChildNode.EstimatedDistanceToEndNode = ((ChildNode.Position.X - EndNode.Position.X) * 2) + ((ChildNode.Position.Y- EndNode.Position.Y) * 2);
 						//child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
 
-						// ...or, just ignore any children that have a higher G
-						// and add any child found with a lower G to the open list
 						OpenList.Add(ChildNode);
 					}
 				}

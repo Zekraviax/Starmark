@@ -42,7 +42,7 @@ struct STARMARK_API FAStarNode
 	int EstimatedDistanceToEndNode;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FAStarNode ParentNode	// is Unreal gonna be okay with this??
+	FAStarNode ParentNode;	// is Unreal gonna be okay with this??
 
 	FAStarNode() {}	// default constructor
 
@@ -112,5 +112,5 @@ public:
 
 	// aaaaaAAAAAAAAAAAA
 	void CalculateValuesForAStarNode(FAStarNode& Node, const FAStarNode StartNode, const FAStarNode EndNode); 	// (don't use this function for the start and end nodes)
-	void CustomAStarPathfindingAlgorithm(FVector StartPosition, FVector EndPosition);
+	TArray<FVector> CustomAStarPathfindingAlgorithm(FVector StartPosition, FVector EndPosition);
 };
