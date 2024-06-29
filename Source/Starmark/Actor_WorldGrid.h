@@ -42,7 +42,10 @@ struct STARMARK_API FAStarNode
 	int EstimatedDistanceToEndNode;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FAStarNode ParentNode;	// is Unreal gonna be okay with this??
+	FVector ParentNodePosition;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsValid = false;
 
 	FAStarNode() {}	// default constructor
 
@@ -57,6 +60,11 @@ struct STARMARK_API FAStarNode
 
 	// To-Do: create a comparator override function here that compares the positions
 	// maybe create a second comparator that compares all 4 values
+	FORCEINLINE bool operator==(const FAStarNode& SecondNode) const
+	{
+		return FMath::IsNearlyEqual(Position.X, SecondNode.Position.X, 0.1f) &&
+			FMath::IsNearlyEqual(Position.Y, SecondNode.Position.Y, 0.1f);
+	}
 };
 
 
@@ -107,7 +115,7 @@ public:
 	ACharacter_Pathfinder* GetAndReturnCharacterAtLocation(const FVector Position) const;
 
 	// Shouldn't be used with any curving paths (yet)
-	int GetTotalDistanceBetweenTwoPosition(FVector PositionOne, FVector PositionTwo);
+	int GetTotalDistanceBetweenTwoPositions(FVector PositionOne, FVector PositionTwo);
 	void DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector PositionOne, FVector PositionTwo, TArray<AActor_GridTile*> &OutGridTilesInPath, TArray<FVector> &OutPositionsInPath);
 
 	// aaaaaAAAAAAAAAAAA

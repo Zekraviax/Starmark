@@ -1,13 +1,10 @@
 #include "Character_Pathfinder.h"
 
 #include "Actor_GridTile.h"
-#include "Actor_WorldGrid.h"
 #include "AIController_Avatar.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Engine/EngineTypes.h"
 #include "Engine/World.h"
-#include "Starmark_GameState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Kismet/GameplayStatics.h"

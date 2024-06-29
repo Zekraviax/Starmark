@@ -213,6 +213,7 @@ void APlayerController_Battle::Server_GetDataFromProfile_Implementation()
 
 void APlayerController_Battle::OnMouseCursorBeginHover(ACharacter_Pathfinder* ActingAvatar, TArray<FVector> PathBetweenAvatars)
 {
+	/*
 	TArray<AActor*> FoundAvatars, FoundGridTiles;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundAvatars);
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTiles);
@@ -232,6 +233,12 @@ void APlayerController_Battle::OnMouseCursorBeginHover(ACharacter_Pathfinder* Ac
 			Cast<AActor_GridTile>(Actor)->SetTileHighlightProperties(true, false, E_GridTile_ColourChangeContext::WithinAttackRange);
 		}
 	}
+	*/
+
+	TArray<AActor*> WorldGridArray;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
+	AActor_WorldGrid* WorldGridRef = Cast<AActor_WorldGrid>(WorldGridArray[0]);
+	WorldGridRef->CustomAStarPathfindingAlgorithm(ActingAvatar->GetActorLocation(), PathBetweenAvatars.Last());
 }
 
 
@@ -354,7 +361,6 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatar
 	} else {
 		// Get the currently acting avatar to swap data
 	}
-
 
 	// Set the players' mouse mode to select a tile
 	PlayerClickMode = E_PlayerCharacter_ClickModes::SummonAvatar;
