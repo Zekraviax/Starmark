@@ -108,14 +108,14 @@ public:
 	// The following functions are examples of overloaded functions
 	// Don't forget that they still have unique signatures, and thus require their own
 	// function definitions in the corresponding .cpp file
-	AActor_GridTile* GetAndReturnGridTileAtLocation(const FIntPoint GridCoordinates) const;
+	AActor_GridTile* GetAndReturnGridTileAtLocation(const FIntPoint& GridCoordinates) const;
 	AActor_GridTile* GetAndReturnGridTileAtLocation(const FVector Position) const;
 
 	ACharacter_Pathfinder* GetAndReturnCharacterAtLocation(const FIntPoint GridCoordinates) const;
 	ACharacter_Pathfinder* GetAndReturnCharacterAtLocation(const FVector Position) const;
 
 	// Shouldn't be used with any curving paths (yet)
-	int GetTotalDistanceBetweenTwoPositions(FVector PositionOne, FVector PositionTwo);
+	static int GetTotalDistanceBetweenTwoPositions(FVector PositionOne, FVector PositionTwo);
 	void DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVector PositionOne, FVector PositionTwo, TArray<AActor_GridTile*> &OutGridTilesInPath, TArray<FVector> &OutPositionsInPath);
 
 	// aaaaaAAAAAAAAAAAA

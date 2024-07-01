@@ -1,6 +1,5 @@
 #include "Actor_WorldGrid.h"
 
-#include "Algo/Reverse.h"
 #include "Actor_GridTile.h"
 #include "Character_Pathfinder.h"
 #include "Kismet/GameplayStatics.h"
@@ -60,7 +59,7 @@ bool AActor_WorldGrid::ConvertWorldTileToGridCoordinates(const FVector& WorldPos
 }
 
 
-// This function is a more sane version of the previous function:
+// This function is a saner version of the previous function:
 // ConvertWorldTileToGridCoordinates
 FIntPoint AActor_WorldGrid::ConvertGridTileLocationToCoordinates(FVector ActorLocation) const
 {
@@ -81,17 +80,15 @@ FVector AActor_WorldGrid::ConvertGridCoordinatesToWorldTile(const FIntPoint& Gri
 }
 
 
-AActor_GridTile* AActor_WorldGrid::GetAndReturnGridTileAtLocation(const FIntPoint GridCoordinates) const
+AActor_GridTile* AActor_WorldGrid::GetAndReturnGridTileAtLocation(const FIntPoint& GridCoordinates) const
 {
 	AActor_GridTile* ReturnTileReference = nullptr;
-	FIntPoint TileGridCoordinates;
 	TArray<AActor*> GridTilesArray;
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
 	for (int i = 0; i < GridTilesArray.Num(); i++) {
 		AActor_GridTile* FoundTile = Cast<AActor_GridTile>(GridTilesArray[i]);
-
-		TileGridCoordinates = ConvertGridTileLocationToCoordinates(FoundTile->GetActorLocation());
+		FIntPoint TileGridCoordinates = ConvertGridTileLocationToCoordinates(FoundTile->GetActorLocation());
 
 		if (GridCoordinates == TileGridCoordinates) {
 			ReturnTileReference = FoundTile;
@@ -106,14 +103,13 @@ AActor_GridTile* AActor_WorldGrid::GetAndReturnGridTileAtLocation(const FIntPoin
 AActor_GridTile* AActor_WorldGrid::GetAndReturnGridTileAtLocation(const FVector Position) const
 {
 	AActor_GridTile* ReturnGridTile = nullptr;
-	FVector GridTilePosition;
 	TArray<AActor*> GridTilesArray;
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
 	for (int i = 0; i < GridTilesArray.Num(); i++) {
 		AActor_GridTile* FoundGridTile = Cast<AActor_GridTile>(GridTilesArray[i]);
 
-		GridTilePosition = FoundGridTile->GetActorLocation();
+		FVector GridTilePosition = FoundGridTile->GetActorLocation();
 
 		if (Position.Equals(GridTilePosition, 1.f)) {
 			ReturnGridTile = FoundGridTile;
@@ -128,14 +124,13 @@ AActor_GridTile* AActor_WorldGrid::GetAndReturnGridTileAtLocation(const FVector 
 ACharacter_Pathfinder* AActor_WorldGrid::GetAndReturnCharacterAtLocation(const FIntPoint GridCoordinates) const
 {
 	ACharacter_Pathfinder* ReturnCharacter = nullptr;
-	FIntPoint ActorGridCoordinates;
 	TArray<AActor*> CharactersArray;
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), CharactersArray);
 	for (int i = 0; i < CharactersArray.Num(); i++) {
 		ACharacter_Pathfinder* FoundCharacter = Cast<ACharacter_Pathfinder>(CharactersArray[i]);
 
-		ActorGridCoordinates = ConvertGridTileLocationToCoordinates(FoundCharacter->GetActorLocation());
+		FIntPoint ActorGridCoordinates = ConvertGridTileLocationToCoordinates(FoundCharacter->GetActorLocation());
 
 		if (GridCoordinates == ActorGridCoordinates) {
 			ReturnCharacter = FoundCharacter;
@@ -149,14 +144,13 @@ ACharacter_Pathfinder* AActor_WorldGrid::GetAndReturnCharacterAtLocation(const F
 ACharacter_Pathfinder* AActor_WorldGrid::GetAndReturnCharacterAtLocation(const FVector Position) const 
 {
 	ACharacter_Pathfinder* ReturnCharacter = nullptr;
-	FVector ActorLocation;
 	TArray<AActor*> CharactersArray;
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), CharactersArray);
 	for (int i = 0; i < CharactersArray.Num(); i++) {
 		ACharacter_Pathfinder* FoundCharacter = Cast<ACharacter_Pathfinder>(CharactersArray[i]);
 
-		ActorLocation = FoundCharacter->GetActorLocation();
+		FVector ActorLocation = FoundCharacter->GetActorLocation();
 		if (Position.Equals(ActorLocation, 1.f)) {
 			ReturnCharacter = FoundCharacter;
 			break;
@@ -228,11 +222,6 @@ void AActor_WorldGrid::DrawStraightPathBetweenTwoPositionsWithoutNavigation(FVec
 
 void AActor_WorldGrid::CalculateValuesForAStarNode(FAStarNode& Node, const FAStarNode StartNode, const FAStarNode EndNode)
 {
-	Node.IsValid = true;
-	
-	// calculate g and h first
-	// then calculate f using the pythagorean equation
-
 	// g = DistanceFromStartNode
 	Node.DistanceFromStartNode = GetTotalDistanceBetweenTwoPositions(StartNode.Position, Node.Position);
 
