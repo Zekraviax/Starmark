@@ -33,8 +33,7 @@ APlayerController_Battle::APlayerController_Battle()
 }
 
 
-// To-Do: Figure out if any of these can be cleaned up
-// (not replicated)
+// To-Do: Figure out if any of these don't need to be replicated so they can be cleaned up
 void APlayerController_Battle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
@@ -106,6 +105,7 @@ void APlayerController_Battle::SetPlayerClickMode(E_PlayerCharacter_ClickModes N
 	// Then handle secondary functionality
 	if (PlayerClickMode == E_PlayerCharacter_ClickModes::E_Nothing || PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter ||
 		PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack || PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
+		
 		// Make sure that the UI has the list of attack
 		BattleWidgetReference->UpdateAvatarAttacksComponents(CurrentSelectedAvatar->CurrentKnownAttacks);
 	} else if (PlayerClickMode == E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon) {

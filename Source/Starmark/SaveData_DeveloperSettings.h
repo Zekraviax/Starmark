@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "GameFramework/SaveGame.h"
+#include "Starmark_Variables.h"
 
 #include "SaveData_DeveloperSettings.generated.h"
 
@@ -35,18 +36,14 @@ class STARMARK_API USaveData_DeveloperSettings : public USaveGame
 public:
 // Variables
 // --------------------------------------------------
-	// To-Do: Put this variable somewhere global, so it can easily be accessed and edited
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString PlayerDataSaveFilePath = "C:\\Users\\zekra\\Documents\\UE\\Projects\\Starmark\\Saved\\SaveGames";
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FDeveloperSettingsAsStruct DevSettingsStruct;
 
 // Functions
 // --------------------------------------------------
 	UFUNCTION(BlueprintCallable)
-	void SavePlayerDataToJson();
+	static void SavePlayerDataToJson();
 
 	UFUNCTION(BlueprintCallable)
-	void LoadPlayerDataFromJson();
+	static void LoadPlayerDataFromJson();
 };

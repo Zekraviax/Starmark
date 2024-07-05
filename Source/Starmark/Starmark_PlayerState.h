@@ -26,16 +26,13 @@ class STARMARK_API AStarmark_PlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
-	//virtual void CopyProperties(class APlayerState* PlayerState) override;
-
 public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	AStarmark_PlayerState();
 
-// Variables
-// --------------------------------------------------
 
+// ---------------------------------------- Variables ---------------------------------------- 
 // ------------------------- Local Helper Variables
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStarmark_GameInstance* GameInstanceReference;
@@ -77,9 +74,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool PreBattleCheck = false;
 
-// Functions
-// --------------------------------------------------
 
+// ---------------------------------------- Functions ---------------------------------------- 
 // ------------------------- Local Helper Functions
 
 // ------------------------- Global Helper Functions

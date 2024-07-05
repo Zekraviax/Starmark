@@ -46,13 +46,8 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 		UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 		PlayerDataStruct = GameInstanceReference->PlayerData;
 
-		// To-Do: Figure out why this crashes clients
-		// Can't get the PlayerState here?
-		//PlayerDataStruct = Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->PlayerDataStruct;
-		//Cast<AStarmark_PlayerState>(GetPawn()->GetPlayerState())->UpdatePlayerData();
-
 		// Send the number of expected players to the GameState
-		// // To-Do: Figure out how to do this
+		// To-Do: Figure out how to do this
 		//GameStateReference->MultiplayerBattleExpectedPlayers = 2;
 
 		LobbyWidget_Reference->AddToViewport();

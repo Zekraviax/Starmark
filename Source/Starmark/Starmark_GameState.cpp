@@ -91,8 +91,6 @@ void AStarmark_GameState::SetTurnOrder_Implementation()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundActors);
 	TArray<ACharacter_Pathfinder*> SlowedAvatars, SlowedAvatarsInTurnOrder;
 
-	// To-Do: Remove the PlayerControllers variable from the function declaration
-
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / Empty the AvatarTurnOrder array"));
 	AvatarTurnOrder.Empty();
 
@@ -360,7 +358,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / CurrentAvatarTurnIndex is: %d"), CurrentAvatarTurnIndex);
 
-	// To-Do: Move this functionality somewhere else, since it doesn't work here
+	// To-Do: Move this functionality to the GameMode, since it doesn't work here
 	/*
 	for (int j = 0; j < PlayerArray.Num(); j++) {
 		APlayerController_Battle* PlayerController = Cast<APlayerController_Battle>(PlayerArray[j]->GetPawn()->GetController());

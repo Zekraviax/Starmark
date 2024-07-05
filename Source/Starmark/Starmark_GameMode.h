@@ -21,6 +21,8 @@ class UStarmark_GameInstance;
 class AStarmark_PlayerState;
 
 
+// The GameMode that handles battles; both singleplayer and multiplayer.
+// Instantiated when the level is first loaded, and destroyed when the level is destroyed.
 UCLASS()
 class STARMARK_API AStarmark_GameMode : public AGameMode
 {

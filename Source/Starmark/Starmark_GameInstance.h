@@ -15,9 +15,10 @@
 class AActor_GridTile;
 
 
-// The GameInstance persists from level to level, regardless of travel type (Seamless vs. Hard)
-// That means this is a good place to store data that needs to be persistent
-// The GameInstance is not replicated at all.
+// The GameInstance is created when the game is first launched, and is not destroyed until the game is closed.
+// It persists from level to level, regardless of travel type (Seamless vs. Hard).
+// That means this is a good place to store data that needs to be persistent, except in multiplayer scenarios.
+// The GameInstance is not replicated at all. So for all replicated variables, use the PlayerState.
 UCLASS()
 class STARMARK_API UStarmark_GameInstance : public UGameInstance
 {
