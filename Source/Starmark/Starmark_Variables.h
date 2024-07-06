@@ -888,16 +888,16 @@ struct TStructOpsTypeTraits< FWrappedPlayerData > : public TStructOpsTypeTraitsB
 
 class STARMARK_API Starmark_Variables
 {
-// To-Do: Put global variables here, like the save directiory file path
+// To-Do: Put global variables here, like the save directory file path.
 public:
 // ------------------------- Global Helper Variables
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FString PlayerDataSaveFilePath = "C:\\Users\\zekra\\Documents\\UE\\Projects\\Starmark\\Saved\\SaveGames";
 
-	// If we put DataTable references here, then an instance of this class will need to be created when the game launches
-	// Same goes for widget blueprint class references
+	// If we put DataTable references here, then an instance of this class will need to be created when the game launches.
+	// Same goes for widget blueprint class references.
 
 
 // ------------------------- Global Helper Functions
-	static FString GetPlayerDataSaveFilePath() { return PlayerDataSaveFilePath; }
+	FString GetPlayerDataSaveFilePath() { return PlayerDataSaveFilePath; }
 };

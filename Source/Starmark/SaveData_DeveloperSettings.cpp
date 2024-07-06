@@ -7,12 +7,12 @@
 void USaveData_DeveloperSettings::SavePlayerDataToJson()
 {
 	FString SaveGamesFolderPathAppend = "SaveGames/";
-	FString SavePath = Starmark_Variables::GetPlayerDataSaveFilePath();
+	FString SavePath = "C:\\Users\\zekra\\Documents\\UE\\Projects\\Starmark\\Saved\\SaveGames";
 
 	// Get the project's save folder directory
-	PlayerDataSaveFilePath = FPaths::ProjectSavedDir();
+	SavePath = FPaths::ProjectSavedDir();
 	UE_LOG(LogTemp, Warning, TEXT("FilePaths: ProjectSavedDir: %s"), *SavePath);
-	PlayerDataSaveFilePath.Append(SaveGamesFolderPathAppend);
+	SavePath.Append(SaveGamesFolderPathAppend);
 	UE_LOG(LogTemp, Warning, TEXT("FilePaths: Player's Save Data Folder: %s"), *SavePath);
 
 	FString DevSettingsJson;

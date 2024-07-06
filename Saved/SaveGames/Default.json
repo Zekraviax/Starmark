@@ -1,7 +1,143 @@
 {
 	"profileName": "Default",
-	"playerName": "Default",
+	"playerName": "None",
 	"team": [
+		{
+			"avatarName": "FireXash",
+			"nickname": "FireXash",
+			"primaryType": "E_Fire",
+			"secondaryType": "E_None",
+			"mark": "E_Xash",
+			"speciesMinimumStats":
+			{
+				"maximumHealthPoints": 10,
+				"maximumManaPoints": 15,
+				"attack": 20,
+				"defence": 10,
+				"specialAttack": 20,
+				"specialDefence": 10,
+				"speed": 20,
+				"evade": 10,
+				"power": 10
+			},
+			"battleStats":
+			{
+				"maximumHealthPoints": 10,
+				"maximumManaPoints": 10,
+				"attack": 10,
+				"defence": 10,
+				"specialAttack": 10,
+				"specialDefence": 10,
+				"speed": 10,
+				"evade": 10,
+				"power": 10
+			},
+			"currentHealthPoints": 1,
+			"currentManaPoints": 1,
+			"maximumTileMoves": 4,
+			"currentTileMoves": 4,
+			"maximumActionPoints": 1,
+			"currentActionPoints": 1,
+			"sameTypeAttackBonusMultiplier": 150,
+			"currentAttacks": [
+				{
+					"name": "Magic Shock",
+					"type": "E_Arcane",
+					"basePower": 15,
+					"baseRange": 1,
+					"manaCost": 25,
+					"description": "Deal damage and paralyze the target.",
+					"attackPattern": "Circle",
+					"attackCategory": "Offensive",
+					"attackTargetsInRange": "AttackClickedAvatar",
+					"attackEffectsOnTarget": [
+						"AddParalyzeStatus"
+					],
+					"attachAttackTraceActorToMouse": false,
+					"rotateAvatarTowardsMouse": true,
+					"endAvatarTurnOnUse": true
+				},
+				{
+					"name": "Kick",
+					"type": "E_None",
+					"basePower": 10,
+					"baseRange": 1,
+					"manaCost": 0,
+					"description": "Default.",
+					"attackPattern": "Circle",
+					"attackCategory": "Offensive",
+					"attackTargetsInRange": "AttackAllTargets",
+					"attackEffectsOnTarget": [],
+					"attachAttackTraceActorToMouse": false,
+					"rotateAvatarTowardsMouse": true,
+					"endAvatarTurnOnUse": true
+				},
+				{
+					"name": "Flamethrower",
+					"type": "E_Fire",
+					"basePower": 60,
+					"baseRange": 4,
+					"manaCost": 30,
+					"description": "Default.",
+					"attackPattern": "FourWayCross",
+					"attackCategory": "Offensive",
+					"attackTargetsInRange": "AttackClickedAvatar",
+					"attackEffectsOnTarget": [
+						"AddBurnStatus"
+					],
+					"attachAttackTraceActorToMouse": false,
+					"rotateAvatarTowardsMouse": true,
+					"endAvatarTurnOnUse": true
+				},
+				{
+					"name": "Ignition",
+					"type": "E_Fire",
+					"basePower": 0,
+					"baseRange": 3,
+					"manaCost": 10,
+					"description": "Default.",
+					"attackPattern": "SingleTile",
+					"attackCategory": "Environment",
+					"attackTargetsInRange": "SelectAllGridTiles",
+					"attackEffectsOnTarget": [
+						"AddPropertyFire"
+					],
+					"attachAttackTraceActorToMouse": true,
+					"rotateAvatarTowardsMouse": true,
+					"endAvatarTurnOnUse": true
+				}
+			],
+			"factions": [
+				"Player1"
+			],
+			"ownerMultiplayerUniqueId": 0,
+			"battleUniqueId": 0,
+			"defaultImage": "Material'/Game/Materials/Avatars/DefaultImages/FireXashDefaultImageMaterial.FireXashDefaultImageMaterial'",
+			"uiImages": [
+				"Texture2D'/Game/Textures/Avatars/DefaultImages/FireXash.FireXash'"
+			],
+			"skeletalMesh": "None",
+			"dyableMaterial": "Material'/Game/Models/Avatars/XashAir/XashAir_DyeableMat.XashAir_DyeableMat'",
+			"defaultColours": [],
+			"currentColours": [],
+			"dyableColourCount": 4,
+			"attacks": [],
+			"encyclopediaNumber": 0,
+			"lore": "Default",
+			"occupiedTiles": [
+				{
+					"x": 0,
+					"y": 0
+				}
+			],
+			"tier": 1,
+			"tokensRequired": 1,
+			"indexInPlayerLibrary": 0,
+			"currentEquippedAttackNames": [],
+			"replicationId": -1,
+			"replicationKey": -1,
+			"mostRecentArrayReplicationKey": -1
+		},
 		{
 			"avatarName": "Magunau",
 			"nickname": "Magunau",
@@ -134,7 +270,7 @@
 			],
 			"tier": 1,
 			"tokensRequired": 1,
-			"indexInPlayerLibrary": 0,
+			"indexInPlayerLibrary": 1,
 			"currentEquippedAttackNames": [],
 			"replicationId": -1,
 			"replicationKey": -1,
@@ -270,7 +406,7 @@
 			],
 			"tier": 1,
 			"tokensRequired": 1,
-			"indexInPlayerLibrary": 1,
+			"indexInPlayerLibrary": 2,
 			"currentEquippedAttackNames": [],
 			"replicationId": -1,
 			"replicationKey": -1,
@@ -408,7 +544,7 @@
 			],
 			"tier": 1,
 			"tokensRequired": 1,
-			"indexInPlayerLibrary": 2,
+			"indexInPlayerLibrary": 3,
 			"currentEquippedAttackNames": [],
 			"replicationId": -1,
 			"replicationKey": -1,
@@ -542,7 +678,7 @@
 			],
 			"tier": 1,
 			"tokensRequired": 1,
-			"indexInPlayerLibrary": 3,
+			"indexInPlayerLibrary": 4,
 			"currentEquippedAttackNames": [],
 			"replicationId": -1,
 			"replicationKey": -1,
@@ -678,11 +814,12 @@
 			],
 			"tier": 1,
 			"tokensRequired": 1,
-			"indexInPlayerLibrary": 4,
+			"indexInPlayerLibrary": 5,
 			"currentEquippedAttackNames": [],
 			"replicationId": -1,
 			"replicationKey": -1,
 			"mostRecentArrayReplicationKey": -1
 		}
-	]
+	],
+	"library": []
 }

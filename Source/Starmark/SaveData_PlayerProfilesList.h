@@ -6,6 +6,8 @@
 #include "SaveData_PlayerProfilesList.generated.h"
 
 
+// This class is deprecated. Please don't use it.
+// Use the save file PlayerProfileHandler to load player JSON data.
 UCLASS()
 class STARMARK_API USaveData_PlayerProfilesList : public USaveGame
 {

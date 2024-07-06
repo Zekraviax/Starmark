@@ -3,11 +3,9 @@
 #include "Components/TextBlock.h"
 #include "GameFramework/SaveGame.h"
 #include "Kismet/GameplayStatics.h"
-#include "Player_SaveData.h"
-#include "SaveData_PlayerProfilesList.h"
 #include "SaveData_PlayerProfile.h"
+#include "SaveData_PlayerProfilesList.h"
 #include "Starmark_GameInstance.h"
-#include "Starmark_PlayerState.h"
 #include "Starmark_Variables.h"
 #include "Widget_AvatarLibrary.h"
 #include "Widget_MainMenu.h"
@@ -17,7 +15,6 @@
 // ------------------------- Widget
 void UWidget_PlayerProfileCreator::OnWidgetOpened()
 {
-	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
 	ProfilesList = Cast<USaveData_PlayerProfilesList>(UGameplayStatics::LoadGameFromSlot("PlayerProfilesList", 0));
 
 	// Get the list of Player Profiles
@@ -36,10 +33,6 @@ void UWidget_PlayerProfileCreator::OnWidgetOpened()
 			PlayerProfileWidgetComponent_Reference->ProfileName = ProfilesList->PlayerProfileNames[i];
 			PlayerProfileWidgetComponent_Reference->ProfileNameText->SetText(FText::FromString(ProfilesList->PlayerProfileNames[i]));
 
-			//PlayerProfileWidgetComponent_Reference->ProfileName = ProfilesList->PlayerProfileNames[i];
-			//const TCHAR* ProfileNameChar = *;
-			//PlayerProfileWidgetComponent_Reference->ProfileNameWithStars = PlayerProfileWidgetComponent_Reference->ProfileNameWithStars.Replace(TEXT("[ProfileName]"), *PlayerProfileWidgetComponent_Reference->ProfileName);
-
 			// Bind delegate
 			PlayerProfileWidgetComponent_Reference->OnPlayerProfileLoadedDelegate.AddDynamic(this, &UWidget_PlayerProfileCreator::OnPlayerProfileLoadedDelegateBroadcast);
 
@@ -48,22 +41,24 @@ void UWidget_PlayerProfileCreator::OnWidgetOpened()
 	}
 
 	// Only enable the Avatar Library if the player has a profile that the library can be saved to
-	AvatarLibraryButton->SetIsEnabled(PlayerStateReference->PlayerProfileReference->IsValidLowLevel());
+	AvatarLibraryButton->SetIsEnabled(Cast<UStarmark_GameInstance>(GetGameInstance())->PlayerSaveGameReference->IsValidLowLevel());
 }
 
 
 void UWidget_PlayerProfileCreator::OnSaveGameButtonPressed()
 {
-	UPlayer_SaveData* PlayerProfileData = Cast<UPlayer_SaveData>(UGameplayStatics::LoadGameFromSlot(NewProfileNameEntryField->GetText().ToString(), 0));
+	USaveData_PlayerProfile* PlayerProfileData = Cast<USaveData_PlayerProfile>(UGameplayStatics::LoadGameFromSlot(NewProfileNameEntryField->GetText().ToString(), 0));
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	if (!PlayerProfileData)
-		PlayerProfileData = Cast<UPlayer_SaveData>(UGameplayStatics::CreateSaveGameObject(UPlayer_SaveData::StaticClass()));
+	if (!PlayerProfileData) {
+		PlayerProfileData = Cast<USaveData_PlayerProfile>(UGameplayStatics::CreateSaveGameObject(USaveData_PlayerProfile::StaticClass()));
+	}
 
 	// Profile variables
 	// Profile
-	PlayerProfileData->ProfileName = NewProfileNameEntryField->GetText().ToString();
+	PlayerProfileData->PlayerProfileStruct.ProfileName = NewProfileNameEntryField->GetText().ToString();
 	// Player
-	PlayerProfileData->Name = NewPlayerNameEntryField->GetText().ToString();
+	PlayerProfileData->PlayerProfileStruct.PlayerName = NewPlayerNameEntryField->GetText().ToString();
 
 	UGameplayStatics::SaveGameToSlot(PlayerProfileData, NewProfileNameEntryField->GetText().ToString(), 0);
 
@@ -79,14 +74,16 @@ void UWidget_PlayerProfileCreator::OnSaveGameButtonPressed()
 	}
 
 	// Set the newly created profile to be the player's active profile
-	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
-	PlayerStateReference->PlayerProfileReference = PlayerProfileData;
+	GameInstanceReference->PlayerSaveGameReference = PlayerProfileData;
 
 	// To-Do: Save the player's profile data to a json file
-	PlayerStateReference->ReturnPlayerProfileInstance()->PlayerProfileStruct.PlayerName = PlayerProfileData->Name;
-	PlayerStateReference->ReturnPlayerProfileInstance()->PlayerProfileStruct.ProfileName = PlayerProfileData->ProfileName;
-	PlayerStateReference->ReturnPlayerProfileInstance()->SaveProfileDataToJson();
+	GameInstanceReference->ReturnPlayerSaveGameReference()->PlayerProfileStruct.PlayerName = PlayerProfileData->PlayerProfileStruct.PlayerName;
+	GameInstanceReference->ReturnPlayerSaveGameReference()->PlayerProfileStruct.ProfileName = PlayerProfileData->PlayerProfileStruct.ProfileName;
+	GameInstanceReference->ReturnPlayerSaveGameReference()->SaveProfileDataToJson();
 
+	GameInstanceReference->PlayerDataStruct.PlayerName = PlayerProfileData->PlayerProfileStruct.PlayerName;
+	GameInstanceReference->PlayerDataStruct.ProfileName = PlayerProfileData->PlayerProfileStruct.ProfileName;
+	
 	OnWidgetOpened();
 }
 
@@ -136,6 +133,5 @@ void UWidget_PlayerProfileCreator::OnAvatarLibraryButtonPressed()
 // ------------------------- Delegates
 void UWidget_PlayerProfileCreator::OnPlayerProfileLoadedDelegateBroadcast()
 {
-	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
-	AvatarLibraryButton->SetIsEnabled(PlayerStateReference->PlayerProfileReference->IsValidLowLevel());
+	AvatarLibraryButton->SetIsEnabled(Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->PlayerSaveGameReference->IsValidLowLevel());
 }

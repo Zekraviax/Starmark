@@ -13,7 +13,7 @@
 void UWidget_ServerHost::OnWidgetOpened()
 {
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	GameInstanceReference->LoadProfile(GameInstanceReference->CurrentProfileName);
+	GameInstanceReference->LoadProfile(GameInstanceReference->PlayerDataStruct.ProfileName);
 
 	UE_LOG(LogTemp, Warning, TEXT("UWidget_ServerHost / OnWidgetOpened / GetOwningPlayerState returns: %s"), GetOwningPlayerState()->IsValidLowLevel() ? TEXT("true") : TEXT("false"));
 

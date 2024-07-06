@@ -204,7 +204,7 @@ void APlayerController_Battle::Server_GetDataFromProfile_Implementation()
 	
 	// ReSharper disable once CppLocalVariableMayBeConst
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	PlayerDataStruct = GameInstanceReference->PlayerData;
+	PlayerDataStruct = GameInstanceReference->PlayerDataStruct;
 
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetDataFromProfile / PlayerName is: %s"), *PlayerDataStruct.PlayerName);
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetDataFromProfile / PlayerName has %d avatars"), PlayerDataStruct.CurrentAvatarTeam.Num());

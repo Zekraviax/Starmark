@@ -8,6 +8,8 @@
 #include "Player_SaveData.generated.h"
 
 
+// This class is deprecated. Please don't use it.
+// Instead, use the USaveData_PlayerProfile class.
 UCLASS()
 class STARMARK_API UPlayer_SaveData : public USaveGame
 {

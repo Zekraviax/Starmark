@@ -1,0 +1,143 @@
+{
+	"profileName": "testificate",
+	"playerName": "None",
+	"team": [
+		{
+			"avatarName": "AirKop",
+			"nickname": "AirKop",
+			"primaryType": "E_Air",
+			"secondaryType": "E_None",
+			"mark": "E_Kop",
+			"speciesMinimumStats":
+			{
+				"maximumHealthPoints": 10,
+				"maximumManaPoints": 20,
+				"attack": 20,
+				"defence": 20,
+				"specialAttack": 20,
+				"specialDefence": 20,
+				"speed": 20,
+				"evade": 10,
+				"power": 10
+			},
+			"battleStats":
+			{
+				"maximumHealthPoints": 10,
+				"maximumManaPoints": 10,
+				"attack": 10,
+				"defence": 10,
+				"specialAttack": 10,
+				"specialDefence": 10,
+				"speed": 10,
+				"evade": 10,
+				"power": 10
+			},
+			"currentHealthPoints": 1,
+			"currentManaPoints": 1,
+			"maximumTileMoves": 4,
+			"currentTileMoves": 4,
+			"maximumActionPoints": 1,
+			"currentActionPoints": 1,
+			"sameTypeAttackBonusMultiplier": 150,
+			"currentAttacks": [
+				{
+					"name": "Peck",
+					"type": "E_None",
+					"basePower": 1,
+					"baseRange": 1,
+					"manaCost": 1,
+					"description": "Default.",
+					"attackPattern": "Circle",
+					"attackCategory": "Offensive",
+					"attackTargetsInRange": "AttackAllTargets",
+					"attackEffectsOnTarget": [],
+					"attachAttackTraceActorToMouse": false,
+					"rotateAvatarTowardsMouse": true,
+					"endAvatarTurnOnUse": true
+				},
+				{
+					"name": "Gust",
+					"type": "E_Air",
+					"basePower": 0,
+					"baseRange": 3,
+					"manaCost": 10,
+					"description": "Default.",
+					"attackPattern": "FourWayCross",
+					"attackCategory": "Offensive",
+					"attackTargetsInRange": "AttackClickedAvatar",
+					"attackEffectsOnTarget": [
+						"KnockbackTarget"
+					],
+					"attachAttackTraceActorToMouse": false,
+					"rotateAvatarTowardsMouse": true,
+					"endAvatarTurnOnUse": true
+				},
+				{
+					"name": "Whirlwind",
+					"type": "E_Air",
+					"basePower": 25,
+					"baseRange": 2,
+					"manaCost": 5,
+					"description": "Default.",
+					"attackPattern": "Circle",
+					"attackCategory": "Offensive",
+					"attackTargetsInRange": "AttackAllTargets",
+					"attackEffectsOnTarget": [
+						"KnockbackTarget"
+					],
+					"attachAttackTraceActorToMouse": false,
+					"rotateAvatarTowardsMouse": true,
+					"endAvatarTurnOnUse": true
+				},
+				{
+					"name": "Wind Blade",
+					"type": "E_Air",
+					"basePower": 70,
+					"baseRange": 3,
+					"manaCost": 30,
+					"description": "Default.",
+					"attackPattern": "FourWayCross",
+					"attackCategory": "Offensive",
+					"attackTargetsInRange": "AttackAllTargets",
+					"attackEffectsOnTarget": [
+						"AddBleedStatus"
+					],
+					"attachAttackTraceActorToMouse": false,
+					"rotateAvatarTowardsMouse": true,
+					"endAvatarTurnOnUse": true
+				}
+			],
+			"factions": [
+				"Player1"
+			],
+			"ownerMultiplayerUniqueId": 0,
+			"battleUniqueId": 0,
+			"defaultImage": "Material'/Game/Materials/Avatars/DefaultImages/AirKopDefaultImageMaterial.AirKopDefaultImageMaterial'",
+			"uiImages": [
+				"Texture2D'/Game/Textures/Avatars/DefaultImages/AirKop.AirKop'"
+			],
+			"skeletalMesh": "None",
+			"dyableMaterial": "None",
+			"defaultColours": [],
+			"currentColours": [],
+			"dyableColourCount": 0,
+			"attacks": [],
+			"encyclopediaNumber": 0,
+			"lore": "Default",
+			"occupiedTiles": [
+				{
+					"x": 0,
+					"y": 0
+				}
+			],
+			"tier": 1,
+			"tokensRequired": 1,
+			"indexInPlayerLibrary": 0,
+			"currentEquippedAttackNames": [],
+			"replicationId": -1,
+			"replicationKey": -1,
+			"mostRecentArrayReplicationKey": -1
+		}
+	],
+	"library": []
+}

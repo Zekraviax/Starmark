@@ -4,7 +4,6 @@
 #include "CoreMinimal.h"
 
 #include "GameFramework/SaveGame.h"
-#include "Starmark_Variables.h"
 
 #include "SaveData_DeveloperSettings.generated.h"
 
@@ -42,8 +41,8 @@ public:
 // Functions
 // --------------------------------------------------
 	UFUNCTION(BlueprintCallable)
-	static void SavePlayerDataToJson();
+	void SavePlayerDataToJson();
 
 	UFUNCTION(BlueprintCallable)
-	static void LoadPlayerDataFromJson();
+	void LoadPlayerDataFromJson();
 };

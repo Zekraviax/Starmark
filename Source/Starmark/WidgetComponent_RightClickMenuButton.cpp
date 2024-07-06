@@ -1,8 +1,10 @@
 #include "WidgetComponent_RightClickMenuButton.h"
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player_SaveData.h"
-#include "Starmark_PlayerState.h"
+#include "SaveData_PlayerProfile.h"
+#include "Starmark_GameInstance.h"
 #include "Widget_AvatarLibrary.h"
 #include "WidgetComponent_Avatar.h"
 
@@ -38,12 +40,12 @@ void UWidgetComponent_RightClickMenuButton::EquipAvatar()
 {
 	int FirstEmptyIndex = 6;
 	TArray<int> OccupiedIndices;
-	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	for (int i = 0; i < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
-		if (PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].AvatarName != "None" &&
-			PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].AvatarName != "Default")
-			OccupiedIndices.Add(PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].IndexInPlayerLibrary);
+	for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library.Num(); i++) {
+		if (GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library[i].AvatarName != "None" &&
+			GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library[i].AvatarName != "Default")
+			OccupiedIndices.Add(GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library[i].IndexInPlayerLibrary);
 	}
 
 	for (int j = 5; j >= 0; j--) {
@@ -56,8 +58,8 @@ void UWidgetComponent_RightClickMenuButton::EquipAvatar()
 		FAvatar_Struct ChosenAvatar = Cast<UWidgetComponent_Avatar>(RightClickMenuWidget->OwnerWidget)->AvatarData;
 		ChosenAvatar.IndexInPlayerLibrary = FirstEmptyIndex;
 
-		PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Insert(ChosenAvatar, FirstEmptyIndex);
-		PlayerStateReference->PlayerProfileReference->AvatarLibrary.Remove(ChosenAvatar);
+		GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Insert(ChosenAvatar, FirstEmptyIndex);
+		GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library.Remove(ChosenAvatar);
 
 		TArray<UUserWidget*> FoundAvatarLibraryWidgets, FoundAvatarComponents;
 		UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundAvatarLibraryWidgets, UWidget_AvatarLibrary::StaticClass(), true);
@@ -69,7 +71,7 @@ void UWidgetComponent_RightClickMenuButton::EquipAvatar()
 			Cast<UWidget_AvatarLibrary>(FoundAvatarLibraryWidgets[i])->UpdateAllAvatarsInTeam();
 		}
 
-		PlayerStateReference->SaveToCurrentProfile();
+		GameInstanceReference->SaveToCurrentProfile();
 	}
 }
 
@@ -78,19 +80,19 @@ void UWidgetComponent_RightClickMenuButton::UnequipAvatar()
 {
 	int FirstEmptyIndex = 0;
 	TArray<int> OccupiedIndices;
-	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	for (int i = 0; i < PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num(); i++) {
-		if (PlayerStateReference->PlayerProfileReference->AvatarLibrary[i].IndexInPlayerLibrary < FirstEmptyIndex) {
-			PlayerStateReference->PlayerProfileReference->AvatarLibrary[i].IndexInPlayerLibrary = FirstEmptyIndex;
+	for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library.Num(); i++) {
+		if (GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library[i].IndexInPlayerLibrary < FirstEmptyIndex) {
+			GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library[i].IndexInPlayerLibrary = FirstEmptyIndex;
 		}
 	}
 
 	FAvatar_Struct ChosenAvatar = Cast<UWidgetComponent_Avatar>(RightClickMenuWidget->OwnerWidget)->AvatarData;
 	ChosenAvatar.IndexInPlayerLibrary = FirstEmptyIndex;
 
-	PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Remove(ChosenAvatar);
-	PlayerStateReference->PlayerProfileReference->AvatarLibrary.Add(ChosenAvatar);
+	GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library.Remove(ChosenAvatar);
+	GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Add(ChosenAvatar);
 
 	TArray<UUserWidget*> FoundAvatarLibraryWidgets, FoundAvatarComponents;
 	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundAvatarLibraryWidgets, UWidget_AvatarLibrary::StaticClass(), true);
@@ -102,32 +104,32 @@ void UWidgetComponent_RightClickMenuButton::UnequipAvatar()
 		Cast<UWidget_AvatarLibrary>(FoundAvatarLibraryWidgets[i])->UpdateAllAvatarsInTeam();
 	}
 
-	PlayerStateReference->SaveToCurrentProfile();
+	GameInstanceReference->SaveToCurrentProfile();
 }
 
 
 void UWidgetComponent_RightClickMenuButton::DeleteAvatar()
 {
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	TArray<UUserWidget*> FoundAvatarLibraryWidgets;
-	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
 	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundAvatarLibraryWidgets, UWidget_AvatarLibrary::StaticClass(), true);
 	UWidgetComponent_Avatar* AvatarSlot = Cast<UWidgetComponent_Avatar>(RightClickMenuWidget->OwnerWidget);
 
 	if (AvatarSlot->IndexInPlayerTeam >= 0) {
-		PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Remove(AvatarSlot->AvatarData);
+		GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Remove(AvatarSlot->AvatarData);
 	} else {
-		PlayerStateReference->PlayerProfileReference->AvatarLibrary.Remove(AvatarSlot->AvatarData);
+		GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Remove(AvatarSlot->AvatarData);
 	}
 
 	AvatarSlot->AvatarData = FAvatar_Struct();
 
 	// Re-assign all indices in the players' library and team
-	for (int i = 0; i < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
-		PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].IndexInPlayerLibrary = i;
+	for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Num(); i++) {
+		GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i].IndexInPlayerLibrary = i;
 	}
 
-	for (int i = 0; i < PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num(); i++) {
-		PlayerStateReference->PlayerProfileReference->AvatarLibrary[i].IndexInPlayerLibrary = (i * -1) - 1;
+	for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Num(); i++) {
+		GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i].IndexInPlayerLibrary = (i * -1) - 1;
 	}
 
 	// Update all Avatar widgets
@@ -136,5 +138,5 @@ void UWidgetComponent_RightClickMenuButton::DeleteAvatar()
 		Cast<UWidget_AvatarLibrary>(FoundAvatarLibraryWidgets[i])->UpdateAllAvatarsInTeam();
 	}
 
-	PlayerStateReference->SaveToCurrentProfile();
+	GameInstanceReference->SaveToCurrentProfile();
 }

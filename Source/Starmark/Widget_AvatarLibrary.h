@@ -10,6 +10,7 @@
 
 // Forward Declarations
 class UWidgetComponent_Avatar;
+class UStarmark_GameInstance;
 
 
 UCLASS()
@@ -33,6 +34,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidgetComponent_Avatar* AvatarWidgetComponent_Reference;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStarmark_GameInstance* GameInstanceReference;
+
 // ------------------------- Materials
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterialInterface* QuestionMarkMaterial;
@@ -50,7 +54,7 @@ public:
 
 // ------------------------- Delegates
 	UFUNCTION()
-	void BindAvatarCreatedDelegate(UWidgetComponent_Avatar* AvatarWidgetComponentReference);
+	void BindAvatarCreatedDelegate(const UWidgetComponent_Avatar* AvatarWidgetComponentReference);
 
 	UFUNCTION()
 	void OnAvatarCreatedDelegateBroadcast();

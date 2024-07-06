@@ -1,6 +1,9 @@
 #include "Widget_AvatarCreation.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Player_SaveData.h"
+#include "SaveData_PlayerProfile.h"
+#include "Starmark_GameInstance.h"
 #include "Starmark_PlayerState.h"
 
 
@@ -306,6 +309,8 @@ void UWidget_AvatarCreation::OnMoveFourDropDownChanged(const FString Option)
 
 void UWidget_AvatarCreation::OnSaveButtonPressed()
 {
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	
 	if (!PlayerStateReference) {
 		PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
 	}
@@ -355,27 +360,27 @@ void UWidget_AvatarCreation::OnSaveButtonPressed()
 	}
 
 	if (!IsEditingExistingAvatar) {
-		CurrentAvatar.IndexInPlayerLibrary = (PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num() * -1) - 1;
-		PlayerStateReference->PlayerProfileReference->AvatarLibrary.Add(CurrentAvatar);
+		CurrentAvatar.IndexInPlayerLibrary = (GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library.Num() * -1) - 1;
+		GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library.Add(CurrentAvatar);
 	} else {
 		// Update the avatar if it's in the player's team
-		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam.Num(); i++) {
-			if (PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
-				PlayerStateReference->PlayerProfileReference->CurrentAvatarTeam[i] = CurrentAvatar;
+		for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Num(); i++) {
+			if (GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
+				GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i] = CurrentAvatar;
 				break;
 			}
 		}
 
 		// Update the avatar if it's in the player's library
-		for (int i = 0; i < PlayerStateReference->PlayerProfileReference->AvatarLibrary.Num(); i++) {
-			if (PlayerStateReference->PlayerProfileReference->AvatarLibrary[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
-				PlayerStateReference->PlayerProfileReference->AvatarLibrary[i] = CurrentAvatar;
+		for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Num(); i++) {
+			if (GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
+				GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i] = CurrentAvatar;
 				break;
 			}
 		}
 	}
 
-	PlayerStateReference->SaveToCurrentProfile();
+	GameInstanceReference->SaveToCurrentProfile();
 
 	if (OnAvatarCreatedDelegate.IsBound()) {
 		OnAvatarCreatedDelegate.Broadcast();

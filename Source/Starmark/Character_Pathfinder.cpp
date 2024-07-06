@@ -361,7 +361,7 @@ void ACharacter_Pathfinder::AvatarStopMoving(bool SnapToGrid)
 
 ECharacter_FacingDirections ACharacter_Pathfinder::GetCharacterFacingDirection()
 {
-	ECharacter_FacingDirections ReturnDirection;
+	ECharacter_FacingDirections ReturnDirection = {};
 
 	if (GetActorRotation().Yaw >= -315.f && GetActorRotation().Yaw <= -225.f) {
 		// Bottom Right

@@ -49,5 +49,5 @@ public:
 	void SaveProfileDataToJson();
 
 	UFUNCTION(BlueprintCallable)
-	void LoadProfileDataFromJson();
+	void LoadProfileDataFromJson(FString InProfileName);
 };

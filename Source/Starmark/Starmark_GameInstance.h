@@ -6,17 +6,17 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "SaveData_DeveloperSettings.h"
 #include "Starmark_Variables.h"
-#include "Player_SaveData.h"
 
 #include "Starmark_GameInstance.generated.h"
 
 
 // Forward Declarations
 class AActor_GridTile;
+class USaveData_PlayerProfile;
 
 
 // The GameInstance is created when the game is first launched, and is not destroyed until the game is closed.
-// It persists from level to level, regardless of travel type (Seamless vs. Hard).
+// It persists from level to level, regardless of travel type (Seamless or Hard).
 // That means this is a good place to store data that needs to be persistent, except in multiplayer scenarios.
 // The GameInstance is not replicated at all. So for all replicated variables, use the PlayerState.
 UCLASS()
@@ -25,7 +25,6 @@ class STARMARK_API UStarmark_GameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
-
 	UStarmark_GameInstance(const FObjectInitializer& ObjectInitializer);
 
 // Variables
@@ -35,8 +34,7 @@ public:
 	UPROPERTY()
 	USaveData_DeveloperSettings* DevSettingsSaveFile;
 
-	// Putting DataTables here so they're all in one place
-	// and easy to access
+	// Putting DataTables here, so they're all in one place and easy to access..
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarsDataTable;
 
@@ -48,29 +46,23 @@ public:
 
 // ------------------------- Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FPlayer_Data PlayerData;
-
+	USaveData_PlayerProfile* PlayerSaveGameReference;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FAvatar_Struct> PlayerTeam;
-
-	UPROPERTY()
-	FString PlayerName;
-
-	UPROPERTY()
-	FString CurrentProfileName;
-
-	UPROPERTY()
-	UPlayer_SaveData* CurrentProfileReference;
+	FPlayer_Data PlayerDataStruct;
 
 
 // Functions
 // --------------------------------------------------
 
 // ------------------------- Global Helper Functions
-	bool DoesSessionExist();
-	FOnlineSessionSettings* GetCurrentSessionSettings();
-	UDataTable* GetAvatarsDataTable() { return AvatarsDataTable; }
-
+	static bool DoesSessionExist();
+	static FOnlineSessionSettings* GetCurrentSessionSettings();
+	
+	USaveData_PlayerProfile* ReturnPlayerSaveGameReference();
+	
+	UDataTable* GetAvatarsDataTable() const { return AvatarsDataTable; }
+	
 	UFUNCTION(BlueprintCallable)
 	USaveData_DeveloperSettings* GetDevSettingsSaveFile();
 
@@ -79,6 +71,9 @@ public:
 
 // ------------------------- Player
 	UFUNCTION(BlueprintCallable)
+	void SaveToCurrentProfile();
+	
+	UFUNCTION(BlueprintCallable)
 	void LoadProfile(FString ProfileName);
 
 	UFUNCTION(BlueprintCallable)
@@ -86,7 +81,7 @@ public:
 
 // ------------------------- Level
 	UFUNCTION()
-	AActor_GridTile* FindTileByCoordinates(int x, int y);
+	AActor_GridTile* FindTileByCoordinates(int x, int y) const;
 
 
 // Networking

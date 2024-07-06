@@ -41,13 +41,9 @@ public:
 // ------------------------- 
 	UFUNCTION(BlueprintCallable)
 	void OnButtonClicked();
-
-	UFUNCTION()
+	
 	void EquipAvatar();
-
-	UFUNCTION()
 	void UnequipAvatar();
-
-	UFUNCTION()
+	
 	void DeleteAvatar();
 };

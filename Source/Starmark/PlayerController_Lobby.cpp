@@ -14,7 +14,7 @@ void APlayerController_Lobby::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(APlayerController_Lobby, PlayerDataStruct);
+	//DOREPLIFETIME(APlayerController_Lobby, PlayerDataStruct);
 }
 
 
@@ -28,8 +28,6 @@ void APlayerController_Lobby::OnRep_PlayerState()
 // ------------------------- Widgets
 void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 {
-	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
-
 	if (!LobbyWidget_Reference->IsValidLowLevel() && LobbyWidget_Class->IsValidLowLevel() && IsLocalPlayerController()) {
 		// Must assign a local controller
 		LobbyWidget_Reference = CreateWidget<UWidget_ServerHost>(this, LobbyWidget_Class);
@@ -44,7 +42,7 @@ void APlayerController_Lobby::PlayerJoinedMultiplayerLobby_Implementation()
 
 		// Get the player's data from their GameInstance
 		UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-		PlayerDataStruct = GameInstanceReference->PlayerData;
+		PlayerDataStruct = GameInstanceReference->PlayerDataStruct;
 
 		// Send the number of expected players to the GameState
 		// To-Do: Figure out how to do this

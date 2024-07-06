@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
+#include "SaveData_PlayerProfile.h"
 #include "SaveData_PlayerProfilesList.h"
 #include "Starmark_PlayerState.h"
 #include "WidgetComponent_FoundServer.h"
@@ -47,6 +48,23 @@ FOnlineSessionSettings* UStarmark_GameInstance::GetCurrentSessionSettings()
 	return CurrentSettings;
 }
 
+
+USaveData_PlayerProfile* UStarmark_GameInstance::ReturnPlayerSaveGameReference()
+{
+	UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / ReturnPlayerSaveGameReference / Players' data returned"));
+
+	if (!PlayerSaveGameReference) {
+		PlayerSaveGameReference = Cast<USaveData_PlayerProfile>(UGameplayStatics::LoadGameFromSlot("PlayerProfileHandler", 0));
+		
+		if (!PlayerSaveGameReference) {
+			PlayerSaveGameReference = Cast<USaveData_PlayerProfile>(UGameplayStatics::CreateSaveGameObject(USaveData_PlayerProfile::StaticClass()));
+			UGameplayStatics::SaveGameToSlot(DevSettingsSaveFile, "PlayerProfileHandler", 0);
+		}
+	}
+	
+	return PlayerSaveGameReference;
+}
+
 USaveData_DeveloperSettings* UStarmark_GameInstance::GetDevSettingsSaveFile()
 {
 	// Try to retrieve the save file
@@ -75,22 +93,25 @@ FDeveloperSettingsAsStruct UStarmark_GameInstance::GetDevSettingsStruct()
 
 
 // ------------------------- Player
+void UStarmark_GameInstance::SaveToCurrentProfile()
+{
+	if (PlayerSaveGameReference) {
+		PlayerSaveGameReference->PlayerProfileStruct.PlayerName = PlayerDataStruct.PlayerName;
+
+		UGameplayStatics::SaveGameToSlot(PlayerSaveGameReference, PlayerDataStruct.ProfileName, 0);
+
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_PlayerState / SaveToCurrentProfile / Saved the players' profile"));
+	}
+
+	// Save the player profile to JSON.
+	ReturnPlayerSaveGameReference()->SaveProfileDataToJson();
+}
+
+
 void UStarmark_GameInstance::LoadProfile(FString ProfileName)
 {
-	USaveData_PlayerProfilesList* SaveGameObject = Cast<USaveData_PlayerProfilesList>(UGameplayStatics::LoadGameFromSlot("PlayerProfilesList", 0));
-
-	for (int i = 0; i < SaveGameObject->PlayerProfileNames.Num(); i++) {
-		if (SaveGameObject->PlayerProfileNames[i] == ProfileName) {
-			CurrentProfileReference = Cast<UPlayer_SaveData>(UGameplayStatics::LoadGameFromSlot(ProfileName, 0));
-
-			PlayerName = CurrentProfileReference->Name;
-			CurrentProfileName = ProfileName;
-
-			// To-Do: Set data in the players' PlayerState (?)
-			//Cast<AStarmark_PlayerState>(GetFirstLocalPlayerController()->GetPawn()->GetPlayerState())->PlayerProfileReference = CurrentProfileReference;
-			break;
-		}
-	}
+	// Load the player profile from JSON.
+	ReturnPlayerSaveGameReference()->LoadProfileDataFromJson(ProfileName);
 }
 
 
@@ -109,14 +130,13 @@ void UStarmark_GameInstance::DeleteProfile(FString ProfileName)
 }
 
 
-AActor_GridTile* UStarmark_GameInstance::FindTileByCoordinates(int x, int y)
+AActor_GridTile* UStarmark_GameInstance::FindTileByCoordinates(int x, int y) const
 {
 	TArray<AActor*> GridTilesArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
-	AActor_GridTile* GridTile = nullptr;
 
 	for (AActor* Tile : GridTilesArray) {
-		GridTile = Cast<AActor_GridTile>(Tile);
+		AActor_GridTile* GridTile = Cast<AActor_GridTile>(Tile);
 		if (Tile->GetActorLocation().X / 200 == x && Tile->GetActorLocation().Y / 200 == y) {
 			return GridTile;
 		}
@@ -124,7 +144,6 @@ AActor_GridTile* UStarmark_GameInstance::FindTileByCoordinates(int x, int y)
 
 	return nullptr;
 }
-
 
 
 // Networking

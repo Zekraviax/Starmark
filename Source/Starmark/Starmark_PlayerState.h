@@ -4,7 +4,6 @@
 #include "GameFramework/PlayerState.h"
 
 #include "Starmark_Variables.h"
-#include "Net/UnrealNetwork.h"
 
 #include "Starmark_PlayerState.generated.h"
 
@@ -17,10 +16,10 @@ class UStarmark_GameInstance;
 class UWidget_HUD_Battle;
 
 
-// Delegates
-//DECLARE_DELEGATE(FJoinedMultiplayerLobby);
-
-
+// The PlayerState is replicated to everyone in multiplayer scenarios.
+// This means it is a good place to put variables that should be replicated like a player's team of avatars,
+// and not their Save Data.
+// The GameState holds an array of PlayerStates called "PlayerArray"
 UCLASS()
 class STARMARK_API AStarmark_PlayerState : public APlayerState
 {
@@ -43,8 +42,6 @@ public:
 // ------------------------- Global Helper Variables
 	// To-Do: Make the PlayerState easily accessible wherever data needs to be saved
 	// And make a function in the PlayerState to handle the PlayerProfileInstance not existing
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	USaveData_PlayerProfile* PlayerProfileInstance;
 
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -56,12 +53,9 @@ public:
 // ------------------------- Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<FAvatar_Struct> PlayerTeam;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepNotify_PlayerProfileReferenceUpdated)
-	UPlayer_SaveData* PlayerProfileReference;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	FPlayer_Data PlayerDataStruct;
+	FPlayer_Data PlayerData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString ReplicatedPlayerName = "None";
@@ -79,39 +73,22 @@ public:
 // ------------------------- Local Helper Functions
 
 // ------------------------- Global Helper Functions
-	USaveData_PlayerProfile* ReturnPlayerProfileInstance();
+	FPlayer_Data GetPlayerDataFromGameInstance();
 
 // ------------------------- Player
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayerData();
-
-	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void Server_UpdatePlayerData(FPlayer_Data InPlayerData);
-
-	UFUNCTION(BlueprintCallable, Client, Reliable)
-	void Client_UpdatePlayerData();
-
-	UFUNCTION(BlueprintCallable)
-	void SaveToCurrentProfile();
 
 // ------------------------- Lobby
 	UFUNCTION(BlueprintNativeEvent)
 	void SendUpdateToMultiplayerLobby();
 
 // ------------------------- Battle
-	UFUNCTION() // this function needs the UFUNCTION tag
-	void OnRepNotify_PlayerProfileReferenceUpdated();
-
-	UPlayer_SaveData* ReturnPlayerData();
-
 	UFUNCTION(Client, Reliable)
 	void Client_UpdateReplicatedPlayerName();
 
 	UFUNCTION(Server, Reliable)
 	void Server_UpdateReplicatedPlayerName(const FString& UpdatedReplicatedPlayerName);
-
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void PlayerState_BeginBattle();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);

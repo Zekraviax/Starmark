@@ -8,7 +8,7 @@ void USaveData_PlayerProfile::SaveProfileDataToJson()
 {
 	FString SaveGamesFolderPathAppend = "SaveGames/";
 
-	// Get the project's save folder directory
+	// Get the projects' save folder directory.
 	PlayerDataSaveFilePath = FPaths::ProjectSavedDir();
 	UE_LOG(LogTemp, Warning, TEXT("FilePaths: ProjectSavedDir: %s"), *PlayerDataSaveFilePath);
 	PlayerDataSaveFilePath.Append(SaveGamesFolderPathAppend);
@@ -17,9 +17,9 @@ void USaveData_PlayerProfile::SaveProfileDataToJson()
 	FString PlayerProfileJson;
 	FJsonObjectConverter::UStructToJsonObjectString(PlayerProfileStruct, PlayerProfileJson, 0, 0);
 
-	// Before we save the json file, we need to check if the player's save data folder exists
-	// If it doesn't, we make it first
-	// The directory path should be PlayerDataSaveFilePath + the player's profile name
+	// Before we save the json file, we need to check if the players' save data folder exists.
+	// If it doesn't, we make it first.
+	// The directory path should be PlayerDataSaveFilePath + the player's profile name.
 	IPlatformFile& FileManager = FPlatformFileManager::Get().GetPlatformFile();
 
 	if (!FileManager.DirectoryExists(*PlayerDataSaveFilePath)) {
@@ -45,6 +45,29 @@ void USaveData_PlayerProfile::SaveProfileDataToJson()
 }
 
 
-void USaveData_PlayerProfile::LoadProfileDataFromJson()
+void USaveData_PlayerProfile::LoadProfileDataFromJson(FString InProfileName)
 {
+	IPlatformFile& FileManager = FPlatformFileManager::Get().GetPlatformFile();
+	FString PlayerSaveDataFileName = "SaveGames/";
+
+	FString PlayerDataSaveFilePath = FPaths::ProjectSavedDir();
+	PlayerDataSaveFilePath.Append(PlayerSaveDataFileName);
+	UE_LOG(LogTemp, Warning, TEXT("FilePaths: Player's save data folder: %s"), *PlayerDataSaveFilePath);
+
+	PlayerDataSaveFilePath.Append(InProfileName + ".json");
+	UE_LOG(LogTemp, Warning, TEXT("FilePaths: Player's save data file : %s"), *PlayerDataSaveFilePath);
+	
+	if (!FileManager.FileExists(*PlayerDataSaveFilePath)) {
+		UE_LOG(LogTemp, Error, TEXT("Error: Could not find Player's data."));
+		return;
+	}
+
+	FString PlayerDataAsJson;
+	FPlayerProfileAsStruct PlayerDataAsStruct;
+
+	FFileHelper::LoadFileToString(PlayerDataAsJson, *PlayerDataSaveFilePath);
+	FJsonObjectConverter::JsonObjectStringToUStruct(PlayerDataAsJson, &PlayerDataAsStruct, 0, 0);
+
+	// Apply player data
+	PlayerProfileStruct = PlayerDataAsStruct;
 }

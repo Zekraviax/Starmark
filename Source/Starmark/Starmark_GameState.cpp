@@ -371,12 +371,12 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 					PlayerController->IsCurrentlyActingPlayer = true;
 					PlayerController->CurrentSelectedAvatar = AvatarTurnOrder[CurrentAvatarTurnIndex];
 
-					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / It's player %s's turn"), *PlayerController->PlayerDataStruct.PlayerName);
+					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / It's player %s's turn"), *PlayerController->PlayerData.PlayerName);
 				} else {
 					PlayerController->IsCurrentlyActingPlayer = false;
 					PlayerController->CurrentSelectedAvatar = nullptr;
 
-					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Player %s is not acting now"), *PlayerController->PlayerDataStruct.PlayerName);
+					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Player %s is not acting now"), *PlayerController->PlayerData.PlayerName);
 				}
 			} else {
 				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Avatar in turn order at index %d is not valid"), CurrentAvatarTurnIndex);

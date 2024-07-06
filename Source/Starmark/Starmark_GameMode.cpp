@@ -6,14 +6,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "OnlineSessionSettings.h"
 #include "PlayerController_Battle.h"
-#include "PlayerController_Lobby.h"
 #include "PlayerPawn_Flying.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
 #include "Starmark_Variables.h"
 #include "Widget_HUD_Battle.h"
-#include "WidgetComponent_AvatarBattleData.h"
 
 
 // ------------------------- Local Helper Functions
@@ -67,7 +65,7 @@ void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerController)
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Begin function"));
-	
+
 	// Spawn and posses player pawn
 	TArray<AActor*> FoundPlayerStartActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), FoundPlayerStartActors);
@@ -93,6 +91,9 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	NewPlayerController->ClientSetRotation(Rotation, true);
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Player controller possessed pawn: %s"), *NewPlayerController->GetPawn()->GetName());
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Player pawn rotation: %s"), *Rotation.ToString());
+
+	// Fetch player data
+	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->UpdatePlayerData();
 
 	// We're assigning each player a unique number just in case two or more players have the same player name
 	MultiplayerUniqueIDCounter++;
@@ -128,9 +129,8 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Total PlayerControllerReferences in array: %d"), PlayerControllerReferences.Num());
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected players: %d"), ExpectedPlayers);
 
-	// Tell the player to have their data passed from their GameInstance to the server
-	// by setting it on the PlayerState
-	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Client_UpdatePlayerData();
+	// Tell the player to have their data passed from their GameInstance to the server by setting it on the PlayerState
+	//Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->Client_UpdatePlayerData();
 
 	// To-Do: Figure out why the ExpectedPlayers is being overridden to 1
 	// Don't call this function unless all PlayerStates have their player data
@@ -203,11 +203,11 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 	}
 
 	for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerState has data with ProfileName: %s"), *Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerDataStruct.ProfileName);
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerState has %d avatars"), Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerDataStruct.CurrentAvatarTeam.Num());
-
-		FPlayer_Data PlayerData = Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerDataStruct;
-		PlayerControllerReferences[i]->PlayerDataStruct = PlayerData;
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerState has data with ProfileName: %s"), *Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerData.ProfileName);
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / PlayerState has %d avatars"), Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerData.CurrentAvatarTeam.Num());
+		
+		FPlayer_Data PlayerData = Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerData;
+		//PlayerControllerReferences[i]->PlayerDataStruct = PlayerData;
 		TArray<FAvatar_Struct> CurrentPlayerTeam = PlayerData.CurrentAvatarTeam;
 
 		int SpawnedAvatarCount = 0;
@@ -222,7 +222,7 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 						SpawnedAvatarCount++;
 					}
 				} else {
-					Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam.RemoveAt(j);
+					Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->PlayerDataStruct.CurrentAvatarTeam.RemoveAt(j);
 					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Remove invalid member %d from PlayerState_PlayerParty"), j);
 				}
 			}
@@ -246,11 +246,12 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 	}
 
 	for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / PlayerState has data with ProfileName: %s"), *Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerDataStruct.ProfileName);
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / PlayerState has %d avatars"), Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerDataStruct.CurrentAvatarTeam.Num());
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / PlayerState has data with ProfileName: %s"), *Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerData.ProfileName);
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / PlayerState has %d avatars"), Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerData.CurrentAvatarTeam.Num());
 
-		FPlayer_Data PlayerData = Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerDataStruct;
-		PlayerControllerReference->PlayerDataStruct = PlayerData;
+
+		FPlayer_Data PlayerData = Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->GetPlayerDataFromGameInstance();
+		//PlayerControllerReference->PlayerDataStruct = PlayerData;
 		TArray<FAvatar_Struct> CurrentPlayerTeam = PlayerData.CurrentAvatarTeam;
 
 		int SpawnedAvatarCount = 0;
@@ -300,7 +301,8 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 	if (ReadyStatuses.Contains(false) || ReadyStatuses.Num() < ExpectedPlayers) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Can't assemble turn order text because not all players are ready"));
 		GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady, 1.f, false);
-	} else {
+	} else
+	{
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / All players are ready to start"));
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Set the turn order for the avatars"));
 
@@ -341,35 +343,36 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 		// Initial HUD set up for all players
 		GameStateReference->ShowHideAllPlayerHuds();
-	}
+	
 
 
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / End normal functionality. Begin dev tests..."));
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / End normal functionality. Begin dev tests..."));
 
-	// Currently, this function only sets an avatar's base stats to their minimum, since there is currently no way for them to scale upwards
-	if (GetHostPlayerGameStateInstanceReference()->GetDevSettingsStruct().RecalculateAvatarStatsAtStartOfBattle) {
-		TArray<AActor*> Avatars;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
-		FString ContextString;
+		// Currently, this function only sets an avatar's base stats to their minimum, since there is currently no way for them to scale upwards
+		if (GetHostPlayerGameStateInstanceReference()->GetDevSettingsStruct().RecalculateAvatarStatsAtStartOfBattle) {
+			TArray<AActor*> Avatars;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
+			FString ContextString;
 
-		for (int i = 0; i < Avatars.Num(); i++) {
-			ACharacter_Pathfinder* FoundActor = Cast<ACharacter_Pathfinder>(Avatars[i]);
-			for (auto Row : GetHostPlayerGameStateInstanceReference()->GetAvatarsDataTable()->GetRowMap()) {
-				FAvatar_Struct* AvatarData = (FAvatar_Struct*)(Row.Value);
+			for (int i = 0; i < Avatars.Num(); i++) {
+				ACharacter_Pathfinder* FoundActor = Cast<ACharacter_Pathfinder>(Avatars[i]);
+				for (const auto Row : GetHostPlayerGameStateInstanceReference()->GetAvatarsDataTable()->GetRowMap()) {
+					const FAvatar_Struct* AvatarData = reinterpret_cast<FAvatar_Struct*>(Row.Value);
 
-				if (AvatarData->AvatarName == FoundActor->AvatarData.AvatarName) {
-					FoundActor->AvatarData.BattleStats = AvatarData->SpeciesMinimumStats;
-					FoundActor->AvatarData.CurrentHealthPoints = AvatarData->SpeciesMinimumStats.MaximumHealthPoints;
-					FoundActor->AvatarData.CurrentManaPoints = AvatarData->SpeciesMinimumStats.MaximumManaPoints;
-					break;
+					if (AvatarData->AvatarName == FoundActor->AvatarData.AvatarName) {
+						FoundActor->AvatarData.BattleStats = AvatarData->SpeciesMinimumStats;
+						FoundActor->AvatarData.CurrentHealthPoints = AvatarData->SpeciesMinimumStats.MaximumHealthPoints;
+						FoundActor->AvatarData.CurrentManaPoints = AvatarData->SpeciesMinimumStats.MaximumManaPoints;
+						break;
+					}
 				}
 			}
 		}
-	}
 
-	for (APlayerController_Battle* Controller : GameStateReference->ReturnAllBattlePlayerControllers()) {
-		Controller->SetBattleWidgetVariables();
-		Controller->BattleWidgetReference->SetCurrentActingEntityInfo(GameStateReference->DynamicAvatarTurnOrder[0]);
+		for (APlayerController_Battle* Controller : GameStateReference->ReturnAllBattlePlayerControllers()) {
+			Controller->SetBattleWidgetVariables();
+			Controller->BattleWidgetReference->SetCurrentActingEntityInfo(GameStateReference->DynamicAvatarTurnOrder[0]);
+		}
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / End function"));
@@ -456,7 +459,7 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 	// without cloning the data for each avatar
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Give the avatar a copy of the player %s's data"), *PlayerController->PlayerDataStruct.ProfileName);
 
-	NewAvatarActor->ControllingPlayerDataCopy = PlayerController->PlayerDataStruct;
+	PlayerController->PlayerDataStruct = Cast<AStarmark_PlayerState>(PlayerController->PlayerState)->GetPlayerDataFromGameInstance();
 	NewAvatarActor->PlayerControllerReference = PlayerController;
 
 	// To-Do: Clean up the MultiPlayer Unique IDs so that there is only one, used everywhere
