@@ -668,8 +668,8 @@ struct STARMARK_API FAvatar_Struct : public FFastArraySerializerItem
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<EEntity_Factions> Factions;
 
-	// The Owner Unique ID should be unique between players
-	// The Battle Unique ID should be unique between *all* avatars
+	// The Owner Unique ID should be unique between players.
+	// The Battle Unique ID should be unique between *all* avatars.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int OwnerMultiplayerUniqueID;
 

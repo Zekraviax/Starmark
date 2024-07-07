@@ -55,7 +55,7 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 }
 
 
-void UWidget_HUD_Battle::SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars) const
+void UWidget_HUD_Battle::SetCommandsToListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars) const
 {
 	for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
 		if (Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))) {
@@ -65,11 +65,11 @@ void UWidget_HUD_Battle::SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveA
 				Button->AttackNameText->SetText(FText::FromString(ReserveAvatars[i].Nickname));
 				Button->AvatarAttackIndex = i;
 			} else {
-				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetListOfReserveAvatars / Reset button at index: %d"), i);
+				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCommandsToListOfReserveAvatars / Reset button at index: %d"), i);
 
 				Button->AttackNameText->SetText(FText::FromString("-"));
 				Button->PlayerControllerReference = nullptr;
-				Button->AvatarAttackIndex = -1;
+				Button->AvatarAttackIndex = ReserveAvatars[i].BattleUniqueID;
 				Button->SetVisibility(ESlateVisibility::Collapsed);
 			}
 		}

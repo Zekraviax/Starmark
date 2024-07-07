@@ -110,6 +110,11 @@ void APlayerController_Battle::SetPlayerClickMode(E_PlayerCharacter_ClickModes N
 		BattleWidgetReference->UpdateAvatarAttacksComponents(CurrentSelectedAvatar->CurrentKnownAttacks);
 	} else if (PlayerClickMode == E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon) {
 		// Replace the list of attacks with the list of reserve avatars
+		TArray<FAvatar_Struct> ReserveAvatars;
+
+		
+		
+		BattleWidgetReference->SetCommandsToListOfReserveAvatars(ReserveAvatars);
 	}
 }
 
@@ -136,15 +141,6 @@ void APlayerController_Battle::SetBattleWidgetVariables()
 		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
 		BattleWidgetReference->AvatarBattleDataWidget->GetAvatarStatusEffects(CurrentSelectedAvatar->CurrentStatusEffectsArray);
 	}
-}
-
-
-void APlayerController_Battle::Client_GetAvatarImagesInDynamicTurnOrder_Implementation()
-{
-	TArray<UTexture2D*> InDynamicAvatarTurnOrderImages = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->DynamicAvatarTurnOrderImages;
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_GetAvatarImagesInDynamicTurnOrder / InDynamicAvatarTurnOrderImages child count: %d"), InDynamicAvatarTurnOrderImages.Num());
-
-	BattleWidgetReference->SetUiIconsInTurnOrder(InDynamicAvatarTurnOrderImages);
 }
 
 
@@ -403,10 +399,18 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatar
 
 void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile, ACharacter_Pathfinder* SelectedAvatar)
 {
-	// Tell the server to physically create the avatar actor, then end the turn
-	// OR, swap the data of the pre-existing avatar actor with the reserve avatar
+	// Tell the server to physically create the avatar actor, then end the turn...
+	// Or, swap the data of the pre-existing avatar actor with the reserve avatar.
 
-	FAvatar_Struct ReserveAvatarData = PlayerDataStruct.CurrentAvatarTeam[4];
+	FAvatar_Struct ReserveAvatarData;
+	// To-Do: Delete this after the reserve avatar UI is properly implemented.
+	for (int i = 0; i < PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
+		if (PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary > 4) {
+			ReserveAvatarData = PlayerDataStruct.CurrentAvatarTeam[i];
+			break;
+		}
+	}
+	
 	int ReserveAvatarIndexInParty = ReserveAvatarData.IndexInPlayerLibrary;
 	ACharacter_Pathfinder* FoundAvatar;
 
@@ -423,6 +427,14 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 
 	// Swap indices
 	ReserveAvatarData.IndexInPlayerLibrary = FoundAvatar->AvatarData.IndexInPlayerLibrary;
+
+	for (int i = 0; i < PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
+		if (PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary > 4) {
+			
+			break;
+		}
+	}
+	
 	FoundAvatar->AvatarData.IndexInPlayerLibrary = ReserveAvatarIndexInParty;
 	FoundAvatar->AvatarData = ReserveAvatarData;
 	
@@ -433,7 +445,8 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 	}
 
 	// Set health and mana?
-
+		
+	// Automatically end the turn whenever a player swaps avatars.
 	PlayerClickMode = E_PlayerCharacter_ClickModes::E_MoveCharacter;
 	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn();
 }

@@ -218,6 +218,11 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn avatar %s for player %s"), *CurrentPlayerTeam[j].AvatarName, *PlayerData.PlayerName);
 						
 						SpawnedAvatarCount++;
+					} else {
+						// Calculate variables like Current Health for reserve avatars here.
+						CurrentPlayerTeam[j].CurrentHealthPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumHealthPoints;
+						CurrentPlayerTeam[j].CurrentManaPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumManaPoints;
+						CurrentPlayerTeam[j].CurrentTileMoves = CurrentPlayerTeam[j].MaximumTileMoves;
 					}
 				} else {
 					GameStateReference->PlayerDataStructsArray[i].CurrentAvatarTeam.RemoveAt(j);
@@ -246,7 +251,6 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 	}
 
 	for (int i = 0; i < GameStateReference->ReturnAllBattlePlayerControllers().Num(); i++) {
-		//FPlayer_Data PlayerData = Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->GetPlayerDataFromGameInstance();
 		TArray<FAvatar_Struct> CurrentPlayerTeam = GameStateReference->PlayerDataStructsArray[i].CurrentAvatarTeam;
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / PlayerState has data with ProfileName: %s"), *Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerData.ProfileName);
@@ -259,13 +263,12 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 				if (CurrentPlayerTeam[j].AvatarName != "Default") {
 					if (SpawnedAvatarCount < 4) {
 						Server_SpawnAvatar(PlayerControllerReference, (SpawnedAvatarCount + 1), CurrentPlayerTeam[j]);
-						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Spawn avatar %s for player %s"), *CurrentPlayerTeam[j].AvatarName, *PlayerControllerReference->PlayerName);
+						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Spawn avatar %s for player %s."), *CurrentPlayerTeam[j].AvatarName, *PlayerControllerReference->PlayerName);
 
 						SpawnedAvatarCount++;
 					}
 				} else {
-					//Cast<UStarmark_GameInstance>(PlayerControllerReferences[i]->GetGameInstance())->CurrentProfileReference->CurrentAvatarTeam.RemoveAt(j);
-					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Remove invalid member %d from PlayerState_PlayerParty"), j);
+					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Invalid member at index %d in Player party"), j);
 				}
 			}
 		}
@@ -345,7 +348,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / End normal functionality. Begin dev tests..."));
 
-		// Currently, this function only sets an avatar's base stats to their minimum, since there is currently no way for them to scale upwards
+		// Currently, this function only sets an avatar's base stats to their minimum, since there is currently no way for them to scale upwards.
 		if (GetHostPlayerGameStateInstanceReference()->GetDevSettingsStruct().RecalculateAvatarStatsAtStartOfBattle) {
 			TArray<AActor*> Avatars;
 			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);

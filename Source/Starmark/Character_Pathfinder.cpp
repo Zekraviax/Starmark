@@ -9,7 +9,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerController_Battle.h"
-#include "Widget_HUD_Battle.h"
+#include "Starmark_GameState.h"
 #include "WidgetComponent_AvatarBattleData.h"
 
 
@@ -405,4 +405,25 @@ void ACharacter_Pathfinder::Client_GetAvatarData_Implementation(FAvatar_Struct N
 void ACharacter_Pathfinder::Local_GetAvatarData(FAvatar_Struct NewAvatarData)
 {
 	AvatarData = NewAvatarData;
+}
+
+
+void ACharacter_Pathfinder::SynchronizeAvatarDataToGameState_Implementation()
+{
+	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
+
+	// Step one: Find the player that controls this avatar.
+	for (int i = 0; i < GameStateReference->PlayerDataStructsArray.Num(); i++) {
+		if (PlayerControllerReference->PlayerDataStruct.ReplicationID == GameStateReference->PlayerDataStructsArray[i].ReplicationID) {
+			// Step two: Find the avatar amongst that players' team.
+			for (int j = 0; j < GameStateReference->PlayerDataStructsArray[i].CurrentAvatarTeam.Num(); j++) {
+				if (AvatarData.BattleUniqueID == GameStateReference->PlayerDataStructsArray[i].CurrentAvatarTeam[j].BattleUniqueID) {
+					// Copy this avatars' data into the array.
+					GameStateReference->PlayerDataStructsArray[i].CurrentAvatarTeam[j] = AvatarData;
+					break;
+				}
+			}
+			break;
+		}
+	}
 }

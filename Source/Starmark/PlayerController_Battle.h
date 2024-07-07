@@ -131,9 +131,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetVariables();
 
-	UFUNCTION(Client, Reliable)
-	void Client_GetAvatarImagesInDynamicTurnOrder();
-
 // ------------------------- Avatar
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void OnRepNotify_CurrentSelectedAvatar();

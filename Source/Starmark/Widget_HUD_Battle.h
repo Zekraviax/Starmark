@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
 #include "Components/Button.h"
@@ -9,7 +8,6 @@
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "Components/UniformGridPanel.h"
 #include "Components/VerticalBox.h"
 #include "Starmark_Variables.h"
 
@@ -89,7 +87,7 @@ public:
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
 	void UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStruct> Attacks);
-	void SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars) const;
+	void SetCommandsToListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars) const;
 
 	void SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages) const;
 	void SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity);

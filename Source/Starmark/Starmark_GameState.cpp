@@ -343,14 +343,24 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Begin function"));
 	
-	TArray<ACharacter_Pathfinder*> AvatarArray;
 	TArray<bool> IsPlayerActingArray;
-	TArray<AActor*> GridTilesArray;
+	TArray<AActor*> GridTilesArray, AvatarsActorsArray;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), AvatarsActorsArray);
+	for (int i = 0; i < AvatarsActorsArray.Num(); i++) {
+		ACharacter_Pathfinder* FoundAvatar = Cast<ACharacter_Pathfinder>(AvatarsActorsArray[i]);
+
+		if (FoundAvatar) {
+			FoundAvatar->SynchronizeAvatarDataToGameState();
+		}
+	}
 
 	CurrentAvatarTurnIndex++;
 
 	// Check if an Avatar died this turn
 	// If true, check for reserve Avatars before ending the turn
+
+	
 
 	// Reset Round if all Avatars have acted
 	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num()) {

@@ -102,6 +102,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<FAvatar_StatusEffect> CurrentStatusEffectsArray;
 
+	// Use this to synchronize the avatar data between the actor and the GameState array.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
 	int IndexInPlayerParty;
 
@@ -178,10 +179,11 @@ public:
 // ------------------------- Multiplayer
 	UFUNCTION(Client, Unreliable)
 	void Client_GetAvatarData(FAvatar_Struct NewAvatarData);
-
-	UFUNCTION()
 	void Local_GetAvatarData(FAvatar_Struct NewAvatarData);
 
 	UFUNCTION(BlueprintCallable)
 	ECharacter_FacingDirections GetCharacterFacingDirection();
+
+	UFUNCTION(Server, Reliable)
+	void SynchronizeAvatarDataToGameState();
 };
