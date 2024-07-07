@@ -50,6 +50,7 @@ public:
 	UDataTable* AvatarComplexAttacksDataTable;
 
 // ------------------------- Battle
+	// To-Do: Deprecate this array. The GameState should be handling this.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<APlayerController_Battle*> PlayerControllerReferences;
 

@@ -55,7 +55,7 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 }
 
 
-void UWidget_HUD_Battle::SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars)
+void UWidget_HUD_Battle::SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars) const
 {
 	for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
 		if (Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))) {
@@ -77,7 +77,7 @@ void UWidget_HUD_Battle::SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveA
 }
 
 
-void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages)
+void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages) const
 {
 	if (InDynamicAvatarTurnOrderImages.Num() > 0) {
 		if (EntityIconsInTurnOrder) {

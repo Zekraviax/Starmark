@@ -8,6 +8,7 @@
 #include "OnlineSessionSettings.h"
 #include "SaveData_PlayerProfile.h"
 #include "SaveData_PlayerProfilesList.h"
+#include "Starmark_GameState.h"
 #include "Starmark_PlayerState.h"
 #include "WidgetComponent_FoundServer.h"
 #include "Widget_ServerBrowser.h"
@@ -112,6 +113,10 @@ void UStarmark_GameInstance::LoadProfile(FString ProfileName)
 {
 	// Load the player profile from JSON.
 	ReturnPlayerSaveGameReference()->LoadProfileDataFromJson(ProfileName);
+	
+	PlayerDataStruct.PlayerName = ReturnPlayerSaveGameReference()->PlayerProfileStruct.PlayerName;
+	PlayerDataStruct.ProfileName = ReturnPlayerSaveGameReference()->PlayerProfileStruct.ProfileName;
+	PlayerDataStruct.CurrentAvatarTeam = ReturnPlayerSaveGameReference()->PlayerProfileStruct.Team;
 }
 
 

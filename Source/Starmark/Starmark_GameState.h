@@ -50,6 +50,9 @@ public:
 
 // ------------------------- Battle
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
+	TArray<FPlayer_Data> PlayerDataStructsArray;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
 	TArray<ACharacter_Pathfinder*> AvatarTurnOrder;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)

@@ -114,7 +114,7 @@ void APlayerController_Battle::SetPlayerClickMode(E_PlayerCharacter_ClickModes N
 }
 
 
-void APlayerController_Battle::Local_BattleWidget_AddToScreen()
+void APlayerController_Battle::Local_BattleWidget_AddToScreen() const
 {
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Local_BattleWidget_AddToScreen / Battle widget added to viewport"));
 	
@@ -172,10 +172,7 @@ void APlayerController_Battle::OnRepNotify_CurrentSelectedAvatar_Implementation(
 			}
 
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / OnRepNotify_CurrentSelectedAvatar / Is %s ready to start the battle? %s"), *PlayerDataStruct.PlayerName, IsReadyToStartMultiplayerBattle ? TEXT("true") : TEXT("false"));
-
-			if (!IsReadyToStartMultiplayerBattle) {
-				Server_SetReadyToStartMultiplayerBattle();
-			}
+			Server_SetReadyToStartMultiplayerBattle();
 		} else {
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / OnRepNotify_CurrentSelectedAvatar / CurrentSelectedAvatar not found, trying again..."));
 
@@ -197,17 +194,45 @@ void APlayerController_Battle::Server_SetReadyToStartMultiplayerBattle_Implement
 }
 
 
-// ------------------------- Battle
-void APlayerController_Battle::Server_GetDataFromProfile_Implementation()
+void APlayerController_Battle::ClientSendDataToServer_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetDataFromProfile / Server is attempting to get the player's data from their profile"));
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	PlayerDataStruct = GameInstanceReference->PlayerDataStruct;
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / ClientSendDataToServer / Sending player data with ProfileName: %s"), *PlayerDataStruct.ProfileName);
+
+	ServerSendDataToServer(PlayerDataStruct);
+}
+
+
+void APlayerController_Battle::ServerSendDataToServer_Implementation(FPlayer_Data ReceivedPlayerDataStruct)
+{
+	if (HasAuthority()) {
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / ServerSendDataToServer / Received player data with ProfileName: %s"), *ReceivedPlayerDataStruct.ProfileName);
+
+		Cast<AStarmark_PlayerState>(PlayerState)->PreBattleCheck = true;
+		Cast<AStarmark_GameState>(GetWorld()->GetGameState())->PlayerDataStructsArray.Add(ReceivedPlayerDataStruct);
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / ServerSendDataToServer / Error: This object does not have server authority."));
+	}
+}
+
+
+// ------------------------- Battle
+FPlayer_Data APlayerController_Battle::Server_GetDataFromProfile()
+{
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetDataFromProfile / Client is attempting to get the player's data from their profile"));
 	
 	// ReSharper disable once CppLocalVariableMayBeConst
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	PlayerDataStruct = GameInstanceReference->PlayerDataStruct;
 
+	// Pass the data to the client's PlayerState
+	Cast<AStarmark_PlayerState>(PlayerState)->PlayerData = PlayerDataStruct;
+
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetDataFromProfile / PlayerName is: %s"), *PlayerDataStruct.PlayerName);
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Server_GetDataFromProfile / PlayerName has %d avatars"), PlayerDataStruct.CurrentAvatarTeam.Num());
+
+	return PlayerDataStruct;
 }
 
 
@@ -314,7 +339,7 @@ void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActo
 }
 
 
-void APlayerController_Battle::HighlightSpecificAvatarsAndTiles(TArray<ACharacter_Pathfinder*> Avatars, TArray<AActor_GridTile*> Tiles)
+void APlayerController_Battle::HighlightSpecificAvatarsAndTiles(TArray<ACharacter_Pathfinder*> Avatars, TArray<AActor_GridTile*> Tiles) const
 {
 	TArray<AActor*> FoundAvatars, FoundGridTiles;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundAvatars);

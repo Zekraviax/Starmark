@@ -89,9 +89,9 @@ public:
 // ------------------------- Widget
 	UFUNCTION(BlueprintCallable)
 	void UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStruct> Attacks);
-	void SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars);
+	void SetListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars) const;
 
-	void SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages);
+	void SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages) const;
 	void SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity);
 
 	UFUNCTION(BlueprintCallable)

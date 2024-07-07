@@ -25,6 +25,7 @@ Core Gameplay:
 * Add a coin-flip/dice-roll when two Avatars are speed-tied.
 * Avatar data needs to be updated in the Player’s party when swapping Reserve Avatars is implemented.
 * Add loading screens.
+* Add status effect icons to the battle HUD.
 * Add turn timers to status effects.
 * Show information boxes when a status effect icon is hovered over.
 
@@ -36,9 +37,8 @@ Menus:
 
 
 Multiplayer:
-* Check if all players are ready before launching a multiplayer match.
 * Add cancel/exit buttons to the multiplayer search and lobby screens.
-* Allow hosts to designate other players as the host when in a multiplayer lobby (?).
+* Allow hosts to designate other players as the host when in a multiplayer lobby.
 * Add a chat box to the server lobby.
 * Prevent players from readying if they don’t have a profile/team loaded.
 * Allow lobby hosts to set a maximum player limit.
@@ -48,7 +48,7 @@ Demo:
 * Create a few different maps with different environments, obstacles and hazards.
 * Allow players to change the colour of Avatars.
 * Allow players to improve Avatars’ stats by distributing a set amount of points.
-* Replace the current default Avatar images with transparent versions.
+* Replace the current default Avatar images with high-quality, transparent versions.
 
 
 Bug fixes:

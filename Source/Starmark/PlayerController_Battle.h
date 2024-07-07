@@ -126,7 +126,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void CreateBattleWidget();
-	void Local_BattleWidget_AddToScreen();
+	void Local_BattleWidget_AddToScreen() const;
 
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetVariables();
@@ -139,8 +139,18 @@ public:
 	void OnRepNotify_CurrentSelectedAvatar();
 
 // ------------------------- Battle
+	// The client fetches their data from their GameInstance here.
+	// And sends it to the server here.
+	UFUNCTION(Client, Reliable)
+	void ClientSendDataToServer();
+
+	// The server receives the data from the client here.
+	// And passes it on to the GameState.
 	UFUNCTION(Server, Reliable)
-	void Server_GetDataFromProfile();
+	void ServerSendDataToServer(FPlayer_Data ReceivedPlayerDataStruct);
+	
+	UFUNCTION()
+	FPlayer_Data Server_GetDataFromProfile();
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetReadyToStartMultiplayerBattle();
@@ -152,7 +162,7 @@ public:
 	void OnPrimaryClick(AActor* ClickedActor, TArray<AActor*> ValidTargetsArray);
 
 	// Use this function to un-highlight all other avatars and tiles not passed in either array
-	void HighlightSpecificAvatarsAndTiles(TArray<ACharacter_Pathfinder*> Avatars, TArray< AActor_GridTile*> Tiles);
+	void HighlightSpecificAvatarsAndTiles(TArray<ACharacter_Pathfinder*> Avatars, TArray< AActor_GridTile*> Tiles) const;
 
 	void BeginSelectingTileForReserveAvatar(bool DidAvatarDie);
 
