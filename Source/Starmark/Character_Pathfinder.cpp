@@ -1,6 +1,7 @@
 #include "Character_Pathfinder.h"
 
 #include "Actor_GridTile.h"
+#include "Actor_WorldGrid.h"
 #include "AIController_Avatar.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -112,8 +113,8 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 	IndexInPlayerParty = 0;
 
 	// Highlight dynamic material
-	ActorHighlightedDecalDynamicMaterial = UMaterialInstanceDynamic::Create(ActorHighlightMaterial, this);
-	ActorHighlightedDecal->SetMaterial(0, ActorHighlightedDecalDynamicMaterial);
+	ActorHighlightedDecalMaterialInstanceDynamic = UMaterialInstanceDynamic::Create(ActorHighlightMaterial, this);
+	ActorHighlightedDecal->SetMaterial(0, ActorHighlightedDecalMaterialInstanceDynamic);
 }
 
 
@@ -170,7 +171,7 @@ void ACharacter_Pathfinder::OnAvatarClicked()
 // ------------------------- Battle
 void ACharacter_Pathfinder::SetActorHighlightProperties(bool IsVisible, E_GridTile_ColourChangeContext ColourChangeContext)
 {
-	if (ActorHighlightedDecal->IsValidLowLevel() && ActorHighlightedDecalDynamicMaterial->IsValidLowLevel()) {
+	if (ActorHighlightedDecal->IsValidLowLevel() && ActorHighlightedDecalMaterialInstanceDynamic->IsValidLowLevel()) {
 		ActorHighlightedDecal->SetVisibility(IsVisible);
 
 		switch (ColourChangeContext)
@@ -178,16 +179,16 @@ void ACharacter_Pathfinder::SetActorHighlightProperties(bool IsVisible, E_GridTi
 		case (E_GridTile_ColourChangeContext::Normal):
 			// Heirarcy of colours based on factors such as tile properties
 			// Lowest priority: White (no properties that change colour)
-			ActorHighlightedDecalDynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 1.f, 1.f, 1.f));
+			ActorHighlightedDecalMaterialInstanceDynamic->SetVectorParameterValue("Colour", FLinearColor(1.f, 1.f, 1.f, 1.f));
 			break;
 		case (E_GridTile_ColourChangeContext::OnMouseHover):
-			ActorHighlightedDecalDynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(0.f, 1.f, 0.f, 1.f));
+			ActorHighlightedDecalMaterialInstanceDynamic->SetVectorParameterValue("Colour", FLinearColor(0.f, 1.f, 0.f, 1.f));
 			break;
 		case (E_GridTile_ColourChangeContext::OnMouseHoverTileUnreachable):
-			ActorHighlightedDecalDynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.f, 0.f, 1.f));
+			ActorHighlightedDecalMaterialInstanceDynamic->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.f, 0.f, 1.f));
 			break;
 		case (E_GridTile_ColourChangeContext::WithinAttackRange):
-			ActorHighlightedDecalDynamicMaterial->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.2f, 0.f, 1.f));
+			ActorHighlightedDecalMaterialInstanceDynamic->SetVectorParameterValue("Colour", FLinearColor(1.f, 0.2f, 0.f, 1.f));
 			break;
 		default:
 			break;
@@ -201,10 +202,12 @@ void ACharacter_Pathfinder::SetActorHighlightProperties(bool IsVisible, E_GridTi
 void ACharacter_Pathfinder::GetValidActorsForAttack_Implementation(FAvatar_AttackStruct Attack, AActor* CurrentlyHoveredActor)
 {
 	TArray<FVector2D> ValidVectors;
-	TArray<AActor*> GridTilesArray, EntitiesArray;
+	TArray<AActor*> GridTilesArray, EntitiesArray, WorldGridActorsArray;
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), EntitiesArray);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), StaticClass(), EntitiesArray);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), WorldGridActorsArray);
+	AActor_WorldGrid* WorldGrid = Cast<AActor_WorldGrid>(WorldGridActorsArray[0]);
 
 	ValidAttackTargetsArray.Empty();
 
@@ -246,12 +249,19 @@ void ACharacter_Pathfinder::GetValidActorsForAttack_Implementation(FAvatar_Attac
 		}
 
 		break;
-	case(EBattle_AttackPatterns::Circle):
+	case(EBattle_AttackPatterns::EightWayCross):
 		for (int i = 1; i <= Attack.BaseRange; i++) {
+			// Cardinal direction tiles
 			ValidVectors.Add(FVector2D(this->GetActorLocation().X + (200 * i), this->GetActorLocation().Y));
 			ValidVectors.Add(FVector2D(this->GetActorLocation().X - (200 * i), this->GetActorLocation().Y));
 			ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y + (200 * i)));
 			ValidVectors.Add(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y - (200 * i)));
+
+			// Diagonal tiles
+			ValidVectors.Add(FVector2D(this->GetActorLocation().X + (200 * i), this->GetActorLocation().Y + (200 * i)));
+			ValidVectors.Add(FVector2D(this->GetActorLocation().X + (200 * i), this->GetActorLocation().Y - (200 * i)));
+			ValidVectors.Add(FVector2D(this->GetActorLocation().X - (200 * i), this->GetActorLocation().Y - (200 * i)));
+			ValidVectors.Add(FVector2D(this->GetActorLocation().X - (200 * i), this->GetActorLocation().Y + (200 * i)));
 		}
 
 		for (AActor* GridTile : GridTilesArray) {
@@ -265,6 +275,21 @@ void ACharacter_Pathfinder::GetValidActorsForAttack_Implementation(FAvatar_Attac
 				ValidAttackTargetsArray.Add(Entity);
 			}
 		}
+		
+		break;
+	case(EBattle_AttackPatterns::Circle):
+		for (AActor* GridTile : GridTilesArray) {
+			if (WorldGrid->GetTotalDistanceBetweenTwoPositions(GetActorLocation(), GridTile->GetActorLocation()) <= Attack.BaseRange) {
+				ValidAttackTargetsArray.Add(GridTile);
+			}
+		}
+
+		for (AActor* Entity : EntitiesArray) {
+			if (WorldGrid->GetTotalDistanceBetweenTwoPositions(GetActorLocation(), Entity->GetActorLocation()) <= Attack.BaseRange) {
+				ValidAttackTargetsArray.Add(Entity);
+			}
+		}
+		
 		break;
 	default:
 		UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / GetValidActorsForAttack / This attack does not have an implemented Pattern!"));

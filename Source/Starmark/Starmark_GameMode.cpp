@@ -30,10 +30,10 @@ void AStarmark_GameMode::SetGameStateLocalReference()
 }
 
 
-UStarmark_GameInstance* AStarmark_GameMode::GetHostPlayerGameStateInstanceReference()
+UStarmark_GameInstance* AStarmark_GameMode::GetHostPlayerGameStateInstanceReference() const
 {
 	// To-Do: Figure out how to always get the host player
-	// (Each player instance can keep track of whether or not they're the host?)
+	// (Each player instance can keep track of whether they're the host?)
 	//if (!HostPlayerGameInstanceReference) {}
 
 	return HostPlayerGameInstanceReference;

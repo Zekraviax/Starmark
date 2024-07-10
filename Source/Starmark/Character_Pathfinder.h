@@ -53,7 +53,7 @@ public:
 	UMaterialInterface* ActorHighlightMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	UMaterialInstanceDynamic* ActorHighlightedDecalDynamicMaterial;
+	UMaterialInstanceDynamic* ActorHighlightedDecalMaterialInstanceDynamic;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ActorSelectedPlane;
@@ -62,7 +62,7 @@ public:
 	UBoxComponent* BoxComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	FLinearColor ActorSelected_DynamicMaterial_Colour;
+	FLinearColor ActorSelectedMaterialInstanceDynamicColour;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UWidgetComponent* AvatarBattleData_Component;

@@ -89,7 +89,7 @@ public:
 
 // ------------------------- Local Helper Functions
 	void SetGameStateLocalReference();
-	UStarmark_GameInstance* GetHostPlayerGameStateInstanceReference();
+	UStarmark_GameInstance* GetHostPlayerGameStateInstanceReference() const;
 
 // ------------------------- Battle
 	// Pre-Battle Setup Functions
