@@ -279,14 +279,18 @@ void ACharacter_Pathfinder::GetValidActorsForAttack_Implementation(FAvatar_Attac
 		break;
 	case(EBattle_AttackPatterns::Circle):
 		for (AActor* GridTile : GridTilesArray) {
-			if (WorldGrid->GetTotalDistanceBetweenTwoPositions(GetActorLocation(), GridTile->GetActorLocation()) <= Attack.BaseRange) {
-				ValidAttackTargetsArray.Add(GridTile);
+			if (!GetActorLocation().Equals(GridTile->GetActorLocation(), 11)) {
+				if (WorldGrid->GetTotalDistanceBetweenTwoPositions(GetActorLocation(), GridTile->GetActorLocation()) <= Attack.BaseRange) {
+					ValidAttackTargetsArray.Add(GridTile);
+				}
 			}
 		}
 
 		for (AActor* Entity : EntitiesArray) {
-			if (WorldGrid->GetTotalDistanceBetweenTwoPositions(GetActorLocation(), Entity->GetActorLocation()) <= Attack.BaseRange) {
-				ValidAttackTargetsArray.Add(Entity);
+			if (!GetActorLocation().Equals(Entity->GetActorLocation(), 11)) {
+				if (WorldGrid->GetTotalDistanceBetweenTwoPositions(GetActorLocation(), Entity->GetActorLocation()) <= Attack.BaseRange) {
+					ValidAttackTargetsArray.Add(Entity);
+				}
 			}
 		}
 		

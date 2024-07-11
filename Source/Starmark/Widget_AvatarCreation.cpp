@@ -101,27 +101,27 @@ void UWidget_AvatarCreation::PopulateDropDownsWithAvatarData(FAvatar_Struct Avat
 
 	// Moves
 	for (int b = 0; b < MoveOneDropDown->GetOptionCount(); b++) {
-		if (Avatar.CurrentAttacks.IsValidIndex(0)) {
-			if (Avatar.CurrentAttacks[0].Name == MoveOneDropDown->GetOptionAtIndex(b)) {
+		if (Avatar.CurrentEquippedAttackNames.IsValidIndex(0)) {
+			if (Avatar.CurrentEquippedAttackNames[0] == FName(MoveOneDropDown->GetOptionAtIndex(b))) {
 				MoveOneDropDown->SetSelectedIndex(b);
 			}
 		}
 
-		if (Avatar.CurrentAttacks.IsValidIndex(1)) {
-			if (Avatar.CurrentAttacks[1].Name == MoveTwoDropDown->GetOptionAtIndex(b)) {
+		if (Avatar.CurrentEquippedAttackNames.IsValidIndex(1)) {
+			if (Avatar.CurrentEquippedAttackNames[1] == FName(MoveTwoDropDown->GetOptionAtIndex(b))) {
 				MoveTwoDropDown->SetSelectedIndex(b);
 			}
 		}
 
 
-		if (Avatar.CurrentAttacks.IsValidIndex(2)) {
-			if (Avatar.CurrentAttacks[2].Name == MoveThreeDropDown->GetOptionAtIndex(b)) {
+		if (Avatar.CurrentEquippedAttackNames.IsValidIndex(2)) {
+			if (Avatar.CurrentEquippedAttackNames[2] == FName(MoveThreeDropDown->GetOptionAtIndex(b))) {
 				MoveThreeDropDown->SetSelectedIndex(b);
 			}
 		}
 
-		if (Avatar.CurrentAttacks.IsValidIndex(3)) {
-			if (Avatar.CurrentAttacks[3].Name == MoveFourDropDown->GetOptionAtIndex(b)) {
+		if (Avatar.CurrentEquippedAttackNames.IsValidIndex(3)) {
+			if (Avatar.CurrentEquippedAttackNames[3] == FName(MoveFourDropDown->GetOptionAtIndex(b))) {
 				MoveFourDropDown->SetSelectedIndex(b);
 			}
 		}
@@ -211,11 +211,6 @@ void UWidget_AvatarCreation::OnMoveOneDropDownChanged(FString Option)
 		FString ContextString;
 
 		if (Option == "None") {
-			/*
-			if (CurrentAvatar.CurrentAttacks.IsValidIndex(0))
-				CurrentAvatar.CurrentAttacks.RemoveAt(0);
-			*/
-			
 			MoveOneNameText->SetText(FText::FromString("None"));
 		} else {
 			for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
@@ -315,46 +310,13 @@ void UWidget_AvatarCreation::OnSaveButtonPressed()
 		PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
 	}
 
-	// Set Attacks arrays
-	CurrentAvatar.Attacks.Empty();
-	CurrentAvatar.CurrentAttacks.Empty();
-	FAvatar_AttackStruct emptyAttack;
-	CurrentAvatar.CurrentAttacks.Init(emptyAttack, 4);
+	// Get the names of all the selected attacks.
+	CurrentAvatar.CurrentEquippedAttackNames.Add(FName(MoveOneNameText->GetText().ToString()));
+	CurrentAvatar.CurrentEquippedAttackNames.Add(FName(MoveTwoNameText->GetText().ToString()));
+	CurrentAvatar.CurrentEquippedAttackNames.Add(FName(MoveThreeNameText->GetText().ToString()));
+	CurrentAvatar.CurrentEquippedAttackNames.Add(FName(MoveFourNameText->GetText().ToString()));
 
-	FString ContextString;
-	FAvatar_AttackStruct CurrentAttack;
-
-	ComplexAttacksRowNames.RemoveAt(0);
-
-	for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
-		UE_LOG(LogTemp, Warning, TEXT("OnSaveButtonPressed / Attack Name at index %d: %s"), i, *ComplexAttacksRowNames[i].ToString());
-
-		if (SimpleAttacksRowNames.IsValidIndex(i)) {
-			if (SimpleAttacksRowNames[i].ToString() == MoveOneNameText->GetText().ToString()) {
-				CurrentAvatar.CurrentAttacks[0] = *SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(SimpleAttacksRowNames[i], ContextString);
-			} else if (SimpleAttacksRowNames[i].ToString() == MoveTwoNameText->GetText().ToString()) {
-				CurrentAvatar.CurrentAttacks[1] = *SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(SimpleAttacksRowNames[i], ContextString);
-			} else if (SimpleAttacksRowNames[i].ToString() == MoveThreeNameText->GetText().ToString()) {
-				CurrentAvatar.CurrentAttacks[2] = *SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(SimpleAttacksRowNames[i], ContextString);
-			} else if (SimpleAttacksRowNames[i].ToString() == MoveFourNameText->GetText().ToString()) {
-				CurrentAvatar.CurrentAttacks[3] = *SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(SimpleAttacksRowNames[i], ContextString);
-			}
-		}
-
-		if (ComplexAttacksDisplayNames.IsValidIndex(i)) {
-			if (ComplexAttacksDisplayNames[i].ToString() == MoveOneNameText->GetText().ToString()) {
-				CurrentAvatar.CurrentAttacks[0] = *ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(ComplexAttacksRowNames[i], ContextString);
-			} else if (ComplexAttacksDisplayNames[i].ToString() == MoveTwoNameText->GetText().ToString()) {
-				CurrentAvatar.CurrentAttacks[1] = *ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(ComplexAttacksRowNames[i], ContextString);
-			} else if (ComplexAttacksDisplayNames[i].ToString() == MoveThreeNameText->GetText().ToString()) {
-				CurrentAvatar.CurrentAttacks[2] = *ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(ComplexAttacksRowNames[i], ContextString);
-			} else if (ComplexAttacksDisplayNames[i].ToString() == MoveFourNameText->GetText().ToString()) {
-				CurrentAvatar.CurrentAttacks[3] = *ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(ComplexAttacksRowNames[i], ContextString);
-			}
-		}
-	}
-
-	// If the avatar has no nickname, set its nickname to be its default name
+	// If the avatar has no nickname, set its nickname to be its species name.
 	if (CurrentAvatar.Nickname.IsEmpty()) {
 		CurrentAvatar.Nickname = CurrentAvatar.AvatarName;
 	}
@@ -363,7 +325,7 @@ void UWidget_AvatarCreation::OnSaveButtonPressed()
 		CurrentAvatar.IndexInPlayerLibrary = (GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library.Num() * -1) - 1;
 		GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library.Add(CurrentAvatar);
 	} else {
-		// Update the avatar if it's in the player's team
+		// Update the avatar if it's in the player's team here.
 		for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Num(); i++) {
 			if (GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
 				GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i] = CurrentAvatar;
@@ -371,7 +333,7 @@ void UWidget_AvatarCreation::OnSaveButtonPressed()
 			}
 		}
 
-		// Update the avatar if it's in the player's library
+		// Update the avatar if it's in the player's library here.
 		for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Num(); i++) {
 			if (GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i].IndexInPlayerLibrary == CurrentAvatar.IndexInPlayerLibrary) {
 				GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i] = CurrentAvatar;

@@ -627,8 +627,8 @@ struct STARMARK_API FAvatar_Struct : public FFastArraySerializerItem
 // ------------------------- Battle
 	// Instinct Abilities
 
-	// Currently used for testing combat only
-	// May or may not be deleted in the future
+	// Currently used for testing combat only.
+	// May or may not be deleted in the future.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	FAvatar_BaseStats SpeciesMinimumStats;
 
@@ -655,9 +655,6 @@ struct STARMARK_API FAvatar_Struct : public FFastArraySerializerItem
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	float SameTypeAttackBonusMultiplier;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
-	TArray<FAvatar_AttackStruct> CurrentAttacks;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	//FAvatar_AbilityStruct Ability;

@@ -465,8 +465,9 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 		NewAvatarActor->AvatarData = PlayerController->PlayerDataStruct.CurrentAvatarTeam[IndexInPlayerParty - 1];
 
 		// Get attacks
-		for (int i = 0; i < AvatarData.CurrentAttacks.Num(); i++) {
-			NewAvatarActor->CurrentKnownAttacks.Add(AvatarData.CurrentAttacks[i]);
+		UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(GetGameInstance());
+		for (int i = 0; i < AvatarData.CurrentEquippedAttackNames.Num(); i++) {
+			NewAvatarActor->CurrentKnownAttacks.Add(*GameInstanceReference->ReturnAttackFromDataTable(AvatarData.CurrentEquippedAttackNames[i]));
 		}
 
 		// Sent data to Clients

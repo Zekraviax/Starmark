@@ -440,9 +440,13 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 	
 	// New avatar's attacks
 	FoundAvatar->CurrentKnownAttacks.Empty();
-	for (int i = 0; i < ReserveAvatarData.CurrentAttacks.Num(); i++) {
-		FoundAvatar->CurrentKnownAttacks.Add(ReserveAvatarData.CurrentAttacks[i]);
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(GetGameInstance());
+	for (int i = 0; i < FoundAvatar->AvatarData.CurrentEquippedAttackNames.Num(); i++) {
+		FoundAvatar->CurrentKnownAttacks.Add(*GameInstanceReference->ReturnAttackFromDataTable(FoundAvatar->AvatarData.CurrentEquippedAttackNames[i]));
 	}
+	/*for (int i = 0; i < ReserveAvatarData.CurrentAttacks.Num(); i++) {
+		FoundAvatar->CurrentKnownAttacks.Add(ReserveAvatarData.CurrentAttacks[i]);
+	}*/
 
 	// Set health and mana?
 		

@@ -56,13 +56,18 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Global Helper Functions
+	// Multiplayer
 	static bool DoesSessionExist();
 	static FOnlineSessionSettings* GetCurrentSessionSettings();
-	
+
+	// Saving and loading
 	USaveData_PlayerProfile* ReturnPlayerSaveGameReference();
-	
+
+	// Fetching data
 	UDataTable* GetAvatarsDataTable() const { return AvatarsDataTable; }
-	
+	FAvatar_AttackStruct* ReturnAttackFromDataTable(FName AttackName) const;
+
+	// Special
 	UFUNCTION(BlueprintCallable)
 	USaveData_DeveloperSettings* GetDevSettingsSaveFile();
 

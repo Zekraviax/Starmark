@@ -39,74 +39,6 @@
 			"maximumActionPoints": 1,
 			"currentActionPoints": 1,
 			"sameTypeAttackBonusMultiplier": 150,
-			"currentAttacks": [
-				{
-					"name": "Magic Shock",
-					"type": "E_Arcane",
-					"basePower": 15,
-					"baseRange": 1,
-					"manaCost": 25,
-					"description": "Deal damage and paralyze the target.",
-					"attackPattern": "Circle",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackClickedAvatar",
-					"attackEffectsOnTarget": [
-						"AddParalyzeStatus"
-					],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Kick",
-					"type": "E_None",
-					"basePower": 10,
-					"baseRange": 1,
-					"manaCost": 0,
-					"description": "Default.",
-					"attackPattern": "Circle",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackAllTargets",
-					"attackEffectsOnTarget": [],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Flamethrower",
-					"type": "E_Fire",
-					"basePower": 60,
-					"baseRange": 4,
-					"manaCost": 30,
-					"description": "Default.",
-					"attackPattern": "FourWayCross",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackClickedAvatar",
-					"attackEffectsOnTarget": [
-						"AddBurnStatus"
-					],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Ignition",
-					"type": "E_Fire",
-					"basePower": 0,
-					"baseRange": 3,
-					"manaCost": 10,
-					"description": "Default.",
-					"attackPattern": "SingleTile",
-					"attackCategory": "Environment",
-					"attackTargetsInRange": "SelectAllGridTiles",
-					"attackEffectsOnTarget": [
-						"AddPropertyFire"
-					],
-					"attachAttackTraceActorToMouse": true,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				}
-			],
 			"factions": [
 				"Player1"
 			],
@@ -175,76 +107,6 @@
 			"maximumActionPoints": 1,
 			"currentActionPoints": 1,
 			"sameTypeAttackBonusMultiplier": 150,
-			"currentAttacks": [
-				{
-					"name": "Hat Trick",
-					"type": "E_Illusion",
-					"basePower": 0,
-					"baseRange": 8,
-					"manaCost": 45,
-					"description": "Default.",
-					"attackPattern": "SingleTile",
-					"attackCategory": "Utility",
-					"attackTargetsInRange": "SelectAllGridTiles",
-					"attackEffectsOnTarget": [
-						"SpawnHats"
-					],
-					"attachAttackTraceActorToMouse": true,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": false
-				},
-				{
-					"name": "Magic Missile",
-					"type": "E_Arcane",
-					"basePower": 70,
-					"baseRange": 7,
-					"manaCost": 35,
-					"description": "Deal damage to all Avatars in a line. Restore MP for each Avatar hit.",
-					"attackPattern": "FourWayCross",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackAllTargets",
-					"attackEffectsOnTarget": [
-						"RefundManaPointsPerTargetHit"
-					],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Teach",
-					"type": "E_Arcane",
-					"basePower": 0,
-					"baseRange": 4,
-					"manaCost": 0,
-					"description": "Transfer half of this Avatar's current MP to the target.",
-					"attackPattern": "SingleTile",
-					"attackCategory": "Utility",
-					"attackTargetsInRange": "AttackClickedAvatar",
-					"attackEffectsOnTarget": [
-						"TransferManaPoints"
-					],
-					"attachAttackTraceActorToMouse": true,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Spellbound",
-					"type": "E_Arcane",
-					"basePower": 0,
-					"baseRange": 2,
-					"manaCost": 20,
-					"description": "Default.",
-					"attackPattern": "SingleTile",
-					"attackCategory": "Utility",
-					"attackTargetsInRange": "AttackClickedAvatar",
-					"attackEffectsOnTarget": [
-						"AddSpellboundStatus"
-					],
-					"attachAttackTraceActorToMouse": true,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				}
-			],
 			"factions": [
 				"Player1"
 			],
@@ -313,74 +175,6 @@
 			"maximumActionPoints": 1,
 			"currentActionPoints": 1,
 			"sameTypeAttackBonusMultiplier": 150,
-			"currentAttacks": [
-				{
-					"name": "Wave",
-					"type": "E_Water",
-					"basePower": 50,
-					"baseRange": 2,
-					"manaCost": 40,
-					"description": "Default.",
-					"attackPattern": "Circle",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackAllTargets",
-					"attackEffectsOnTarget": [],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Tsunami",
-					"type": "E_Water",
-					"basePower": 50,
-					"baseRange": 5,
-					"manaCost": 5,
-					"description": "Default.",
-					"attackPattern": "FourWayCross",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackAllTargets",
-					"attackEffectsOnTarget": [
-						"KnockbackTarget"
-					],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Drown",
-					"type": "E_Water",
-					"basePower": 20,
-					"baseRange": 2,
-					"manaCost": 25,
-					"description": "Default.",
-					"attackPattern": "Circle",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackClickedAvatar",
-					"attackEffectsOnTarget": [
-						"AddDrowningStatus"
-					],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Teach",
-					"type": "E_Arcane",
-					"basePower": 0,
-					"baseRange": 4,
-					"manaCost": 0,
-					"description": "Transfer half of this Avatar's current MP to the target.",
-					"attackPattern": "SingleTile",
-					"attackCategory": "Utility",
-					"attackTargetsInRange": "AttackClickedAvatar",
-					"attackEffectsOnTarget": [
-						"TransferManaPoints"
-					],
-					"attachAttackTraceActorToMouse": true,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				}
-			],
 			"factions": [
 				"Player1"
 			],
@@ -449,76 +243,6 @@
 			"maximumActionPoints": 1,
 			"currentActionPoints": 1,
 			"sameTypeAttackBonusMultiplier": 150,
-			"currentAttacks": [
-				{
-					"name": "Spotlight",
-					"type": "E_Light",
-					"basePower": 55,
-					"baseRange": 1,
-					"manaCost": 20,
-					"description": "Deal damage to all Avatars in an area, except friendly Avatars.",
-					"attackPattern": "Circle",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackAllTargets",
-					"attackEffectsOnTarget": [
-						"NoFriendlyFire"
-					],
-					"attachAttackTraceActorToMouse": true,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Sunray",
-					"type": "E_Light",
-					"basePower": 40,
-					"baseRange": 5,
-					"manaCost": 10,
-					"description": "Default.",
-					"attackPattern": "FourWayCross",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackAllTargets",
-					"attackEffectsOnTarget": [
-						"NoFriendlyFire"
-					],
-					"attachAttackTraceActorToMouse": true,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Illuminate",
-					"type": "E_Air",
-					"basePower": 0,
-					"baseRange": 2,
-					"manaCost": 10,
-					"description": "Default.",
-					"attackPattern": "Circle",
-					"attackCategory": "Environment",
-					"attackTargetsInRange": "SelectAllGridTiles",
-					"attackEffectsOnTarget": [
-						"Light_Illuminate"
-					],
-					"attachAttackTraceActorToMouse": true,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Blindspot",
-					"type": "E_Light",
-					"basePower": 0,
-					"baseRange": 3,
-					"manaCost": 10,
-					"description": "Default.",
-					"attackPattern": "SingleTile",
-					"attackCategory": "Utility",
-					"attackTargetsInRange": "AttackClickedAvatar",
-					"attackEffectsOnTarget": [
-						"AddMarkedStatus"
-					],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				}
-			],
 			"factions": [
 				"Player1"
 			],
@@ -545,7 +269,12 @@
 			"tier": 1,
 			"tokensRequired": 1,
 			"indexInPlayerLibrary": 3,
-			"currentEquippedAttackNames": [],
+			"currentEquippedAttackNames": [
+				"Scratch",
+				"Spotlight",
+				"Sunray",
+				"Illuminate"
+			],
 			"replicationId": -1,
 			"replicationKey": -1,
 			"mostRecentArrayReplicationKey": -1
@@ -587,72 +316,6 @@
 			"maximumActionPoints": 1,
 			"currentActionPoints": 1,
 			"sameTypeAttackBonusMultiplier": 150,
-			"currentAttacks": [
-				{
-					"name": "Full Moon",
-					"type": "E_Dark",
-					"basePower": 50,
-					"baseRange": 2,
-					"manaCost": 15,
-					"description": "Default.",
-					"attackPattern": "Circle",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "SelectAllGridTilesAndSelectAllAvatars",
-					"attackEffectsOnTarget": [
-						"AddPropertyShadow"
-					],
-					"attachAttackTraceActorToMouse": true,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "New Moon",
-					"type": "E_Dark",
-					"basePower": 50,
-					"baseRange": 2,
-					"manaCost": 15,
-					"description": "Default.",
-					"attackPattern": "Ring",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "SelectAllGridTilesAndSelectAllAvatars",
-					"attackEffectsOnTarget": [
-						"AddPropertyShadow"
-					],
-					"attachAttackTraceActorToMouse": true,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Swipe",
-					"type": "E_None",
-					"basePower": 10,
-					"baseRange": 1,
-					"manaCost": 1,
-					"description": "Default.",
-					"attackPattern": "Circle",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackAllTargets",
-					"attackEffectsOnTarget": [],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Default",
-					"type": "E_Air",
-					"basePower": 1,
-					"baseRange": 1,
-					"manaCost": 1,
-					"description": "Default.",
-					"attackPattern": "Circle",
-					"attackCategory": "EBattle_MAX",
-					"attackTargetsInRange": "EBattle_MAX",
-					"attackEffectsOnTarget": [],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				}
-			],
 			"factions": [
 				"Player1"
 			],
@@ -721,74 +384,6 @@
 			"maximumActionPoints": 1,
 			"currentActionPoints": 1,
 			"sameTypeAttackBonusMultiplier": 150,
-			"currentAttacks": [
-				{
-					"name": "Casting Stones",
-					"type": "E_Earth",
-					"basePower": 1,
-					"baseRange": 1,
-					"manaCost": 10,
-					"description": "Default.",
-					"attackPattern": "SingleTile",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackClickedAvatar",
-					"attackEffectsOnTarget": [
-						"LowerTargetHealthEqualsHigherDamageDealt"
-					],
-					"attachAttackTraceActorToMouse": true,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Rock Wall",
-					"type": "E_Earth",
-					"basePower": 0,
-					"baseRange": 3,
-					"manaCost": 2,
-					"description": "Default.",
-					"attackPattern": "Special",
-					"attackCategory": "Utility",
-					"attackTargetsInRange": "SelectAllGridTiles",
-					"attackEffectsOnTarget": [
-						"SpawnWall"
-					],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Stone Skin",
-					"type": "E_Earth",
-					"basePower": 0,
-					"baseRange": 1,
-					"manaCost": 2,
-					"description": "Default.",
-					"attackPattern": "SingleTile",
-					"attackCategory": "Utility",
-					"attackTargetsInRange": "Self",
-					"attackEffectsOnTarget": [
-						"AddStoneSkinStatus"
-					],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": false,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Default",
-					"type": "E_Air",
-					"basePower": 1,
-					"baseRange": 1,
-					"manaCost": 1,
-					"description": "Default.",
-					"attackPattern": "Circle",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "EBattle_MAX",
-					"attackEffectsOnTarget": [],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				}
-			],
 			"factions": [
 				"Player1"
 			],

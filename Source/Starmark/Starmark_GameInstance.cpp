@@ -66,6 +66,27 @@ USaveData_PlayerProfile* UStarmark_GameInstance::ReturnPlayerSaveGameReference()
 	return PlayerSaveGameReference;
 }
 
+
+FAvatar_AttackStruct* UStarmark_GameInstance::ReturnAttackFromDataTable(FName AttackName) const
+{
+	for (int i = 0; i < SimpleAttacksDataTable->GetRowNames().Num(); i++) {
+		if (SimpleAttacksDataTable->GetRowNames()[i] == AttackName) {
+			FString ContextString;
+			return SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(SimpleAttacksDataTable->GetRowNames()[i]), ContextString);
+		}
+	}
+	
+	for (int i = 0; i < ComplexAttacksDataTable->GetRowNames().Num(); i++) {
+		if (ComplexAttacksDataTable->GetRowNames()[i] == AttackName) {
+			FString ContextString;
+			return ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksDataTable->GetRowNames()[i]), ContextString);
+		}
+	}
+
+	return nullptr;
+}
+
+
 USaveData_DeveloperSettings* UStarmark_GameInstance::GetDevSettingsSaveFile()
 {
 	// Try to retrieve the save file
