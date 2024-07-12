@@ -83,9 +83,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Entity")
 	FDataTableRowHandle EntityDataTableRow;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Entity")
-	bool FetchDataFromDataTable;
-
 // ------------------------- Battle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	UDataTable* UltimateTypeChartDataTable;
@@ -103,9 +100,11 @@ public:
 	TArray<FAvatar_StatusEffect> CurrentStatusEffectsArray;
 
 	// Use this to synchronize the avatar data between the actor and the GameState array.
+	// This variable is deprecated. Use the same variable in the PlayerData struct instead.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
 	int IndexInPlayerParty;
-
+	
+	// This variable is deprecated. Use the same variable in the PlayerData struct instead.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	int MultiplayerControllerUniqueID;
 
@@ -152,9 +151,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetActorHighlightProperties(bool IsVisible, E_GridTile_ColourChangeContext ColourChangeContext);
 
-	// Used to highlight valid actors when an attack is selected but not confirmed
-	// Used to get valid targets when confirming an attack
-	// Returns an array of actors
+	// Used to highlight valid actors when an attack is selected but not confirmed.
+	// Used to get valid targets when confirming an attack.
+	// Returns an array of actors.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void GetValidActorsForAttack(FAvatar_AttackStruct Attack, AActor* CurrentlyHoveredActor);
 

@@ -896,5 +896,6 @@ public:
 
 
 // ------------------------- Global Helper Functions
+	// To-Do: Make this function static?
 	FString GetPlayerDataSaveFilePath() { return PlayerDataSaveFilePath; }
 };

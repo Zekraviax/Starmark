@@ -34,7 +34,7 @@ public:
 	UPROPERTY()
 	USaveData_DeveloperSettings* DevSettingsSaveFile;
 
-	// Putting DataTables here, so they're all in one place and easy to access..
+	// Putting DataTables here, so they're all in one place and easy to access.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* AvatarsDataTable;
 

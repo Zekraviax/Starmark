@@ -8,6 +8,7 @@
 
 // This class is deprecated. Please don't use it.
 // Use the save file PlayerProfileHandler to load player JSON data.
+// To-Do: Delete this class.
 UCLASS()
 class STARMARK_API USaveData_PlayerProfilesList : public USaveGame
 {

@@ -76,7 +76,7 @@ void UWidget_PlayerProfileCreator::OnSaveGameButtonPressed()
 	// Set the newly created profile to be the player's active profile
 	GameInstanceReference->PlayerSaveGameReference = PlayerProfileData;
 
-	// To-Do: Save the player's profile data to a json file
+	// To-Do: Clean up these lines of code
 	GameInstanceReference->ReturnPlayerSaveGameReference()->PlayerProfileStruct.PlayerName = PlayerProfileData->PlayerProfileStruct.PlayerName;
 	GameInstanceReference->ReturnPlayerSaveGameReference()->PlayerProfileStruct.ProfileName = PlayerProfileData->PlayerProfileStruct.ProfileName;
 	GameInstanceReference->ReturnPlayerSaveGameReference()->SaveProfileDataToJson();

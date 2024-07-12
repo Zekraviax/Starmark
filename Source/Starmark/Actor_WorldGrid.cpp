@@ -279,13 +279,13 @@ TArray<FVector> AActor_WorldGrid::CustomAStarPathfindingAlgorithm(FVector StartP
 			}
 		}
 
-		// remove the current node from the open list and add it to the closed list
+		// Remove the current node from the open list and add it to the closed list.
 		OpenList.Remove(CurrentNode);
 		ClosedList.Add(CurrentNode);
 
-		// the pathfinding is complete if this is true
+		// The pathfinding is complete if this is true.
 		if (CurrentNode == EndNode) {
-			// here we "draw" the path, starting from the end and working backwards
+			// Here we "draw" the path, starting from the end and working backwards.
 			for (int i = ClosedList.Num() - 1; i >= 0; i--) {
 				Path.Add(ClosedList[i].Position);
 			}
@@ -293,25 +293,24 @@ TArray<FVector> AActor_WorldGrid::CustomAStarPathfindingAlgorithm(FVector StartP
 			return Path;
 		}
 
-		// Get all the adjacent nodes of the current node
-		// these nodes are the "children" of the current node
+		// Get all the adjacent nodes of the current node.
+		// These nodes are the "children" of the current node.
 		TArray<FAStarNode> ChildrenNodes = { FAStarNode(FVector(CurrentNode.Position.X + 200, CurrentNode.Position.Y, 0)), 
 		FAStarNode(FVector(CurrentNode.Position.X, CurrentNode.Position.Y + 200, 0)),
 		FAStarNode(FVector(CurrentNode.Position.X - 200, CurrentNode.Position.Y, 0)),
 		FAStarNode(FVector(CurrentNode.Position.X, CurrentNode.Position.Y - 200, 0)), };
 
-		// it's here in this if/else statement that we can check for other conditions like whether the node can be traversed
+		// it's here in this if/else statement that we can check for other conditions like whether or not the node can be traversed.
 		for (FAStarNode ChildNode : ChildrenNodes) {
-			// check if the child node is in the closed list
+			// Check if the child node is in the closed list.
 			if (ClosedList.Contains(ChildNode)) {
-				// if this is true, just ignore the child
+				// If this is true, just ignore the child.
 				continue;
 			}
 			
 			if (!IsGridCellWalkable(ConvertGridTileLocationToCoordinates(ChildNode.Position))) {
-				// if the end node isn't walkable, we need to terminate the algorithm here
-
-				// otherwise, if it isn't the end node, ignore it
+				// If the end node isn't walkable, we need to terminate the algorithm here.
+				// If it isn't the end node, ignore it.
 				continue;
 			}
 
@@ -321,8 +320,8 @@ TArray<FVector> AActor_WorldGrid::CustomAStarPathfindingAlgorithm(FVector StartP
 			ChildNode.TotalCost = ChildNode.DistanceFromStartNode + ChildNode.EstimatedDistanceToEndNode;
 			ChildNode.IsValid = true;
 			
-			// check if the child node is in the open node list
-			// if it isn't, add it
+			// Check if the child node is in the open node list.
+			// if it isn't, add it.
 			if (!OpenList.Contains(ChildNode)) {
 				OpenList.Add(ChildNode);
 			} else {

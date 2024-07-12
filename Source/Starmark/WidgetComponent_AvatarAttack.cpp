@@ -22,6 +22,7 @@ void UWidgetComponent_AvatarAttack::OnButtonPressed()
 		// Enable rotation towards mouse cursor
 		PlayerControllerReference->CurrentSelectedAvatar->RotateAvatarTowardsMouse = true;
 	} else if (AttackNameText->GetText().EqualTo(FText::FromString("RESERVE"))) {
-		PlayerControllerReference->BeginSelectingTileForReserveAvatar(false);
+		//PlayerControllerReference->BeginSelectingTileForReserveAvatar(false);
+		PlayerControllerReference->SetPlayerClickMode(E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon);
 	}
 }

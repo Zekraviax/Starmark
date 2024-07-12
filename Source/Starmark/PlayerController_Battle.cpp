@@ -99,20 +99,27 @@ void APlayerController_Battle::CreateBattleWidget_Implementation()
 
 void APlayerController_Battle::SetPlayerClickMode(E_PlayerCharacter_ClickModes NewClickMode)
 {
-	// First, set the new mode
+	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
+
+	// First, set the new mode...
 	PlayerClickMode = NewClickMode;
 
-	// Then handle secondary functionality
+	// ...then handle secondary functionality.
 	if (PlayerClickMode == E_PlayerCharacter_ClickModes::E_Nothing || PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter ||
 		PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack || PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
 		
-		// Make sure that the UI has the list of attack
+		// Make sure that the UI has the list of attacks.
 		BattleWidgetReference->UpdateAvatarAttacksComponents(CurrentSelectedAvatar->CurrentKnownAttacks);
 	} else if (PlayerClickMode == E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon) {
-		// Replace the list of attacks with the list of reserve avatars
+		// Replace the list of attacks with the list of reserve avatars.
 		TArray<FAvatar_Struct> ReserveAvatars;
+		TArray<FAvatar_Struct> Team = PlayerStateReference->GetPlayerDataFromGamesInstance()->CurrentAvatarTeam;
 
-		
+		for (int i = 0; i < Team.Num(); i++) {
+			if (Team[i].IndexInPlayerLibrary >= 4) {
+				ReserveAvatars.Add(Team[i]);
+			}
+		}
 		
 		BattleWidgetReference->SetCommandsToListOfReserveAvatars(ReserveAvatars);
 	}
@@ -430,7 +437,7 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 
 	for (int i = 0; i < PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
 		if (PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary > 4) {
-			
+			// ??
 			break;
 		}
 	}

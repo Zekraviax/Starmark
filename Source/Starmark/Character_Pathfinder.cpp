@@ -337,7 +337,7 @@ void ACharacter_Pathfinder::SetTilesOccupiedBySize(bool ClearTiles)
 		}
 	}
 
-	// Set overlapping tiles to 'Occupied'
+	// Set overlapping tiles to 'Occupied'.
 	for (int j = 0; j < OverlappingActors.Num(); j++) {
 		Cast<AActor_GridTile>(OverlappingActors[j])->Properties.AddUnique(E_GridTile_Properties::E_Occupied);
 		Cast<AActor_GridTile>(OverlappingActors[j])->OccupyingActor = this;

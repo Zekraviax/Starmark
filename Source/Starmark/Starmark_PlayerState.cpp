@@ -29,7 +29,6 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerReadyStatus);
-	DOREPLIFETIME(AStarmark_PlayerState, ReplicatedPlayerName);
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerTeam);
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerData);
 }
@@ -80,19 +79,6 @@ void AStarmark_PlayerState::SendUpdateToMultiplayerLobby_Implementation()
 
 
 // ------------------------- Battle
-void AStarmark_PlayerState::Client_UpdateReplicatedPlayerName_Implementation()
-{
-	Server_UpdateReplicatedPlayerName(ReplicatedPlayerName);
-}
-
-
-void AStarmark_PlayerState::Server_UpdateReplicatedPlayerName_Implementation(const FString& UpdatedReplicatedPlayerName)
-{
-	ReplicatedPlayerName = UpdatedReplicatedPlayerName;
-	SetPlayerName(UpdatedReplicatedPlayerName);
-}
-
-
 // To-Do: Move this to the GameMode
 void AStarmark_PlayerState::Server_SubtractHealth_Implementation(ACharacter_Pathfinder* Defender, int DamageDealt)
 {
@@ -126,58 +112,15 @@ void AStarmark_PlayerState::Server_AddHealth_Implementation(ACharacter_Pathfinde
 }
 
 
-// To-Do: Move this to the GameMode
+// To-Do: Delete this function now that it has been moved to the GameMode.
 void AStarmark_PlayerState::Battle_AvatarDefeated_Implementation(ACharacter_Pathfinder* Avatar)
 {
 	Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_AvatarDefeated(Avatar);
 
-	/*
-	AStarmark_GameState* GameStateReference = Cast<AStarmark_GameState>(GetWorld()->GetGameState());
-	APlayerController_Battle* PlayerControllerReference = Avatar->PlayerControllerReference;
-
-	if (IsValid(Avatar->PlayerControllerReference)) {
-		if (Avatar->PlayerControllerReference->PlayerParty.IsValidIndex(Avatar->IndexInPlayerParty)) {
-			Avatar->PlayerControllerReference->PlayerParty.RemoveAt(Avatar->IndexInPlayerParty);
-
-			// Remove the Avatar from the turn order
-			UE_LOG(LogTemp, Warning, TEXT("Battle_AvatarDefeated / Remove Avatar %s from Turn Order"), *Avatar->AvatarData.AvatarName);
-			GameStateReference->AvatarTurnOrder.Remove(Avatar);
-			GameStateReference->DynamicAvatarTurnOrder.Remove(Avatar);
-
-			Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_AssembleTurnOrderText();
-		}
-
-		if (Avatar->PlayerControllerReference->PlayerParty.Num() <= 0) {
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player has run out of Avatars")));
-			GameStateReference->EndOfBattle_Implementation();
-		} else {
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Player Avatars Remaining: %d"), Avatar->PlayerControllerReference->PlayerParty.Num()));
-
-			// Check for any avatars in reserve
-			bool FoundAvatarInReserve = false;
-			
-			for (int i = 0; i < Avatar->PlayerControllerReference->PlayerParty.Num(); i++) {
-				FAvatar_Struct FoundAvatar = Avatar->PlayerControllerReference->PlayerParty[i];
-				if (FoundAvatar.CurrentHealthPoints > 0 && FoundAvatar.IndexInPlayerLibrary >= 4) {
-					// To-Do: Allow the player to summon an Avatar from reserve as a special action.
-					FoundAvatarInReserve = true;
-
-					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackEffectsOnTarget.Empty();
-					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackEffectsOnTarget.Add(EBattle_AttackEffects::SummonAvatar);
-					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange = EBattle_AttackTargetsInRange::SelectAllGridTiles;
-					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackPattern = EBattle_AttackPatterns::SingleTile;
-					
-					break;
-				}
-			}
-		}
-	}
-
-	Avatar->Destroy();
-	*/
 }
 
 
+// To-Do: Figure out of this function is needed, and if not, delete it.
 void AStarmark_PlayerState::Server_UpdatePlayerStateVariables_Implementation(const TArray<FAvatar_Struct>& UpdatedPlayerParty)
 {
 	PlayerTeam = UpdatedPlayerParty;

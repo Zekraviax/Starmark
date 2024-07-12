@@ -10,6 +10,7 @@ class ACharacter_Pathfinder;
 class UPlayer_SaveData;
 
 
+// To-Do: Figure out if this class can be deleted.
 UCLASS()
 class STARMARK_API APlayerState_Base : public APlayerState
 {

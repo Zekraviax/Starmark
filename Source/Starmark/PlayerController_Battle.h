@@ -20,12 +20,27 @@ class UWidget_HUD_Battle;
 UENUM(BlueprintType)
 enum class E_PlayerCharacter_ClickModes : uint8
 {
+	// Use this click mode for times when we don't want the player to be able to interact with anything at all.
+	// This click mode can be used to prevent any input, not just mouse clicks.
 	E_Nothing,
 	E_SelectCharacterToControl,
 	E_SelectCharacterToAttack,
 	E_MoveCharacter,
+
+	// This is the first of the two Avatar summoning click modes.
+	// Use this one to have the player select an Avatar-in-reserve, and the location to summon it.
 	SelectReserveAvatarToSummon,
-	SummonAvatar
+	// The "SummonAvatar" click mode should only be used to finalize the Summon action.
+	// Use this once the player has selected the Avatar they wish to summon, and the location for said avatar.
+	SummonAvatar,
+	
+	// This is the first of the two Item use click modes.
+	// Use this one to have the player select the item they wish to use, 
+	// and any other necessary actions like selecting a location for said item.
+	SelectItemToUse,
+	// This click mode should only be used to finaluse the Use Item action.
+	// Use this once the player has selected the item they wish to use, plus any other necessary actions.
+	UseItem
 };
 
 
@@ -58,6 +73,7 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Controller
+	// To-Do: Figure out if this variable needs to be replicated. (Do other players need to know this?)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Controller")
 	E_PlayerCharacter_ClickModes PlayerClickMode;
 
@@ -136,8 +152,8 @@ public:
 	void OnRepNotify_CurrentSelectedAvatar();
 
 // ------------------------- Battle
-	// The client fetches their data from their GameInstance here.
-	// And sends it to the server here.
+	// The client fetches their data from their GameInstance here,
+	// and sends it to the server here.
 	UFUNCTION(Client, Reliable)
 	void ClientSendDataToServer();
 
@@ -158,7 +174,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryClick(AActor* ClickedActor, TArray<AActor*> ValidTargetsArray);
 
-	// Use this function to un-highlight all other avatars and tiles not passed in either array
+	// Use this function to highlight all avatars and entites passed,
+	// and to un-highlight all avatars and tiles not passed.
 	void HighlightSpecificAvatarsAndTiles(TArray<ACharacter_Pathfinder*> Avatars, TArray< AActor_GridTile*> Tiles) const;
 
 	void BeginSelectingTileForReserveAvatar(bool DidAvatarDie);
@@ -166,7 +183,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile, ACharacter_Pathfinder* SelectedAvatar);
 
-	// 
 	void DelayedEndTurn();
 
 	UFUNCTION(BlueprintCallable, Client, Reliable)
@@ -175,7 +191,7 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();
 	
-	// Called at the end of a turn, before the currently acting Avatar changes
+	// Called at the end of a turn, before the currently acting Avatar changes.
 	UFUNCTION(Server, Unreliable)
 	void Player_OnAvatarTurnChanged();
 

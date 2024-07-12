@@ -17,9 +17,9 @@ class UWidget_HUD_Battle;
 
 
 // The PlayerState is replicated to everyone in multiplayer scenarios.
-// This means it is a good place to put variables that should be replicated like a player's team of avatars,
-// and not their Save Data.
-// The GameState holds an array of PlayerStates called "PlayerArray"
+// This means it is a good place to put variables that should be replicated like
+// a player's team of avatars, not their Save Data.
+// The GameState holds an array of PlayerStates, called the "PlayerArray".
 UCLASS()
 class STARMARK_API AStarmark_PlayerState : public APlayerState
 {
@@ -58,7 +58,7 @@ public:
 	FPlayer_Data PlayerData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	FString ReplicatedPlayerName = "None";
+	FString ReplicatedPlayerName = "Default";
 
 // ------------------------- Lobby
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
@@ -84,12 +84,6 @@ public:
 	void SendUpdateToMultiplayerLobby();
 
 // ------------------------- Battle
-	UFUNCTION(Client, Reliable)
-	void Client_UpdateReplicatedPlayerName();
-
-	UFUNCTION(Server, Reliable)
-	void Server_UpdateReplicatedPlayerName(const FString& UpdatedReplicatedPlayerName);
-
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_SubtractHealth(ACharacter_Pathfinder* Defender, int DamageDealt);
 

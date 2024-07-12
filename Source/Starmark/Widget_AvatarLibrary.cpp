@@ -27,10 +27,10 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 	int Row = 0;
 
 	if (GameInstanceReference->PlayerSaveGameReference && AvatarWidgetComponent_Class) {
-		// Populate Avatar Team Slots
+		// Populate Avatar team slots.
 		TArray<UWidget*> FoundChildWidgetComponents = Cast<UPanelWidget>(LibraryWidgetTree->RootWidget)->GetAllChildren();
 
-		// Add Avatars to the team slots, making sure that the index in the players team is preserved
+		// Add Avatars to the team slots, making sure that the index in the players team is preserved.
 		for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Num(); i++) {
 			for (int j = 0; j < FoundChildWidgetComponents.Num(); j++) {
 				if (Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]) ) {

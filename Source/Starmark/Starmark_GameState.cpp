@@ -293,7 +293,7 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 		}
 
 		if (!Avatar->CurrentStatusEffectsArray.Contains(StunStatus)) {
-			// If the currently acting entity is an enemy, activate their AI functions
+			// If the currently acting entity is an enemy, activate their AI functions.
 			if (Avatar->AvatarData.Factions.Contains(EEntity_Factions::Enemy1)) {
 				AAIController_EnemyEntity* EnemyController = Cast<AAIController_EnemyEntity>(Avatar->GetController());
 

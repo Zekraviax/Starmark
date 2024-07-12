@@ -45,7 +45,6 @@ float WorldGridGraphQueryFiler::GetTraversalCost(FIntPoint StartLocation, FIntPo
 
 bool WorldGridGraphQueryFiler::IsTraversalAllowed(const FIntPoint FirstPoint, const FIntPoint SecondPoint) const
 {
-	//if (!WorldGridReference->IsGridCellWalkable(FirstPoint) || !WorldGridReference->IsGridCellWalkable(SecondPoint))
 	if (!WorldGridReference->IsGridCellWalkable(SecondPoint))
 		return false;
 
