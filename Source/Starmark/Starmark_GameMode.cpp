@@ -213,6 +213,12 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 		for (int j = 0; j < CurrentPlayerTeam.Num(); j++) {
 			if (CurrentPlayerTeam.IsValidIndex(j)) {
 				if (CurrentPlayerTeam[j].AvatarName != "Default") {
+					// To-Do: Synchronize all of the changes through the GameState.
+					// Upon finding a valid avatar in any players' party,
+					// Increment the BattleUniqueIDCounter and assign that ID to the avatar.
+					CurrentPlayerTeam[j].BattleUniqueID = BattleUniqueIDCounter;
+					BattleUniqueIDCounter++;
+					
 					if (SpawnedAvatarCount < 4) {
 						Server_SpawnAvatar(PlayerControllerReferences[i], (j + 1), CurrentPlayerTeam[j]);
 						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn avatar %s for player %s"), *CurrentPlayerTeam[j].AvatarName, *PlayerData.PlayerName);
@@ -242,6 +248,8 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 
 void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementation(APlayerController_Battle* PlayerControllerReference)
 {
+	TArray<FAvatar_Struct> CurrentPlayerTeam;
+	
 	// To-Do: rename this function to something that makes more sense
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Begin function"));
 
@@ -251,7 +259,7 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 	}
 
 	for (int i = 0; i < GameStateReference->ReturnAllBattlePlayerControllers().Num(); i++) {
-		TArray<FAvatar_Struct> CurrentPlayerTeam = GameStateReference->PlayerDataStructsArray[i].CurrentAvatarTeam;
+		CurrentPlayerTeam = GameStateReference->PlayerDataStructsArray[i].CurrentAvatarTeam;
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / PlayerState has data with ProfileName: %s"), *Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerData.ProfileName);
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / PlayerState has %d avatars"), Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerData.CurrentAvatarTeam.Num());
@@ -261,6 +269,11 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 		for (int j = 0; j < CurrentPlayerTeam.Num(); j++) {
 			if (CurrentPlayerTeam.IsValidIndex(j)) {
 				if (CurrentPlayerTeam[j].AvatarName != "Default") {
+					// Upon finding a valid avatar in any players' party,
+					// Increment the BattleUniqueIDCounter and assign that ID to the avatar.
+					CurrentPlayerTeam[j].BattleUniqueID = BattleUniqueIDCounter;
+					BattleUniqueIDCounter++;
+					
 					if (SpawnedAvatarCount < 4) {
 						Server_SpawnAvatar(PlayerControllerReference, (SpawnedAvatarCount + 1), CurrentPlayerTeam[j]);
 						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Spawn avatar %s for player %s."), *CurrentPlayerTeam[j].AvatarName, *PlayerControllerReference->PlayerName);
@@ -273,9 +286,12 @@ void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementatio
 			}
 		}
 
+		// Synchronize the players' team to their class.
+		PlayerControllerReference->PlayerDataStruct.CurrentAvatarTeam = CurrentPlayerTeam;
+
 		PlayerControllerReference->OnRepNotify_CurrentSelectedAvatar();
 	}
-
+	
 	Server_MultiplayerBattleCheckAllPlayersReady();
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / End function"));
@@ -461,13 +477,15 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 		// To-Do: Clean up the MultiPlayer Unique IDs so that there is only one, used everywhere
 		NewAvatarActor->MultiplayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
 		PlayerController->PlayerDataStruct.CurrentAvatarTeam[IndexInPlayerParty - 1].OwnerMultiplayerUniqueID = PlayerController->MultiplayerUniqueID;
-		PlayerController->PlayerDataStruct.CurrentAvatarTeam[IndexInPlayerParty - 1].BattleUniqueID = FoundAvatars.Num() + 1;
+		//PlayerController->PlayerDataStruct.CurrentAvatarTeam[IndexInPlayerParty - 1].BattleUniqueID = FoundAvatars.Num() + 1;
 		NewAvatarActor->AvatarData = PlayerController->PlayerDataStruct.CurrentAvatarTeam[IndexInPlayerParty - 1];
 
 		// Get attacks
 		UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(GetGameInstance());
 		for (int i = 0; i < AvatarData.CurrentEquippedAttackNames.Num(); i++) {
-			NewAvatarActor->CurrentKnownAttacks.Add(*GameInstanceReference->ReturnAttackFromDataTable(AvatarData.CurrentEquippedAttackNames[i]));
+			if (AvatarData.CurrentEquippedAttackNames[i] != FName("None")) {
+				NewAvatarActor->CurrentKnownAttacks.Add(*GameInstanceReference->ReturnAttackFromDataTable(AvatarData.CurrentEquippedAttackNames[i]));
+			}
 		}
 
 		// Sent data to Clients
@@ -545,11 +563,11 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Begin function"));
 	
 	FAvatar_AttackStruct AttackData;
-	FActorSpawnParameters SpawnInfo;
-	FString ContextString, MoveTypeAsString, TargetTypeAsString;
+	const FActorSpawnParameters SpawnInfo;
+	const FString ContextString;
+	FString MoveTypeAsString, TargetTypeAsString;
 	TArray<FName> ComplexAttackRowNames = AvatarComplexAttacksDataTable->GetRowNames();
 	ACharacter_Pathfinder* TargetAsCharacter = Cast<ACharacter_Pathfinder>(Target);
-	float CurrentDamage = 1.f;
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Attack chosen: %s"), *AttackName);
 	
@@ -562,7 +580,7 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 
 	if (Attacker->CurrentSelectedAttack.AttackCategory == EBattle_AttackCategories::Offensive && Attacker->CurrentSelectedAttack.BasePower > 0) {
 		// Calculate damage, one step at a time
-		CurrentDamage = FMath::RandRange(1.f, 5.f);
+		float CurrentDamage = FMath::RandRange(1.f, 5.f);
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Damage calculation started with random float: %s"), *FString::SanitizeFloat(CurrentDamage));
 
 		CurrentDamage = CurrentDamage * Attacker->CurrentSelectedAttack.BasePower;

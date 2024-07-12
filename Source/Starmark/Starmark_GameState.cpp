@@ -359,9 +359,7 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 	// Check if an Avatar died this turn
 	// If true, check for reserve Avatars before ending the turn
-
 	
-
 	// Reset Round if all Avatars have acted
 	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num()) {
 		CurrentAvatarTurnIndex = 0;

@@ -113,7 +113,7 @@ void APlayerController_Battle::SetPlayerClickMode(E_PlayerCharacter_ClickModes N
 	} else if (PlayerClickMode == E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon) {
 		// Replace the list of attacks with the list of reserve avatars.
 		TArray<FAvatar_Struct> ReserveAvatars;
-		TArray<FAvatar_Struct> Team = PlayerStateReference->GetPlayerDataFromGamesInstance()->CurrentAvatarTeam;
+		TArray<FAvatar_Struct> Team = PlayerStateReference->GetPlayerDataFromGameInstance().CurrentAvatarTeam;
 
 		for (int i = 0; i < Team.Num(); i++) {
 			if (Team[i].IndexInPlayerLibrary >= 4) {
@@ -342,7 +342,7 @@ void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActo
 }
 
 
-void APlayerController_Battle::HighlightSpecificAvatarsAndTiles(TArray<ACharacter_Pathfinder*> Avatars, TArray<AActor_GridTile*> Tiles) const
+void APlayerController_Battle::HighlightSpecificAvatarsAndTiles(const TArray<ACharacter_Pathfinder*>& Avatars, const TArray<AActor_GridTile*>& Tiles) const
 {
 	TArray<AActor*> FoundAvatars, FoundGridTiles;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundAvatars);
@@ -366,12 +366,12 @@ void APlayerController_Battle::HighlightSpecificAvatarsAndTiles(TArray<ACharacte
 }
 
 
-void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatarDie)
+void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatarDie, int SelectedBattleUniqueID)
 {
 	// Update the UI (which UI?)
 
 	if (DidAvatarDie) {
-		// Highlight each valid tile that the player can summon an avatar to
+		// Highlight each valid tile that the player can summon an avatar to.
 		TArray<AActor*> GridTilesArray;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
 
@@ -387,14 +387,17 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatar
 			}
 		}
 	} else {
-		// Get the currently acting avatar to swap data
+
 	}
 
-	// Set the players' mouse mode to select a tile
+	// Remember which avatar was chosen.
+	SelectedReserveAvatarBattleUniqueID = SelectedBattleUniqueID;
+
+	// Set the players' mouse mode to select a tile.
 	PlayerClickMode = E_PlayerCharacter_ClickModes::SummonAvatar;
 
-	// Highlight the currently acting avatar if it isn't the end of the turn and an avatar was defeated
-	// Otherwise, highlight each valid tile that the player can summon avatars to
+	// Highlight the currently acting avatar if it isn't the end of the turn and an avatar was defeated.
+	// Otherwise, highlight each valid tile that the player can summon avatars to.
 	TArray<ACharacter_Pathfinder*> Avatars = { CurrentSelectedAvatar };
 	TArray<AActor*> WorldGridArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
@@ -406,19 +409,9 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatar
 
 void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile, ACharacter_Pathfinder* SelectedAvatar)
 {
-	// Tell the server to physically create the avatar actor, then end the turn...
-	// Or, swap the data of the pre-existing avatar actor with the reserve avatar.
-
 	FAvatar_Struct ReserveAvatarData;
-	// To-Do: Delete this after the reserve avatar UI is properly implemented.
-	for (int i = 0; i < PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
-		if (PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary > 4) {
-			ReserveAvatarData = PlayerDataStruct.CurrentAvatarTeam[i];
-			break;
-		}
-	}
+	int ReserveAvatarDataIndex = -1;
 	
-	int ReserveAvatarIndexInParty = ReserveAvatarData.IndexInPlayerLibrary;
 	ACharacter_Pathfinder* FoundAvatar;
 
 	if (!SelectedAvatar) {
@@ -432,18 +425,46 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 		FoundAvatar = SelectedAvatar;
 	}
 
-	// Swap indices
-	ReserveAvatarData.IndexInPlayerLibrary = FoundAvatar->AvatarData.IndexInPlayerLibrary;
-
+	// Swap indices.
+	// We need to retrieve the index of the chosen reserve avatar, then find that avatars' data here.
 	for (int i = 0; i < PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
-		if (PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary > 4) {
-			// ??
+		if (PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary == SelectedReserveAvatarBattleUniqueID) {
+
+
+
+
+
+
+			for (int j = 0; j < PlayerDataStruct.CurrentAvatarTeam.Num(); j++) {
+				if (PlayerDataStruct.CurrentAvatarTeam[j].IndexInPlayerLibrary == FoundAvatar->AvatarData.IndexInPlayerLibrary) {
+					// Step one: Get the reserve Avatars' data and set it aside.
+					ReserveAvatarDataIndex = PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary;
+					ReserveAvatarData = PlayerDataStruct.CurrentAvatarTeam[i];
+
+					// Step two: Override the reserve Avatars' data with the current avatars' data.
+					//PlayerDataStruct.CurrentAvatarTeam[j] = FoundAvatar->AvatarData;
+					PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary = PlayerDataStruct.CurrentAvatarTeam[j].IndexInPlayerLibrary;
+					PlayerDataStruct.CurrentAvatarTeam[j].IndexInPlayerLibrary = ReserveAvatarDataIndex;
+
+					// Step three: Override the physical Avatar actors' data with the reserve avatars' data.
+					FoundAvatar->AvatarData = ReserveAvatarData;
+				}
+			}
+
+
+			
+
+
+			
+			PlayerDataStruct.CurrentAvatarTeam[i] = FoundAvatar->AvatarData;
+			//ReserveAvatarData.IndexInPlayerLibrary = SelectedAvatar->AvatarData.IndexInPlayerLibrary;
+			ReserveAvatarData = PlayerDataStruct.CurrentAvatarTeam[i];
+
+			FoundAvatar->AvatarData = ReserveAvatarData;
+			FoundAvatar->AvatarData.IndexInPlayerLibrary = ReserveAvatarDataIndex;
 			break;
 		}
 	}
-	
-	FoundAvatar->AvatarData.IndexInPlayerLibrary = ReserveAvatarIndexInParty;
-	FoundAvatar->AvatarData = ReserveAvatarData;
 	
 	// New avatar's attacks
 	FoundAvatar->CurrentKnownAttacks.Empty();
@@ -459,7 +480,8 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 		
 	// Automatically end the turn whenever a player swaps avatars.
 	PlayerClickMode = E_PlayerCharacter_ClickModes::E_MoveCharacter;
-	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn();
+	Client_SendEndOfTurnCommandToServer();
+	//Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn();
 }
 
 
@@ -472,7 +494,7 @@ void APlayerController_Battle::DelayedEndTurn()
 void APlayerController_Battle::Client_SendEndOfTurnCommandToServer_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_SendEndOfTurnCommandToServer / Call SendEndOfTurnCommandToServer()"));
-
+	
 	CurrentSelectedAvatar->CurrentSelectedAttack.Name = "Default";
 	CurrentSelectedAvatar->CurrentSelectedAttack.AttackPattern = EBattle_AttackPatterns::Circle;
 
@@ -482,6 +504,9 @@ void APlayerController_Battle::Client_SendEndOfTurnCommandToServer_Implementatio
 
 void APlayerController_Battle::SendEndOfTurnCommandToServer_Implementation()
 {
+	// Reset the players' HUD here.
+	SetPlayerClickMode(E_PlayerCharacter_ClickModes::E_MoveCharacter);
+	
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / SendEndOfTurnCommandToServer / Call AvatarEndTurn_Implementation()"));
 	Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn_Implementation();
 }

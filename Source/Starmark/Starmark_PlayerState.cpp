@@ -36,8 +36,11 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 FPlayer_Data AStarmark_PlayerState::GetPlayerDataFromGameInstance()
 {
-	ReplicatedPlayerName = GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.PlayerName;
-	PlayerData.PlayerName = ReplicatedPlayerName;
+	if (!GameInstanceReference) {
+		GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	}
+	
+	PlayerData.PlayerName = GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.PlayerName;
 	PlayerData.ProfileName = GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.ProfileName;
 	PlayerData.CurrentAvatarTeam = GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team;
 	

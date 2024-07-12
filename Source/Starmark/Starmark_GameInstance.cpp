@@ -69,20 +69,20 @@ USaveData_PlayerProfile* UStarmark_GameInstance::ReturnPlayerSaveGameReference()
 
 FAvatar_AttackStruct* UStarmark_GameInstance::ReturnAttackFromDataTable(FName AttackName) const
 {
+	FString ContextString;
+	
 	for (int i = 0; i < SimpleAttacksDataTable->GetRowNames().Num(); i++) {
-		if (SimpleAttacksDataTable->GetRowNames()[i] == AttackName) {
-			FString ContextString;
+		if (SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(SimpleAttacksDataTable->GetRowNames()[i]), ContextString)->Name == AttackName.ToString()) {
 			return SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(SimpleAttacksDataTable->GetRowNames()[i]), ContextString);
 		}
 	}
-	
+
 	for (int i = 0; i < ComplexAttacksDataTable->GetRowNames().Num(); i++) {
-		if (ComplexAttacksDataTable->GetRowNames()[i] == AttackName) {
-			FString ContextString;
+		if (ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksDataTable->GetRowNames()[i]), ContextString)->Name == AttackName.ToString()) {
 			return ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksDataTable->GetRowNames()[i]), ContextString);
 		}
 	}
-
+	
 	return nullptr;
 }
 

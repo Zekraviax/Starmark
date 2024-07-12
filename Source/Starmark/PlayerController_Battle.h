@@ -94,6 +94,9 @@ public:
 	UPROPERTY()
 	FTimerHandle PlayerStateTimerHandle;
 
+	UPROPERTY()
+	int SelectedReserveAvatarBattleUniqueID;
+
 // ------------------------- Player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
 	bool IsReadyToStartMultiplayerBattle = false;
@@ -176,9 +179,9 @@ public:
 
 	// Use this function to highlight all avatars and entites passed,
 	// and to un-highlight all avatars and tiles not passed.
-	void HighlightSpecificAvatarsAndTiles(TArray<ACharacter_Pathfinder*> Avatars, TArray< AActor_GridTile*> Tiles) const;
+	void HighlightSpecificAvatarsAndTiles(const TArray<ACharacter_Pathfinder*>& Avatars, const TArray< AActor_GridTile*>& Tiles) const;
 
-	void BeginSelectingTileForReserveAvatar(bool DidAvatarDie);
+	void BeginSelectingTileForReserveAvatar(bool DidAvatarDie, int SelectedBattleUniqueID);
 
 	UFUNCTION(BlueprintCallable)
 	void SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile, ACharacter_Pathfinder* SelectedAvatar);

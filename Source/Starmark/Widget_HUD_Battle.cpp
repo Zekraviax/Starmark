@@ -13,12 +13,11 @@
 // ------------------------- Widget
 void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStruct> Attacks)
 {
-	int ValidButtonsCount = 0;
-
 	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox is valid? %s"), IsValid(AvatarAttacksBox) ? TEXT("true") : TEXT("false"));
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox is valid? %s"), IsValid(AvatarAttacksBox) ? TEXT("true") : TEXT("false")));
 
 	if (AvatarAttacksBox) {
+		int ValidButtonsCount = 0;
 		UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox child count: %d"), AvatarAttacksBox->GetChildrenCount());
 		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / AvatarAttacksBox child count: %d"), AvatarAttacksBox->GetChildrenCount()));
 
@@ -28,6 +27,7 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 			if (IsValid(Button)) {
 				Button->PlayerControllerReference = PlayerControllerReference;
 				Button->SetIsEnabled(true);
+				Button->SetVisibility(ESlateVisibility::Visible);
 
 				if (Attacks.IsValidIndex(ValidButtonsCount) && Attacks[ValidButtonsCount].Name != "Default") {
 					UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Create UI button for current avatar's attack %s at index: %d"), *PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[ValidButtonsCount].Name, ValidButtonsCount);
@@ -57,21 +57,27 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 
 void UWidget_HUD_Battle::SetCommandsToListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars) const
 {
+	int ValidButtonIndex = 0;
+	
 	for (int i = 0; i < AvatarAttacksBox->GetChildrenCount(); i++) {
 		if (Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i))) {
 			UWidgetComponent_AvatarAttack* Button = Cast<UWidgetComponent_AvatarAttack>(AvatarAttacksBox->GetChildAt(i));
-
-			if (!ReserveAvatars.IsValidIndex(i)) {
-				Button->AttackNameText->SetText(FText::FromString(ReserveAvatars[i].Nickname));
-				Button->AvatarAttackIndex = i;
+			
+			if (ReserveAvatars.IsValidIndex(ValidButtonIndex)) {
+				Button->AttackNameText->SetText(FText::FromString(ReserveAvatars[ValidButtonIndex].Nickname));
+				Button->AvatarAttackIndex = ReserveAvatars[ValidButtonIndex].IndexInPlayerLibrary;
+				Button->SetVisibility(ESlateVisibility::Visible);
+				Button->SetIsEnabled(true);
 			} else {
 				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCommandsToListOfReserveAvatars / Reset button at index: %d"), i);
 
 				Button->AttackNameText->SetText(FText::FromString("-"));
-				Button->PlayerControllerReference = nullptr;
-				Button->AvatarAttackIndex = ReserveAvatars[i].BattleUniqueID;
+				//Button->PlayerControllerReference = nullptr;
+				Button->AvatarAttackIndex = -1;
 				Button->SetVisibility(ESlateVisibility::Collapsed);
 			}
+
+			ValidButtonIndex++;
 		}
 	}
 }

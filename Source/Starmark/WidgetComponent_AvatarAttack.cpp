@@ -12,7 +12,12 @@
 // ------------------------- Widget
 void UWidgetComponent_AvatarAttack::OnButtonPressed()
 {
-	if (AvatarAttackIndex > -1 && PlayerControllerReference && PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.IsValidIndex(AvatarAttackIndex)) {
+	if (PlayerControllerReference->PlayerClickMode == E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon &&
+		!AttackNameText->GetText().EqualTo(FText::FromString("RESERVE"))) {
+		// Here is where the player selects a reserve avatar to summon.
+		// We need to pass the index of the chosen avatar here.
+		PlayerControllerReference->BeginSelectingTileForReserveAvatar(false, AvatarAttackIndex);
+	} else if (AvatarAttackIndex > -1 && PlayerControllerReference && PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.IsValidIndex(AvatarAttackIndex)) {
 		PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack;
 		PlayerControllerReference->TileHighlightMode = E_PlayerCharacter_HighlightModes::E_AttackPattern;
 
@@ -22,7 +27,7 @@ void UWidgetComponent_AvatarAttack::OnButtonPressed()
 		// Enable rotation towards mouse cursor
 		PlayerControllerReference->CurrentSelectedAvatar->RotateAvatarTowardsMouse = true;
 	} else if (AttackNameText->GetText().EqualTo(FText::FromString("RESERVE"))) {
-		//PlayerControllerReference->BeginSelectingTileForReserveAvatar(false);
+		// Give the player the list of reserve avatars that they can summon.
 		PlayerControllerReference->SetPlayerClickMode(E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon);
 	}
 }

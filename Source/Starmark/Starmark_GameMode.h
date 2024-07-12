@@ -80,6 +80,9 @@ public:
 	UPROPERTY()
 	int MultiplayerUniqueIDCounter;
 
+	UPROPERTY()
+	int BattleUniqueIDCounter;	
+
 // ------------------------- Other
 	UPROPERTY()
 	FString GameModeContextString;

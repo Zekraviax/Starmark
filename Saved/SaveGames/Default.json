@@ -133,7 +133,12 @@
 			"tier": 1,
 			"tokensRequired": 1,
 			"indexInPlayerLibrary": 1,
-			"currentEquippedAttackNames": [],
+			"currentEquippedAttackNames": [
+				"Magic Shock",
+				"Magic Missile",
+				"None",
+				"None"
+			],
 			"replicationId": -1,
 			"replicationKey": -1,
 			"mostRecentArrayReplicationKey": -1
@@ -410,7 +415,12 @@
 			"tier": 1,
 			"tokensRequired": 1,
 			"indexInPlayerLibrary": 5,
-			"currentEquippedAttackNames": [],
+			"currentEquippedAttackNames": [
+				"Swipe",
+				"None",
+				"Casting Stones",
+				"Rock Wall"
+			],
 			"replicationId": -1,
 			"replicationKey": -1,
 			"mostRecentArrayReplicationKey": -1
