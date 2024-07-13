@@ -108,9 +108,6 @@ public:
 	void Server_BeginMultiplayerBattle();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void Server_SinglePlayerBeginMultiplayerBattle(APlayerController_Battle* PlayerControllerReference);
-
-	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_MultiplayerBattleCheckAllPlayersReady();
 
 	// Battle Functions

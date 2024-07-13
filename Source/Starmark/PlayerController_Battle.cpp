@@ -113,6 +113,7 @@ void APlayerController_Battle::SetPlayerClickMode(E_PlayerCharacter_ClickModes N
 	} else if (PlayerClickMode == E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon) {
 		// Replace the list of attacks with the list of reserve avatars.
 		TArray<FAvatar_Struct> ReserveAvatars;
+		// Don't need to pass-by-reference here since we're not changing anything.
 		TArray<FAvatar_Struct> Team = PlayerStateReference->GetPlayerDataFromGameInstance().CurrentAvatarTeam;
 
 		for (int i = 0; i < Team.Num(); i++) {

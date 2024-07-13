@@ -53,7 +53,6 @@ void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 
 	// Set-up for the new controller
 	NewController->CreateBattleWidget();
-	PlayerControllerReferences.Add(NewController);
 
 	// Set-up for the battle
 	OnPlayerPostLogin(NewController);
@@ -70,6 +69,7 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 
 	// The one true method of sending the players' data to the server.
 	NewPlayerController->ClientSendDataToServer();
+	PlayerControllerReferences.Add(NewPlayerController);
 
 	// Spawn and posses player pawn
 	TArray<AActor*> FoundPlayerStartActors;
@@ -181,10 +181,7 @@ void AStarmark_GameMode::GetPreBattleChecks_Implementation()
 		} else {
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Starting a single player battle."));
 
-			TArray<AActor*> FoundPlayerControllers;
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), FoundPlayerControllers);
-
-			Server_SinglePlayerBeginMultiplayerBattle(Cast<APlayerController_Battle>(FoundPlayerControllers[0]));
+			Server_BeginMultiplayerBattle();
 		}
 
 	} else {
@@ -205,19 +202,18 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 	}
 
 	for (int i = 0; i < GameStateReference->PlayerDataStructsArray.Num(); i++) {
-		FPlayer_Data PlayerData = GameStateReference->PlayerDataStructsArray[i];
-		TArray<FAvatar_Struct> CurrentPlayerTeam = PlayerData.CurrentAvatarTeam;
+		FPlayer_Data& PlayerData = GameStateReference->PlayerDataStructsArray[i];
+		TArray<FAvatar_Struct>& CurrentPlayerTeam = PlayerData.CurrentAvatarTeam;
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Double checking player name: %s"), *PlayerData.PlayerName);
 
 		int SpawnedAvatarCount = 0;
 		for (int j = 0; j < CurrentPlayerTeam.Num(); j++) {
 			if (CurrentPlayerTeam.IsValidIndex(j)) {
 				if (CurrentPlayerTeam[j].AvatarName != "Default") {
-					// To-Do: Synchronize all of the changes through the GameState.
 					// Upon finding a valid avatar in any players' party,
-					// Increment the BattleUniqueIDCounter and assign that ID to the avatar.
-					CurrentPlayerTeam[j].BattleUniqueID = BattleUniqueIDCounter;
+					// increment the BattleUniqueIDCounter and assign that ID to the avatar.
 					BattleUniqueIDCounter++;
+					CurrentPlayerTeam[j].BattleUniqueID = BattleUniqueIDCounter;
 					
 					if (SpawnedAvatarCount < 4) {
 						Server_SpawnAvatar(PlayerControllerReferences[i], (j + 1), CurrentPlayerTeam[j]);
@@ -243,58 +239,6 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 	Server_MultiplayerBattleCheckAllPlayersReady();
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / End function"));
-}
-
-
-void AStarmark_GameMode::Server_SinglePlayerBeginMultiplayerBattle_Implementation(APlayerController_Battle* PlayerControllerReference)
-{
-	TArray<FAvatar_Struct> CurrentPlayerTeam;
-	
-	// To-Do: rename this function to something that makes more sense
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Begin function"));
-
-	if (!GameStateReference) {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / GameStateReference is not valid. Attempting to fetch now."));
-		SetGameStateLocalReference();
-	}
-
-	for (int i = 0; i < GameStateReference->ReturnAllBattlePlayerControllers().Num(); i++) {
-		CurrentPlayerTeam = GameStateReference->PlayerDataStructsArray[i].CurrentAvatarTeam;
-
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / PlayerState has data with ProfileName: %s"), *Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerData.ProfileName);
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / PlayerState has %d avatars"), Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerData.CurrentAvatarTeam.Num());
-
-		int SpawnedAvatarCount = 0;
-
-		for (int j = 0; j < CurrentPlayerTeam.Num(); j++) {
-			if (CurrentPlayerTeam.IsValidIndex(j)) {
-				if (CurrentPlayerTeam[j].AvatarName != "Default") {
-					// Upon finding a valid avatar in any players' party,
-					// Increment the BattleUniqueIDCounter and assign that ID to the avatar.
-					CurrentPlayerTeam[j].BattleUniqueID = BattleUniqueIDCounter;
-					BattleUniqueIDCounter++;
-					
-					if (SpawnedAvatarCount < 4) {
-						Server_SpawnAvatar(PlayerControllerReference, (SpawnedAvatarCount + 1), CurrentPlayerTeam[j]);
-						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Spawn avatar %s for player %s."), *CurrentPlayerTeam[j].AvatarName, *PlayerControllerReference->PlayerName);
-
-						SpawnedAvatarCount++;
-					}
-				} else {
-					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / Invalid member at index %d in Player party"), j);
-				}
-			}
-		}
-
-		// Synchronize the players' team to their class.
-		PlayerControllerReference->PlayerDataStruct.CurrentAvatarTeam = CurrentPlayerTeam;
-
-		PlayerControllerReference->OnRepNotify_CurrentSelectedAvatar();
-	}
-	
-	Server_MultiplayerBattleCheckAllPlayersReady();
-
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SinglePlayerBeginMultiplayerBattle / End function"));
 }
 
 
