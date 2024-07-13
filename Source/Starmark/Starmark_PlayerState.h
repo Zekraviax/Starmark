@@ -68,6 +68,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool PreBattleCheck = false;
 
+	// This variable only tracks the number of avatars that the player controlled that died this turn, not all avatars.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
+	int NumberOfAvatarsDiedThisTurn = 0;
+
 
 // ---------------------------------------- Functions ---------------------------------------- 
 // ------------------------- Local Helper Functions

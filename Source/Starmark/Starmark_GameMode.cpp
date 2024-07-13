@@ -306,6 +306,7 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		// Initial HUD set up for all players
 		GameStateReference->ShowHideAllPlayerHuds();
 
+		
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / End normal functionality. Begin dev tests..."));
 
 		// Currently, this function only sets an avatar's base stats to their minimum, since there is currently no way for them to scale upwards.
@@ -342,10 +343,10 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Begin function"));
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Assembling text"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Assembling text."));
 	
-	// The AssembleTurnOrderText should only handle the text, and not images in the hud
-	// But whenever the text is updated, shouldn't the images be update to match?
+	// The AssembleTurnOrderText should only handle the text, and not images in the hud.
+	// But whenever the text is updated, shouldn't the images be updated to match?
 	FString NewTurnOrderText;
 
 	if (!GameStateReference) {
@@ -370,34 +371,40 @@ void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 }
 
 
-void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Battle* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData)
+void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Battle* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData, FVector Location = FVector(0, 0, -9999))
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Begin function"));
 	
 	FString ContextString;
-	const FActorSpawnParameters SpawnInfo;
 	TArray<AActor*> FoundGridTileActors, ValidMultiplayerSpawnTiles, FoundAvatars;
 	TArray<FName> AvatarRowNames;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTileActors);
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundAvatars);
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Attempting to spawn avatar actor"));
-	// Find all tiles that can spawn avatars in multiplayer battles
+	// Find all tiles that can spawn avatars in multiplayer battles, if the player hasn't selected a location.
 	for (int i = 0; i < FoundGridTileActors.Num(); i++) {
 		const AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(FoundGridTileActors[i]);
+		if (Location.Z == -9999) {
+			if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_PlayerAvatarSpawn) &&
+				GridTileReference->AvatarSlotNumber == IndexInPlayerParty &&
+				GridTileReference->AssignedMultiplayerUniqueID == PlayerController->MultiplayerUniqueID) {
+				ValidMultiplayerSpawnTiles.Add(FoundGridTileActors[i]);
 
-		if (GridTileReference->Properties.Contains(E_GridTile_Properties::E_PlayerAvatarSpawn) &&
-			GridTileReference->AvatarSlotNumber == IndexInPlayerParty &&
-			GridTileReference->AssignedMultiplayerUniqueID == PlayerController->MultiplayerUniqueID) {
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Found valid spawn tile at location: x %d, y %d"),
+					FMath::RoundToInt(FoundGridTileActors[i]->GetActorLocation().X),
+					FMath::RoundToInt(FoundGridTileActors[i]->GetActorLocation().Y));
+				}
+		} else if (Location.Z != -9999 && FMath::IsNearlyEqual(GridTileReference->GetActorLocation().X == Location.X, 1.f) && FMath::IsNearlyEqual(GridTileReference->GetActorLocation().Y == Location.Y, 1.f)) {
+			// Find the tile and add it to the valid spawn tiles array, so we don't have to refactor this colossal block of code.
 			ValidMultiplayerSpawnTiles.Add(FoundGridTileActors[i]);
-
-			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Found valid spawn tile at location: x %d, y %d"),
-				FMath::RoundToInt(FoundGridTileActors[i]->GetActorLocation().X),
-				FMath::RoundToInt(FoundGridTileActors[i]->GetActorLocation().Y));
-		}
+			break;
+		} 
 	}
 
+
 	if (ValidMultiplayerSpawnTiles.Num() > 0) {
+		const FActorSpawnParameters SpawnInfo;
 		FVector Location = ValidMultiplayerSpawnTiles[0]->GetActorLocation();
 		Location.Z = 100;
 
@@ -412,16 +419,15 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 		NewAvatarActor->AvatarData.CurrentTileMoves = NewAvatarActor->AvatarData.MaximumTileMoves;
 
 		// To-Do: Figure out a way for each avatar to have a reference to their players' data
-		// without cloning the data for each avatar
+		// without cloning the data for each avatar.
+		// (pass-by-reference)
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Give the avatar a copy of the player %s's data"), *PlayerController->PlayerDataStruct.ProfileName);
-
-		//PlayerController->PlayerDataStruct = Cast<AStarmark_PlayerState>(PlayerController->PlayerState)->GetPlayerDataFromGameInstance();
+		
 		NewAvatarActor->PlayerControllerReference = PlayerController;
 
-		// To-Do: Clean up the MultiPlayer Unique IDs so that there is only one, used everywhere
+		// To-Do: Clean up the MultiPlayer Unique IDs so that there is only one that is used everywhere.
 		NewAvatarActor->MultiplayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
 		PlayerController->PlayerDataStruct.CurrentAvatarTeam[IndexInPlayerParty - 1].OwnerMultiplayerUniqueID = PlayerController->MultiplayerUniqueID;
-		//PlayerController->PlayerDataStruct.CurrentAvatarTeam[IndexInPlayerParty - 1].BattleUniqueID = FoundAvatars.Num() + 1;
 		NewAvatarActor->AvatarData = PlayerController->PlayerDataStruct.CurrentAvatarTeam[IndexInPlayerParty - 1];
 
 		// Get attacks
@@ -436,12 +442,10 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 		// To-Do: Consider sending avatar data to the GameState? Because all players will want to see all avatar data.
 		NewAvatarActor->Client_GetAvatarData(NewAvatarActor->AvatarData);
 
-		// To-Do: Check if this is redundant, considering it's set in the MultiplayerBeginBattle function
-		// Verifying that this is redundant
-		// This isn't redundant??
+		// To-Do: Deprecate this cloning of avatar data, or just make it a reference to the GameState's data.
 		PlayerController->CurrentSelectedAvatar = NewAvatarActor;
 
-		// Set spawn tile to be occupied
+		// Set spawn tile to be occupied.
 		// ---- Can be refactored into a function ---- //
 		if (Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Contains(E_GridTile_Properties::E_None)) {
 			Cast<AActor_GridTile>(ValidMultiplayerSpawnTiles[0])->Properties.Remove(E_GridTile_Properties::E_None);
@@ -507,15 +511,15 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Begin function"));
 	
 	FAvatar_AttackStruct AttackData;
-	const FActorSpawnParameters SpawnInfo;
-	const FString ContextString;
 	FString MoveTypeAsString, TargetTypeAsString;
 	TArray<FName> ComplexAttackRowNames = AvatarComplexAttacksDataTable->GetRowNames();
 	ACharacter_Pathfinder* TargetAsCharacter = Cast<ACharacter_Pathfinder>(Target);
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Attack chosen: %s"), *AttackName);
 	
-	for (int i = 0; i < ComplexAttackRowNames.Num(); i++) {
+	for (int i = 0; i < ComplexAttackRowNames.Num(); i++)
+	{
+		const FString ContextString;
 		if (AvatarComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(ComplexAttackRowNames[i], ContextString)->Name == AttackName) {
 			AttackData = *AvatarComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(ComplexAttackRowNames[i], ContextString);
 			break;
@@ -548,11 +552,10 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 		PlayerStateReference->Server_SubtractHealth_Implementation(TargetAsCharacter, CurrentDamage);
 	}
 
-	// To-do: Subtract Mana
-	//Attacker->AvatarData.CurrentManaPoints -= Attacker->CurrentSelectedAttack.ManaCost;
-
 	// Apply move effects after the damage has been dealt
-	if (!AttackEffectsLibrary_Reference && AttackEffectsLibrary_Class) {
+	if (!AttackEffectsLibrary_Reference && AttackEffectsLibrary_Class)
+	{
+		const FActorSpawnParameters SpawnInfo;
 		AttackEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_AttackEffectsLibrary>(AttackEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
 	}
 
@@ -599,6 +602,11 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin new turn for player: %s"), *Controller->PlayerDataStruct.PlayerName);
 	}
 
+	// Reset the number of avatars died for each player.
+	for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
+		Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->NumberOfAvatarsDiedThisTurn = 0;
+	}
+
 	// Update all the players' HUDs here and avatar icons in turn order
 	GameStateReference->SetTurnOrder();
 
@@ -627,6 +635,16 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 		}
 	}
 
+	// Find the tile that avatar was at, and remove the 'Occupied' property.
+	TArray<AActor*> FoundGridTileActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), FoundGridTileActors);
+	for (int i = 0; i < FoundGridTileActors.Num(); i++) {
+		if (FMath::IsNearlyEqual(FoundGridTileActors[i]->GetActorLocation().X, Avatar->GetActorLocation().X, 1.f) && FMath::IsNearlyEqual(FoundGridTileActors[i]->GetActorLocation().Y, Avatar->GetActorLocation().Y, 1.f)) {
+			Cast<AActor_GridTile>(FoundGridTileActors[i])->Properties.Remove(E_GridTile_Properties::E_Occupied);
+			break;
+		}
+	}
+
 	if (IsValid(PlayerControllerReference)) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarDefeated / Remove Avatar %s from Turn Order"), *Avatar->AvatarData.AvatarName);
 		Server_AssembleTurnOrderText();
@@ -637,26 +655,23 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 		} else {
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("AStarmark_GameMode / Server_AvatarDefeated / Player Avatars Remaining: %d"), Avatar->PlayerControllerReference->PlayerParty.Num()));
 
-			// Check for any avatars in reserve
-			bool FoundAvatarInReserve = false;
-
-			for (int i = 0; i < PlayerControllerReference->PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
-				FAvatar_Struct FoundAvatar = PlayerControllerReference->PlayerDataStruct.CurrentAvatarTeam[i];
-				if (FoundAvatar.CurrentHealthPoints > 0 && FoundAvatar.IndexInPlayerLibrary >= 4) {
-					// To-Do: Allow the player to summon an Avatar from reserve as a special action here.
-					FoundAvatarInReserve = true;
-
-					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackEffectsOnTarget.Empty();
-					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackEffectsOnTarget.Add(EBattle_AttackEffects::SummonAvatar);
-					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange = EBattle_AttackTargetsInRange::SelectAllGridTiles;
-					PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack.AttackPattern = EBattle_AttackPatterns::SingleTile;
-
-					break;
+			// Tell the player how many avatars they've lost this turn so they can summon more than one if they have to.
+			Cast<AStarmark_PlayerState>(PlayerControllerReference->PlayerState)->NumberOfAvatarsDiedThisTurn++;
+			
+			// Check for any avatars in reserve.
+			if (PlayerControllerReference->PlayerClickMode != E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon) {
+				for (int i = 0; i < PlayerControllerReference->PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
+					const FAvatar_Struct& FoundAvatar = PlayerControllerReference->PlayerDataStruct.CurrentAvatarTeam[i];
+					if (FoundAvatar.CurrentHealthPoints > 0 && FoundAvatar.IndexInPlayerLibrary >= 4) {
+						PlayerControllerReference->SetPlayerClickMode(E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon);
+					
+						break;
+					}
 				}
 			}
 		}
 	}
-
+	
 	Avatar->Destroy();
 }
 

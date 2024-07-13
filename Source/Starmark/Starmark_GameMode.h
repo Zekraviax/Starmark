@@ -115,7 +115,7 @@ public:
 	void Server_AssembleTurnOrderText();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void Server_SpawnAvatar(APlayerController_Battle* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData);
+	void Server_SpawnAvatar(APlayerController_Battle* PlayerController, int IndexInPlayerParty, FAvatar_Struct AvatarData, FVector Location = FVector(0, 0, -9999));
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_UpdateAllAvatarDecals();

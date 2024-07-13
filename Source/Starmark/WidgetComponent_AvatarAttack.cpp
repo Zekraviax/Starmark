@@ -16,7 +16,7 @@ void UWidgetComponent_AvatarAttack::OnButtonPressed()
 		!AttackNameText->GetText().EqualTo(FText::FromString("RESERVE"))) {
 		// Here is where the player selects a reserve avatar to summon.
 		// We need to pass the index of the chosen avatar here.
-		PlayerControllerReference->BeginSelectingTileForReserveAvatar(false, AvatarAttackIndex);
+		PlayerControllerReference->BeginSelectingTileForReserveAvatar(AvatarAttackIndex);
 	} else if (AvatarAttackIndex > -1 && PlayerControllerReference && PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.IsValidIndex(AvatarAttackIndex)) {
 		PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack;
 		PlayerControllerReference->TileHighlightMode = E_PlayerCharacter_HighlightModes::E_AttackPattern;

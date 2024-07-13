@@ -116,9 +116,17 @@ void APlayerController_Battle::SetPlayerClickMode(E_PlayerCharacter_ClickModes N
 		// Don't need to pass-by-reference here since we're not changing anything.
 		TArray<FAvatar_Struct> Team = PlayerStateReference->GetPlayerDataFromGameInstance().CurrentAvatarTeam;
 
-		for (int i = 0; i < Team.Num(); i++) {
-			if (Team[i].IndexInPlayerLibrary >= 4) {
-				ReserveAvatars.Add(Team[i]);
+		// Need to check if the avatar is in reserve *and* not already summoned to the field.
+		TArray<FAvatar_Struct> TemporaryPlayerTeamCopy = PlayerDataStruct.CurrentAvatarTeam;
+		TArray<AActor*> CharactersArray;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), CharactersArray);
+		for (int j = 0; j < CharactersArray.Num(); j++) {
+			TemporaryPlayerTeamCopy.Remove(Cast<ACharacter_Pathfinder>(CharactersArray[j])->AvatarData);
+		}
+		
+		for (int i = 0; i < TemporaryPlayerTeamCopy.Num(); i++) {
+			if (TemporaryPlayerTeamCopy[i].IndexInPlayerLibrary >= 4) {
+				ReserveAvatars.Add(TemporaryPlayerTeamCopy[i]);
 			}
 		}
 		
@@ -322,7 +330,8 @@ void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActo
 				if (Cast<ACharacter_Pathfinder>(ClickedActor)) {
 					if (CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(ClickedActor)) {
 						CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(ClickedActor));
-						// Don't automatically end the turn just because someone attacked
+						// Don't automatically end the turn just because someone attacked.
+						// End the turn automatically if no avatars died.
 						//Client_SendEndOfTurnCommandToServer();
 					}
 				}
@@ -367,54 +376,111 @@ void APlayerController_Battle::HighlightSpecificAvatarsAndTiles(const TArray<ACh
 }
 
 
-void APlayerController_Battle::BeginSelectingTileForReserveAvatar(bool DidAvatarDie, int SelectedBattleUniqueID)
+void APlayerController_Battle::BeginSelectingTileForReserveAvatar(int SelectedBattleUniqueID)
 {
-	// Update the UI (which UI?)
+	// These are the arrays of entities and grid tiles we're going to highlight at the end of the function.
+	TArray<ACharacter_Pathfinder*> AvatarsArray;
+	TArray<AActor_GridTile*> GridTilesArray;
+	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(PlayerState);
 
-	if (DidAvatarDie) {
+	TArray<AActor*> WorldGridArray;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
+	AActor_WorldGrid* WorldGridRef = Cast<AActor_WorldGrid>(WorldGridArray[0]);
+
+	// Highlight the currently acting avatar if it isn't the end of the turn and an avatar was defeated.
+	// Otherwise, highlight each valid tile that the player can summon avatars to.
+	if (PlayerStateReference->NumberOfAvatarsDiedThisTurn > 0) {
 		// Highlight each valid tile that the player can summon an avatar to.
-		TArray<AActor*> GridTilesArray;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTilesArray);
+		TArray<AActor*> GridTileActorsArray;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTileActorsArray);
 
-		for (AActor* TileAsActor : GridTilesArray) {
+		for (AActor* TileAsActor : GridTileActorsArray) {
 			AActor_GridTile* Tile = Cast<AActor_GridTile>(TileAsActor);
 
 			if (Tile) {
-				if (Tile->AssignedMultiplayerUniqueID == MultiplayerUniqueID) {
-					Tile->SetTileHighlightProperties(true, false, E_GridTile_ColourChangeContext::WithinAttackRange);
-				} else {
-					Tile->SetTileHighlightProperties(false, true, E_GridTile_ColourChangeContext::Normal);
+				if (!Tile->Properties.Contains(E_GridTile_Properties::E_Occupied)) {
+					if (Tile->AssignedMultiplayerUniqueID == MultiplayerUniqueID) {
+						GridTilesArray.AddUnique(Tile);
+					} else if (WorldGridRef->GetTotalDistanceBetweenTwoPositions(Tile->GetActorLocation(), CurrentSelectedAvatar->GetActorLocation()) == 1) {
+						GridTilesArray.AddUnique(Tile);
+					} else if (Tile->AssignedMultiplayerUniqueID == MultiplayerUniqueID) {
+						GridTilesArray.AddUnique(Tile);
+					}
 				}
 			}
 		}
 	} else {
-
+		AvatarsArray.Add(CurrentSelectedAvatar);
+		GridTilesArray.Add(Cast<AActor_GridTile>(WorldGridRef->GetAndReturnGridTileAtLocation(WorldGridRef->ConvertGridTileLocationToCoordinates(CurrentSelectedAvatar->GetActorLocation()))));
 	}
 
 	// Remember which avatar was chosen.
 	SelectedReserveAvatarBattleUniqueID = SelectedBattleUniqueID;
 
-	// Set the players' mouse mode to select a tile.
+	// Set the players' mouse mode to select a tile and finalize the summoning.
 	PlayerClickMode = E_PlayerCharacter_ClickModes::SummonAvatar;
-
-	// Highlight the currently acting avatar if it isn't the end of the turn and an avatar was defeated.
-	// Otherwise, highlight each valid tile that the player can summon avatars to.
-	TArray<ACharacter_Pathfinder*> Avatars = { CurrentSelectedAvatar };
-	TArray<AActor*> WorldGridArray;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
-	AActor_WorldGrid* WorldGridRef = Cast<AActor_WorldGrid>(WorldGridArray[0]);
-	TArray<AActor_GridTile*> TileAtAvatarLocation { WorldGridRef->GetAndReturnGridTileAtLocation(WorldGridRef->ConvertGridTileLocationToCoordinates(CurrentSelectedAvatar->GetActorLocation())) };
-	HighlightSpecificAvatarsAndTiles(Avatars, TileAtAvatarLocation);
+	HighlightSpecificAvatarsAndTiles(AvatarsArray, GridTilesArray);
 }
 
 
-void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile, ACharacter_Pathfinder* SelectedAvatar)
+void APlayerController_Battle::SummonReserveAvatarAtSelectedTile_Implementation(AActor_GridTile* SelectedTile, ACharacter_Pathfinder* SelectedAvatar)
 {
 	FAvatar_Struct ReserveAvatarData;
 	int ReserveAvatarDataIndex = -1;
-	
 	ACharacter_Pathfinder* FoundAvatar;
 
+	// If a tile is selected, that means the game mode needs to spawn in a new avatar.
+	// Otherwise, we can just override the existing data on an avatar.
+	if (SelectedTile) {
+		for (int i = 0; i < PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
+			if (PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary == SelectedReserveAvatarBattleUniqueID) {
+				Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_SpawnAvatar(this, SelectedReserveAvatarBattleUniqueID, PlayerDataStruct.CurrentAvatarTeam[i], SelectedTile->GetActorLocation());
+				break;
+			}
+		}
+		
+		// Once an avatar has been spawned, we can set it to the FoundAvatar local variable?
+	} else {
+		FoundAvatar = SelectedAvatar;
+
+		// Swap indices.
+		// We need to retrieve the index of the chosen reserve avatar, then find that avatars' data here.
+		for (int i = 0; i < PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
+			if (PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary == SelectedReserveAvatarBattleUniqueID) {
+				for (int j = 0; j < PlayerDataStruct.CurrentAvatarTeam.Num(); j++) {
+					if (PlayerDataStruct.CurrentAvatarTeam[j].IndexInPlayerLibrary == FoundAvatar->AvatarData.IndexInPlayerLibrary) {
+						// Step one: Get the reserve Avatars' data and set it aside.
+						ReserveAvatarDataIndex = PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary;
+						ReserveAvatarData = PlayerDataStruct.CurrentAvatarTeam[i];
+
+						// Step two: Override the reserve Avatars' data with the current avatars' data.
+						PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary = PlayerDataStruct.CurrentAvatarTeam[j].IndexInPlayerLibrary;
+						PlayerDataStruct.CurrentAvatarTeam[j].IndexInPlayerLibrary = ReserveAvatarDataIndex;
+
+						// Step three: Override the physical Avatar actors' data with the reserve avatars' data.
+						FoundAvatar->AvatarData = ReserveAvatarData;
+					}
+				}
+			
+				PlayerDataStruct.CurrentAvatarTeam[i] = FoundAvatar->AvatarData;
+				ReserveAvatarData = PlayerDataStruct.CurrentAvatarTeam[i];
+
+				FoundAvatar->AvatarData = ReserveAvatarData;
+				FoundAvatar->AvatarData.IndexInPlayerLibrary = ReserveAvatarDataIndex;
+				break;
+			}
+		}
+
+		// New avatar's attacks
+		FoundAvatar->CurrentKnownAttacks.Empty();
+		UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(GetGameInstance());
+		for (int i = 0; i < FoundAvatar->AvatarData.CurrentEquippedAttackNames.Num(); i++) {
+			FoundAvatar->CurrentKnownAttacks.Add(*GameInstanceReference->ReturnAttackFromDataTable(FoundAvatar->AvatarData.CurrentEquippedAttackNames[i]));
+		}
+
+		// Set health and mana?
+	}
+	/*
 	if (!SelectedAvatar) {
 		TArray<AActor*> WorldGridArray;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
@@ -425,64 +491,20 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile(AActor_GridTile
 	} else {
 		FoundAvatar = SelectedAvatar;
 	}
-
-	// Swap indices.
-	// We need to retrieve the index of the chosen reserve avatar, then find that avatars' data here.
-	for (int i = 0; i < PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
-		if (PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary == SelectedReserveAvatarBattleUniqueID) {
-
-
-
-
-
-
-			for (int j = 0; j < PlayerDataStruct.CurrentAvatarTeam.Num(); j++) {
-				if (PlayerDataStruct.CurrentAvatarTeam[j].IndexInPlayerLibrary == FoundAvatar->AvatarData.IndexInPlayerLibrary) {
-					// Step one: Get the reserve Avatars' data and set it aside.
-					ReserveAvatarDataIndex = PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary;
-					ReserveAvatarData = PlayerDataStruct.CurrentAvatarTeam[i];
-
-					// Step two: Override the reserve Avatars' data with the current avatars' data.
-					//PlayerDataStruct.CurrentAvatarTeam[j] = FoundAvatar->AvatarData;
-					PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary = PlayerDataStruct.CurrentAvatarTeam[j].IndexInPlayerLibrary;
-					PlayerDataStruct.CurrentAvatarTeam[j].IndexInPlayerLibrary = ReserveAvatarDataIndex;
-
-					// Step three: Override the physical Avatar actors' data with the reserve avatars' data.
-					FoundAvatar->AvatarData = ReserveAvatarData;
-				}
-			}
-
-
-			
-
-
-			
-			PlayerDataStruct.CurrentAvatarTeam[i] = FoundAvatar->AvatarData;
-			//ReserveAvatarData.IndexInPlayerLibrary = SelectedAvatar->AvatarData.IndexInPlayerLibrary;
-			ReserveAvatarData = PlayerDataStruct.CurrentAvatarTeam[i];
-
-			FoundAvatar->AvatarData = ReserveAvatarData;
-			FoundAvatar->AvatarData.IndexInPlayerLibrary = ReserveAvatarDataIndex;
-			break;
+	*/
+		
+	// Automatically end the turn whenever a player swaps avatars only if they're the acting player.
+	// And if they don't need to summon any more avatars.
+	Cast<AStarmark_PlayerState>(PlayerState)->NumberOfAvatarsDiedThisTurn--;
+	if (Cast<AStarmark_PlayerState>(PlayerState)->NumberOfAvatarsDiedThisTurn > 0) {
+		SetPlayerClickMode(E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon);
+	} else {
+		PlayerClickMode = E_PlayerCharacter_ClickModes::E_MoveCharacter;
+		
+		if (Cast<AStarmark_GameState>(GetWorld()->GetGameState())->CurrentlyActingPlayer == this) {
+			Client_SendEndOfTurnCommandToServer();
 		}
 	}
-	
-	// New avatar's attacks
-	FoundAvatar->CurrentKnownAttacks.Empty();
-	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(GetGameInstance());
-	for (int i = 0; i < FoundAvatar->AvatarData.CurrentEquippedAttackNames.Num(); i++) {
-		FoundAvatar->CurrentKnownAttacks.Add(*GameInstanceReference->ReturnAttackFromDataTable(FoundAvatar->AvatarData.CurrentEquippedAttackNames[i]));
-	}
-	/*for (int i = 0; i < ReserveAvatarData.CurrentAttacks.Num(); i++) {
-		FoundAvatar->CurrentKnownAttacks.Add(ReserveAvatarData.CurrentAttacks[i]);
-	}*/
-
-	// Set health and mana?
-		
-	// Automatically end the turn whenever a player swaps avatars.
-	PlayerClickMode = E_PlayerCharacter_ClickModes::E_MoveCharacter;
-	Client_SendEndOfTurnCommandToServer();
-	//Cast<AStarmark_GameState>(GetWorld()->GetGameState())->AvatarEndTurn();
 }
 
 

@@ -181,9 +181,9 @@ public:
 	// and to un-highlight all avatars and tiles not passed.
 	void HighlightSpecificAvatarsAndTiles(const TArray<ACharacter_Pathfinder*>& Avatars, const TArray< AActor_GridTile*>& Tiles) const;
 
-	void BeginSelectingTileForReserveAvatar(bool DidAvatarDie, int SelectedBattleUniqueID);
+	void BeginSelectingTileForReserveAvatar(int SelectedBattleUniqueID);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void SummonReserveAvatarAtSelectedTile(AActor_GridTile* SelectedTile, ACharacter_Pathfinder* SelectedAvatar);
 
 	void DelayedEndTurn();
