@@ -39,74 +39,6 @@
 			"maximumActionPoints": 1,
 			"currentActionPoints": 1,
 			"sameTypeAttackBonusMultiplier": 150,
-			"currentAttacks": [
-				{
-					"name": "Peck",
-					"type": "E_None",
-					"basePower": 1,
-					"baseRange": 1,
-					"manaCost": 1,
-					"description": "Default.",
-					"attackPattern": "Circle",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackAllTargets",
-					"attackEffectsOnTarget": [],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Gust",
-					"type": "E_Air",
-					"basePower": 0,
-					"baseRange": 3,
-					"manaCost": 10,
-					"description": "Default.",
-					"attackPattern": "FourWayCross",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackClickedAvatar",
-					"attackEffectsOnTarget": [
-						"KnockbackTarget"
-					],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Whirlwind",
-					"type": "E_Air",
-					"basePower": 25,
-					"baseRange": 2,
-					"manaCost": 5,
-					"description": "Default.",
-					"attackPattern": "Circle",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackAllTargets",
-					"attackEffectsOnTarget": [
-						"KnockbackTarget"
-					],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				},
-				{
-					"name": "Wind Blade",
-					"type": "E_Air",
-					"basePower": 70,
-					"baseRange": 3,
-					"manaCost": 30,
-					"description": "Default.",
-					"attackPattern": "FourWayCross",
-					"attackCategory": "Offensive",
-					"attackTargetsInRange": "AttackAllTargets",
-					"attackEffectsOnTarget": [
-						"AddBleedStatus"
-					],
-					"attachAttackTraceActorToMouse": false,
-					"rotateAvatarTowardsMouse": true,
-					"endAvatarTurnOnUse": true
-				}
-			],
 			"factions": [
 				"Player1"
 			],
@@ -133,7 +65,12 @@
 			"tier": 1,
 			"tokensRequired": 1,
 			"indexInPlayerLibrary": 0,
-			"currentEquippedAttackNames": [],
+			"currentEquippedAttackNames": [
+				"Gust",
+				"Wind Blade",
+				"Peck",
+				"Whirlwind"
+			],
 			"replicationId": -1,
 			"replicationKey": -1,
 			"mostRecentArrayReplicationKey": -1

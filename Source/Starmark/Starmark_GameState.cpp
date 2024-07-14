@@ -2,7 +2,6 @@
 
 #include "Actor_AbilitiesLibrary.h"
 #include "Actor_GridTile.h"
-#include "AIController_EnemyEntity.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Character_NonAvatarEntity.h"
 #include "Character_Pathfinder.h"
@@ -48,7 +47,7 @@ APlayerController_Battle* AStarmark_GameState::ReturnCurrentlyActingPlayer()
 }
 
 
-TArray<APlayerController_Battle*> AStarmark_GameState::ReturnAllBattlePlayerControllers()
+TArray<APlayerController_Battle*> AStarmark_GameState::ReturnAllBattlePlayerControllers() const
 {
 	TArray<AActor*> ActorsArray;
 	TArray<APlayerController_Battle*> ControllersArray;
@@ -165,7 +164,7 @@ void AStarmark_GameState::SetTurnOrder_Implementation()
 }
 
 
-void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
+void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated_Implementation()
 {
 	// To-Do: Update this function with a better name
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Begin function"));
@@ -178,6 +177,7 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 	DynamicAvatarTurnOrderImages.Empty();
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Fill the DynamicAvatarTurnOrderImages array."));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / DynamicAvatarTurnOrderImages array length: %d"), DynamicAvatarTurnOrder.Num());
 	// Put together an array of the avatars' images in order.
 	for (int i = 0; i < DynamicAvatarTurnOrder.Num(); i++) {
 		if (DynamicAvatarTurnOrder.IsValidIndex(i)) {
@@ -208,6 +208,7 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 
 					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Found a battle widget"));
 				} else {
+					ActorsArray[i]->CreateBattleWidget();
 					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Could not find a battle widget!"));
 				}
 			}
@@ -228,7 +229,8 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated()
 void AStarmark_GameState::AvatarBeginTurn_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / Begin function"));
-	
+
+	/*
 	if (AvatarTurnOrder.IsValidIndex(CurrentAvatarTurnIndex)) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / Begin a new turn"));
 
@@ -285,7 +287,6 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 			// Call the ability function
 			Avatar->AvatarData.Ability.AbilityLibraryActor->SwitchOnAbilityEffect(Avatar->AvatarData.Ability.Function, Avatar, Avatar);
 		}
-		*/
 
 		// Check that the currently acting entity isn't stunned
 		if (StunStatus.Name != "Stunned") {
@@ -308,6 +309,7 @@ void AStarmark_GameState::AvatarBeginTurn_Implementation()
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarBeginTurn / CurrentAvatarTurnIndex isn't valid?"));
 	}
+	*/
 
 	// All players' HUDs should be checked at the end of every turn, not just their own
 	/*
@@ -357,9 +359,6 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 
 	CurrentAvatarTurnIndex++;
 
-	// Check if an Avatar died this turn
-	// If true, check for reserve Avatars before ending the turn
-	
 	// Reset Round if all Avatars have acted
 	if (CurrentAvatarTurnIndex >= AvatarTurnOrder.Num()) {
 		CurrentAvatarTurnIndex = 0;

@@ -94,7 +94,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ResetBattleHud();
-	void ShowHideActingPlayerHudElements(bool ShowElements);
+	void ShowHideActingPlayerHudElements(bool ShowElements) const;
 
 // ------------------------- Commands
 	UFUNCTION(BlueprintCallable)

@@ -65,7 +65,12 @@
 			"tier": 1,
 			"tokensRequired": 1,
 			"indexInPlayerLibrary": 0,
-			"currentEquippedAttackNames": [],
+			"currentEquippedAttackNames": [
+				"Kick",
+				"Scratch",
+				"Flamethrower",
+				"Breath of Fire"
+			],
 			"replicationId": -1,
 			"replicationKey": -1,
 			"mostRecentArrayReplicationKey": -1
@@ -136,8 +141,8 @@
 			"currentEquippedAttackNames": [
 				"Magic Shock",
 				"Magic Missile",
-				"None",
-				"None"
+				"Punch",
+				"Teach"
 			],
 			"replicationId": -1,
 			"replicationKey": -1,
@@ -206,7 +211,12 @@
 			"tier": 1,
 			"tokensRequired": 1,
 			"indexInPlayerLibrary": 2,
-			"currentEquippedAttackNames": [],
+			"currentEquippedAttackNames": [
+				"Peck",
+				"Wave",
+				"Tsunami",
+				"Drown"
+			],
 			"replicationId": -1,
 			"replicationKey": -1,
 			"mostRecentArrayReplicationKey": -1
@@ -347,7 +357,12 @@
 			"tier": 1,
 			"tokensRequired": 1,
 			"indexInPlayerLibrary": 4,
-			"currentEquippedAttackNames": [],
+			"currentEquippedAttackNames": [
+				"Scratch",
+				"Full Moon",
+				"New Moon",
+				"Punch"
+			],
 			"replicationId": -1,
 			"replicationKey": -1,
 			"mostRecentArrayReplicationKey": -1
@@ -417,7 +432,7 @@
 			"indexInPlayerLibrary": 5,
 			"currentEquippedAttackNames": [
 				"Swipe",
-				"None",
+				"Pave",
 				"Casting Stones",
 				"Rock Wall"
 			],

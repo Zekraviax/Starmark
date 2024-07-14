@@ -29,11 +29,13 @@ void UWidget_HUD_Battle::UpdateAvatarAttacksComponents(TArray<FAvatar_AttackStru
 				Button->SetIsEnabled(true);
 				Button->SetVisibility(ESlateVisibility::Visible);
 
-				if (Attacks.IsValidIndex(ValidButtonsCount) && Attacks[ValidButtonsCount].Name != "Default") {
-					UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Create UI button for current avatar's attack %s at index: %d"), *PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[ValidButtonsCount].Name, ValidButtonsCount);
+				if (Attacks.IsValidIndex(ValidButtonsCount)) {
+					if (Attacks[ValidButtonsCount].Name != "Default" && Attacks[ValidButtonsCount].Name != "None") {
+						UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / UpdateAvatarAttacksComponents / Create UI button for current avatar's attack %s at index: %d"), *PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[ValidButtonsCount].Name, ValidButtonsCount);
 
-					Button->AttackNameText->SetText(FText::FromString(Attacks[ValidButtonsCount].Name.ToUpper()));
-					Button->AvatarAttackIndex = ValidButtonsCount;
+						Button->AttackNameText->SetText(FText::FromString(Attacks[ValidButtonsCount].Name.ToUpper()));
+						Button->AvatarAttackIndex = ValidButtonsCount;
+					}
 				} else if (ValidButtonsCount == 4) {
 					Button->AttackNameText->SetText(FText::FromString("RESERVE"));
 					Button->AvatarAttackIndex = -5;
@@ -185,8 +187,8 @@ void UWidget_HUD_Battle::ResetBattleHud()
 }
 
 
-// Show or hide all the HUD elements that are only relevent to the player whose turn it is
-void UWidget_HUD_Battle::ShowHideActingPlayerHudElements(bool ShowElements)
+// Show or hide all the HUD elements that are only relevant to the player whose turn it is
+void UWidget_HUD_Battle::ShowHideActingPlayerHudElements(bool ShowElements) const
 {
 	if (ShowElements) {
 		AvatarAttacksBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);

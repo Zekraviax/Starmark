@@ -390,7 +390,6 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(int SelectedBa
 	// Highlight the currently acting avatar if it isn't the end of the turn and an avatar was defeated.
 	// Otherwise, highlight each valid tile that the player can summon avatars to.
 	if (PlayerStateReference->NumberOfAvatarsDiedThisTurn > 0) {
-		// Highlight each valid tile that the player can summon an avatar to.
 		TArray<AActor*> GridTileActorsArray;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_GridTile::StaticClass(), GridTileActorsArray);
 
@@ -425,23 +424,22 @@ void APlayerController_Battle::BeginSelectingTileForReserveAvatar(int SelectedBa
 
 void APlayerController_Battle::SummonReserveAvatarAtSelectedTile_Implementation(AActor_GridTile* SelectedTile, ACharacter_Pathfinder* SelectedAvatar)
 {
-	FAvatar_Struct ReserveAvatarData;
 	int ReserveAvatarDataIndex = -1;
-	ACharacter_Pathfinder* FoundAvatar;
 
 	// If a tile is selected, that means the game mode needs to spawn in a new avatar.
 	// Otherwise, we can just override the existing data on an avatar.
 	if (SelectedTile) {
 		for (int i = 0; i < PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
 			if (PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary == SelectedReserveAvatarBattleUniqueID) {
-				Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_SpawnAvatar(this, SelectedReserveAvatarBattleUniqueID, PlayerDataStruct.CurrentAvatarTeam[i], SelectedTile->GetActorLocation());
+				Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_SpawnAvatar(this, PlayerDataStruct, SelectedReserveAvatarBattleUniqueID, PlayerDataStruct.CurrentAvatarTeam[i], SelectedTile->GetActorLocation());
 				break;
 			}
 		}
 		
 		// Once an avatar has been spawned, we can set it to the FoundAvatar local variable?
 	} else {
-		FoundAvatar = SelectedAvatar;
+		FAvatar_Struct ReserveAvatarData;
+		ACharacter_Pathfinder* FoundAvatar = SelectedAvatar;
 
 		// Swap indices.
 		// We need to retrieve the index of the chosen reserve avatar, then find that avatars' data here.
@@ -554,7 +552,10 @@ void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation(const AC
 
 		if (BattleWidgetReference) {
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Initializing HUD"));
-			BattleWidgetReference->UpdateAvatarAttacksComponents(ActingAvatar->CurrentKnownAttacks);
+
+			if (ActingAvatar->CurrentKnownAttacks.Num() > 0) {
+				BattleWidgetReference->UpdateAvatarAttacksComponents(ActingAvatar->CurrentKnownAttacks);
+			}
 		} else {
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Error: HUD reference is not valid"));
 		}

@@ -91,7 +91,7 @@ public:
 // ------------------------- Global Helper Functions
 	ACharacter_Pathfinder* ReturnCurrentlyActingAvatar();
 	APlayerController_Battle* ReturnCurrentlyActingPlayer();
-	TArray<APlayerController_Battle*> ReturnAllBattlePlayerControllers();
+	TArray<APlayerController_Battle*> ReturnAllBattlePlayerControllers() const;
 
 	// To-Do: Move this to the GameMode.
 	void ShowHideAllPlayerHuds();
@@ -100,7 +100,7 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SetTurnOrder();
 
-	UFUNCTION() // This function needs the UFUNCTION tag. It breaks without it.
+	UFUNCTION(Server, Reliable) // This function needs the UFUNCTION tag. It breaks without it.
 	void OnRepNotify_DynamicAvatarTurnOrderUpdated();
 
 	// This function should only be used to update variables that all players might want.

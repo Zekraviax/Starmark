@@ -74,21 +74,21 @@ public:
 
 // ------------------------- Controller
 	// To-Do: Figure out if this variable needs to be replicated. (Do other players need to know this?)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Controller")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	E_PlayerCharacter_ClickModes PlayerClickMode;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	E_PlayerCharacter_HighlightModes TileHighlightMode = E_PlayerCharacter_HighlightModes::E_MovePath;
 
 // ------------------------- Widgets
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UWidget_HUD_Battle> BattleWidgetChildClass;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Widgets")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
 	UWidget_HUD_Battle* BattleWidgetReference;
 
 // ------------------------- Avatar
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Avatar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
 
 	UPROPERTY()
@@ -98,26 +98,26 @@ public:
 	int SelectedReserveAvatarBattleUniqueID;
 
 // ------------------------- Player
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	bool IsReadyToStartMultiplayerBattle = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<FAvatar_Struct> PlayerParty;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	bool IsCurrentlyActingPlayer;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FPlayer_Data PlayerDataStruct;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString PlayerName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	int MultiplayerUniqueID;
 
 // ------------------------- Grid
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector CursorLocationSnappedToGrid;
 
 // ------------------------- Other

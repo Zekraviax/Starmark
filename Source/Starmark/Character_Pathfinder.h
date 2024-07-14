@@ -46,78 +46,79 @@ public:
 // --------------------------------------------------
 
 // ------------------------- Components
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UDecalComponent* ActorHighlightedDecal;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterialInterface* ActorHighlightMaterial;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterialInstanceDynamic* ActorHighlightedDecalMaterialInstanceDynamic;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ActorSelectedPlane;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBoxComponent* BoxComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLinearColor ActorSelectedMaterialInstanceDynamicColour;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UWidgetComponent* AvatarBattleData_Component;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UWidgetComponent_AvatarBattleData> AvatarBattleDataComponent_Class;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UWidgetComponent_AvatarBattleData* AvatarBattleDataComponent_Reference;
 
 // ------------------------- Entity
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Entity")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FAvatar_Struct AvatarData;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Entity")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool RotateAvatarTowardsMouse = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Entity")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FDataTableRowHandle EntityDataTableRow;
 
 // ------------------------- Battle
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* UltimateTypeChartDataTable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<FAvatar_AttackStruct> CurrentKnownAttacks;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FAvatar_AttackStruct CurrentSelectedAttack;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<AActor*> ValidAttackTargetsArray;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FAvatar_StatusEffect> CurrentStatusEffectsArray;
 
-	// Use this to synchronize the avatar data between the actor and the GameState array.
-	// This variable is deprecated. Use the same variable in the PlayerData struct instead.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Battle")
-	int IndexInPlayerParty;
+	// This variable ties this physical avatar actor to a FAvatar struct in the GameState array, it shouldn't be used for anything else.
+	// We can't do pass-by-reference for this value because I don't know how to initialize the variable lol.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	int AvatarBattleUniqueID;
+	//Cast<AStarmark_GameState>(AActor::GetWorld()->GetGameState())->PlayerDataStructsArray[0].CurrentAvatarTeam[0].BattleUniqueID
 	
-	// This variable is deprecated. Use the same variable in the PlayerData struct instead.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	// This variable ties this physical avatar actor to a player controller, it shouldn't be used for anything else.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int MultiplayerControllerUniqueID;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* AttackTraceActor;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UStaticMesh*> AttackTraceStaticMeshes;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int AttackRotationSnapToDegrees = 90;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<AActor_GridTile*> CurrentPathTiles;
 
 // ------------------------- Other
@@ -178,7 +179,7 @@ public:
 // ------------------------- Multiplayer
 	UFUNCTION(Client, Unreliable)
 	void Client_GetAvatarData(FAvatar_Struct NewAvatarData);
-	void Local_GetAvatarData(FAvatar_Struct NewAvatarData);
+	void Local_GetAvatarData(const FAvatar_Struct& NewAvatarData);
 
 	UFUNCTION(BlueprintCallable)
 	ECharacter_FacingDirections GetCharacterFacingDirection();

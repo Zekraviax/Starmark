@@ -16,7 +16,10 @@
 
 ACharacter_Pathfinder::ACharacter_Pathfinder()
 {
-	// Set size for player capsule
+	// Reference must be initialized.
+	//AvatarBattleUniqueID
+	
+	// Set size for the avatar capsule.
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 69.0f);
 
 	// Don't rotate character to camera
@@ -36,7 +39,6 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	ActorHighlightedDecal->SetVisibility(true);
 	ActorHighlightedDecal->SetHiddenInGame(false);
 	ActorHighlightedDecal->DecalSize = FVector(32.0f, 64.0f, 64.0f);
-	//ActorHighlightedDecal->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 	ActorHighlightedDecal->SetRelativeScale3D(FVector(1.25f, 1.f, 2.f));
 
 	// Actor Selected Plane
@@ -68,7 +70,7 @@ ACharacter_Pathfinder::ACharacter_Pathfinder()
 	bReplicates = true; 
 	//bReplicateMovement = true; 
 	bNetUseOwnerRelevancy = true;
-	IndexInPlayerParty = -1;
+	AvatarBattleUniqueID = -1;
 	//ActorSelected->SetIsReplicated(true);
 	ActorSelectedPlane->SetIsReplicated(true);
 }
@@ -83,7 +85,7 @@ void ACharacter_Pathfinder::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(ACharacter_Pathfinder, PlayerControllerReference);
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentKnownAttacks);
 	DOREPLIFETIME(ACharacter_Pathfinder, CurrentSelectedAttack);
-	DOREPLIFETIME(ACharacter_Pathfinder, IndexInPlayerParty);
+	DOREPLIFETIME(ACharacter_Pathfinder, AvatarBattleUniqueID);
 }
 
 
@@ -105,12 +107,6 @@ void ACharacter_Pathfinder::BeginPlayWorkaroundFunction_Implementation(UWidget_H
 	AvatarData.CurrentHealthPoints = AvatarData.BattleStats.MaximumHealthPoints;
 	AvatarData.CurrentManaPoints = AvatarData.BattleStats.MaximumManaPoints;
 	AvatarData.CurrentTileMoves = AvatarData.MaximumTileMoves;
-
-	// Set default selected attack
-	//if (CurrentKnownAttacks.Num() > 0)
-	//	CurrentSelectedAttack = CurrentKnownAttacks[0];
-
-	IndexInPlayerParty = 0;
 
 	// Highlight dynamic material
 	ActorHighlightedDecalMaterialInstanceDynamic = UMaterialInstanceDynamic::Create(ActorHighlightMaterial, this);
@@ -356,10 +352,10 @@ void ACharacter_Pathfinder::SetTilesOccupiedBySize(bool ClearTiles)
 void ACharacter_Pathfinder::UpdateAvatarDataInPlayerParty()
 {
 	if (PlayerControllerReference) {
-		if (PlayerControllerReference->PlayerParty.IsValidIndex(IndexInPlayerParty)) {
-			PlayerControllerReference->PlayerParty[IndexInPlayerParty] = AvatarData;
+		if (PlayerControllerReference->PlayerParty.IsValidIndex(AvatarBattleUniqueID)) {
+			PlayerControllerReference->PlayerParty[AvatarBattleUniqueID] = AvatarData;
 		} else {
-			UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / UpdateAvatarDataInPlayerParty / Index in player party %d is not valid"), IndexInPlayerParty);
+			UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / UpdateAvatarDataInPlayerParty / Index in player party %d is not valid"), AvatarBattleUniqueID);
 		}
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / UpdateAvatarDataInPlayerParty / PlayerControllerReference is not valid"));
@@ -431,7 +427,7 @@ void ACharacter_Pathfinder::Client_GetAvatarData_Implementation(FAvatar_Struct N
 }
 
 
-void ACharacter_Pathfinder::Local_GetAvatarData(FAvatar_Struct NewAvatarData)
+void ACharacter_Pathfinder::Local_GetAvatarData(const FAvatar_Struct& NewAvatarData)
 {
 	AvatarData = NewAvatarData;
 }
