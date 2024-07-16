@@ -107,12 +107,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	bool IsCurrentlyActingPlayer;
 
+	// This should only be used to pass the player's data to the server's GameState.
+	// For all other needs, get this data from the GameState TMap.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FPlayer_Data PlayerDataStruct;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString PlayerName;
 
+	// Use this to find the player's data in the GameState's player data array.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	int MultiplayerUniqueID;
 
@@ -177,10 +180,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryClick(AActor* ClickedActor, TArray<AActor*> ValidTargetsArray);
 
-	// Use this function to highlight all avatars and entites passed,
+	// Use this function to highlight all avatars and entities passed,
 	// and to un-highlight all avatars and tiles not passed.
 	void HighlightSpecificAvatarsAndTiles(const TArray<ACharacter_Pathfinder*>& Avatars, const TArray< AActor_GridTile*>& Tiles) const;
-
 	void BeginSelectingTileForReserveAvatar(int SelectedBattleUniqueID);
 
 	UFUNCTION(BlueprintCallable, Client, Reliable)
@@ -193,13 +195,20 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SendEndOfTurnCommandToServer();
-	
+
+	// -------- HUD functions that the GameMode can call for all players. -------- //
 	// Called at the end of a turn, before the currently acting Avatar changes.
 	UFUNCTION(Server, Unreliable)
 	void Player_OnAvatarTurnChanged();
 
 	UFUNCTION(Client, Reliable)
 	void Client_UpdateAttacksInHud(const ACharacter_Pathfinder* ActingAvatar);
+
+	UFUNCTION(Client, Reliable)
+	void Client_UpdateCurrentAvatarInHud(ACharacter_Pathfinder* ActingAvatar);
+
+	UFUNCTION(Client, Reliable)
+	void Client_UpdateCurrentTurnOrderInHud(const TArray<UTexture2D*>& InDynamicAvatarTurnOrderImages);
 
 	UFUNCTION(Client, Reliable)
 	void Client_ShowHideHud(bool ShowHud);

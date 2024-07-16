@@ -81,6 +81,22 @@ void AStarmark_GameState::ShowHideAllPlayerHuds()
 }
 
 
+FPlayer_Data& AStarmark_GameState::FindPlayerDataUsingMultiplayerUniqueID(int MultiplayerUniqueID)
+{
+	// Apparently this is how C++ wants you to initialize pass-by-reference variables.
+	FPlayer_Data& DefaultReturnValue = PlayerDataStructsArray[0];
+	
+	for (auto& Element : PlayerDataAndUniqueIDMap) {
+		if (Element.Key == MultiplayerUniqueID) {
+			return Element.Value;
+		}
+	}
+
+	// Return the default data if the player data can't be found.
+	return DefaultReturnValue;
+}
+
+
 // ------------------------- Battle
 void AStarmark_GameState::SetTurnOrder_Implementation()
 {
@@ -154,11 +170,6 @@ void AStarmark_GameState::SetTurnOrder_Implementation()
 	for (int i = 0; i < SlowedAvatarsInTurnOrder.Num(); i++) {
 		AvatarTurnOrder.Add(SlowedAvatarsInTurnOrder[i]);
 	}
-
-	// To-Do: Shift the avatars around in the dynamic array, so that they are in dynamic order
-	// and the first avatar is the acting one
-
-	//OnRepNotify_DynamicAvatarTurnOrderUpdated();
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / SetTurnOrder / End function"));
 }
@@ -415,13 +426,13 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 			DynamicAvatarTurnOrder = AvatarTurnOrder;
 
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Every avatar has had a turn. Start a new round here."));
+		} else {
+			//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Avatar %s is up next"), *DynamicAvatarTurnOrder[0]->AvatarData.Nickname);
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Avatar %s is up next"), *DynamicAvatarTurnOrder[0]->AvatarData.Nickname);
-
 		// Update the helper variables here
-		CurrentlyActingAvatar = DynamicAvatarTurnOrder[0];
-		CurrentlyActingPlayer = CurrentlyActingAvatar->PlayerControllerReference;
+		//CurrentlyActingAvatar = DynamicAvatarTurnOrder[0];
+		//CurrentlyActingPlayer = CurrentlyActingAvatar->PlayerControllerReference;
 
 		// Assign currently controlled avatars based on the dynamic turn order
 		for (int i = DynamicAvatarTurnOrder.Num() - 1; i >= 0; i--) {

@@ -29,6 +29,16 @@ void AStarmark_GameMode::SetGameStateLocalReference()
 }
 
 
+AStarmark_GameState* AStarmark_GameMode::GetGameState()
+{
+	if (!GameStateReference) {
+		SetGameStateLocalReference();
+	}
+	
+	return GameStateReference;
+}
+
+
 UStarmark_GameInstance* AStarmark_GameMode::GetHostPlayerGameStateInstanceReference() const
 {
 	// To-Do: Figure out how to always get the host player
@@ -98,10 +108,11 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Player pawn rotation: %s"), *Rotation.ToString());
 
 	// We're assigning each player a unique number just in case two or more players have the same player name
-	MultiplayerUniqueIDCounter++;
 	NewPlayerController->MultiplayerUniqueID = MultiplayerUniqueIDCounter;
+	GetGameState()->PlayerDataAndUniqueIDMap.Add(MultiplayerUniqueIDCounter, GetGameState()->PlayerDataStructsArray.Last());
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / MultiplayerUniqueIDCounter is: %d"), MultiplayerUniqueIDCounter);
-
+	MultiplayerUniqueIDCounter++;
+	
 	// Clear Combat Log
 	if (CombatLogTextArray.Num() > 0) {
 		CombatLogTextArray.Empty();
@@ -195,14 +206,9 @@ void AStarmark_GameMode::GetPreBattleChecks_Implementation()
 void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Begin function"));
-	
-	if (!GameStateReference) {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / GameStateReference is not valid. Attempting to fetch now."));
-		SetGameStateLocalReference();
-	}
 
-	for (int i = 0; i < GameStateReference->PlayerDataStructsArray.Num(); i++) {
-		FPlayer_Data& PlayerData = GameStateReference->PlayerDataStructsArray[i];
+	for (int i = 0; i < GetGameState()->PlayerDataStructsArray.Num(); i++) {
+		FPlayer_Data& PlayerData = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(i);
 		TArray<FAvatar_Struct>& CurrentPlayerTeam = PlayerData.CurrentAvatarTeam;
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Double checking player name: %s"), *PlayerData.PlayerName);
 
@@ -212,8 +218,9 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 				if (CurrentPlayerTeam[j].AvatarName != "Default") {
 					// Upon finding a valid avatar in any players' party,
 					// increment the BattleUniqueIDCounter and assign that ID to the avatar.
-					BattleUniqueIDCounter++;
 					CurrentPlayerTeam[j].BattleUniqueID = BattleUniqueIDCounter;
+					CurrentPlayerTeam[j].OwnerMultiplayerUniqueID = i;
+					BattleUniqueIDCounter++;
 					
 					if (SpawnedAvatarCount < 4) {
 						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn avatar %s for player %s"), *CurrentPlayerTeam[j].AvatarName, *PlayerData.PlayerName);
@@ -441,8 +448,8 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 		// To-Do: Clean up all of this. (pass values by-reference)
 		NewAvatarActor->AvatarBattleUniqueID = AvatarData.BattleUniqueID;
 		NewAvatarActor->MultiplayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
-		PlayerData.CurrentAvatarTeam[IndexInPlayerParty - 1].OwnerMultiplayerUniqueID = PlayerController->MultiplayerUniqueID;
-		NewAvatarActor->AvatarData = PlayerData.CurrentAvatarTeam[IndexInPlayerParty - 1];
+		//PlayerData.CurrentAvatarTeam[IndexInPlayerParty - 1].OwnerMultiplayerUniqueID = PlayerController->MultiplayerUniqueID;
+		NewAvatarActor->AvatarData = AvatarData;
 
 		// Get attacks
 		UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(GetGameInstance());
@@ -489,12 +496,19 @@ void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 		SetGameStateLocalReference();
 	}
 
-	// To-Do: Figure out this code chunk is here and whether or not its relevant
-	if (GameStateReference->AvatarTurnOrder.IsValidIndex(GameStateReference->CurrentAvatarTurnIndex)) {
+	// This chunk of code assigns the Currently Acting Avatar.
+	// It should be refactored into its own function.
+	/*if (GameStateReference->AvatarTurnOrder.IsValidIndex(GameStateReference->CurrentAvatarTurnIndex)) {
 		CurrentlyActingAvatar = GameStateReference->AvatarTurnOrder[GameStateReference->CurrentAvatarTurnIndex];
 	} else { 
 		CurrentlyActingAvatar = GameStateReference->AvatarTurnOrder[0];
+	}*/
+	if (!GameStateReference->DynamicAvatarTurnOrder.IsValidIndex(0)) {
+		GameStateReference->DynamicAvatarTurnOrder = GameStateReference->AvatarTurnOrder;
+		GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
 	}
+	
+	CurrentlyActingAvatar = GameStateReference->DynamicAvatarTurnOrder[0];
 
 	for (int i = 0; i < Avatars.Num(); i++) {
 		ACharacter_Pathfinder* FoundActor = Cast<ACharacter_Pathfinder>(Avatars[i]);
@@ -506,7 +520,7 @@ void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 				IsCurrentlyActing = true;
 			}
 
-			FoundActor->MultiplayerControllerUniqueID = FoundActor->PlayerControllerReference->MultiplayerUniqueID;
+			//FoundActor->MultiplayerControllerUniqueID = FoundActor->PlayerControllerReference->MultiplayerUniqueID;
 
 			for (int j = 0; j < PlayerControllerReferences.Num(); j++) {
 				PlayerControllerReferences[j]->GetAvatarUpdateFromServer(FoundActor, FoundActor->MultiplayerControllerUniqueID, IsCurrentlyActing, true);
@@ -565,8 +579,7 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 	}
 
 	// Apply move effects after the damage has been dealt
-	if (!AttackEffectsLibrary_Reference && AttackEffectsLibrary_Class)
-	{
+	if (!AttackEffectsLibrary_Reference && AttackEffectsLibrary_Class) {
 		const FActorSpawnParameters SpawnInfo;
 		AttackEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_AttackEffectsLibrary>(AttackEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
 	}
@@ -583,18 +596,62 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin function"));
 
+	TArray<AActor*> PlayerControllerActors, AvatarActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), AvatarActors);
+
 	if (!GameStateReference) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / GameStateReference is not valid. Attempting to fetch now."));
 		SetGameStateLocalReference();
 	}
 
-	TArray<AActor*> PlayerControllerActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
+	// Pre-Begin Turn Checks:
+	// Check if any players still need to summon avatars to replace those that have died.
+	// Make sure that all avatars are in the normal AvatarTurnOrder array so that the Dynamic Turn Order can be calculated.
+	for (AActor* ControllerActor : PlayerControllerActors) {
+		APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
+		
+		if (Controller) {
+			AStarmark_PlayerState* PlayerState = Cast<AStarmark_PlayerState>(Controller->PlayerState);
+			int DeployedAvatarCount = 0, TotalAvatarsInParty =  GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam.Num();
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Player has %d avatars remaining."), TotalAvatarsInParty);
 
+			for (AActor* AvatarActor : AvatarActors) {
+				ACharacter_Pathfinder* Avatar = Cast<ACharacter_Pathfinder>(AvatarActor);
+				if (Avatar) {
+					if (Avatar->MultiplayerControllerUniqueID == Controller->MultiplayerUniqueID) {
+						DeployedAvatarCount++;
+					}
+				}
+			}
+
+			//PlayerState->NumberOfAvatarsDiedThisTurn > (TotalAvatarsInParty - DeployedAvatarCount
+			if (PlayerState->NumberOfAvatarsDiedThisTurn > 0 && TotalAvatarsInParty <= 4 && DeployedAvatarCount >= TotalAvatarsInParty) {
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / There's a player that has had more avatars died than they can summon."));
+				PlayerState->NumberOfAvatarsDiedThisTurn = 0;
+
+				// Tell the game to re-calculate the turn order.
+				GameStateReference->SetTurnOrder();
+			} else if (PlayerState->NumberOfAvatarsDiedThisTurn > 0) {
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / There's a player that still needs to summon an avatar."));
+				
+				Controller->SetPlayerClickMode(E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon);
+				return;
+			} else {
+				// The player doesn't need to summon any reserve avatars.
+			}
+		}
+	}
+	
+	//GameStateReference->SetTurnOrder();
+	//GameStateReference->DynamicAvatarTurnOrder = GameStateReference->AvatarTurnOrder;
+	//GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
+
+	// End checks.
 	for (AActor* ControllerActor : PlayerControllerActors) {
 		APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
 		if (Controller) {
-			Controller->CurrentSelectedAvatar = GameStateReference->CurrentlyActingAvatar;
+			Controller->CurrentSelectedAvatar = GameStateReference->ReturnCurrentlyActingAvatar();
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Set the currently acting avatar: %s"), *GameStateReference->CurrentlyActingAvatar->AvatarData.Nickname);
 
 			if (Cast<APlayerController_Battle>(GameStateReference->CurrentlyActingPlayer) == Controller) {
@@ -614,6 +671,7 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 
 			Controller->Player_OnAvatarTurnChanged();
 			Controller->Client_UpdateAttacksInHud(GameStateReference->CurrentlyActingAvatar);
+			Controller->Client_UpdateCurrentAvatarInHud(GameStateReference->CurrentlyActingAvatar);
 
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / First avatar: %s"), *GameStateReference->DynamicAvatarTurnOrder[0]->AvatarData.Nickname);
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin new turn for player: %s"), *Controller->PlayerDataStruct.PlayerName);
@@ -624,9 +682,6 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
 		Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->NumberOfAvatarsDiedThisTurn = 0;
 	}
-
-	// Update all the players' HUDs here and avatar icons in turn order
-	GameStateReference->SetTurnOrder();
 
 	// testing this
 	GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
@@ -640,23 +695,36 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 	APlayerController_Battle* PlayerControllerReference = nullptr;
 	TArray<AActor*> PlayerControllerActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
+	bool ContinueLooping = true;
 	
 	for (AActor* ControllerActor : PlayerControllerActors) {
 		APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
-		if (Controller) {
-			for (FAvatar_Struct AvatarData : Controller->PlayerDataStruct.CurrentAvatarTeam) {
-				if (AvatarData.BattleUniqueID == Avatar->AvatarData.BattleUniqueID) {
-					Controller->PlayerDataStruct.CurrentAvatarTeam.Remove(AvatarData);
+		
+		if (Controller && ContinueLooping) {
+			PlayerControllerReference = Controller;
+			
+			if (Controller->MultiplayerUniqueID == Avatar->PlayerControllerReference->MultiplayerUniqueID) {
+				FPlayer_Data& PlayerData = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID);
+				
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarDefeated / Remove Avatar from Turn Order"));
+				
+				for (FAvatar_Struct AvatarData : PlayerData.CurrentAvatarTeam) {
+					if (AvatarData.BattleUniqueID == Avatar->AvatarData.BattleUniqueID) {
+						GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam.Remove(AvatarData);
 
-					GameStateReference->AvatarTurnOrder.Remove(Avatar);
-					GameStateReference->DynamicAvatarTurnOrder.Remove(Avatar);
+						GameStateReference->AvatarTurnOrder.Remove(Avatar);
+						GameStateReference->DynamicAvatarTurnOrder.Remove(Avatar);
 
-					PlayerControllerReference = Controller;
-					break;
+						// Sync players' data to their player controllers
+						Controller->PlayerDataStruct = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID);
+						break;
+					}
 				}
 			}
 		}
 	}
+
+	
 
 	// Find the tile that avatar was at, and remove the 'Occupied' property.
 	TArray<AActor*> FoundGridTileActors;
@@ -672,7 +740,7 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarDefeated / Remove Avatar %s from Turn Order"), *Avatar->AvatarData.AvatarName);
 		Server_AssembleTurnOrderText();
 
-		if (PlayerControllerReference->PlayerDataStruct.CurrentAvatarTeam.Num() <= 0) {
+		if (GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(PlayerControllerReference->MultiplayerUniqueID).CurrentAvatarTeam.Num() <= 0) {
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("AStarmark_GameMode / Server_AvatarDefeated / Player has run out of Avatars")));
 			GameStateReference->EndOfBattle_Implementation();
 		} else {
@@ -683,8 +751,8 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 			
 			// Check for any avatars in reserve.
 			if (PlayerControllerReference->PlayerClickMode != E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon) {
-				for (int i = 0; i < PlayerControllerReference->PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
-					const FAvatar_Struct& FoundAvatar = PlayerControllerReference->PlayerDataStruct.CurrentAvatarTeam[i];
+				for (int i = 0; i < GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(PlayerControllerReference->MultiplayerUniqueID).CurrentAvatarTeam.Num(); i++) {
+					const FAvatar_Struct& FoundAvatar = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(PlayerControllerReference->MultiplayerUniqueID).CurrentAvatarTeam[i];
 					if (FoundAvatar.CurrentHealthPoints > 0 && FoundAvatar.IndexInPlayerLibrary >= 4) {
 						PlayerControllerReference->SetPlayerClickMode(E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon);
 					
@@ -695,6 +763,7 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 		}
 	}
 	
+	// When the turn ends, the dynamic turn order should be updated.
 	Avatar->Destroy();
 }
 

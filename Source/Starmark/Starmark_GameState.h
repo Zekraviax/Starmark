@@ -37,6 +37,9 @@ public:
 	UPROPERTY()
 	APlayerController_Battle* CurrentlyActingPlayer;
 
+	UPROPERTY()
+	TMap<int, FPlayer_Data> PlayerDataAndUniqueIDMap;
+
 // ------------------------- Lobbies
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UWidgetComponent_LobbyPlayerVals> LobbyPlayerVals_Class;
@@ -95,6 +98,7 @@ public:
 
 	// To-Do: Move this to the GameMode.
 	void ShowHideAllPlayerHuds();
+	FPlayer_Data& FindPlayerDataUsingMultiplayerUniqueID(int MultiplayerUniqueID);
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)

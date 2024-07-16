@@ -15,7 +15,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Math/Vector.h"
 #include "NavigationSystem.h"
-#include "Player_SaveData.h"
 #include "Widget_HUD_Battle.h"
 #include "Widget_ServerHost.h"
 #include "WidgetComponent_AvatarBattleData.h"
@@ -478,6 +477,10 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile_Implementation(
 
 		// Set health and mana?
 	}
+
+	// When the avatar has been summoned, add it to the turn order array
+	
+	
 	/*
 	if (!SelectedAvatar) {
 		TArray<AActor*> WorldGridArray;
@@ -490,19 +493,10 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile_Implementation(
 		FoundAvatar = SelectedAvatar;
 	}
 	*/
-		
-	// Automatically end the turn whenever a player swaps avatars only if they're the acting player.
-	// And if they don't need to summon any more avatars.
+	
+	// The GameMode will handle checking whether or not all players have finished summoning reserve avatars.
 	Cast<AStarmark_PlayerState>(PlayerState)->NumberOfAvatarsDiedThisTurn--;
-	if (Cast<AStarmark_PlayerState>(PlayerState)->NumberOfAvatarsDiedThisTurn > 0) {
-		SetPlayerClickMode(E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon);
-	} else {
-		PlayerClickMode = E_PlayerCharacter_ClickModes::E_MoveCharacter;
-		
-		if (Cast<AStarmark_GameState>(GetWorld()->GetGameState())->CurrentlyActingPlayer == this) {
-			Client_SendEndOfTurnCommandToServer();
-		}
-	}
+	Client_SendEndOfTurnCommandToServer();
 }
 
 
@@ -584,6 +578,19 @@ void APlayerController_Battle::GetAvatarUpdateFromServer_Implementation(ACharact
 	}
 }
 
+
+void APlayerController_Battle::Client_UpdateCurrentAvatarInHud_Implementation(ACharacter_Pathfinder* ActingAvatar)
+{
+	if (IsValid(BattleWidgetReference)) {
+		BattleWidgetReference->SetCurrentActingEntityInfo(ActingAvatar);
+	}
+}
+
+
+void APlayerController_Battle::Client_UpdateCurrentTurnOrderInHud_Implementation(const TArray<UTexture2D*>& InDynamicAvatarTurnOrderImages)
+{
+	
+}
 
 void APlayerController_Battle::LocalAvatarUpdate(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar)
 {

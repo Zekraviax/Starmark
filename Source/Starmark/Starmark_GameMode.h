@@ -4,7 +4,6 @@
 #include "GameFramework/GameMode.h"
 
 #include "Engine/DataTable.h"
-#include "Player_SaveData.h"
 #include "Starmark_Variables.h"
 
 #include "Starmark_GameMode.generated.h"
@@ -92,6 +91,7 @@ public:
 
 // ------------------------- Local Helper Functions
 	void SetGameStateLocalReference();
+	AStarmark_GameState* GetGameState();
 	UStarmark_GameInstance* GetHostPlayerGameStateInstanceReference() const;
 
 // ------------------------- Battle
