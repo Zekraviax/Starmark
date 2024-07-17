@@ -842,6 +842,12 @@ struct STARMARK_API FPlayer_Data : public FFastArraySerializerItem
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
 	TArray<FAvatar_Struct> CurrentAvatarTeam;
 
+	// -------- Multiplayer only -------- //
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int MultiplayerUniqueID;
+
+	
+
 	FPlayer_Data()
 	{
 		Birthday_Day = 1;
@@ -853,6 +859,7 @@ struct STARMARK_API FPlayer_Data : public FFastArraySerializerItem
 		PlayerName = "None";
 		ProfileName = "None";
 		Pronouns = EPlayer_Pronouns::E_Neutral;
+		MultiplayerUniqueID = -1;
 	}
 };
 
