@@ -91,6 +91,7 @@ public:
 
 // ------------------------- Local Helper Functions
 	void SetGameStateLocalReference();
+	
 	AStarmark_GameState* GetGameState();
 	UStarmark_GameInstance* GetHostPlayerGameStateInstanceReference() const;
 	TArray<APlayerController_Battle*> GetAllBattlePlayerControllers() const;

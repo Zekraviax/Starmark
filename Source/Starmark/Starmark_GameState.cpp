@@ -166,7 +166,7 @@ void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated_Implementati
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Begin function"));
 	
 	// Tell each player controller to update their HUDs.
-	TArray<APlayerController_Battle*> ActorsArray = ReturnAllBattlePlayerControllers();
+	TArray<APlayerController_Battle*> ActorsArray = Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->GetAllBattlePlayerControllers();
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / This function is being multicast to all clients."));
 

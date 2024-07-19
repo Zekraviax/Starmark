@@ -100,7 +100,6 @@ public:
 // ------------------------- Global Helper Functions
 	ACharacter_Pathfinder* ReturnCurrentlyActingAvatar();
 	APlayerController_Battle* ReturnCurrentlyActingPlayer();
-	TArray<APlayerController_Battle*> ReturnAllBattlePlayerControllers() const;	// deprecated, use the GameMode version
 
 	// To-Do: Move this to the GameMode.
 	void ShowHideAllPlayerHuds();

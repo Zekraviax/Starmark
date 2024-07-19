@@ -5,7 +5,6 @@
 #include "GameFramework/PlayerController.h"
 
 #include "Character_Pathfinder.h"
-#include "Engine.h"
 
 #include "PlayerController_Battle.generated.h"
 

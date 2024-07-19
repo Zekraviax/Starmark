@@ -292,11 +292,8 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 	GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
 
 	// We're going to tell each player which avatar is going first here, after all avatar actors have been spawned.
-	TArray<AActor*> PlayerControllerActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
-	
-	for (AActor* ControllerActor : PlayerControllerActors) {
-		APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
+	TArray<APlayerController_Battle*> PlayerControllerActors = GetAllBattlePlayerControllers();
+	for (APlayerController_Battle* Controller : PlayerControllerActors) {
 		Controller->CurrentSelectedAvatar = GameStateReference->ReturnCurrentlyActingAvatar();
 		Controller->OnRepNotify_CurrentSelectedAvatar();
 
@@ -316,17 +313,14 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 	
 	TArray<bool> ReadyStatuses;
 	TArray<AActor*> GridTilesArray;
+	TArray<APlayerController_Battle*> PlayerControllerActors = GetAllBattlePlayerControllers();
 
 	if (!GameStateReference) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / GameStateReference is not valid. Attempting to fetch now."));
 		SetGameStateLocalReference();
 	}
-
-	TArray<AActor*> PlayerControllerActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
 	
-	for (AActor* ControllerActor : PlayerControllerActors) {
-		APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
+	for (APlayerController_Battle* Controller : PlayerControllerActors) {
 		if (Controller) {
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Is %s ready to start the battle? %s."), *Controller->PlayerDataStruct.PlayerName, Controller->IsReadyToStartMultiplayerBattle ? TEXT("true") : TEXT("false"));
 
@@ -344,17 +338,19 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		Server_AssembleTurnOrderText();
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Update each avatars' attacks in their controllers' HUD."));
-		for (AActor* ControllerActor : PlayerControllerActors) {
-			APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
+		for (APlayerController_Battle* Controller : PlayerControllerActors) {
 			for (int j = 0; j < GameStateReference->AvatarTurnOrder.Num(); j++) {
 				if (Controller->MultiplayerUniqueID == GameStateReference->AvatarTurnOrder[j]->MultiplayerControllerUniqueID) {
 					//Controller->CurrentSelectedAvatar = GameStateReference->AvatarTurnOrder[j];
 					Controller->Client_UpdateAttacksInHud(GameStateReference->AvatarTurnOrder[j]);
+					Controller->Client_UpdateCurrentAvatarInHud_Implementation(GameStateReference->AvatarTurnOrder[j]);
 					break;
 				}
 			}
 
-			Controller->SetBattleWidgetVariables();
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Update all the other HUD elements for player %s."), *Controller->PlayerDataStruct.PlayerName);
+			
+			//Controller->SetBattleWidgetVariables();
 		}
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Update all avatar decals."));
@@ -371,29 +367,26 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 
 		// Currently, this function only sets an avatar's base stats to their minimum, since there is currently no way for them to scale upwards.
 		if (GetHostPlayerGameStateInstanceReference()->GetDevSettingsStruct().RecalculateAvatarStatsAtStartOfBattle) {
-			TArray<AActor*> Avatars;
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
+			TArray<ACharacter_Pathfinder*> Avatars = GetAllAvatars();
 			FString ContextString;
 
 			for (int i = 0; i < Avatars.Num(); i++) {
-				ACharacter_Pathfinder* FoundActor = Cast<ACharacter_Pathfinder>(Avatars[i]);
 				for (const auto Row : GetHostPlayerGameStateInstanceReference()->GetAvatarsDataTable()->GetRowMap()) {
 					const FAvatar_Struct* AvatarData = reinterpret_cast<FAvatar_Struct*>(Row.Value);
 
-					if (AvatarData->AvatarName == FoundActor->AvatarData.AvatarName) {
-						FoundActor->AvatarData.BattleStats = AvatarData->SpeciesMinimumStats;
-						FoundActor->AvatarData.CurrentHealthPoints = AvatarData->SpeciesMinimumStats.MaximumHealthPoints;
-						FoundActor->AvatarData.CurrentManaPoints = AvatarData->SpeciesMinimumStats.MaximumManaPoints;
+					if (AvatarData->AvatarName == Avatars[i]->AvatarData.AvatarName) {
+						Avatars[i]->AvatarData.BattleStats = AvatarData->SpeciesMinimumStats;
+						Avatars[i]->AvatarData.CurrentHealthPoints = AvatarData->SpeciesMinimumStats.MaximumHealthPoints;
+						Avatars[i]->AvatarData.CurrentManaPoints = AvatarData->SpeciesMinimumStats.MaximumManaPoints;
 						break;
 					}
 				}
 			}
 		}
 		
-		for (AActor* ControllerActor : PlayerControllerActors) {
-			APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
+		for (APlayerController_Battle* Controller : PlayerControllerActors) {
+			//Controller->BattleWidgetReference->SetCurrentActingEntityInfo(GameStateReference->DynamicAvatarTurnOrder[0]);
 			Controller->SetBattleWidgetVariables();
-			Controller->BattleWidgetReference->SetCurrentActingEntityInfo(GameStateReference->DynamicAvatarTurnOrder[0]);
 		}
 	}
 

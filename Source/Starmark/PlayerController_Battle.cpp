@@ -149,8 +149,6 @@ void APlayerController_Battle::SetBattleWidgetVariables()
 			BattleWidgetReference->PlayerControllerReference = this;
 		}
 
-		//UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / SetBattleWidgetVariables / Set variables in the battle widget"));
-
 		// To-Do: Fix these
 		// Also To-Do: Figure out how and why these are broken before we fix them
 		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
@@ -581,9 +579,14 @@ void APlayerController_Battle::GetAvatarUpdateFromServer_Implementation(ACharact
 
 void APlayerController_Battle::Client_UpdateCurrentAvatarInHud_Implementation(ACharacter_Pathfinder* ActingAvatar)
 {
-	if (IsValid(BattleWidgetReference)) {
-		BattleWidgetReference->SetCurrentActingEntityInfo(ActingAvatar);
+	if (!IsValid(BattleWidgetReference)) {
+		CreateBattleWidget();
 	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateCurrentAvatarInHud / Received current acting avatar: %s"), *ActingAvatar->AvatarData.Nickname);
+
+	BattleWidgetReference->SetCurrentActingEntityInfo(ActingAvatar);
+	BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
 }
 
 
