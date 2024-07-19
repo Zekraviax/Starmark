@@ -94,17 +94,18 @@ void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvat
 
 			for (int i = 1; i < 6; i++) {
 				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Validating InDynamicAvatarTurnOrderImages child at index: %d"), i);
+				UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder child count: %d"), EntityIconsInTurnOrder->GetChildrenCount());
 				int EntityIconIndex = i - 1;
 
 				if (InDynamicAvatarTurnOrderImages.IsValidIndex(i)) {
-					if (EntityIconsInTurnOrder->GetChildAt(EntityIconIndex)) {
+					if (EntityIconsInTurnOrder->GetChildrenCount() <= EntityIconIndex) {
 						if (Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))) {
 							Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetBrushFromTexture(InDynamicAvatarTurnOrderImages[i]);
 							Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 							UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Apply avatar image to EntityIconsInTurnOrder child at index %d"), EntityIconIndex)
 						} else {
-							Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetVisibility(ESlateVisibility::Collapsed);
+							//Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetVisibility(ESlateVisibility::Collapsed);
 							UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder child at index %d is not a UImage"), EntityIconIndex)
 						}
 					} else {

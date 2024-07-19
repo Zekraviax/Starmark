@@ -47,31 +47,16 @@ APlayerController_Battle* AStarmark_GameState::ReturnCurrentlyActingPlayer()
 }
 
 
-TArray<APlayerController_Battle*> AStarmark_GameState::ReturnAllBattlePlayerControllers() const
-{
-	TArray<AActor*> ActorsArray;
-	TArray<APlayerController_Battle*> ControllersArray;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), ActorsArray);
-
-	for (AActor* Actor : ActorsArray) {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / ReturnAllBattlePlayerControllers / Found actor: %s"), *Actor->GetName());
-
-		if (Cast<APlayerController_Battle>(Actor)) {
-			ControllersArray.Add(Cast<APlayerController_Battle>(Actor));
-
-			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / ReturnAllBattlePlayerControllers / Adding player to array: %s"), *Cast<APlayerController_Battle>(Actor)->PlayerDataStruct.PlayerName);
-		}
-	}
-
-	return ControllersArray;
-}
-
-
 void AStarmark_GameState::ShowHideAllPlayerHuds()
 {
 	ReturnCurrentlyActingPlayer();
 
-	for (auto Controller : ReturnAllBattlePlayerControllers()) {
+	TArray<AActor*> PlayerControllerActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
+
+	for (AActor* ControllerActor : PlayerControllerActors) {
+		APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
+		
 		if (Controller == CurrentlyActingPlayer) {
 			Controller->Client_ShowHideHud(true);
 		} else {
@@ -409,16 +394,18 @@ void AStarmark_GameState::AvatarEndTurn_Implementation()
 	// Set all GridTiles to default colours and visibility
 	TArray<ACharacter_Pathfinder*> Avatars;
 	TArray<AActor_GridTile*> Tiles;
-	for (APlayerController_Battle* Controller : ReturnAllBattlePlayerControllers()) {
-		Controller->HighlightSpecificAvatarsAndTiles(Avatars, Tiles);
+	
+	TArray<AActor*> PlayerControllerActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
+	for (int i = 0; i < PlayerControllerActors.Num(); i++) {
+		Cast<APlayerController_Battle>(PlayerControllerActors[i])->HighlightSpecificAvatarsAndTiles(Avatars, Tiles);
 	}
 
 	// Update the dynamic turn order
 	if (DynamicAvatarTurnOrder.Num() > 0) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Update the DynamicAvatarTurnOrder array"));
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / AvatarEndTurn / Some avatars in the DynamicAvatarTurnOrder array"));
-
-		ACharacter_Pathfinder* FirstAvatarInDynamicTurnOrder = DynamicAvatarTurnOrder[0];
+		
 		DynamicAvatarTurnOrder.RemoveAt(0);
 		//DynamicAvatarTurnOrder.Add(FirstAvatarInDynamicTurnOrder);
 

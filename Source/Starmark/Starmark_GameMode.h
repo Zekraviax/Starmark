@@ -93,8 +93,8 @@ public:
 	void SetGameStateLocalReference();
 	AStarmark_GameState* GetGameState();
 	UStarmark_GameInstance* GetHostPlayerGameStateInstanceReference() const;
-	TArray<APlayerController_Battle*> GetAllBattlePlayerControllers();
-	TArray<ACharacter_Pathfinder*> GetAllAvatars();
+	TArray<APlayerController_Battle*> GetAllBattlePlayerControllers() const;
+	TArray<ACharacter_Pathfinder*> GetAllAvatars() const;
 
 // ------------------------- Battle
 	// Pre-Battle Setup Functions

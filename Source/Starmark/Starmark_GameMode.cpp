@@ -48,9 +48,9 @@ UStarmark_GameInstance* AStarmark_GameMode::GetHostPlayerGameStateInstanceRefere
 	return HostPlayerGameInstanceReference;
 }
 
-
-TArray<APlayerController_Battle*> AStarmark_GameMode::GetAllBattlePlayerControllers()
+TArray<APlayerController_Battle*> AStarmark_GameMode::GetAllBattlePlayerControllers() const
 {
+	
 	TArray<APlayerController_Battle*> ReturnArray;
 	TArray<AActor*> PlayerControllerActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
@@ -61,12 +61,13 @@ TArray<APlayerController_Battle*> AStarmark_GameMode::GetAllBattlePlayerControll
 		}
 	}
 
-
 	return ReturnArray;
+
+
 }
 
 
-TArray<ACharacter_Pathfinder*> AStarmark_GameMode::GetAllAvatars()
+TArray<ACharacter_Pathfinder*> AStarmark_GameMode::GetAllAvatars() const
 {
 	TArray<ACharacter_Pathfinder*> ReturnArray;
 	TArray<AActor*> AvatarActors;
@@ -206,7 +207,8 @@ void AStarmark_GameMode::GetPreBattleChecks_Implementation()
 			if (GameStateReference->PlayerArray.IsValidIndex(i)) {
 				AStarmark_PlayerState* FoundPlayerState = Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i]);
 
-				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Checking ready status from player: %s."), *Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->PlayerData.PlayerName);
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Player %s has the ready status: %s"), *GetGameState()->PlayerDataStructsArray[i].PlayerName, FoundPlayerState->PreBattleCheck ? TEXT("true") : TEXT("false"));
+				//GetGameState()->PlayerDataStructsArray[i] ? TEXT("true") : TEXT("false")
 				
 				if (FoundPlayerState->PreBattleCheck == false) {
 					AreAllPlayersReady = false;
@@ -248,7 +250,7 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Begin function"));
 
 	for (int i = 0; i < GetGameState()->PlayerDataStructsArray.Num(); i++) {
-		FPlayer_Data& PlayerData = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(i);
+		FPlayer_Data& PlayerData = GetGameState()->PlayerDataStructsArray[i];
 		TArray<FAvatar_Struct>& CurrentPlayerTeam = PlayerData.CurrentAvatarTeam;
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Double checking player name: %s."), *PlayerData.PlayerName);
 
@@ -359,8 +361,8 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		Server_UpdateAllAvatarDecals();
 		
 		// Set first Avatar's controller as the currently acting player.
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Set the currently acting player."));
-		GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Set the currently acting player: %s."), *GameStateReference->ReturnCurrentlyActingPlayer()->PlayerName);
+		//GameStateReference->AvatarTurnOrder[0]->PlayerControllerReference->IsCurrentlyActingPlayer = true;
 
 		// Show the currently acting players' HUD, and hide all other players' HUDs.
 		GameStateReference->ShowHideAllPlayerHuds();
@@ -441,6 +443,9 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), FoundAvatars);
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Attempting to spawn avatar actor."));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Avatar's IndexInPlayerParty: %d."), IndexInPlayerParty);
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Player's MultiplayerUniqueID: %d."), PlayerController->MultiplayerUniqueID);
+	
 	// Find all tiles that can spawn avatars in multiplayer battles, if the player hasn't selected a location.
 	for (int i = 0; i < FoundGridTileActors.Num(); i++) {
 		const AActor_GridTile* GridTileReference = Cast<AActor_GridTile>(FoundGridTileActors[i]);
@@ -513,17 +518,18 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 		// ---- End refactorable code chunk ---- //
 
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Avatar spawned."));
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / End function."));
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / Failed to find valid tile for Avatar at index: %d"), IndexInPlayerParty);
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_SpawnAvatar / End function."));
 }
 
 
 void AStarmark_GameMode::Server_UpdateAllAvatarDecals_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_UpdateAllAvatarDecals / Begin function"));
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_UpdateAllAvatarDecals / Updating all avatar decals"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_UpdateAllAvatarDecals / Updating all avatar decals."));
 	
 	TArray<AActor*> Avatars;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), Avatars);
