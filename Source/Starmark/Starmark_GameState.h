@@ -27,17 +27,23 @@ class STARMARK_API AStarmark_GameState : public AGameState
 public:
 // ---------------------------------------- Variables ---------------------------------------- 
 // ------------------------- Local Helper Variables
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	AStarmark_GameMode* GameModeReference;
 
 // ------------------------- Global Helper Variables
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int CurrentlyActingAvatarUniqueID = -1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	ACharacter_Pathfinder* CurrentlyActingAvatar;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int CurrentlyActingPlayerUniqueID = -1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	APlayerController_Battle* CurrentlyActingPlayer;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TMap<int, FPlayer_Data> PlayerDataAndUniqueIDMap;
 
 // ------------------------- Lobbies
@@ -48,7 +54,7 @@ public:
 	UWidgetComponent_LobbyPlayerVals* LobbyPlayerVals_Reference;
 
 	// To-Do: Move this to the Lobby GameMode?
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int MultiplayerBattleExpectedPlayers = 1;
 
 // ------------------------- Battle
@@ -80,11 +86,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FAvatar_StatusEffect StunStatus;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FTimerHandle StunTimerHandle;
 
 // ------------------------- Game
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int ExpectedPlayersForNextLevel = 1;
 
 
@@ -94,7 +100,7 @@ public:
 // ------------------------- Global Helper Functions
 	ACharacter_Pathfinder* ReturnCurrentlyActingAvatar();
 	APlayerController_Battle* ReturnCurrentlyActingPlayer();
-	TArray<APlayerController_Battle*> ReturnAllBattlePlayerControllers() const;
+	TArray<APlayerController_Battle*> ReturnAllBattlePlayerControllers() const;	// deprecated, use the GameMode version
 
 	// To-Do: Move this to the GameMode.
 	void ShowHideAllPlayerHuds();

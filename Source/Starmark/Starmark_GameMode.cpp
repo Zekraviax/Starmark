@@ -49,6 +49,40 @@ UStarmark_GameInstance* AStarmark_GameMode::GetHostPlayerGameStateInstanceRefere
 }
 
 
+TArray<APlayerController_Battle*> AStarmark_GameMode::GetAllBattlePlayerControllers()
+{
+	TArray<APlayerController_Battle*> ReturnArray;
+	TArray<AActor*> PlayerControllerActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
+
+	for (int i = 0; i < PlayerControllerActors.Num(); i++) {
+		if (Cast<APlayerController_Battle>(PlayerControllerActors[i])) {
+			ReturnArray.Add(Cast<APlayerController_Battle>(PlayerControllerActors[i]));
+		}
+	}
+
+
+	return ReturnArray;
+}
+
+
+TArray<ACharacter_Pathfinder*> AStarmark_GameMode::GetAllAvatars()
+{
+	TArray<ACharacter_Pathfinder*> ReturnArray;
+	TArray<AActor*> AvatarActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), AvatarActors);
+
+	for (int i = 0; i < AvatarActors.Num(); i++) {
+		if (Cast<ACharacter_Pathfinder>(AvatarActors[i])) {
+			ReturnArray.Add(Cast<ACharacter_Pathfinder>(AvatarActors[i]));
+		}
+	}
+
+
+	return ReturnArray;
+}
+
+
 // ------------------------- Battle
 void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 {
@@ -620,6 +654,8 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	// Pre Start-Of-Turn Checks:
 	// Check if any players still need to summon avatars to replace those that have died.
 	// Make sure that all avatars are in the normal AvatarTurnOrder array so that the Dynamic Turn Order can be calculated.
+	// If at least one player needs to summon an avatar, stop the start-of-turn checks and have them summon an avatar.
+	// Then repeat the process until nobody can or needs to summon avatars.
 	for (AActor* ControllerActor : PlayerControllerActors) {
 		APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
 		
@@ -656,6 +692,8 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	}
 	
 	// End Start-Of-Turn Checks:
+	// Find the player that should be acting, and update and show their HUD.
+	// Hide everyone else's HUD.
 	for (AActor* ControllerActor : PlayerControllerActors) {
 		APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
 		if (Controller) {
@@ -700,12 +738,12 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 
 void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfinder* Avatar)
 {
-	// List of things this function should do:
+	// List of things this function should do (not in any particular order):
 	//
 	// Remove the Avatar from the players' team in the GameState player data array.
 	// Remove the Avatar from the Static TurnOrder array and the Dynamic TurnOrder array.
 	// Delete the Avatar actor.
-	// Synchronize the players data to the controllers
+	// Synchronize the players' data to their controllers?
 	//
 
 	APlayerController_Battle* PlayerControllerReference = nullptr;

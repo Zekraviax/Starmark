@@ -32,10 +32,10 @@ public:
 // --------------------------------------------------
 
 // ------------------------- References
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	AStarmark_GameState* GameStateReference;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStarmark_GameInstance* HostPlayerGameInstanceReference;
 
 // ------------------------- Data Tables
@@ -69,21 +69,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataTable* StatusEffectsDataTable;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<FString> CombatLogTextArray;
 
 // ------------------------- Multiplayer
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FTimerHandle PlayerReadyCheckTimerHandle;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int MultiplayerUniqueIDCounter;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int BattleUniqueIDCounter;	
 
 // ------------------------- Other
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FString GameModeContextString;
 
 // Functions
@@ -93,6 +93,8 @@ public:
 	void SetGameStateLocalReference();
 	AStarmark_GameState* GetGameState();
 	UStarmark_GameInstance* GetHostPlayerGameStateInstanceReference() const;
+	TArray<APlayerController_Battle*> GetAllBattlePlayerControllers();
+	TArray<ACharacter_Pathfinder*> GetAllAvatars();
 
 // ------------------------- Battle
 	// Pre-Battle Setup Functions
