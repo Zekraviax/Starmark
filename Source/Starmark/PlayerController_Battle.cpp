@@ -136,9 +136,9 @@ void APlayerController_Battle::SetPlayerClickMode(E_PlayerCharacter_ClickModes N
 
 void APlayerController_Battle::Local_BattleWidget_AddToScreen() const
 {
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Local_BattleWidget_AddToScreen / Battle widget added to viewport"));
-	
 	BattleWidgetReference->AddToViewport();
+	
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Local_BattleWidget_AddToScreen / Battle widget added to viewport."));
 }
 
 
@@ -475,22 +475,6 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile_Implementation(
 
 		// Set health and mana?
 	}
-
-	// When the avatar has been summoned, add it to the turn order array
-	
-	
-	/*
-	if (!SelectedAvatar) {
-		TArray<AActor*> WorldGridArray;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor_WorldGrid::StaticClass(), WorldGridArray);
-		AActor_WorldGrid* FoundWorldGrid = Cast<AActor_WorldGrid>(WorldGridArray[0]);
-		FIntPoint ActorCoordinates = FoundWorldGrid->ConvertGridTileLocationToCoordinates(Cast<AStarmark_GameState>(GetWorld()->GetGameState())->ReturnCurrentlyActingAvatar()->GetActorLocation());
-
-		FoundAvatar = FoundWorldGrid->GetAndReturnCharacterAtLocation(ActorCoordinates);
-	} else {
-		FoundAvatar = SelectedAvatar;
-	}
-	*/
 	
 	// The GameMode will handle checking whether or not all players have finished summoning reserve avatars.
 	Cast<AStarmark_PlayerState>(PlayerState)->NumberOfAvatarsDiedThisTurn--;
@@ -559,12 +543,9 @@ void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation(const AC
 
 void APlayerController_Battle::Client_ShowHideHud_Implementation(bool ShowHud)
 {
-	if (BattleWidgetReference) {
-		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ShowHideHud / Show HUD? %s"), ShowHud ? TEXT("true") : TEXT("false"));
-		BattleWidgetReference->ShowHideActingPlayerHudElements(ShowHud);
-	} else {
-		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ShowHideHud / Error: HUD reference is not valid"));
-	}
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ShowHideHud / Show HUD? %s"), ShowHud ? TEXT("true") : TEXT("false"));
+
+	BattleWidgetReference->ShowHideActingPlayerHudElements(ShowHud);
 }
 
 
@@ -579,10 +560,6 @@ void APlayerController_Battle::GetAvatarUpdateFromServer_Implementation(ACharact
 
 void APlayerController_Battle::Client_UpdateCurrentAvatarInHud_Implementation(ACharacter_Pathfinder* ActingAvatar)
 {
-	if (!IsValid(BattleWidgetReference)) {
-		CreateBattleWidget();
-	}
-	
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateCurrentAvatarInHud / Received current acting avatar: %s"), *ActingAvatar->AvatarData.Nickname);
 
 	BattleWidgetReference->SetCurrentActingEntityInfo(ActingAvatar);

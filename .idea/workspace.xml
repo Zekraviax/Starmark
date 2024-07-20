@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2b258272-6a2c-4844-8838-2b1133d62763" name="Changes" comment="Changes">
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultGameUserSettings.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGameUserSettings.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Starmark/Starmark_GameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Starmark/Starmark_GameMode.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Starmark.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/Starmark.uproject" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Starmark/Starmark_GameState.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Starmark/Starmark_GameState.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Starmark/Widget_HUD_Battle.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Starmark/Widget_HUD_Battle.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -98,21 +98,16 @@ void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvat
 				int EntityIconIndex = i - 1;
 
 				if (InDynamicAvatarTurnOrderImages.IsValidIndex(i)) {
-					//if (EntityIconsInTurnOrder->GetChildrenCount() <= EntityIconIndex) {
-						if (Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))) {
-							Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetBrushFromTexture(InDynamicAvatarTurnOrderImages[i]);
-							Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+					if (Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))) {
+						Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetBrushFromTexture(InDynamicAvatarTurnOrderImages[i]);
+						Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
-							UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Apply avatar image to EntityIconsInTurnOrder child at index %d"), EntityIconIndex)
-						} else {
-							//Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetVisibility(ESlateVisibility::Collapsed);
-							UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder child at index %d is not a UImage"), EntityIconIndex)
-						}
-					//} else {
+						UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / Apply avatar image to EntityIconsInTurnOrder child at index %d."), EntityIconIndex)
+					} else {
 						//Cast<UImage>(EntityIconsInTurnOrder->GetChildAt(EntityIconIndex))->SetVisibility(ESlateVisibility::Collapsed);
-						//UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder child at index %d is not valid"), EntityIconIndex)
-					//}
-					
+						UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetUiIconsInTurnOrder / EntityIconsInTurnOrder child at index %d is not a UImage."), EntityIconIndex)
+					}
+
 					// To-Do: If no UI images are found, get the default image
 				}
 				else {
@@ -191,7 +186,9 @@ void UWidget_HUD_Battle::ResetBattleHud()
 // Show or hide all the HUD elements that are only relevant to the player whose turn it is
 void UWidget_HUD_Battle::ShowHideActingPlayerHudElements(bool ShowElements) const
 {
+	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ShowHideActingPlayerHudElements / Begin function."));
 	if (ShowElements) {
+		UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ShowHideActingPlayerHudElements / Show HUD elements."));
 		AvatarAttacksBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		EndTurnCommand->SetVisibility(ESlateVisibility::Visible);
 		CommandsBackgroundImage->SetVisibility(ESlateVisibility::Visible);
@@ -202,6 +199,7 @@ void UWidget_HUD_Battle::ShowHideActingPlayerHudElements(bool ShowElements) cons
 		ManaBar->SetVisibility(ESlateVisibility::Visible);
 		ManaText->SetVisibility(ESlateVisibility::Visible);
 	} else {
+		UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ShowHideActingPlayerHudElements / Hide HUD elements."));
 		AvatarAttacksBox->SetVisibility(ESlateVisibility::Collapsed);
 		EndTurnCommand->SetVisibility(ESlateVisibility::Collapsed);
 		CommandsBackgroundImage->SetVisibility(ESlateVisibility::Collapsed);
@@ -212,6 +210,7 @@ void UWidget_HUD_Battle::ShowHideActingPlayerHudElements(bool ShowElements) cons
 		ManaBar->SetVisibility(ESlateVisibility::Collapsed);
 		ManaText->SetVisibility(ESlateVisibility::Collapsed);
 	}
+	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ShowHideActingPlayerHudElements / End function."));
 }
 
 

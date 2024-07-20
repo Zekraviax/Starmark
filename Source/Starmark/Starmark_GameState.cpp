@@ -49,7 +49,7 @@ APlayerController_Battle* AStarmark_GameState::ReturnCurrentlyActingPlayer()
 
 void AStarmark_GameState::ShowHideAllPlayerHuds()
 {
-	ReturnCurrentlyActingPlayer();
+	//ReturnCurrentlyActingPlayer();
 
 	TArray<AActor*> PlayerControllerActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
@@ -58,8 +58,10 @@ void AStarmark_GameState::ShowHideAllPlayerHuds()
 		APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
 		
 		if (Controller == CurrentlyActingPlayer) {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / ShowHideAllPlayerHuds / Show HUD for player: %s"), *Controller->PlayerDataStruct.PlayerName);
 			Controller->Client_ShowHideHud(true);
 		} else {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / ShowHideAllPlayerHuds / Hide HUD for player: %s"), *Controller->PlayerDataStruct.PlayerName);
 			Controller->Client_ShowHideHud(false);
 		}
 	}

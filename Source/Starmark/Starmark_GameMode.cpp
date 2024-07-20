@@ -93,7 +93,6 @@ void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 	SwapPlayerControllers(Cast<APlayerController>(C), NewController);
 
 	// Set-up for the new controller
-	NewController->CreateBattleWidget();
 	PlayerControllerReferences.AddUnique(NewController);
 
 	// Set-up for the battle
@@ -393,7 +392,7 @@ void AStarmark_GameMode::Server_AssembleTurnOrderText_Implementation()
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Begin function"));
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AssembleTurnOrderText / Assembling text."));
 	
-	// The AssembleTurnOrderText should only handle the text, and not images in the hud.
+	// The AssembleTurnOrderText should only handle the text, and not images in the HUD.
 	// But whenever the text is updated, shouldn't the images be updated to match?
 	FString NewTurnOrderText;
 
@@ -635,8 +634,8 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin function"));
 
-	TArray<AActor*> PlayerControllerActors, AvatarActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
+	TArray<AActor*> AvatarActors;
+	TArray<APlayerController_Battle*> ControllerActorsArray = GetAllBattlePlayerControllers();
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), AvatarActors);
 
 	if (!GameStateReference) {
@@ -649,9 +648,7 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	// Make sure that all avatars are in the normal AvatarTurnOrder array so that the Dynamic Turn Order can be calculated.
 	// If at least one player needs to summon an avatar, stop the start-of-turn checks and have them summon an avatar.
 	// Then repeat the process until nobody can or needs to summon avatars.
-	for (AActor* ControllerActor : PlayerControllerActors) {
-		APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
-		
+	for (APlayerController_Battle* Controller : ControllerActorsArray) {
 		if (Controller) {
 			AStarmark_PlayerState* PlayerState = Cast<AStarmark_PlayerState>(Controller->PlayerState);
 			int DeployedAvatarCount = 0, TotalAvatarsInParty =  GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam.Num();
@@ -687,30 +684,28 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	// End Start-Of-Turn Checks:
 	// Find the player that should be acting, and update and show their HUD.
 	// Hide everyone else's HUD.
-	for (AActor* ControllerActor : PlayerControllerActors) {
-		APlayerController_Battle* Controller = Cast<APlayerController_Battle>(ControllerActor);
+	GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
+	
+	for (APlayerController_Battle* Controller : ControllerActorsArray) {
 		if (Controller) {
 			Controller->CurrentSelectedAvatar = GameStateReference->ReturnCurrentlyActingAvatar();
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Set the currently acting avatar: %s"), *GameStateReference->CurrentlyActingAvatar->AvatarData.Nickname);
 
+			// Set the first Avatar's controller as the currently acting player.
 			if (Controller == GameStateReference->ReturnCurrentlyActingPlayer()) {
-				// Set the first Avatar's controller as the currently acting player.
-				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Set the currently acting player: %s."), *Controller->PlayerDataStruct.PlayerName);
-
 				Controller->IsCurrentlyActingPlayer = true;
-				Controller->Client_ShowHideHud(true);
-
 				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Yaaaaay"));
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Set the currently acting player: %s."), *Controller->PlayerDataStruct.PlayerName);
 			} else {
 				Controller->IsCurrentlyActingPlayer = false;
 				Controller->Client_ShowHideHud(false);
-
 				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Boooooo"));
 			}
 
 			Controller->Player_OnAvatarTurnChanged();
 			Controller->Client_UpdateAttacksInHud(GameStateReference->CurrentlyActingAvatar);
 			Controller->Client_UpdateCurrentAvatarInHud(GameStateReference->CurrentlyActingAvatar);
+			Controller->Client_UpdateCurrentTurnOrderInHud(GameStateReference->DynamicAvatarTurnOrderImages);
 
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / First avatar: %s"), *GameStateReference->DynamicAvatarTurnOrder[0]->AvatarData.Nickname);
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin new turn for player: %s"), *Controller->PlayerDataStruct.PlayerName);
@@ -721,9 +716,8 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
 		Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i])->NumberOfAvatarsDiedThisTurn = 0;
 	}
-
-	// testing this
-	GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
+	
+	GameStateReference->ShowHideAllPlayerHuds();
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / End function"));
 }
