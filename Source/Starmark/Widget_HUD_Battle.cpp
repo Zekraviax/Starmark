@@ -136,7 +136,7 @@ void UWidget_HUD_Battle::SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvat
 }
 
 
-void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity)
+void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity) const
 {
 	// To-Do: If no UI images are found, get the default image
 	// To-Do: Don't let the player interact with the HUD when an enemy is acting.

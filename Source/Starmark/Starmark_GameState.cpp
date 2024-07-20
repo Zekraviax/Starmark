@@ -40,7 +40,7 @@ ACharacter_Pathfinder* AStarmark_GameState::ReturnCurrentlyActingAvatar()
 
 APlayerController_Battle* AStarmark_GameState::ReturnCurrentlyActingPlayer()
 {
-	CurrentlyActingPlayer = AvatarTurnOrder[0]->PlayerControllerReference;
+	CurrentlyActingPlayer = DynamicAvatarTurnOrder[0]->PlayerControllerReference;
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / ReturnCurrentlyActingPlayer / Currently acting player: %s"), *CurrentlyActingPlayer->PlayerDataStruct.PlayerName);
 
 	return CurrentlyActingPlayer;
@@ -163,13 +163,12 @@ void AStarmark_GameState::SetTurnOrder_Implementation()
 void AStarmark_GameState::OnRepNotify_DynamicAvatarTurnOrderUpdated_Implementation()
 {
 	// To-Do: Update this function with a better name
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Begin function"));
-	
+
 	// Tell each player controller to update their HUDs.
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Begin function"));
 	TArray<APlayerController_Battle*> ActorsArray = Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->GetAllBattlePlayerControllers();
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / This function is being multicast to all clients."));
-
 	DynamicAvatarTurnOrderImages.Empty();
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / OnRepNotify_DynamicAvatarTurnOrderUpdated / Fill the DynamicAvatarTurnOrderImages array."));

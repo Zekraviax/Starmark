@@ -560,7 +560,7 @@ void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation(const AC
 void APlayerController_Battle::Client_ShowHideHud_Implementation(bool ShowHud)
 {
 	if (BattleWidgetReference) {
-		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ShowHideHud / Showing or Hiding HUD"));
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ShowHideHud / Show HUD? %s"), ShowHud ? TEXT("true") : TEXT("false"));
 		BattleWidgetReference->ShowHideActingPlayerHudElements(ShowHud);
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ShowHideHud / Error: HUD reference is not valid"));
@@ -592,7 +592,9 @@ void APlayerController_Battle::Client_UpdateCurrentAvatarInHud_Implementation(AC
 
 void APlayerController_Battle::Client_UpdateCurrentTurnOrderInHud_Implementation(const TArray<UTexture2D*>& InDynamicAvatarTurnOrderImages)
 {
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateCurrentTurnOrderInHud / Received %d turn order images."), InDynamicAvatarTurnOrderImages.Num());
 	
+	BattleWidgetReference->SetUiIconsInTurnOrder(InDynamicAvatarTurnOrderImages);
 }
 
 void APlayerController_Battle::LocalAvatarUpdate(ACharacter_Pathfinder* AvatarReference, int AvatarUniqueID, bool IsCurrentlyActing, bool IsCurrentlSelectedAvatar)

@@ -90,7 +90,7 @@ public:
 	void SetCommandsToListOfReserveAvatars(TArray<FAvatar_Struct> ReserveAvatars) const;
 
 	void SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages) const;
-	void SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity);
+	void SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity) const;
 
 	UFUNCTION(BlueprintCallable)
 	void ResetBattleHud();
