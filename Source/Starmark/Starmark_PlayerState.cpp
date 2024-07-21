@@ -32,6 +32,7 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerTeam);
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerData);
 	DOREPLIFETIME(AStarmark_PlayerState, ReplicatedMultiplayerUniqueID);
+	DOREPLIFETIME(AStarmark_PlayerState, NumberOfAvatarsDiedThisTurn);
 }
 
 
