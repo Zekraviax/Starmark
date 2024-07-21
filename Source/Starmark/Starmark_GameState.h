@@ -32,13 +32,7 @@ public:
 
 // ------------------------- Global Helper Variables
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int CurrentlyActingAvatarUniqueID = -1;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	ACharacter_Pathfinder* CurrentlyActingAvatar;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int CurrentlyActingPlayerUniqueID = -1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	APlayerController_Battle* CurrentlyActingPlayer;

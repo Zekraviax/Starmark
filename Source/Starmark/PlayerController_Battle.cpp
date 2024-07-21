@@ -428,6 +428,8 @@ void APlayerController_Battle::SummonReserveAvatarAtSelectedTile_Implementation(
 	if (SelectedTile) {
 		for (int i = 0; i < PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
 			if (PlayerDataStruct.CurrentAvatarTeam[i].IndexInPlayerLibrary == SelectedReserveAvatarBattleUniqueID) {
+				UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / SummonReserveAvatarAtSelectedTile / Summoning avatar %s within Unique ID %d."), *PlayerDataStruct.CurrentAvatarTeam[i].Nickname, SelectedReserveAvatarBattleUniqueID);
+				
 				Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->Server_SpawnAvatar(this, PlayerDataStruct, SelectedReserveAvatarBattleUniqueID, PlayerDataStruct.CurrentAvatarTeam[i], SelectedTile->GetActorLocation());
 				break;
 			}

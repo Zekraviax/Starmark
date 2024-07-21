@@ -64,6 +64,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor_AttackEffectsLibrary> AttackEffectsLibrary_Class;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	AActor_AttackEffectsLibrary* AttackEffectsLibrary_Reference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -71,6 +73,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<FString> CombatLogTextArray;
+
+	// This should only be used to recalculate the AvatarTurnOrder.
+	// It should be reset at the start of each Avatar's turn.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool AvatarDiedThisTurn = false;
 
 // ------------------------- Multiplayer
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

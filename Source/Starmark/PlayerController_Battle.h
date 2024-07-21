@@ -90,10 +90,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FTimerHandle PlayerStateTimerHandle;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int SelectedReserveAvatarBattleUniqueID;
 
 // ------------------------- Player

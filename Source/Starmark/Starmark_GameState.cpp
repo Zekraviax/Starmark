@@ -41,6 +41,7 @@ ACharacter_Pathfinder* AStarmark_GameState::ReturnCurrentlyActingAvatar()
 APlayerController_Battle* AStarmark_GameState::ReturnCurrentlyActingPlayer()
 {
 	CurrentlyActingPlayer = DynamicAvatarTurnOrder[0]->PlayerControllerReference;
+	CurrentlyActingPlayer->IsCurrentlyActingPlayer = true;
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / ReturnCurrentlyActingPlayer / Currently acting player: %s"), *CurrentlyActingPlayer->PlayerDataStruct.PlayerName);
 
 	return CurrentlyActingPlayer;

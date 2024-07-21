@@ -1,17 +1,16 @@
 #include "WidgetComponent_AvatarAttack.h"
 
 
-#include "Actor_AttackEffectsLibrary.h"
 #include "Actor_GridTile.h"
 #include "Character_Pathfinder.h"
-#include "Kismet/GameplayStatics.h"
 #include "PlayerController_Battle.h"
-#include "Starmark_GameInstance.h"
 
 
 // ------------------------- Widget
 void UWidgetComponent_AvatarAttack::OnButtonPressed()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UWidgetComponent_AvatarAttack / OnButtonPressed / Attack button pressed.."));
+	
 	if (PlayerControllerReference->PlayerClickMode == E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon &&
 		!AttackNameText->GetText().EqualTo(FText::FromString("RESERVE"))) {
 		// Here is where the player selects a reserve avatar to summon.
