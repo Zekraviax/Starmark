@@ -17,8 +17,8 @@ void UWidgetComponent_AvatarAttack::OnButtonPressed()
 		// We need to pass the index of the chosen avatar here.
 		PlayerControllerReference->BeginSelectingTileForReserveAvatar(AvatarAttackIndex);
 	} else if (AvatarAttackIndex > -1 && PlayerControllerReference && PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks.IsValidIndex(AvatarAttackIndex)) {
-		PlayerControllerReference->PlayerClickMode = E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack;
 		PlayerControllerReference->TileHighlightMode = E_PlayerCharacter_HighlightModes::E_AttackPattern;
+		PlayerControllerReference->SetPlayerClickMode(E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack);
 
 		// Set selected Attack
 		PlayerControllerReference->CurrentSelectedAvatar->CurrentSelectedAttack = PlayerControllerReference->CurrentSelectedAvatar->CurrentKnownAttacks[AvatarAttackIndex];

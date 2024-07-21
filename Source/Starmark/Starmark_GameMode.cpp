@@ -134,7 +134,7 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / FoundPlayerStartActors[0] is not valid."));
 		}
 	} else {
-		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / FoundPlayerStartActors.IsValidIndex(0) is not valid"));
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / FoundPlayerStartActors.IsValidIndex(0) is not valid."));
 	}
 
 	NewPlayerController->Possess(GetWorld()->SpawnActor<APlayerPawn_Flying>(PlayerPawnBlueprintClass, Location, Rotation, SpawnInfo));
@@ -169,14 +169,14 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 		ExpectedPlayers = 1;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Total PlayerControllerReferences in array: %d"), PlayerControllerReferences.Num());
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected players: %d"), ExpectedPlayers);
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Total PlayerControllerReferences in array: %d."), PlayerControllerReferences.Num());
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected players: %d."), ExpectedPlayers);
 
 	// When all players have joined, begin running the setup functions needed to start the battle.
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Start checking if all players are ready"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Start checking if all players are ready."));
 	GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::GetPreBattleChecks, 1.f, false);
 
-	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / End function"));
+	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / End function."));
 }
 
 
@@ -251,6 +251,10 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 					CurrentPlayerTeam[j].BattleUniqueID = BattleUniqueIDCounter;
 					CurrentPlayerTeam[j].OwnerMultiplayerUniqueID = i;
 					BattleUniqueIDCounter++;
+
+					CurrentPlayerTeam[j].CurrentHealthPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumHealthPoints;
+					CurrentPlayerTeam[j].CurrentManaPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumManaPoints;
+					CurrentPlayerTeam[j].CurrentTileMoves = CurrentPlayerTeam[j].MaximumTileMoves;
 					
 					if (SpawnedAvatarCount < 4) {
 						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn avatar %s for player %s."), *CurrentPlayerTeam[j].AvatarName, *PlayerData.PlayerName);
@@ -260,10 +264,6 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 					} else {
 						// Calculate variables like Current Health for reserve avatars here.
 						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Avatar %s for player %s is in reserve."), *CurrentPlayerTeam[j].AvatarName, *PlayerData.PlayerName);
-
-						CurrentPlayerTeam[j].CurrentHealthPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumHealthPoints;
-						CurrentPlayerTeam[j].CurrentManaPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumManaPoints;
-						CurrentPlayerTeam[j].CurrentTileMoves = CurrentPlayerTeam[j].MaximumTileMoves;
 					}
 				} else {
 					GameStateReference->PlayerDataStructsArray[i].CurrentAvatarTeam.RemoveAt(j);

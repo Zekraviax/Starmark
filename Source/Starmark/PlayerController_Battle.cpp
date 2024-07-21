@@ -104,6 +104,10 @@ void APlayerController_Battle::SetPlayerClickMode(E_PlayerCharacter_ClickModes N
 	PlayerClickMode = NewClickMode;
 
 	// ...then handle secondary functionality.
+	TArray<ACharacter_Pathfinder*> Avatars;
+	TArray<AActor_GridTile*> Tiles;
+	HighlightSpecificAvatarsAndTiles(Avatars, Tiles);
+	
 	if (PlayerClickMode == E_PlayerCharacter_ClickModes::E_Nothing || PlayerClickMode == E_PlayerCharacter_ClickModes::E_MoveCharacter ||
 		PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToAttack || PlayerClickMode == E_PlayerCharacter_ClickModes::E_SelectCharacterToControl) {
 		
@@ -327,9 +331,8 @@ void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActo
 				if (Cast<ACharacter_Pathfinder>(ClickedActor)) {
 					if (CurrentSelectedAvatar->ValidAttackTargetsArray.Contains(ClickedActor)) {
 						CurrentSelectedAvatar->LaunchAttack_Implementation(Cast<ACharacter_Pathfinder>(ClickedActor));
-						// Don't automatically end the turn just because someone attacked.
-						// End the turn automatically if no avatars died.
-						//Client_SendEndOfTurnCommandToServer();
+						// The GameMode handles checking for avatars that have died.
+						Client_SendEndOfTurnCommandToServer();
 					}
 				}
 			} else if (CurrentSelectedAvatar->CurrentSelectedAttack.AttackTargetsInRange == EBattle_AttackTargetsInRange::AttackAllTargets) {
@@ -342,7 +345,7 @@ void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActo
 					}
 				}
 
-				//Client_SendEndOfTurnCommandToServer();
+				Client_SendEndOfTurnCommandToServer();
 			}
 		}
 	}
