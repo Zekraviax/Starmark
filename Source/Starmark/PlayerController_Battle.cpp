@@ -68,7 +68,7 @@ void APlayerController_Battle::PlayerTick(float DeltaTime)
 // ------------------------- Widgets
 void APlayerController_Battle::Client_ClearLobbyFromScreen_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ClearLobbyFromScreen / Clear lobby widgets on screen"));
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_ClearLobbyFromScreen / Clear lobby widgets on screen."));
 
 	TArray<UUserWidget*> FoundServerHostWidgets;
 	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, FoundServerHostWidgets, UWidget_ServerHost::StaticClass(), true);
@@ -151,7 +151,7 @@ void APlayerController_Battle::SetBattleWidgetVariables()
 
 		// To-Do: Fix these
 		// Also To-Do: Figure out how and why these are broken before we fix them
-		BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
+		//BattleWidgetReference->AvatarBattleDataWidget->UpdateAvatarData(CurrentSelectedAvatar->AvatarData);
 		BattleWidgetReference->AvatarBattleDataWidget->GetAvatarStatusEffects(CurrentSelectedAvatar->CurrentStatusEffectsArray);
 	}
 }
@@ -523,7 +523,7 @@ void APlayerController_Battle::Player_OnAvatarTurnChanged_Implementation()
 
 void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation(const ACharacter_Pathfinder* ActingAvatar)
 {
-	if (CurrentSelectedAvatar) {
+	if (CurrentSelectedAvatar && ActingAvatar) {
 		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Passed avatar: %s"), *ActingAvatar->AvatarData.Nickname);
 
 		if (BattleWidgetReference) {
@@ -536,7 +536,7 @@ void APlayerController_Battle::Client_UpdateAttacksInHud_Implementation(const AC
 			UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / Error: HUD reference is not valid"));
 		}
 	} else {
-		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / CurrentSelectedAvatar is not valid"));
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Client_UpdateAttacksInHud_Implementation / CurrentSelectedAvatar or ActingAvatar is not valid"));
 	}
 }
 

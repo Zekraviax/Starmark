@@ -68,19 +68,20 @@ void AStarmark_GameState::ShowHideAllPlayerHuds()
 }
 
 
-FPlayer_Data& AStarmark_GameState::FindPlayerDataUsingMultiplayerUniqueID(int MultiplayerUniqueID)
+FPlayer_Data AStarmark_GameState::FindPlayerDataUsingMultiplayerUniqueID(int MultiplayerUniqueID)
 {
 	// Apparently this is how C++ wants you to initialize pass-by-reference variables.
-	FPlayer_Data& DefaultReturnValue = PlayerDataStructsArray[0];
+	//FPlayer_Data& DefaultReturnValue = PlayerDataStructsArray[0];
 	
 	for (auto& Element : PlayerDataAndUniqueIDMap) {
+		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / FindPlayerDataUsingMultiplayerUniqueID / Found PlayerData at index %d with name: %s,"), MultiplayerUniqueID, *Element.Value.PlayerName);
 		if (Element.Key == MultiplayerUniqueID) {
 			return Element.Value;
 		}
 	}
 
 	// Return the default data if the player data can't be found.
-	return DefaultReturnValue;
+	return FPlayer_Data();
 }
 
 

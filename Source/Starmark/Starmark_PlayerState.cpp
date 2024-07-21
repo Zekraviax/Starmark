@@ -31,6 +31,7 @@ void AStarmark_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerReadyStatus);
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerTeam);
 	DOREPLIFETIME(AStarmark_PlayerState, PlayerData);
+	DOREPLIFETIME(AStarmark_PlayerState, ReplicatedMultiplayerUniqueID);
 }
 
 

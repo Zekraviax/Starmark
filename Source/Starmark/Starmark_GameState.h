@@ -103,7 +103,7 @@ public:
 
 	// To-Do: Move this to the GameMode.
 	void ShowHideAllPlayerHuds();
-	FPlayer_Data& FindPlayerDataUsingMultiplayerUniqueID(int MultiplayerUniqueID);
+	FPlayer_Data FindPlayerDataUsingMultiplayerUniqueID(int MultiplayerUniqueID);
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)

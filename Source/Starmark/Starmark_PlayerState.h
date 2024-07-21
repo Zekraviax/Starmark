@@ -60,6 +60,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString ReplicatedPlayerName = "Default";
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
+	int ReplicatedMultiplayerUniqueID = -1;
+
 // ------------------------- Lobby
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FString PlayerReadyStatus = "Not Ready";

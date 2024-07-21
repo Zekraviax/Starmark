@@ -92,10 +92,8 @@ void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / Attempting to swap player controllers"));
 	SwapPlayerControllers(Cast<APlayerController>(C), NewController);
 
-	// Set-up for the new controller
-	PlayerControllerReferences.AddUnique(NewController);
-
 	// Set-up for the battle
+	PlayerControllerReferences.AddUnique(NewController);
 	OnPlayerPostLogin(NewController);
 
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / HandleSeamlessTravelPlayer / End function"));
@@ -107,19 +105,16 @@ void AStarmark_GameMode::HandleSeamlessTravelPlayer(AController*& C)
 void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerController)
 {
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Begin function."));
-
-	// The one true method of sending the players' data to the server.
-	NewPlayerController->ClientSendDataToServer();
 	PlayerControllerReferences.AddUnique(NewPlayerController);
 
 	// We're assigning each player a unique number just in case two or more players have the same player name.
 	NewPlayerController->MultiplayerUniqueID = MultiplayerUniqueIDCounter;
+	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->ReplicatedMultiplayerUniqueID = MultiplayerUniqueIDCounter;
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / MultiplayerUniqueIDCounter is: %d."), MultiplayerUniqueIDCounter);
 	MultiplayerUniqueIDCounter++;
-
-	// To-Do: Delay adding the Data to the Map until the ServerSendDataToServer function has finished resolving.
-	//GetGameState()->PlayerDataAndUniqueIDMap.Add(MultiplayerUniqueIDCounter, GetGameState()->PlayerDataStructsArray.Last());
-	//UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Player has the profile name: %s."), *GetGameState()->PlayerDataStructsArray.Last().ProfileName);
+	
+	// The one true method of sending the players' data to the server.
+	NewPlayerController->ClientSendDataToServer();
 	
 	// Spawn and possess the player pawn.
 	TArray<AActor*> FoundPlayerStartActors;
@@ -150,13 +145,14 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	// Clear Combat Log
 	if (CombatLogTextArray.Num() > 0) {
 		CombatLogTextArray.Empty();
+
+		CombatLogTextArray.Add("Begin battle!");
 	}
 
 	// Clear the Server Lobby widget from the players' display.
 	NewPlayerController->Client_ClearLobbyFromScreen();
 
-	// When all players have joined, begin running the setup functions needed to start the battle.
-	// To-Do: Add a step here to check if a session even exists before trying to fetch the number of connections.
+	// Try and figure out which player is hosting the multiplayer battle.
 	if (!HostPlayerGameInstanceReference) {
 		// This should only be done once per battle.
 		HostPlayerGameInstanceReference = Cast<UStarmark_GameInstance>(NewPlayerController->GetGameInstance());
@@ -176,8 +172,7 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Total PlayerControllerReferences in array: %d"), PlayerControllerReferences.Num());
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Expected players: %d"), ExpectedPlayers);
 
-	// To-Do: Figure out why the ExpectedPlayers is being overridden to 1.
-	// Don't call this function unless all PlayerStates have their player data.
+	// When all players have joined, begin running the setup functions needed to start the battle.
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Start checking if all players are ready"));
 	GetWorld()->GetTimerManager().SetTimer(PlayerReadyCheckTimerHandle, this, &AStarmark_GameMode::GetPreBattleChecks, 1.f, false);
 
@@ -191,8 +186,7 @@ void AStarmark_GameMode::GetPreBattleChecks_Implementation()
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Checking if all players have readied up"));
 	
 	bool AreAllPlayersReady = true;
-
-	// Can't fetch the GameState here, it just crashes.
+	
 	if (!GameStateReference) {
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / GameStateReference is not valid. Attempting to fetch now."));
 		SetGameStateLocalReference();
@@ -202,10 +196,8 @@ void AStarmark_GameMode::GetPreBattleChecks_Implementation()
 		for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
 			if (GameStateReference->PlayerArray.IsValidIndex(i)) {
 				AStarmark_PlayerState* FoundPlayerState = Cast<AStarmark_PlayerState>(GameStateReference->PlayerArray[i]);
-
 				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / GetPreBattleChecks / Player %s has the ready status: %s"), *GetGameState()->PlayerDataStructsArray[i].PlayerName, FoundPlayerState->PreBattleCheck ? TEXT("true") : TEXT("false"));
-				//GetGameState()->PlayerDataStructsArray[i] ? TEXT("true") : TEXT("false")
-				
+
 				if (FoundPlayerState->PreBattleCheck == false) {
 					AreAllPlayersReady = false;
 					break;
@@ -650,9 +642,11 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	// Then repeat the process until nobody can or needs to summon avatars.
 	for (APlayerController_Battle* Controller : ControllerActorsArray) {
 		if (Controller) {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Pre start-of-turn check for player %s"), *Controller->PlayerDataStruct.PlayerName);
+			
 			AStarmark_PlayerState* PlayerState = Cast<AStarmark_PlayerState>(Controller->PlayerState);
-			int DeployedAvatarCount = 0, TotalAvatarsInParty =  GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam.Num();
-			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Player has %d avatars remaining."), TotalAvatarsInParty);
+			int DeployedAvatarCount = 0, TotalAvatarsInParty = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(PlayerState->ReplicatedMultiplayerUniqueID).CurrentAvatarTeam.Num();
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Player with Multiplayer ID %d has %d avatars remaining in their party."), PlayerState->ReplicatedMultiplayerUniqueID, TotalAvatarsInParty);
 
 			for (AActor* AvatarActor : AvatarActors) {
 				ACharacter_Pathfinder* Avatar = Cast<ACharacter_Pathfinder>(AvatarActor);
@@ -745,7 +739,7 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 			PlayerControllerReference = Controller;
 			
 			if (Controller->MultiplayerUniqueID == Avatar->PlayerControllerReference->MultiplayerUniqueID) {
-				FPlayer_Data& PlayerData = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID);
+				FPlayer_Data PlayerData = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID);
 			
 				for (FAvatar_Struct AvatarData : PlayerData.CurrentAvatarTeam) {
 					if (AvatarData.BattleUniqueID == Avatar->AvatarData.BattleUniqueID) {
