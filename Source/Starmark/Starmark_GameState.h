@@ -98,6 +98,7 @@ public:
 	// To-Do: Move this to the GameMode.
 	void ShowHideAllPlayerHuds();
 	FPlayer_Data FindPlayerDataUsingMultiplayerUniqueID(int MultiplayerUniqueID);
+	FAvatar_Struct& FindAvatarUsingUniqueID(int AvatarUniqueID);
 
 // ------------------------- Battle
 	UFUNCTION(BlueprintCallable, Server, Reliable)

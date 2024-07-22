@@ -88,6 +88,23 @@ FPlayer_Data AStarmark_GameState::FindPlayerDataUsingMultiplayerUniqueID(int Mul
 }
 
 
+FAvatar_Struct& AStarmark_GameState::FindAvatarUsingUniqueID(int AvatarUniqueID)
+{
+	FAvatar_Struct& DefaultReturnValue = AvatarTurnOrder[0]->AvatarData;
+	
+	for (auto& Element : PlayerDataAndUniqueIDMap) {
+		for (FAvatar_Struct Avatar : Element.Value.CurrentAvatarTeam) {
+			if (Avatar.BattleUniqueID == AvatarUniqueID) {
+				DefaultReturnValue = Avatar;
+				break;
+			}
+		}
+	}
+	
+	return DefaultReturnValue;
+}
+
+
 // ------------------------- Battle
 void AStarmark_GameState::SetTurnOrder_Implementation()
 {

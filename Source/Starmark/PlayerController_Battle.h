@@ -179,6 +179,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryClick(AActor* ClickedActor, TArray<AActor*> ValidTargetsArray);
 
+	UFUNCTION(BlueprintCallable)
+	void SubtractAvatarMovementPoints(int Moves);
+
 	// Use this function to highlight all avatars and entities passed,
 	// and to un-highlight all avatars and tiles not passed.
 	void HighlightSpecificAvatarsAndTiles(const TArray<ACharacter_Pathfinder*>& Avatars, const TArray< AActor_GridTile*>& Tiles) const;

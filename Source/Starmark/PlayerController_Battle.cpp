@@ -352,6 +352,15 @@ void APlayerController_Battle::OnPrimaryClick(AActor* ClickedActor, TArray<AActo
 }
 
 
+void APlayerController_Battle::SubtractAvatarMovementPoints(int Moves)
+{
+	FAvatar_Struct& Avatar = Cast<AStarmark_GameState>(GetWorld()->GetGameState())->FindAvatarUsingUniqueID(CurrentSelectedAvatar->AvatarBattleUniqueID);
+	Avatar.CurrentTileMoves -= Moves;
+
+	CurrentSelectedAvatar->AvatarData = Avatar;
+}
+
+
 void APlayerController_Battle::HighlightSpecificAvatarsAndTiles(const TArray<ACharacter_Pathfinder*>& Avatars, const TArray<AActor_GridTile*>& Tiles) const
 {
 	TArray<AActor*> FoundAvatars, FoundGridTiles;
