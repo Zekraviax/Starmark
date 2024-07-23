@@ -50,8 +50,6 @@ APlayerController_Battle* AStarmark_GameState::ReturnCurrentlyActingPlayer()
 
 void AStarmark_GameState::ShowHideAllPlayerHuds()
 {
-	//ReturnCurrentlyActingPlayer();
-
 	TArray<AActor*> PlayerControllerActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
 
@@ -102,6 +100,19 @@ FAvatar_Struct& AStarmark_GameState::FindAvatarUsingUniqueID(int AvatarUniqueID)
 	}
 	
 	return DefaultReturnValue;
+}
+
+
+void AStarmark_GameState::AppendStringToCombatLog_Implementation(const FString& AppendString)
+{
+	CombatLogString.Append(AppendString + "\n");
+	
+	TArray<AActor*> PlayerControllerActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), PlayerControllerActors);
+
+	for (int i = 0; i < PlayerControllerActors.Num(); i++) {
+		Cast<APlayerController_Battle>(PlayerControllerActors[i])->GetUpdatedCombatLogTextFromGameState(CombatLogString);
+	}
 }
 
 

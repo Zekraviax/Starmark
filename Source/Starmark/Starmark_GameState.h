@@ -64,6 +64,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRepNotify_DynamicAvatarTurnOrderUpdated)
 	TArray<UTexture2D*> DynamicAvatarTurnOrderImages;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString CombatLogString;
+
 	// The Index of the currently acting avatar in the AvatarTurnOrder array.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int CurrentAvatarTurnIndex;
@@ -106,6 +109,9 @@ public:
 
 	UFUNCTION(Server, Reliable) // This function needs the UFUNCTION tag. It breaks without it.
 	void OnRepNotify_DynamicAvatarTurnOrderUpdated();
+
+	UFUNCTION(Server, Reliable)
+	void AppendStringToCombatLog(const FString& AppendString);
 
 	// This function should only be used to update variables that all players might want.
 	// For other functionality, use the GameMode.

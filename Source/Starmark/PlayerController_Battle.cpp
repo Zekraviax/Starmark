@@ -249,6 +249,14 @@ FPlayer_Data APlayerController_Battle::Server_GetDataFromProfile()
 }
 
 
+void APlayerController_Battle::GetUpdatedCombatLogTextFromGameState_Implementation(const FString& CombatLogText)
+{
+	if (BattleWidgetReference) {
+		BattleWidgetReference->SetCombatLogText(CombatLogText);
+	}
+}
+
+
 void APlayerController_Battle::OnMouseCursorBeginHover(ACharacter_Pathfinder* ActingAvatar, TArray<FVector> PathBetweenAvatars)
 {
 	/*

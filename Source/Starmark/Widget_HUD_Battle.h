@@ -51,7 +51,7 @@ public:
 	UButton* EndTurnCommand;
 
 	UPROPERTY(meta = (BindWidget))
-	UVerticalBox* CombatLog;
+	UTextBlock* CombatLog;
 
 	UPROPERTY(meta = (BindWidget))
 	UHorizontalBox* EntityIconsInTurnOrder;
@@ -91,7 +91,8 @@ public:
 
 	void SetUiIconsInTurnOrder(TArray<UTexture2D*> InDynamicAvatarTurnOrderImages) const;
 	void SetCurrentActingEntityInfo(ACharacter_Pathfinder* CurrentActingEntity) const;
-
+	void SetCombatLogText(const FString& CombatLogAsString) const;
+	
 	UFUNCTION(BlueprintCallable)
 	void ResetBattleHud();
 	void ShowHideActingPlayerHudElements(bool ShowElements) const;

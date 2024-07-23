@@ -141,13 +141,6 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	NewPlayerController->ClientSetRotation(Rotation, true);
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Player controller possessed pawn: %s"), *NewPlayerController->GetPawn()->GetName());
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Player pawn rotation: %s"), *Rotation.ToString());
-	
-	// Clear Combat Log
-	if (CombatLogTextArray.Num() > 0) {
-		CombatLogTextArray.Empty();
-
-		CombatLogTextArray.Add("Begin battle!");
-	}
 
 	// Clear the Server Lobby widget from the players' display.
 	NewPlayerController->Client_ClearLobbyFromScreen();
@@ -344,6 +337,9 @@ void AStarmark_GameMode::Server_MultiplayerBattleCheckAllPlayersReady_Implementa
 		// Set first Avatar's controller as the currently acting player.
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_MultiplayerBattleCheckAllPlayersReady / Set the currently acting player: %s."), *GameStateReference->ReturnCurrentlyActingPlayer()->PlayerName);
 
+		// Clear Combat Log
+		GetGameState()->AppendStringToCombatLog("Battle begin!");
+		
 		// Show the currently acting players' HUD, and hide all other players' HUDs.
 		GameStateReference->ShowHideAllPlayerHuds();
 

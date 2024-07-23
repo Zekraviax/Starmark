@@ -167,6 +167,12 @@ void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* Curre
 }
 
 
+void UWidget_HUD_Battle::SetCombatLogText(const FString& CombatLogAsString) const
+{
+	CombatLog->SetText(FText::FromString(CombatLogAsString));
+}
+
+
 void UWidget_HUD_Battle::ResetBattleHud()
 {
 	UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / ResetBattleHud / Player's HUD is being reset."));

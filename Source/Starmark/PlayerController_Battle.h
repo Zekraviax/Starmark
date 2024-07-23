@@ -173,6 +173,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_SetReadyToStartMultiplayerBattle();
 
+	UFUNCTION(Client, Reliable)
+	void GetUpdatedCombatLogTextFromGameState(const FString& CombatLogText);
+
 	UFUNCTION(BlueprintCallable)
 	void OnMouseCursorBeginHover(ACharacter_Pathfinder* ActingAvatar, TArray<FVector> PathBetweenAvatars);
 
