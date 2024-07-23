@@ -570,6 +570,10 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 		}
 	}
 
+	GetGameState()->AppendStringToCombatLog(Attacker->PlayerControllerReference->PlayerDataStruct.PlayerName + "'s " + Attacker->AvatarData.Nickname + " used " +
+		AttackName + " on " + TargetAsCharacter->PlayerControllerReference->PlayerDataStruct.PlayerName + "'s " + TargetAsCharacter->AvatarData.Nickname + "!");
+
+	// Damage calculation
 	if (Attacker->CurrentSelectedAttack.AttackCategory == EBattle_AttackCategories::Offensive && Attacker->CurrentSelectedAttack.BasePower > 0) {
 		// Calculate damage, one step at a time.
 		float CurrentDamage = FMath::RandRange(1.f, 5.f);
@@ -590,16 +594,16 @@ void AStarmark_GameMode::Server_LaunchAttack_Implementation(ACharacter_Pathfinde
 		}
 
 		FMath::FloorToFloat(CurrentDamage);
-
-		// Subtract health.
-		//AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(Attacker->PlayerControllerReference->PlayerState);
-		//PlayerStateReference->Server_SubtractHealth_Implementation(TargetAsCharacter, CurrentDamage);
+		
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / Target health: %d"), TargetAsCharacter->AvatarData.CurrentHealthPoints);
 		TargetAsCharacter->AvatarData.CurrentHealthPoints -= CurrentDamage;
+		GetGameState()->AppendStringToCombatLog(TargetAsCharacter->PlayerControllerReference->PlayerDataStruct.PlayerName + "'s " + TargetAsCharacter->AvatarData.Nickname + " took "
+			+ FString::FromInt(CurrentDamage) + " damage!");
 
 		if (TargetAsCharacter->AvatarData.CurrentHealthPoints <= 0) {
 			// If the avatar was defeated, remove it from the turn order.
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_LaunchAttack / The avatar %s was defeated."), *TargetAsCharacter->AvatarData.Nickname);
+			GetGameState()->AppendStringToCombatLog(TargetAsCharacter->PlayerControllerReference->PlayerDataStruct.PlayerName + "'s " + TargetAsCharacter->AvatarData.Nickname + " has been defeated!");
 			Server_AvatarDefeated(TargetAsCharacter);
 		}
 	}
