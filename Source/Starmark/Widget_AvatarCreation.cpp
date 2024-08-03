@@ -10,19 +10,19 @@
 // ------------------------- Widget
 void UWidget_AvatarCreation::PopulateDropDowns()
 {
-	FString ContextString;
+	FString LocalContextString;
 
 	// Avatars
 	if (AvatarDataTable) {
 		AvatarRowNames = AvatarDataTable->GetRowNames();
 
 		for (int i = 0; i < AvatarRowNames.Num(); i++) {
-			SpeciesDropDown->AddOption(AvatarDataTable->FindRow<FAvatar_Struct>(FName(*AvatarRowNames[i].ToString()), ContextString)->AvatarName);
+			SpeciesDropDown->AddOption(AvatarDataTable->FindRow<FAvatar_Struct>(FName(*AvatarRowNames[i].ToString()), LocalContextString)->AvatarName);
 
 			if (i == 0) {
 				SpeciesDropDown->SetSelectedOption(AvatarRowNames[i].ToString());
 				SpeciesDropDown->SetIsEnabled(true);
-				CurrentAvatar = *AvatarDataTable->FindRow<FAvatar_Struct>(FName(*AvatarRowNames[i].ToString()), ContextString);
+				CurrentAvatar = *AvatarDataTable->FindRow<FAvatar_Struct>(FName(*AvatarRowNames[i].ToString()), LocalContextString);
 			}
 		}
 
@@ -46,12 +46,12 @@ void UWidget_AvatarCreation::PopulateDropDowns()
 		ComplexAttacksRowNames = ComplexAttacksDataTable->GetRowNames();
 
 		for (int i = 1; i < ComplexAttacksRowNames.Num(); i++) {
-			MoveOneDropDown->AddOption(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name);
-			MoveTwoDropDown->AddOption(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name);
-			MoveThreeDropDown->AddOption(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name);
-			MoveFourDropDown->AddOption(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name);
+			MoveOneDropDown->AddOption(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name);
+			MoveTwoDropDown->AddOption(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name);
+			MoveThreeDropDown->AddOption(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name);
+			MoveFourDropDown->AddOption(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name);
 
-			ComplexAttacksDisplayNames.Add(FName(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
+			ComplexAttacksDisplayNames.Add(FName(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name));
 		}
 	}
 
@@ -160,13 +160,15 @@ void UWidget_AvatarCreation::OnAvatarNicknameTextChanged(FText NewNickname)
 
 void UWidget_AvatarCreation::OnSpeciesDropDownChanged(FString Option)
 {
+	FString LocalContextString;
+
 	if (Option.Len() == 0 || Option == "") {
 		SpeciesText->SetText(FText::FromString("Species: None"));
 		ElementsText->SetText(FText::FromString("Elements: None"));
 	} else {
 		for (int i = 0; i < AvatarRowNames.Num(); i++) {
-			if (AvatarDataTable->FindRow<FAvatar_Struct>(FName(*AvatarRowNames[i].ToString()), ContextString)->AvatarName == SpeciesDropDown->GetSelectedOption()) {
-				CurrentAvatar = *AvatarDataTable->FindRow<FAvatar_Struct>(FName(*AvatarRowNames[i].ToString()), ContextString);
+			if (AvatarDataTable->FindRow<FAvatar_Struct>(FName(*AvatarRowNames[i].ToString()), LocalContextString)->AvatarName == SpeciesDropDown->GetSelectedOption()) {
+				CurrentAvatar = *AvatarDataTable->FindRow<FAvatar_Struct>(FName(*AvatarRowNames[i].ToString()), LocalContextString);
 				break;
 			}
 		}
@@ -185,8 +187,8 @@ void UWidget_AvatarCreation::OnAbilityDropDownChanged(FString Option)
 		AbilityText->SetText(FText::FromString("Ability: " + Option));
 
 		for (int i = 0; i < AbilityRowNames.Num(); i++) {
-			if (AbilitiesDataTable->FindRow<FAvatar_AbilityStruct>(FName(*AbilityRowNames[i].ToString()), ContextString)->Name == AbilityDropDown->GetSelectedOption()) {
-				CurrentAvatar.Ability = *AbilitiesDataTable->FindRow<FAvatar_AbilityStruct>(FName(*AbilityRowNames[i].ToString()), ContextString);
+			if (AbilitiesDataTable->FindRow<FAvatar_AbilityStruct>(FName(*AbilityRowNames[i].ToString()), LocalContextString)->Name == AbilityDropDown->GetSelectedOption()) {
+				CurrentAvatar.Ability = *AbilitiesDataTable->FindRow<FAvatar_AbilityStruct>(FName(*AbilityRowNames[i].ToString()), LocalContextString);
 				break;
 			}
 		}
@@ -208,21 +210,21 @@ void UWidget_AvatarCreation::OnMoveOneDropDownChanged(FString Option)
 	if (Option.Len() == 0 || Option == "")
 		MoveOneNameText->SetText(FText::FromString("None"));
 	else {
-		FString ContextString;
+		FString LocalContextString;
 
 		if (Option == "None") {
 			MoveOneNameText->SetText(FText::FromString("None"));
 		} else {
 			for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
 				if (Option == SimpleAttacksRowNames[i].ToString()) {
-					MoveOneNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
+					MoveOneNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), LocalContextString)->Name));
 					break;
 				}
 			}
 
 			for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
-				if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
-					MoveOneNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
+				if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name) {
+					MoveOneNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name));
 					break;
 				}
 			}
@@ -236,18 +238,18 @@ void UWidget_AvatarCreation::OnMoveTwoDropDownChanged(FString Option)
 	if (Option.Len() == 0 || Option == "")
 		MoveTwoNameText->SetText(FText::FromString("None"));
 	else {
-		FString ContextString;
+		FString LocalContextString;
 
 		for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
 			if (Option == SimpleAttacksRowNames[i].ToString()) {
-				MoveTwoNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
+				MoveTwoNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), LocalContextString)->Name));
 				break;
 			}
 		}
 
 		for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
-			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
-				MoveTwoNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
+			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name) {
+				MoveTwoNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name));
 				break;
 			}
 		}
@@ -260,18 +262,18 @@ void UWidget_AvatarCreation::OnMoveThreeDropDownChanged(FString Option)
 	if (Option.Len() == 0 || Option == "")
 		MoveThreeNameText->SetText(FText::FromString("None"));
 	else {
-		FString ContextString;
+		FString LocalContextString;
 
 		for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
 			if (Option == SimpleAttacksRowNames[i].ToString()) {
-				MoveThreeNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
+				MoveThreeNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), LocalContextString)->Name));
 				break;
 			}
 		}
 
 		for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
-			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
-				MoveThreeNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
+			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name) {
+				MoveThreeNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name));
 				break;
 			}
 		}
@@ -284,17 +286,17 @@ void UWidget_AvatarCreation::OnMoveFourDropDownChanged(const FString Option)
 	if (Option.Len() == 0 || Option == "")
 		MoveFourNameText->SetText(FText::FromString("None"));
 	else {
-		const FString ContextString;
+		const FString LocalContextString;
 		for (int i = 0; i < SimpleAttacksRowNames.Num(); i++) {
 			if (Option == SimpleAttacksRowNames[i].ToString()) {
-				MoveFourNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), ContextString)->Name));
+				MoveFourNameText->SetText(FText::FromString(SimpleAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(*Option), LocalContextString)->Name));
 				break;
 			}
 		}
 
 		for (int i = 0; i < ComplexAttacksRowNames.Num(); i++) {
-			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name) {
-				MoveFourNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), ContextString)->Name));
+			if (Option == ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name) {
+				MoveFourNameText->SetText(FText::FromString(ComplexAttacksDataTable->FindRow<FAvatar_AttackStruct>(FName(ComplexAttacksRowNames[i]), LocalContextString)->Name));
 				break;
 			}
 		}

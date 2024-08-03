@@ -21,7 +21,7 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 		GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	}
 
-	UWidgetComponent_Avatar* AvatarWidgetComponent_Reference;
+	UWidgetComponent_Avatar* LocalAvatarWidgetComponent_Reference;
 	UWidgetTree* LibraryWidgetTree = this->WidgetTree;
 	int Column = -1;
 	int Row = 0;
@@ -34,25 +34,25 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 		for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Num(); i++) {
 			for (int j = 0; j < FoundChildWidgetComponents.Num(); j++) {
 				if (Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]) ) {
-					AvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
-					if (AvatarWidgetComponent_Reference->IndexInPlayerTeam == i) {
+					LocalAvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
+					if (LocalAvatarWidgetComponent_Reference->IndexInPlayerTeam == i) {
 						if (GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i].IndexInPlayerLibrary != i) {
 							GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i].IndexInPlayerLibrary = i;
 						}
 
-						AvatarWidgetComponent_Reference->PairedWidget = this;
-						AvatarWidgetComponent_Reference->ApplyNewAvatarData(GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i]);
+						LocalAvatarWidgetComponent_Reference->PairedWidget = this;
+						LocalAvatarWidgetComponent_Reference->ApplyNewAvatarData(GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i]);
 
-						AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
-						AvatarWidgetComponent_Reference->RightClickMenuCommands.Empty();
+						LocalAvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
+						LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Empty();
 
-						if (AvatarWidgetComponent_Reference->AvatarData.AvatarName != "None") {
-							AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
-							AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::UnequipAvatar);
-							AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::DeleteAvatar);
+						if (LocalAvatarWidgetComponent_Reference->AvatarData.AvatarName != "None") {
+							LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
+							LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::UnequipAvatar);
+							LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::DeleteAvatar);
 						}
 						
-						AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
+						LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
 
 						break;
 					}
@@ -65,8 +65,8 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 
 		// Populate the Avatar Library (Avatars not currently in the players' team)
 		for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library.Num(); i++) {
-			AvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
-			AvatarWidgetComponent_Reference->ApplyNewAvatarData(GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library[i]);
+			LocalAvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
+			LocalAvatarWidgetComponent_Reference->ApplyNewAvatarData(GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library[i]);
 
 			Column++;
 			if (Column >= 4) {
@@ -74,21 +74,21 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 				Row++;
 			}
 
-			AvatarWidgetComponent_Reference->PairedWidget = this;
-			AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
+			LocalAvatarWidgetComponent_Reference->PairedWidget = this;
+			LocalAvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
 
-			AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EquipAvatar);
-			AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
-			AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::DeleteAvatar);
-			AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
+			LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EquipAvatar);
+			LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
+			LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::DeleteAvatar);
+			LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
 
-			AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Row, Column);
+			AvatarLibraryUniformGridPanel->AddChildToUniformGrid(LocalAvatarWidgetComponent_Reference, Row, Column);
 		}
 
 		// Create one move Avatar WidgetComponent that's used to add new Avatars to the Library
-		AvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
-		AvatarWidgetComponent_Reference->PairedWidget = this;
-		AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_CreateNewAvatarInLibrary;
+		LocalAvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
+		LocalAvatarWidgetComponent_Reference->PairedWidget = this;
+		LocalAvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_CreateNewAvatarInLibrary;
 
 		Column++;
 		if (Column >= 4) {
@@ -96,9 +96,9 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 			Row++;
 		}
 
-		AvatarWidgetComponent_Reference->UpdateWidgetMaterials();
-		AvatarWidgetComponent_Reference->AvatarName->SetText(FText::FromString("Create New"));
-		AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Row, Column);
+		LocalAvatarWidgetComponent_Reference->UpdateWidgetMaterials();
+		LocalAvatarWidgetComponent_Reference->AvatarName->SetText(FText::FromString("Create New"));
+		AvatarLibraryUniformGridPanel->AddChildToUniformGrid(LocalAvatarWidgetComponent_Reference, Row, Column);
 	}
 
 	// Add hidden children to enforce the layout of the grid panel, if there are less than four children
@@ -109,9 +109,9 @@ void UWidget_AvatarLibrary::OnWidgetOpened()
 			Row++;
 		}
 
-		AvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
-		AvatarWidgetComponent_Reference->SetVisibility(ESlateVisibility::Hidden);
-		AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Row, Column);
+		LocalAvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
+		LocalAvatarWidgetComponent_Reference->SetVisibility(ESlateVisibility::Hidden);
+		AvatarLibraryUniformGridPanel->AddChildToUniformGrid(LocalAvatarWidgetComponent_Reference, Row, Column);
 	}
 
 	// Adjust all children in the Uniform Grid Panel
@@ -138,32 +138,32 @@ void UWidget_AvatarLibrary::UpdateAllAvatarsInTeam()
 	
 	for (int j = 0; j < FoundChildWidgetComponents.Num(); j++) {
 		if (Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j])) {
-			UWidgetComponent_Avatar* AvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
+			UWidgetComponent_Avatar* LocalAvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
 
-			if (AvatarWidgetComponent_Reference->IndexInPlayerTeam >= 0) {
+			if (LocalAvatarWidgetComponent_Reference->IndexInPlayerTeam >= 0) {
 				bool FoundAvatarInSlot = false;
 				for (int k = 0; k < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Num(); k++) {
-					if (GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[k].IndexInPlayerLibrary == AvatarWidgetComponent_Reference->IndexInPlayerTeam) {
+					if (GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[k].IndexInPlayerLibrary == LocalAvatarWidgetComponent_Reference->IndexInPlayerTeam) {
 						FoundAvatarInSlot = true;
-						AvatarWidgetComponent_Reference->AvatarData = GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[k];
+						LocalAvatarWidgetComponent_Reference->AvatarData = GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[k];
 						break;
 					}
 				}
 
-				AvatarWidgetComponent_Reference->RightClickMenuCommands.Empty();	
+				LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Empty();	
 
 				if (FoundAvatarInSlot) {
-					AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
-					AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::UnequipAvatar);
+					LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::EditAvatar);
+					LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::UnequipAvatar);
 
-					AvatarWidgetComponent_Reference->UpdateWidgetMaterials();
+					LocalAvatarWidgetComponent_Reference->UpdateWidgetMaterials();
 				} else {
-					AvatarWidgetComponent_Reference->AvatarData = FAvatar_Struct();
-					AvatarWidgetComponent_Reference->AvatarName->SetText(FText::FromString("Empty Slot"));
-					AvatarWidgetComponent_Reference->AvatarImage->SetBrushFromTexture(Cast<UTexture2D>(QuestionMarkMaterials[0]), true);
+					LocalAvatarWidgetComponent_Reference->AvatarData = FAvatar_Struct();
+					LocalAvatarWidgetComponent_Reference->AvatarName->SetText(FText::FromString("Empty Slot"));
+					LocalAvatarWidgetComponent_Reference->AvatarImage->SetBrushFromTexture(Cast<UTexture2D>(QuestionMarkMaterials[0]), true);
 				}
 
-				AvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
+				LocalAvatarWidgetComponent_Reference->RightClickMenuCommands.Add(E_RightClickMenu_Commands::Cancel);
 			}
 		}
 	}

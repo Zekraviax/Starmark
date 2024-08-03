@@ -9,6 +9,7 @@
 #include "Character_NonAvatarEntity.h"
 #include "Starmark_PlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
 
 
 // Sets default values
@@ -177,8 +178,8 @@ void AActor_AttackEffectsLibrary::Attack_AddStoneSkin_Implementation(ACharacter_
 	FAvatar_StatusEffect* StoneSkinStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("StoneSkin", ContextString);
 
 	if (IsValid(StatusEffectsLibrary_Class)) {
-		FActorSpawnParameters SpawnInfo;
-		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
+		FActorSpawnParameters LocalSpawnInfo;
+		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, LocalSpawnInfo);
 		StatusEffectsLibrary_Reference->OnStatusEffectApplied(Defender, *StoneSkinStatus);
 	}
 }
@@ -190,8 +191,8 @@ void AActor_AttackEffectsLibrary::Attack_AddBleed_Implementation(ACharacter_Path
 	FAvatar_StatusEffect* BleedStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Bleeding", ContextString);
 
 	if (IsValid(StatusEffectsLibrary_Class)) {
-		FActorSpawnParameters SpawnInfo;
-		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
+		FActorSpawnParameters LocalSpawnInfo;
+		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, LocalSpawnInfo);
 		StatusEffectsLibrary_Reference->OnStatusEffectApplied(Defender, *BleedStatus);
 	}
 }
@@ -218,8 +219,8 @@ void AActor_AttackEffectsLibrary::Attack_AddSpellbound_Implementation(ACharacter
 	FAvatar_StatusEffect* SpellboundStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Spellbound", ContextString);
 
 	if (IsValid(StatusEffectsLibrary_Class) && !StatusEffectsLibrary_Reference) {
-		FActorSpawnParameters SpawnInfo;
-		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
+		FActorSpawnParameters LocalSpawnInfo;
+		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, LocalSpawnInfo);
 	}
 
 	//StatusEffectsLibrary_Reference->RememberedAvatarOne = Attacker;
@@ -235,8 +236,8 @@ void AActor_AttackEffectsLibrary::Attack_AddMarked_Implementation(ACharacter_Pat
 	FAvatar_StatusEffect* MarkedStatus = StatusEffectsDataTable->FindRow<FAvatar_StatusEffect>("Marked", ContextString);
 
 	if (IsValid(StatusEffectsLibrary_Class) && !StatusEffectsLibrary_Reference) {
-		FActorSpawnParameters SpawnInfo;
-		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
+		FActorSpawnParameters LocalSpawnInfo;
+		StatusEffectsLibrary_Reference = GetWorld()->SpawnActor<AActor_StatusEffectsLibrary>(StatusEffectsLibrary_Class, FVector::ZeroVector, FRotator::ZeroRotator, LocalSpawnInfo);
 	}
 
 	//StatusEffectsLibrary_Reference->RememberedAvatarOne = Attacker;
@@ -288,8 +289,9 @@ void AActor_AttackEffectsLibrary::Attack_TransferMana_Implementation(ACharacter_
 void AActor_AttackEffectsLibrary::Spawn_RockWall_Implementation(AActor_GridTile* TargetTile)
 {
 	FVector Location = FVector(TargetTile->GetActorLocation().X, TargetTile->GetActorLocation().Y, TargetTile->GetActorLocation().Z + 50);
+	FActorSpawnParameters LocalSpawnInfo;
 
-	ACharacter_NonAvatarEntity* NewRockWallActor = GetWorld()->SpawnActor<ACharacter_NonAvatarEntity>(RockWall_Class, Location, FRotator::ZeroRotator, SpawnInfo);
+	ACharacter_NonAvatarEntity* NewRockWallActor = GetWorld()->SpawnActor<ACharacter_NonAvatarEntity>(RockWall_Class, Location, FRotator::ZeroRotator, LocalSpawnInfo);
 	TargetTile->Properties.AddUnique(E_GridTile_Properties::E_Wall);
 }
 
@@ -297,21 +299,23 @@ void AActor_AttackEffectsLibrary::Spawn_RockWall_Implementation(AActor_GridTile*
 void AActor_AttackEffectsLibrary::Spawn_Hurricane_Implementation(AActor_GridTile* TargetTile)
 {
 	FVector Location = FVector(TargetTile->GetActorLocation().X, TargetTile->GetActorLocation().Y, TargetTile->GetActorLocation().Z + 50);
+	FActorSpawnParameters LocalSpawnInfo;
 
-	ACharacter_NonAvatarEntity* NewHurricaneActor = GetWorld()->SpawnActor<ACharacter_NonAvatarEntity>(NonEntityCharacter_Class, Location, FRotator::ZeroRotator, SpawnInfo);
+	ACharacter_NonAvatarEntity* NewHurricaneActor = GetWorld()->SpawnActor<ACharacter_NonAvatarEntity>(NonEntityCharacter_Class, Location, FRotator::ZeroRotator, LocalSpawnInfo);
 	NewHurricaneActor->HurricaneOnSpawn();
 }
 
 
 void AActor_AttackEffectsLibrary::Spawn_Hats_Implementation(AActor_GridTile* TargetTile)
 {
+	FActorSpawnParameters LocalSpawnInfo;
 	ACharacter_HatTrick* HatTrickActor = nullptr;
 	FVector SpawnLocation = FVector::ZeroVector;
 
 	// Spawn three hats
 	for (int i = 0; i < HatTilesArray.Num(); i++) {
 		SpawnLocation = FVector(HatTilesArray[i]->GetActorLocation().X, HatTilesArray[i]->GetActorLocation().Y, HatTilesArray[i]->GetActorLocation().Z + 100);
-		HatTrickActor = GetWorld()->SpawnActor<ACharacter_HatTrick>(HatTrick_Class, SpawnLocation, FRotator::ZeroRotator, SpawnInfo);
+		HatTrickActor = GetWorld()->SpawnActor<ACharacter_HatTrick>(HatTrick_Class, SpawnLocation, FRotator::ZeroRotator, LocalSpawnInfo);
 	}
 
 	// Make the player choose one hat to hide their avatar in

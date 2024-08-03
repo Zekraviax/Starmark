@@ -50,14 +50,14 @@ void USaveData_PlayerProfile::LoadProfileDataFromJson(FString InProfileName)
 	IPlatformFile& FileManager = FPlatformFileManager::Get().GetPlatformFile();
 	FString PlayerSaveDataFileName = "SaveGames/";
 
-	FString PlayerDataSaveFilePath = FPaths::ProjectSavedDir();
-	PlayerDataSaveFilePath.Append(PlayerSaveDataFileName);
-	UE_LOG(LogTemp, Warning, TEXT("FilePaths: Player's save data folder: %s"), *PlayerDataSaveFilePath);
+	FString LocalPlayerDataSaveFilePath = FPaths::ProjectSavedDir();
+	LocalPlayerDataSaveFilePath.Append(PlayerSaveDataFileName);
+	UE_LOG(LogTemp, Warning, TEXT("FilePaths: Player's save data folder: %s"), *LocalPlayerDataSaveFilePath);
 
-	PlayerDataSaveFilePath.Append(InProfileName + ".json");
-	UE_LOG(LogTemp, Warning, TEXT("FilePaths: Player's save data file : %s"), *PlayerDataSaveFilePath);
+	LocalPlayerDataSaveFilePath.Append(InProfileName + ".json");
+	UE_LOG(LogTemp, Warning, TEXT("FilePaths: Player's save data file : %s"), *LocalPlayerDataSaveFilePath);
 	
-	if (!FileManager.FileExists(*PlayerDataSaveFilePath)) {
+	if (!FileManager.FileExists(*LocalPlayerDataSaveFilePath)) {
 		UE_LOG(LogTemp, Error, TEXT("Error: Could not find Player's data."));
 		return;
 	}
@@ -65,7 +65,7 @@ void USaveData_PlayerProfile::LoadProfileDataFromJson(FString InProfileName)
 	FString PlayerDataAsJson;
 	FPlayerProfileAsStruct PlayerDataAsStruct;
 
-	FFileHelper::LoadFileToString(PlayerDataAsJson, *PlayerDataSaveFilePath);
+	FFileHelper::LoadFileToString(PlayerDataAsJson, *LocalPlayerDataSaveFilePath);
 	FJsonObjectConverter::JsonObjectStringToUStruct(PlayerDataAsJson, &PlayerDataAsStruct, 0, 0);
 
 	// Apply player data

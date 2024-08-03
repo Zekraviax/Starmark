@@ -13,7 +13,7 @@ void UWidget_AvatarSelection::OnWidgetOpened()
 {
 	const UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	AStarmark_PlayerState* PlayerStateReference = Cast<AStarmark_PlayerState>(GetOwningPlayerState());
-	UWidgetComponent_Avatar* AvatarWidgetComponent_Reference;
+	UWidgetComponent_Avatar* LocalAvatarWidgetComponent_Reference;
 	const UWidgetTree* SelectionWidgetTree = this->WidgetTree;
 	int Column = -1;
 	int Row = 0;
@@ -25,10 +25,10 @@ void UWidget_AvatarSelection::OnWidgetOpened()
 		for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team.Num(); i++) {
 			for (int j = 0; j < FoundChildWidgetComponents.Num(); j++) {
 				if (Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j])) {
-					AvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
-					if (AvatarWidgetComponent_Reference->IndexInPlayerTeam == i) {
-						AvatarWidgetComponent_Reference->ApplyNewAvatarData(GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i]);
-						AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
+					LocalAvatarWidgetComponent_Reference = Cast<UWidgetComponent_Avatar>(FoundChildWidgetComponents[j]);
+					if (LocalAvatarWidgetComponent_Reference->IndexInPlayerTeam == i) {
+						LocalAvatarWidgetComponent_Reference->ApplyNewAvatarData(GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Team[i]);
+						LocalAvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
 						break;
 					}
 				}
@@ -40,8 +40,8 @@ void UWidget_AvatarSelection::OnWidgetOpened()
 
 		// Populate Avatar Library
 		for (int i = 0; i < GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library.Num(); i++) {
-			AvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
-			AvatarWidgetComponent_Reference->ApplyNewAvatarData(GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library[i]);
+			LocalAvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
+			LocalAvatarWidgetComponent_Reference->ApplyNewAvatarData(GameInstanceReference->PlayerSaveGameReference->PlayerProfileStruct.Library[i]);
 
 			Column++;
 			if (Column >= 4) {
@@ -49,15 +49,15 @@ void UWidget_AvatarSelection::OnWidgetOpened()
 				Row++;
 			}
 
-			AvatarWidgetComponent_Reference->PairedWidget = this;
-			AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
-			AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Row, Column);
+			LocalAvatarWidgetComponent_Reference->PairedWidget = this;
+			LocalAvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_AddAvatarToChosenSlot;
+			AvatarLibraryUniformGridPanel->AddChildToUniformGrid(LocalAvatarWidgetComponent_Reference, Row, Column);
 		}
 
 		// Create one move Avatar WidgetComponent that's used to add new Avatars to the Library
-		//AvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
-		//AvatarWidgetComponent_Reference->PairedWidget = this;
-		//AvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_CreateNewAvatarInLibrary;
+		//LocalAvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
+		//LocalAvatarWidgetComponent_Reference->PairedWidget = this;
+		//LocalAvatarWidgetComponent_Reference->CurrentFunction = E_AvatarWidgetComponent_Function::E_CreateNewAvatarInLibrary;
 
 		//Column++;
 		//if (Column >= 4) {
@@ -65,9 +65,9 @@ void UWidget_AvatarSelection::OnWidgetOpened()
 		//	Row++;
 		//}
 
-		//AvatarWidgetComponent_Reference->UpdateWidgetMaterials();
-		//AvatarWidgetComponent_Reference->AvatarName->SetText(FText::FromString("Create New"));
-		//AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Row, Column);
+		//LocalAvatarWidgetComponent_Reference->UpdateWidgetMaterials();
+		//LocalAvatarWidgetComponent_Reference->AvatarName->SetText(FText::FromString("Create New"));
+		//AvatarLibraryUniformGridPanel->AddChildToUniformGrid(LocalAvatarWidgetComponent_Reference, Row, Column);
 	}
 
 	// Add hidden children to enforce the layout of the grid panel, if there are less than four children
@@ -78,9 +78,9 @@ void UWidget_AvatarSelection::OnWidgetOpened()
 			Row++;
 		}
 
-		AvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
-		AvatarWidgetComponent_Reference->SetVisibility(ESlateVisibility::Hidden);
-		AvatarLibraryUniformGridPanel->AddChildToUniformGrid(AvatarWidgetComponent_Reference, Row, Column);
+		LocalAvatarWidgetComponent_Reference = CreateWidget<UWidgetComponent_Avatar>(this, AvatarWidgetComponent_Class);
+		LocalAvatarWidgetComponent_Reference->SetVisibility(ESlateVisibility::Hidden);
+		AvatarLibraryUniformGridPanel->AddChildToUniformGrid(LocalAvatarWidgetComponent_Reference, Row, Column);
 	}
 
 	// Adjust all children in the Uniform Grid Panel

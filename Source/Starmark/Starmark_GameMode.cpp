@@ -650,8 +650,6 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	// Make sure that all avatars are in the normal AvatarTurnOrder array so that the Dynamic Turn Order can be calculated.
 	// If at least one player needs to summon an avatar, stop the start-of-turn checks and have them summon an avatar.
 	// Then repeat the process until nobody can or needs to summon avatars.
-
-	// There's something wrong 
 	for (APlayerController_Battle* Controller : ControllerActorsArray) {
 		if (Controller) {
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Pre start-of-turn check for player %s."), *Controller->PlayerDataStruct.PlayerName);
@@ -686,7 +684,7 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 				
 				Controller->SetPlayerClickMode(E_PlayerCharacter_ClickModes::SelectReserveAvatarToSummon);
 
-				// Don't just return, break out of the whole function.
+				// Don't just break out of the loop, break out of the whole function.
 				PlayerFailedPreStartOfTurnCheck = true;
 				return;
 			} else {
