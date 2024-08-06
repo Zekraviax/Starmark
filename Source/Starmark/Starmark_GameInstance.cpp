@@ -253,7 +253,7 @@ void UStarmark_GameInstance::OnCreateSessionComplete(FName SessionName, bool bWa
 
 void UStarmark_GameInstance::OnStartOnlineGameComplete(FName SessionName, bool bWasSuccessful)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnStartSessionComplete %s, %d"), *SessionName.ToString(), bWasSuccessful));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnStartSessionComplete %s, %s"), *SessionName.ToString(), bWasSuccessful ? TEXT("true") : TEXT("false")));
 
 	// Get the Online Subsystem so we can get the Session Interface
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
@@ -281,7 +281,7 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
 
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / FindSessions /  if (OnlineSub) returns: %s"), OnlineSub ? TEXT("true") : TEXT("false")));
-	UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / FindSessions / if (OnlineSub) returns: %s"), OnlineSub ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / FindSessions / OnlineSub is valid?: %s"), OnlineSub ? TEXT("true") : TEXT("false"));
 
 	if (OnlineSub)
 	{
@@ -336,8 +336,8 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 
 void UStarmark_GameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / OnFindSessionsComplete / bWasSuccessfull: %d"), bWasSuccessful));
-	UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / OnFindSessionsComplete / bWasSuccessfull is: %s"), bWasSuccessful ? TEXT("true") : TEXT("false"));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / OnFindSessionsComplete / bWasSuccessful: %s"), bWasSuccessful ? TEXT("true") : TEXT("false")));
+	UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / OnFindSessionsComplete / bWasSuccessful: %s"), bWasSuccessful ? TEXT("true") : TEXT("false"));
 
 	// Get OnlineSubsystem we want to work with
 	IOnlineSubsystem* const OnlineSub = IOnlineSubsystem::Get();

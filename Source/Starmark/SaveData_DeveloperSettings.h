@@ -14,6 +14,9 @@ struct STARMARK_API FDeveloperSettingsAsStruct
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool AutoLoadFirstFoundPlayerProfile;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool RecalculateAvatarStatsAtStartOfBattle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -21,6 +24,7 @@ struct STARMARK_API FDeveloperSettingsAsStruct
 
 	FDeveloperSettingsAsStruct()
 	{
+		AutoLoadFirstFoundPlayerProfile = true;
 		RecalculateAvatarStatsAtStartOfBattle = true;
 		PrintMessageOnGameStart = "test";
 	}

@@ -16,7 +16,7 @@
 			]
 		}
 	],
-    "Plugins": [
+	"Plugins": [
 		{
 			"Name": "OnlineFramework",
 			"Enabled": true
@@ -32,6 +32,16 @@
 		{
 			"Name": "AppleMoviePlayer",
 			"Enabled": false
+		},
+		{
+			"Name": "SteamVR",
+			"Enabled": false,
+			"SupportedTargetPlatforms": [
+				"Win32",
+				"Win64",
+				"Linux",
+				"Mac"
+			]
 		}
 	],
 	"TargetPlatforms": [

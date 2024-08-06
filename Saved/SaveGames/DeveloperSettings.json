@@ -1,4 +1,5 @@
 {
+	"autoLoadFirstFoundPlayerProfile": true,
 	"recalculateAvatarStatsAtStartOfBattle": true,
 	"printMessageOnGameStart": "developer settings enabled"
 }
