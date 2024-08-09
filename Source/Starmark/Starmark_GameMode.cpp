@@ -836,7 +836,7 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 }
 
 
-void AStarmark_GameMode::EndOfBattle_Implementation()
+void AStarmark_GameMode::EndOfBattle()
 {
-	// Implemented in Blueprints
+	
 }
