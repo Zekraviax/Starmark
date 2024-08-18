@@ -66,11 +66,17 @@ public:
 	UProgressBar* ManaBar;
 
 	UPROPERTY(meta = (BindWidget))
+	UProgressBar* MovesBar;
+
+	UPROPERTY(meta = (BindWidget))
 	UTextBlock* HealthText;
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ManaText;
 
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* MovesText;
+	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* CurrentEntityNameText;
 

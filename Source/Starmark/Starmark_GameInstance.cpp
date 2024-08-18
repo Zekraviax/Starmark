@@ -301,7 +301,7 @@ void UStarmark_GameInstance::FindSessions(TSharedPtr<const FUniqueNetId> UserId,
 			SessionSearch = MakeShareable(new FOnlineSessionSearch());
 
 			// Steam setting?
-			bIsPresence = true;
+			bIsPresence = false;
 
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("UStarmark_GameInstance / FindSessions / bIsLAN is: %s"), bIsLAN ? TEXT("true") : TEXT("false")));
 			UE_LOG(LogTemp, Warning, TEXT("UStarmark_GameInstance / FindSessions / bIsLAN is: %s"), bIsLAN ? TEXT("true") : TEXT("false"));

@@ -150,9 +150,11 @@ void UWidget_HUD_Battle::SetCurrentActingEntityInfo(ACharacter_Pathfinder* Curre
 			UE_LOG(LogTemp, Warning, TEXT("UWidget_HUD_Battle / SetCurrentActingEntityInfo / This avatar has the faction Player1"));
 			HealthText->SetText(FText::FromString(FString::FromInt(CurrentActingEntity->AvatarData.CurrentHealthPoints) + " / " + FString::FromInt(CurrentActingEntity->AvatarData.BattleStats.MaximumHealthPoints)));
 			ManaText->SetText(FText::FromString(FString::FromInt(CurrentActingEntity->AvatarData.CurrentManaPoints) + " / " + FString::FromInt(CurrentActingEntity->AvatarData.BattleStats.MaximumManaPoints)));
-
+			MovesText->SetText(FText::FromString(FString::FromInt(CurrentActingEntity->AvatarData.CurrentTileMoves) + " / " + FString::FromInt(CurrentActingEntity->AvatarData.MaximumTileMoves)));
+			
 			HealthBar->SetPercent(float(CurrentActingEntity->AvatarData.CurrentHealthPoints) / float(CurrentActingEntity->AvatarData.BattleStats.MaximumHealthPoints));
 			ManaBar->SetPercent(float(CurrentActingEntity->AvatarData.CurrentManaPoints) / float(CurrentActingEntity->AvatarData.BattleStats.MaximumManaPoints));
+			ManaBar->SetPercent(float(CurrentActingEntity->AvatarData.CurrentTileMoves) / float(CurrentActingEntity->AvatarData.MaximumTileMoves));
 
 			CurrentEntityNameText->SetText(FText::FromString(CurrentActingEntity->AvatarData.Nickname.ToUpper() + "'S TURN"));
 		} else {

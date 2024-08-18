@@ -705,6 +705,9 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 		}
 
 		GameStateReference->OnRepNotify_DynamicAvatarTurnOrderUpdated();
+
+		// Reset the currently acting avatars' moves
+		GameStateReference->CurrentlyActingAvatar->AvatarData.CurrentTileMoves = GameStateReference->CurrentlyActingAvatar->AvatarData.MaximumTileMoves;
 	
 		for (APlayerController_Battle* Controller : ControllerActorsArray) {
 			if (Controller) {
@@ -731,7 +734,7 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Begin new turn for player: %s"), *Controller->PlayerDataStruct.PlayerName);
 			}
 		}
-
+		
 		// Reset the number of avatars died for each player.
 		AvatarDiedThisTurn = false;
 		for (int i = 0; i < GameStateReference->PlayerArray.Num(); i++) {
