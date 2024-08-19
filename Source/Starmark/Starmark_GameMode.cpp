@@ -654,8 +654,9 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 	for (APlayerController_Battle* Controller : ControllerActorsArray) {
 		if (Controller) {
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Pre start-of-turn check for player %s."), *Controller->PlayerDataStruct.PlayerName);
-			
+
 			AStarmark_PlayerState* PlayerState = Cast<AStarmark_PlayerState>(Controller->PlayerState);
+			FPlayer_Data LocalPlayerReference = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(PlayerState->ReplicatedMultiplayerUniqueID);
 			int DeployedAvatarCount = 0, TotalAvatarsInParty = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(PlayerState->ReplicatedMultiplayerUniqueID).CurrentAvatarTeam.Num();
 			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Player with Multiplayer ID %d has %d avatars remaining in their party."), PlayerState->ReplicatedMultiplayerUniqueID, TotalAvatarsInParty);
 
@@ -664,15 +665,15 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 				if (Avatar) {
 					if (Avatar->MultiplayerControllerUniqueID == Controller->MultiplayerUniqueID) {
 						DeployedAvatarCount++;
-						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Found 1 avatar belonging to the player %s. Total avatars found so far: %d."), *Controller->PlayerDataStruct.PlayerName, DeployedAvatarCount);
+						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Found 1 avatar belonging to the player %s. Total avatars found so far: %d."), *LocalPlayerReference.PlayerName, DeployedAvatarCount);
 					} else {
-						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Found an avatar that doesn't belong to the player %s."), *Controller->PlayerDataStruct.PlayerName);
+						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Found an avatar that doesn't belong to the player %s."), *LocalPlayerReference.PlayerName);
 					}
 				}
 			}
 
-			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Player %s has %d deployed avatar(s) and %d avatar(s) in their party."), *Controller->PlayerDataStruct.PlayerName, DeployedAvatarCount, TotalAvatarsInParty);
-			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Player %s has lost %d avatar(s) this turn"), *Controller->PlayerDataStruct.PlayerName, PlayerState->NumberOfAvatarsDiedThisTurn);
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Player %s has %d deployed avatar(s) and %d avatar(s) in their party."), *LocalPlayerReference.PlayerName, DeployedAvatarCount, TotalAvatarsInParty);
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Player %s has lost %d avatar(s) this turn"), *LocalPlayerReference.PlayerName, PlayerState->NumberOfAvatarsDiedThisTurn);
 			
 			if (PlayerState->NumberOfAvatarsDiedThisTurn > 0 && TotalAvatarsInParty <= 4 && DeployedAvatarCount >= TotalAvatarsInParty) {
 				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / There's a player that has had more avatars died than they can summon."));
@@ -690,7 +691,7 @@ void AStarmark_GameMode::Server_AvatarBeginTurn_Implementation(int CurrentAvatar
 				return;
 			} else {
 				// The player doesn't need to summon any reserve avatars.
-				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Player %s doesn't need to summon any reserve avatars."), *Controller->PlayerDataStruct.PlayerName);
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarBeginTurn / Player %s doesn't need to summon any reserve avatars."), *LocalPlayerReference.PlayerName);
 			}
 		}
 	}
