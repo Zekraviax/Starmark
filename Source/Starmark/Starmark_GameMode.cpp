@@ -13,6 +13,7 @@
 #include "Starmark_PlayerState.h"
 #include "Starmark_Variables.h"
 #include "Widget_HUD_Battle.h"
+#include "Widget_MultiplayerEndMenu.h"
 
 
 // ------------------------- Local Helper Functions
@@ -839,7 +840,26 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 }
 
 
-void AStarmark_GameMode::EndOfBattle()
+void AStarmark_GameMode::EndOfBattle() const
 {
-	
+	TArray<APlayerController_Battle*> PlayerControllerActors = GetAllBattlePlayerControllers();
+
+	for (APlayerController_Battle* Controller : PlayerControllerActors) {
+		Controller->CreateEndOfBattleWidget();
+	}
+
+	for (APlayerController_Battle* Controller : PlayerControllerActors) {
+		int LocalRemainingAvatarsCount = 0;
+		
+		for (FAvatar_Struct Avatar : Controller->PlayerParty) {
+			if (Avatar.CurrentHealthPoints > 0) {
+				LocalRemainingAvatarsCount++;
+			}
+		}
+
+		for (APlayerController_Battle* Controller2 : PlayerControllerActors) {
+			Controller2->EndOfBattleWidgetReference->AppendPlayerDataToResultsString(Controller->ReturnPlayerData().PlayerName + ": " +
+				FString::FromInt(LocalRemainingAvatarsCount) + "/" + FString::FromInt(Controller->PlayerParty.Num()) + " avatars remaining.");
+		}
+	}
 }

@@ -13,6 +13,7 @@
 class AAIController_Avatar;
 class UPlayer_SaveData;
 class UWidget_HUD_Battle;
+class UWidget_MultiplayerEndMenu;
 
 
 // Unique Enums
@@ -86,6 +87,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
 	UWidget_HUD_Battle* BattleWidgetReference;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWidget_MultiplayerEndMenu> EndOfBattleWidgetChildClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
+	UWidget_MultiplayerEndMenu* EndOfBattleWidgetReference;
+
 // ------------------------- Avatar
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	ACharacter_Pathfinder* CurrentSelectedAvatar;
@@ -148,6 +155,9 @@ public:
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void CreateBattleWidget();
 	void Local_BattleWidget_AddToScreen() const;
+	
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void CreateEndOfBattleWidget();
 
 	UFUNCTION(BlueprintCallable)
 	void SetBattleWidgetVariables();

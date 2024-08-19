@@ -140,5 +140,5 @@ public:
 	void Server_AvatarDefeated(ACharacter_Pathfinder* Avatar);
 
 	UFUNCTION()
-	static void EndOfBattle();
+	void EndOfBattle() const;
 };

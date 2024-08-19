@@ -193,13 +193,13 @@ bool UStarmark_GameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, 
 			SessionSettings = MakeShareable(new FOnlineSessionSettings());
 
 			SessionSettings->bIsLANMatch = bIsLAN;
-			SessionSettings->bUsesPresence = false;
+			SessionSettings->bUsesPresence = bIsPresence;
 			SessionSettings->NumPublicConnections = MaxNumPlayers;
 			SessionSettings->NumPrivateConnections = 0;
 			SessionSettings->bAllowInvites = true;
 			SessionSettings->bAllowJoinInProgress = true;
 			SessionSettings->bShouldAdvertise = true;
-			SessionSettings->bAllowJoinViaPresence = false;
+			SessionSettings->bAllowJoinViaPresence = true;
 			SessionSettings->bAllowJoinViaPresenceFriendsOnly = false;
 
 			SessionSettings->Set(SETTING_MAPNAME, FString("NewMap"), EOnlineDataAdvertisementType::ViaOnlineService);

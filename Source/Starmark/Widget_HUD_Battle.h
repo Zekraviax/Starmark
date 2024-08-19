@@ -8,7 +8,6 @@
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "Components/VerticalBox.h"
 #include "Starmark_Variables.h"
 
 #include "Widget_HUD_Battle.generated.h"

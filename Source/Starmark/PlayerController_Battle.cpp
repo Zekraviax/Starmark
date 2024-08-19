@@ -16,6 +16,7 @@
 #include "Math/Vector.h"
 #include "NavigationSystem.h"
 #include "Widget_HUD_Battle.h"
+#include "Widget_MultiplayerEndMenu.h"
 #include "Widget_ServerHost.h"
 #include "WidgetComponent_AvatarBattleData.h"
 
@@ -143,6 +144,19 @@ void APlayerController_Battle::Local_BattleWidget_AddToScreen() const
 	BattleWidgetReference->AddToViewport();
 	
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / Local_BattleWidget_AddToScreen / Battle widget added to viewport."));
+}
+
+
+void APlayerController_Battle::CreateEndOfBattleWidget_Implementation()
+{
+	if (!EndOfBattleWidgetReference) {
+		if (EndOfBattleWidgetChildClass) {
+			EndOfBattleWidgetReference = CreateWidget<UWidget_MultiplayerEndMenu>(this, EndOfBattleWidgetChildClass);
+		}
+	}
+
+	BattleWidgetReference->RemoveFromParent();
+	EndOfBattleWidgetReference->AddToViewport();
 }
 
 
