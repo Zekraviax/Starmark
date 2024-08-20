@@ -251,13 +251,13 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 					CurrentPlayerTeam[j].CurrentTileMoves = CurrentPlayerTeam[j].MaximumTileMoves;
 					
 					if (SpawnedAvatarCount < 4) {
-						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn avatar %s for player %s."), *CurrentPlayerTeam[j].AvatarName, *PlayerData.PlayerName);
+						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn avatar %s for player %s with unique ID %d."), *CurrentPlayerTeam[j].AvatarName, *PlayerData.PlayerName, BattleUniqueIDCounter);
 
 						Server_SpawnAvatar(PlayerControllerReferences[i], PlayerData, (j + 1), CurrentPlayerTeam[j]);
 						SpawnedAvatarCount++;
 					} else {
 						// Calculate variables like Current Health for reserve avatars here.
-						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Avatar %s for player %s is in reserve."), *CurrentPlayerTeam[j].AvatarName, *PlayerData.PlayerName);
+						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Avatar %s with unique Id %d for player %s is in reserve."), *CurrentPlayerTeam[j].AvatarName, BattleUniqueIDCounter, *PlayerData.PlayerName);
 					}
 				} else {
 					GameStateReference->PlayerDataStructsArray[i].CurrentAvatarTeam.RemoveAt(j);
@@ -781,10 +781,20 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 		if (Controller && ContinueLooping) {
 			if (Controller->MultiplayerUniqueID == Avatar->PlayerControllerReference->MultiplayerUniqueID) {
 				FPlayer_Data PlayerData = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID);
-			
+				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarDefeated / Searching for Avatar in Player %s's data. Player has ID %d"), *PlayerData.PlayerName, Controller->MultiplayerUniqueID);
+				
 				for (FAvatar_Struct AvatarData : PlayerData.CurrentAvatarTeam) {
+					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarDefeated / Comparing Actor's UniqueID %d with Avatar-In-Teams ID %d"), Avatar->AvatarData.BattleUniqueID, AvatarData.BattleUniqueID);
+					
 					if (AvatarData.BattleUniqueID == Avatar->AvatarData.BattleUniqueID) {
 						GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam.Remove(AvatarData);
+						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarDefeated / Player has %d avatars remaining."), GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam.Num());
+
+						if (GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam.Num() <= 0) {
+							// The player has been defeated.
+							ContinueLooping = false;
+							EndOfBattle();
+						}
 						
 						PlayerControllerReference = Controller;
 						break;
