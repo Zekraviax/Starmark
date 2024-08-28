@@ -243,7 +243,7 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 				if (CurrentPlayerTeam[j].AvatarName != "Default") {
 					// Upon finding a valid avatar in any players' party,
 					// increment the BattleUniqueIDCounter and assign that ID to the avatar.
-					CurrentPlayerTeam[j].BattleUniqueID = BattleUniqueIDCounter;
+					GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(i).CurrentAvatarTeam[j].BattleUniqueID = BattleUniqueIDCounter;
 					CurrentPlayerTeam[j].OwnerMultiplayerUniqueID = i;
 
 					CurrentPlayerTeam[j].CurrentHealthPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumHealthPoints;
