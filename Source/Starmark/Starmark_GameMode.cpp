@@ -232,7 +232,8 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Begin function"));
 
 	for (int i = 0; i < GetGameState()->PlayerDataStructsArray.Num(); i++) {
-		FPlayer_Data& PlayerData = GetGameState()->PlayerDataStructsArray[i];
+		// UStructs are value types. If you want to pass-by-reference, use the parent.
+		FPlayer_Data PlayerData = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(i);
 		TArray<FAvatar_Struct>& CurrentPlayerTeam = PlayerData.CurrentAvatarTeam;
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Double checking player name: %s."), *PlayerData.PlayerName);
 
@@ -244,14 +245,13 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 					// increment the BattleUniqueIDCounter and assign that ID to the avatar.
 					CurrentPlayerTeam[j].BattleUniqueID = BattleUniqueIDCounter;
 					CurrentPlayerTeam[j].OwnerMultiplayerUniqueID = i;
-					BattleUniqueIDCounter++;
 
 					CurrentPlayerTeam[j].CurrentHealthPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumHealthPoints;
 					CurrentPlayerTeam[j].CurrentManaPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumManaPoints;
 					CurrentPlayerTeam[j].CurrentTileMoves = CurrentPlayerTeam[j].MaximumTileMoves;
 					
 					if (SpawnedAvatarCount < 4) {
-						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn avatar %s for player %s with unique ID %d."), *CurrentPlayerTeam[j].AvatarName, *PlayerData.PlayerName, BattleUniqueIDCounter);
+						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn avatar %s for player %s with unique ID %d."), *CurrentPlayerTeam[j].AvatarName, *PlayerData.PlayerName, CurrentPlayerTeam[j].BattleUniqueID);
 
 						Server_SpawnAvatar(PlayerControllerReferences[i], PlayerData, (j + 1), CurrentPlayerTeam[j]);
 						SpawnedAvatarCount++;
@@ -259,6 +259,8 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 						// Calculate variables like Current Health for reserve avatars here.
 						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Avatar %s with unique Id %d for player %s is in reserve."), *CurrentPlayerTeam[j].AvatarName, BattleUniqueIDCounter, *PlayerData.PlayerName);
 					}
+
+					BattleUniqueIDCounter++;
 				} else {
 					GameStateReference->PlayerDataStructsArray[i].CurrentAvatarTeam.RemoveAt(j);
 					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Invalid Avatar team member at index: %d."), j);
@@ -466,7 +468,6 @@ void AStarmark_GameMode::Server_SpawnAvatar_Implementation(APlayerController_Bat
 		// To-Do: Clean up all of this. (pass values by-reference)
 		NewAvatarActor->AvatarBattleUniqueID = AvatarData.BattleUniqueID;
 		NewAvatarActor->MultiplayerControllerUniqueID = PlayerController->MultiplayerUniqueID;
-		//PlayerData.CurrentAvatarTeam[IndexInPlayerParty - 1].OwnerMultiplayerUniqueID = PlayerController->MultiplayerUniqueID;
 		NewAvatarActor->AvatarData = AvatarData;
 
 		// Get attacks
@@ -783,7 +784,7 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 				FPlayer_Data PlayerData = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID);
 				UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarDefeated / Searching for Avatar in Player %s's data. Player has ID %d"), *PlayerData.PlayerName, Controller->MultiplayerUniqueID);
 				
-				for (FAvatar_Struct AvatarData : PlayerData.CurrentAvatarTeam) {
+				for (FAvatar_Struct AvatarData : GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam) {
 					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarDefeated / Comparing Actor's UniqueID %d with Avatar-In-Teams ID %d"), Avatar->AvatarData.BattleUniqueID, AvatarData.BattleUniqueID);
 					
 					if (AvatarData.BattleUniqueID == Avatar->AvatarData.BattleUniqueID) {

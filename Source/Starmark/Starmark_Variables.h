@@ -760,7 +760,8 @@ struct STARMARK_API FAvatar_Struct : public FFastArraySerializerItem
 		CurrentActionPoints = 1;
 		SameTypeAttackBonusMultiplier = 150;
 		//Factions.AddUnique(EEntity_Factions::Player1);
-		OwnerMultiplayerUniqueID = 0;
+		OwnerMultiplayerUniqueID = -1;
+		BattleUniqueID = -1;
 		DefaultImage = nullptr;
 		SkeletalMesh = nullptr;
 		DyableMaterial = nullptr;
