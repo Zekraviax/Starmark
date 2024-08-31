@@ -101,6 +101,7 @@ public:
 	// To-Do: Move this to the GameMode.
 	void ShowHideAllPlayerHuds();
 	FPlayer_Data FindPlayerDataUsingMultiplayerUniqueID(int MultiplayerUniqueID);
+	FPlayer_Data& PassByReferencePlayerDataUsingMultiplayerUniqueID(int MultiplayerUniqueID);
 	FAvatar_Struct& FindAvatarUsingUniqueID(int AvatarUniqueID);
 
 // ------------------------- Battle

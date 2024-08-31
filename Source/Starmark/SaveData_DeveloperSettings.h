@@ -22,11 +22,15 @@ struct STARMARK_API FDeveloperSettingsAsStruct
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString PrintMessageOnGameStart;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool EnableMultiplayerDumpToLogButton;
+
 	FDeveloperSettingsAsStruct()
 	{
 		AutoLoadFirstFoundPlayerProfile = true;
 		RecalculateAvatarStatsAtStartOfBattle = true;
 		PrintMessageOnGameStart = "test";
+		EnableMultiplayerDumpToLogButton = true;
 	}
 };
 
@@ -49,4 +53,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LoadPlayerDataFromJson();
+
+	UFUNCTION(BlueprintCallable)
+	void DumpMultiplayerStateToJsonLog();
 };

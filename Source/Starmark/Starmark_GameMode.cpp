@@ -233,7 +233,7 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 
 	for (int i = 0; i < GetGameState()->PlayerDataStructsArray.Num(); i++) {
 		// UStructs are value types. If you want to pass-by-reference, use the parent.
-		FPlayer_Data PlayerData = GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(i);
+		FPlayer_Data PlayerData = GetGameState()->PassByReferencePlayerDataUsingMultiplayerUniqueID(i);
 		TArray<FAvatar_Struct>& CurrentPlayerTeam = PlayerData.CurrentAvatarTeam;
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Double checking player name: %s."), *PlayerData.PlayerName);
 
@@ -788,8 +788,9 @@ void AStarmark_GameMode::Server_AvatarDefeated_Implementation(ACharacter_Pathfin
 					UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarDefeated / Comparing Actor's UniqueID %d with Avatar-In-Teams ID %d"), Avatar->AvatarData.BattleUniqueID, AvatarData.BattleUniqueID);
 					
 					if (AvatarData.BattleUniqueID == Avatar->AvatarData.BattleUniqueID) {
+						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarDefeated / Before: Player has %d avatars remaining."), GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam.Num());
 						GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam.Remove(AvatarData);
-						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarDefeated / Player has %d avatars remaining."), GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam.Num());
+						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_AvatarDefeated / After: Player has %d avatars remaining."), GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam.Num());
 
 						if (GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(Controller->MultiplayerUniqueID).CurrentAvatarTeam.Num() <= 0) {
 							// The player has been defeated.

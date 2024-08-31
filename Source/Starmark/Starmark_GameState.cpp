@@ -86,6 +86,22 @@ FPlayer_Data AStarmark_GameState::FindPlayerDataUsingMultiplayerUniqueID(int Mul
 }
 
 
+FPlayer_Data& AStarmark_GameState::PassByReferencePlayerDataUsingMultiplayerUniqueID(int MultiplayerUniqueID)
+{
+	for (auto& Element : PlayerDataAndUniqueIDMap) {
+		if (Element.Key == MultiplayerUniqueID) {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / FindPlayerDataUsingMultiplayerUniqueID / Returning PlayerData at index %d with name: %s."), MultiplayerUniqueID, *Element.Value.PlayerName);
+			return Element.Value;
+		} else {
+			UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameState / FindPlayerDataUsingMultiplayerUniqueID / Found PlayerData at index %d with name: %s."), Element.Key, *Element.Value.PlayerName);
+		}
+	}
+
+	// Return the default data if the player data can't be found.
+	return PlayerDataAndUniqueIDMap[0];
+}
+
+
 FAvatar_Struct& AStarmark_GameState::FindAvatarUsingUniqueID(int AvatarUniqueID)
 {
 	FAvatar_Struct& DefaultReturnValue = AvatarTurnOrder[0]->AvatarData;
