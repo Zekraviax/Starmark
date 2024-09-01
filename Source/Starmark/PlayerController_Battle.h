@@ -148,6 +148,11 @@ public:
 	// Handles all secondary functions when changing click modes (e.g. list of attacks vs list of reserve avatars)
 	void SetPlayerClickMode(E_PlayerCharacter_ClickModes NewClickMode);
 
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void ClientTellServerToDumpMultiplayerLogs();
+	UFUNCTION(Server, Reliable)
+	void ServerTellServerToDumpMultiplayerLogs();
+
 // ------------------------- Widgets
 	UFUNCTION(Client, Reliable)
 	void Client_ClearLobbyFromScreen();

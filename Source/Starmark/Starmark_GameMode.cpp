@@ -7,6 +7,7 @@
 #include "OnlineSessionSettings.h"
 #include "PlayerController_Battle.h"
 #include "PlayerPawn_Flying.h"
+#include "Runtime/JsonUtilities/Public/JsonObjectConverter.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_GameMode_Lobby.h"
 #include "Starmark_GameState.h"
@@ -79,6 +80,21 @@ TArray<ACharacter_Pathfinder*> AStarmark_GameMode::GetAllAvatars() const
 
 
 	return ReturnArray;
+}
+
+
+void AStarmark_GameMode::ServerDumpMultiplayerBattleToLogs_Implementation()
+{
+	FString DumpToLogsJson;
+	FString SingleObjectJson;
+	// Get all players and avatars and add their data to the FString
+	TArray<AActor*> ActorList;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), ActorList);
+	for (int i = 0; i < ActorList.Num(); i++) {
+		FJsonObjectConverter::UStructToJsonObjectString(Cast<ACharacter_Pathfinder>(ActorList[i])->AvatarData, SingleObjectJson, 0, 0);
+		DumpToLogsJson.Append(SingleObjectJson);
+		UE_LOG(LogTemp, Warning, TEXT("Append Avatar data to log as FString: %s"), *SingleObjectJson);
+	}
 }
 
 

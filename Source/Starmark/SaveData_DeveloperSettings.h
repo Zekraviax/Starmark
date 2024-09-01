@@ -54,6 +54,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LoadPlayerDataFromJson();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void DumpMultiplayerStateToJsonLog();
 };

@@ -139,6 +139,22 @@ void APlayerController_Battle::SetPlayerClickMode(E_PlayerCharacter_ClickModes N
 }
 
 
+void APlayerController_Battle::ClientTellServerToDumpMultiplayerLogs_Implementation()
+{
+	ServerTellServerToDumpMultiplayerLogs();
+}
+
+
+void APlayerController_Battle::ServerTellServerToDumpMultiplayerLogs_Implementation()
+{
+	if (HasAuthority()) {
+		Cast<AStarmark_GameMode>(GetWorld()->GetAuthGameMode())->ServerDumpMultiplayerBattleToLogs();
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / ServerTellServerToDumpMultiplayerLogs / Error: This object does not have server authority."));
+	}
+}
+
+
 void APlayerController_Battle::Local_BattleWidget_AddToScreen() const
 {
 	BattleWidgetReference->AddToViewport();

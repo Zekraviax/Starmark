@@ -104,6 +104,9 @@ public:
 	TArray<APlayerController_Battle*> GetAllBattlePlayerControllers() const;
 	TArray<ACharacter_Pathfinder*> GetAllAvatars() const;
 
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void ServerDumpMultiplayerBattleToLogs();
+
 // ------------------------- Battle
 	// Pre-Battle Setup Functions
 	virtual void HandleSeamlessTravelPlayer(AController*& C);

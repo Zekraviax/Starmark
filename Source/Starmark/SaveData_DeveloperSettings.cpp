@@ -1,6 +1,7 @@
 #include "SaveData_DeveloperSettings.h"
 
-#include "Engine/World.h"
+#include "Character_Pathfinder.h"
+#include "Kismet/GameplayStatics.h"
 #include "Runtime/JsonUtilities/Public/JsonObjectConverter.h"
 
 
@@ -74,7 +75,7 @@ void USaveData_DeveloperSettings::LoadPlayerDataFromJson()
 }
 
 
-void USaveData_DeveloperSettings::DumpMultiplayerStateToJsonLog()
+void USaveData_DeveloperSettings::DumpMultiplayerStateToJsonLog_Implementation()
 {
 	FString SaveGamesFolderPathAppend = "SaveGames/";
 	FString SavePath = "C:\\Users\\zekra\\Documents\\UE\\Projects\\Starmark\\Saved\\SaveGames";
@@ -85,9 +86,26 @@ void USaveData_DeveloperSettings::DumpMultiplayerStateToJsonLog()
 	SavePath.Append(SaveGamesFolderPathAppend);
 	UE_LOG(LogTemp, Warning, TEXT("FilePaths: Player's Save Data Folder: %s"), *SavePath);
 
+
+	
+
 	FString DumpToLogsJson;
+	FString SingleObjectJson;
 	// Get all players and avatars and add their data to the FString
-	//FJsonObjectConverter::UStructToJsonObjectString(DevSettingsStruct, DevSettingsJson, 0, 0);
+	TArray<AActor*> ActorList;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), ActorList);
+	for (int i = 0; i < ActorList.Num(); i++) {
+		//UScriptStruct* Struct = Cast<ACharacter_Pathfinder>(ActorList[i])->AvatarData.StaticStruct();
+		//FString Output = TEXT("");
+		//Struct->ExportText(Output, Cast<ACharacter_Pathfinder>(ActorList[i])->AvatarData.StaticStruct(), nullptr, this, (PPF_ExportsNotFullyQualified | PPF_Copy | PPF_Delimited | PPF_IncludeTransient), nullptr);
+		//DumpToLogsJson.Append(Output);
+
+		FJsonObjectConverter::UStructToJsonObjectString(Cast<ACharacter_Pathfinder>(ActorList[i])->AvatarData, SingleObjectJson, 0, 0);
+		DumpToLogsJson.Append(SingleObjectJson);
+		UE_LOG(LogTemp, Warning, TEXT("Append Avatar data to log as FString: %s"), *SingleObjectJson);
+	}
+	
+	
 
 	// Before we save the json file, we need to check if the player's save data folder exists.
 	// If it doesn't, we make it first.
@@ -103,7 +121,7 @@ void USaveData_DeveloperSettings::DumpMultiplayerStateToJsonLog()
 	}
 
 	if (FileManager.DirectoryExists(*SavePath)) {
-		FString FileName = SavePath.Append("DeveloperSettings.json");
+		FString FileName = SavePath.Append("Log.json");
 		UE_LOG(LogTemp, Warning, TEXT("FilePaths: Log file name: %s"), *FileName);
 
 		if (FFileHelper::SaveStringToFile(DumpToLogsJson, *FileName)) {
