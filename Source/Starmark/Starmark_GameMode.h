@@ -84,10 +84,10 @@ public:
 	FTimerHandle PlayerReadyCheckTimerHandle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int MultiplayerUniqueIDCounter;
+	int MultiplayerUniqueIDCounter = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int BattleUniqueIDCounter;	
+	int BattleUniqueIDCounter = 2;
 
 // ------------------------- Other
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

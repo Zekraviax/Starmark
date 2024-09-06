@@ -93,7 +93,15 @@ void AStarmark_GameMode::ServerDumpMultiplayerBattleToLogs_Implementation()
 	for (int i = 0; i < ActorList.Num(); i++) {
 		FJsonObjectConverter::UStructToJsonObjectString(Cast<ACharacter_Pathfinder>(ActorList[i])->AvatarData, SingleObjectJson, 0, 0);
 		DumpToLogsJson.Append(SingleObjectJson);
+		DumpToLogsJson.Append("\nbattleUniqueId: %d" + FString::FromInt(Cast<ACharacter_Pathfinder>(ActorList[i])->AvatarBattleUniqueID));
 		UE_LOG(LogTemp, Warning, TEXT("Append Avatar data to log as FString: %s"), *SingleObjectJson);
+	}
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), ActorList);
+	for (int i = 0; i < ActorList.Num(); i++) {
+		FJsonObjectConverter::UStructToJsonObjectString(Cast<APlayerController_Battle>(ActorList[i])->PlayerDataStruct, SingleObjectJson, 0, 0);
+		DumpToLogsJson.Append(SingleObjectJson);
+		UE_LOG(LogTemp, Warning, TEXT("Append Player data to log as FString: %s"), *SingleObjectJson);
 	}
 }
 
@@ -129,6 +137,13 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->ReplicatedMultiplayerUniqueID = MultiplayerUniqueIDCounter;
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / MultiplayerUniqueIDCounter is: %d."), MultiplayerUniqueIDCounter);
 	MultiplayerUniqueIDCounter++;
+
+	// We also assign each Avatar a Unique ID.
+	for (int i = 0; i < Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->PlayerData.CurrentAvatarTeam.Num(); i++) {
+		Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->PlayerData.CurrentAvatarTeam[i].OwnerMultiplayerUniqueID = MultiplayerUniqueIDCounter;
+		Cast<AStarmark_PlayerState>(NewPlayerController->PlayerState)->PlayerData.CurrentAvatarTeam[i].BattleUniqueID = BattleUniqueIDCounter;
+		BattleUniqueIDCounter++;
+	}
 	
 	// The one true method of sending the players' data to the server.
 	NewPlayerController->ClientSendDataToServer();
@@ -158,7 +173,7 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	NewPlayerController->ClientSetRotation(Rotation, true);
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Player controller possessed pawn: %s"), *NewPlayerController->GetPawn()->GetName());
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / Player pawn rotation: %s"), *Rotation.ToString());
-
+	
 	// Clear the Server Lobby widget from the players' display.
 	NewPlayerController->Client_ClearLobbyFromScreen();
 
@@ -249,7 +264,7 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 
 	for (int i = 0; i < GetGameState()->PlayerDataStructsArray.Num(); i++) {
 		// UStructs are value types. If you want to pass-by-reference, use the parent.
-		FPlayer_Data PlayerData = GetGameState()->PassByReferencePlayerDataUsingMultiplayerUniqueID(i);
+		FPlayer_Data& PlayerData = GetGameState()->PassByReferencePlayerDataUsingMultiplayerUniqueID(i + 2);
 		TArray<FAvatar_Struct>& CurrentPlayerTeam = PlayerData.CurrentAvatarTeam;
 		UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Double checking player name: %s."), *PlayerData.PlayerName);
 
@@ -257,14 +272,16 @@ void AStarmark_GameMode::Server_BeginMultiplayerBattle_Implementation()
 		for (int j = 0; j < CurrentPlayerTeam.Num(); j++) {
 			if (CurrentPlayerTeam.IsValidIndex(j)) {
 				if (CurrentPlayerTeam[j].AvatarName != "Default") {
+					// To-Do: Move these to a function where they'll work (probably the OnPlayerPostLogin function)
 					// Upon finding a valid avatar in any players' party,
 					// increment the BattleUniqueIDCounter and assign that ID to the avatar.
-					GetGameState()->FindPlayerDataUsingMultiplayerUniqueID(i).CurrentAvatarTeam[j].BattleUniqueID = BattleUniqueIDCounter;
-					CurrentPlayerTeam[j].OwnerMultiplayerUniqueID = i;
+					//CurrentPlayerTeam[j].BattleUniqueID = BattleUniqueIDCounter;
+					//CurrentPlayerTeam[j].OwnerMultiplayerUniqueID = PlayerData.MultiplayerUniqueID;
 
-					CurrentPlayerTeam[j].CurrentHealthPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumHealthPoints;
-					CurrentPlayerTeam[j].CurrentManaPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumManaPoints;
-					CurrentPlayerTeam[j].CurrentTileMoves = CurrentPlayerTeam[j].MaximumTileMoves;
+					//CurrentPlayerTeam[j].CurrentHealthPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumHealthPoints;
+					//CurrentPlayerTeam[j].CurrentManaPoints = CurrentPlayerTeam[j].SpeciesMinimumStats.MaximumManaPoints;
+					//CurrentPlayerTeam[j].CurrentTileMoves = CurrentPlayerTeam[j].MaximumTileMoves;
+					//GetGameState()->PassByReferencePlayerDataUsingMultiplayerUniqueID(i + 2).CurrentAvatarTeam[j].CurrentTileMoves = 6;
 					
 					if (SpawnedAvatarCount < 4) {
 						UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / Server_BeginMultiplayerBattle / Spawn avatar %s for player %s with unique ID %d."), *CurrentPlayerTeam[j].AvatarName, *PlayerData.PlayerName, CurrentPlayerTeam[j].BattleUniqueID);
