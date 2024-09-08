@@ -175,7 +175,7 @@ public:
 	// The client fetches their data from their GameInstance here,
 	// and sends it to the server here.
 	UFUNCTION(Client, Reliable)
-	void ClientSendDataToServer();
+	void ClientSendDataToServer(int BattleUniqueIDCounter, int MultiplayerUniqueIDCounter);
 
 	// The server receives the data from the client here.
 	// And passes it on to the GameState.

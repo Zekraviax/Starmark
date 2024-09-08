@@ -237,9 +237,16 @@ void APlayerController_Battle::Server_SetReadyToStartMultiplayerBattle_Implement
 }
 
 
-void APlayerController_Battle::ClientSendDataToServer_Implementation()
+void APlayerController_Battle::ClientSendDataToServer_Implementation(int BattleUniqueIDCounter, int MultiplayerUniqueIDCounter)
 {
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	GameInstanceReference->PlayerDataStruct.MultiplayerUniqueID = MultiplayerUniqueIDCounter;
+	
+	for (int i = 0; i < GameInstanceReference->PlayerDataStruct.CurrentAvatarTeam.Num(); i++) {
+		GameInstanceReference->PlayerDataStruct.CurrentAvatarTeam[i].BattleUniqueID = (BattleUniqueIDCounter + i);
+		GameInstanceReference->PlayerDataStruct.CurrentAvatarTeam[i].OwnerMultiplayerUniqueID = MultiplayerUniqueID;
+	}
+
 	PlayerDataStruct = GameInstanceReference->PlayerDataStruct;
 	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / ClientSendDataToServer / Sending player data with ProfileName: %s"), *PlayerDataStruct.ProfileName);
 
