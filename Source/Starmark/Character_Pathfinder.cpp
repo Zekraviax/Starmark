@@ -353,6 +353,7 @@ void ACharacter_Pathfinder::UpdateAvatarDataInPlayerParty()
 {
 	if (PlayerControllerReference) {
 		if (PlayerControllerReference->PlayerParty.IsValidIndex(AvatarBattleUniqueID)) {
+			UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / UpdateAvatarDataInPlayerParty / Updated avatar data at index in player party %d"), AvatarBattleUniqueID);
 			PlayerControllerReference->PlayerParty[AvatarBattleUniqueID] = AvatarData;
 		} else {
 			UE_LOG(LogTemp, Warning, TEXT("ACharacter_Pathfinder / UpdateAvatarDataInPlayerParty / Index in player party %d is not valid"), AvatarBattleUniqueID);

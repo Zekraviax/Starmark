@@ -87,21 +87,25 @@ void AStarmark_GameMode::ServerDumpMultiplayerBattleToLogs_Implementation()
 {
 	FString DumpToLogsJson;
 	FString SingleObjectJson;
+	
 	// Get all players and avatars and add their data to the FString
 	TArray<AActor*> ActorList;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter_Pathfinder::StaticClass(), ActorList);
 	for (int i = 0; i < ActorList.Num(); i++) {
 		FJsonObjectConverter::UStructToJsonObjectString(Cast<ACharacter_Pathfinder>(ActorList[i])->AvatarData, SingleObjectJson, 0, 0);
 		DumpToLogsJson.Append(SingleObjectJson);
-		DumpToLogsJson.Append("\nbattleUniqueId: %d" + FString::FromInt(Cast<ACharacter_Pathfinder>(ActorList[i])->AvatarBattleUniqueID));
-		UE_LOG(LogTemp, Warning, TEXT("Append Avatar data to log as FString: %s"), *SingleObjectJson);
+		DumpToLogsJson.Append("battleUniqueId: %d" + FString::FromInt(Cast<ACharacter_Pathfinder>(ActorList[i])->AvatarBattleUniqueID));
+		//UE_LOG(LogTemp, Warning, TEXT("Append Avatar data to log as FString: %s"), *SingleObjectJson);
 	}
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController_Battle::StaticClass(), ActorList);
 	for (int i = 0; i < ActorList.Num(); i++) {
-		FJsonObjectConverter::UStructToJsonObjectString(Cast<APlayerController_Battle>(ActorList[i])->PlayerDataStruct, SingleObjectJson, 0, 0);
-		DumpToLogsJson.Append(SingleObjectJson);
-		UE_LOG(LogTemp, Warning, TEXT("Append Player data to log as FString: %s"), *SingleObjectJson);
+		//Cast<APlayerController_Battle>(ActorList[i])->ClientSendDataToServer();
+		//FJsonObjectConverter::UStructToJsonObjectString(Cast<APlayerController_Battle>(ActorList[i])->PlayerDataStruct, SingleObjectJson, 0, 0);
+		//DumpToLogsJson.Append(SingleObjectJson);
+		//UE_LOG(LogTemp, Warning, TEXT("Append Player data to log as FString: %s"), *SingleObjectJson);
+
+		Cast<APlayerController_Battle>(ActorList[i])->ServerSendDataToServerWithReturn();
 	}
 }
 
@@ -138,7 +142,7 @@ void AStarmark_GameMode::OnPlayerPostLogin(APlayerController_Battle* NewPlayerCo
 	UE_LOG(LogTemp, Warning, TEXT("AStarmark_GameMode / OnPlayerPostLogin / MultiplayerUniqueIDCounter is: %d."), MultiplayerUniqueIDCounter);
 	
 	// The one true method of sending the players' data to the server.
-	NewPlayerController->ClientSendDataToServer(BattleUniqueIDCounter, MultiplayerUniqueIDCounter);
+	NewPlayerController->ClientGetIdsAndSendDataToServer(BattleUniqueIDCounter, MultiplayerUniqueIDCounter);
 	BattleUniqueIDCounter += (NewPlayerController->PlayerDataStruct.CurrentAvatarTeam.Num() + 1);
 	MultiplayerUniqueIDCounter++;
 	

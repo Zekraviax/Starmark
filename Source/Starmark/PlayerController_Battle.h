@@ -175,12 +175,17 @@ public:
 	// The client fetches their data from their GameInstance here,
 	// and sends it to the server here.
 	UFUNCTION(Client, Reliable)
-	void ClientSendDataToServer(int BattleUniqueIDCounter, int MultiplayerUniqueIDCounter);
+	void ClientGetIdsAndSendDataToServer(int BattleUniqueIDCounter, int MultiplayerUniqueIDCounter);
+	UFUNCTION(Client, Reliable)
+	void ClientSendDataToServer();
 
 	// The server receives the data from the client here.
 	// And passes it on to the GameState.
 	UFUNCTION(Server, Reliable)
 	void ServerSendDataToServer(FPlayer_Data ReceivedPlayerDataStruct);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSendDataToServerWithReturn();
 	
 	UFUNCTION()
 	FPlayer_Data Server_GetDataFromProfile();

@@ -8,6 +8,7 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Character_HatTrick.h"
 #include "Engine/World.h"
+#include "Runtime/JsonUtilities/Public/JsonObjectConverter.h"
 #include "Starmark_GameInstance.h"
 #include "Starmark_GameMode.h"
 #include "Starmark_GameState.h"
@@ -237,7 +238,7 @@ void APlayerController_Battle::Server_SetReadyToStartMultiplayerBattle_Implement
 }
 
 
-void APlayerController_Battle::ClientSendDataToServer_Implementation(int BattleUniqueIDCounter, int MultiplayerUniqueIDCounter)
+void APlayerController_Battle::ClientGetIdsAndSendDataToServer_Implementation(int BattleUniqueIDCounter, int MultiplayerUniqueIDCounter)
 {
 	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	GameInstanceReference->PlayerDataStruct.MultiplayerUniqueID = MultiplayerUniqueIDCounter;
@@ -248,7 +249,7 @@ void APlayerController_Battle::ClientSendDataToServer_Implementation(int BattleU
 	}
 
 	PlayerDataStruct = GameInstanceReference->PlayerDataStruct;
-	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / ClientSendDataToServer / Sending player data with ProfileName: %s"), *PlayerDataStruct.ProfileName);
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / ClientGetIdsAndSendDataToServer / Sending player data with ProfileName: %s"), *PlayerDataStruct.ProfileName);
 
 	ServerSendDataToServer(PlayerDataStruct);
 }
@@ -264,6 +265,25 @@ void APlayerController_Battle::ServerSendDataToServer_Implementation(FPlayer_Dat
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / ServerSendDataToServer / Error: This object does not have server authority."));
 	}
+}
+
+
+void APlayerController_Battle::ClientSendDataToServer_Implementation()
+{
+	UStarmark_GameInstance* GameInstanceReference = Cast<UStarmark_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+	PlayerDataStruct = GameInstanceReference->PlayerDataStruct;
+	UE_LOG(LogTemp, Warning, TEXT("APlayerController_Battle / ClientGetIdsAndSendDataToServer / Sending player data with ProfileName: %s"), *PlayerDataStruct.ProfileName);
+
+	ServerSendDataToServer(PlayerDataStruct);
+}
+
+
+void APlayerController_Battle::ServerSendDataToServerWithReturn_Implementation()
+{
+	FString SingleObjectJson;
+	FJsonObjectConverter::UStructToJsonObjectString(PlayerDataStruct, SingleObjectJson, 0, 0);
+	UE_LOG(LogTemp, Warning, TEXT("Append Player data to log as FString: %s"), *SingleObjectJson);
 }
 
 
